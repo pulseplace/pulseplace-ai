@@ -1,45 +1,45 @@
 
 import React from 'react';
 import { 
-  UserPlus, 
-  MessageSquareText, 
+  MessageSquare,
   Brain, 
-  BarChart, 
+  BarChart2, 
   Award, 
+  Globe,
   ChevronRight 
 } from 'lucide-react';
 
 const steps = [
   {
-    icon: <UserPlus className="h-8 w-8 text-white" />,
-    title: "Organization Onboarding",
-    description: "HR signs up, defines profile, chooses survey frequency, and optionally integrates with HRIS."
-  },
-  {
-    icon: <MessageSquareText className="h-8 w-8 text-white" />,
-    title: "Pulse Surveys",
-    description: "AI-curated questions sent to employees. Surveys are anonymous and gamified."
+    icon: <MessageSquare className="h-8 w-8 text-white" />,
+    title: "Employees complete short pulse surveys",
+    description: "Simple, engaging pulse surveys gather anonymous feedback from your team."
   },
   {
     icon: <Brain className="h-8 w-8 text-white" />,
-    title: "AI Sentiment Processing",
-    description: "Responses processed through sentiment detection, tone analysis, and keyword clustering."
+    title: "AI analyzes responses + signals trust score",
+    description: "Our advanced AI processes sentiment and derives meaningful insights."
   },
   {
-    icon: <BarChart className="h-8 w-8 text-white" />,
-    title: "Dashboard + Benchmarking",
-    description: "Admin views trends, heatmaps, and AI recommendations with industry benchmarking."
+    icon: <BarChart2 className="h-8 w-8 text-white" />,
+    title: "Company dashboard shows live PulseScore",
+    description: "Access real-time analytics and benchmarking against industry peers."
   },
   {
     icon: <Award className="h-8 w-8 text-white" />,
-    title: "Certification & Badges",
-    description: "PulseScore triggers badge assignment, downloadable reports, and optional third-party validation."
+    title: "Certification + Culture Report issued",
+    description: "Earn official recognition with detailed insights and recommendations."
+  },
+  {
+    icon: <Globe className="h-8 w-8 text-white" />,
+    title: "Rank published to PulsePlace Index",
+    description: "Showcase your workplace excellence on the public PulsePlace rankings."
   }
 ];
 
 const HowItWorks = () => {
   return (
-    <section id="how-it-works" className="py-16 md:py-24 px-4">
+    <section id="how-it-works" className="py-16 md:py-24 px-4 bg-white">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
@@ -48,7 +48,7 @@ const HowItWorks = () => {
           </p>
         </div>
 
-        <div className="relative">
+        <div className="relative max-w-4xl mx-auto">
           {/* Connecting line */}
           <div className="absolute left-1/2 top-8 bottom-0 w-1 bg-gradient-to-b from-pulse-600 to-teal-500 hidden md:block" style={{ transform: 'translateX(-50%)' }}></div>
           

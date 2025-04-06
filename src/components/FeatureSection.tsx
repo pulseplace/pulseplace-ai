@@ -1,38 +1,28 @@
 
 import React from 'react';
-import { Activity, BarChart3, Award, TrendingUp, CheckCircle, Users } from 'lucide-react';
+import { Activity, ChartBar, Award, Brain } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
   {
     icon: <Activity className="h-10 w-10 text-pulse-500" />,
     title: "PulseScore™",
-    description: "Real-time workplace score derived from employee feedback, sentiment analysis, and retention signals."
+    description: "Real-time workplace culture rating powered by sentiment + retention analytics."
   },
   {
-    icon: <BarChart3 className="h-10 w-10 text-teal-500" />,
+    icon: <ChartBar className="h-10 w-10 text-teal-500" />,
     title: "Culture Compass™",
-    description: "Interactive dashboard benchmarking organizations against industry peers across culture, inclusion, growth, and flexibility."
+    description: "Benchmark your organization against your industry in areas like growth, flexibility, and inclusion."
   },
   {
     icon: <Award className="h-10 w-10 text-pulse-600" />,
-    title: "Certification Tiers",
-    description: "Earn digital badges like 'Pulse Certified', 'Remote Ready', 'Women-Led', 'Inclusive Culture', and 'Mentor Workplace'."
+    title: "Pulse Certified",
+    description: "Earn digital badges and global recognition based on transparency, not testimonials."
   },
   {
-    icon: <TrendingUp className="h-10 w-10 text-teal-600" />,
-    title: "AI Insights",
-    description: "Leverage cutting-edge AI to gain actionable insights and improvement recommendations for your workplace culture."
-  },
-  {
-    icon: <CheckCircle className="h-10 w-10 text-pulse-500" />,
-    title: "Sentiment Analysis",
-    description: "Advanced NLP technology to analyze employee sentiment and identify trends in real-time."
-  },
-  {
-    icon: <Users className="h-10 w-10 text-teal-500" />,
-    title: "Employee Engagement",
-    description: "Gamified surveys and feedback loops to increase participation and collect honest feedback."
+    icon: <Brain className="h-10 w-10 text-teal-600" />,
+    title: "AI Insights Engine",
+    description: "Get personalized action plans from our culture model trained on thousands of data points."
   }
 ];
 
@@ -47,7 +37,7 @@ const FeatureSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {features.map((feature, index) => (
             <Card key={index} className="border border-gray-200 hover:shadow-lg transition-shadow overflow-hidden group">
               <CardContent className="p-6">
@@ -64,6 +54,8 @@ const FeatureSection = () => {
             </Card>
           ))}
         </div>
+        
+        <div className="w-full h-1 bg-gray-200 my-16 max-w-4xl mx-auto"></div>
       </div>
     </section>
   );

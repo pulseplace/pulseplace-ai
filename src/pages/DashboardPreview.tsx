@@ -25,7 +25,7 @@ const pulseScoreData = [
   { month: 'Aug', score: 86 },
 ];
 
-// Fixed engagement data with proper labels and values
+// Updated engagement data with properly formatted labels
 const engagementData = [
   { name: 'Highly Engaged', value: 35, color: '#4ade80' },
   { name: 'Engaged', value: 40, color: '#a3e635' },
@@ -109,6 +109,15 @@ const activities = [
 ];
 
 const Sidebar = () => {
+  const { toast } = useToast();
+  
+  const handleMenuItemClick = (label) => {
+    toast({
+      title: `${label} Selected`,
+      description: `You clicked on the ${label} menu item`,
+    });
+  };
+  
   return (
     <div className="border-r bg-white w-64 min-h-screen hidden md:block">
       <div className="p-6">
@@ -119,7 +128,7 @@ const Sidebar = () => {
       </div>
       <nav className="mt-4">
         <div className="px-3 py-1">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Analytics</p>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">ANALYTICS</p>
         </div>
         <div className="space-y-1 px-3">
           {[
@@ -128,21 +137,22 @@ const Sidebar = () => {
             { icon: <TrendingUp className="h-4 w-4 mr-3" />, label: "Trends" },
             { icon: <Users className="h-4 w-4 mr-3" />, label: "Teams" },
           ].map((item, i) => (
-            <div 
+            <button 
               key={i} 
-              className={`flex items-center px-3 py-2 rounded-md text-sm ${
+              className={`flex w-full items-center px-3 py-2 rounded-md text-sm ${
                 item.active ? "bg-pulse-50 text-pulse-700" : "text-gray-700 hover:bg-gray-100"
               } cursor-pointer`}
+              onClick={() => handleMenuItemClick(item.label)}
             >
               {item.icon}
               {item.label}
               {item.active && <Badge className="ml-auto bg-pulse-100 text-pulse-700 hover:bg-pulse-200">Active</Badge>}
-            </div>
+            </button>
           ))}
         </div>
         
         <div className="mt-6 px-3 py-1">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">MANAGEMENT</p>
         </div>
         <div className="space-y-1 px-3">
           {[
@@ -151,13 +161,14 @@ const Sidebar = () => {
             { icon: <FileText className="h-4 w-4 mr-3" />, label: "Documentation" },
             { icon: <Settings className="h-4 w-4 mr-3" />, label: "Settings" },
           ].map((item, i) => (
-            <div 
+            <button 
               key={i} 
-              className="flex items-center px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+              className="flex w-full items-center px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+              onClick={() => handleMenuItemClick(item.label)}
             >
               {item.icon}
               {item.label}
-            </div>
+            </button>
           ))}
         </div>
       </nav>
@@ -174,12 +185,26 @@ const Header = () => {
       description: "You have 3 unread notifications",
     });
   };
+
+  const handleSidebarToggle = () => {
+    toast({
+      title: "Sidebar Toggle",
+      description: "This would toggle the sidebar visibility on mobile",
+    });
+  };
+  
+  const handleProfileClick = () => {
+    toast({
+      title: "User Profile",
+      description: "This would open your profile settings",
+    });
+  };
   
   return (
     <header className="bg-white border-b py-4 px-6">
       <div className="flex items-center justify-between">
         <div className="md:hidden flex items-center">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={handleSidebarToggle}>
             <PanelLeft className="h-5 w-5" />
           </Button>
           <span className="ml-2 font-bold">Dashboard</span>
@@ -196,7 +221,7 @@ const Header = () => {
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] flex items-center justify-center">3</span>
           </Button>
           
-          <div className="flex items-center ml-4 cursor-pointer">
+          <div className="flex items-center ml-4 cursor-pointer" onClick={handleProfileClick}>
             <div className="w-8 h-8 rounded-full bg-pulse-100 flex items-center justify-center text-pulse-600">
               <User className="h-5 w-5" />
             </div>
@@ -378,14 +403,20 @@ const DashboardOverview = () => {
                     fill="#8884d8"
                     dataKey="value"
                     nameKey="name"
+                    labelLine={true}
                     label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   >
                     {engagementData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
+                  <Legend 
+                    layout="horizontal" 
+                    verticalAlign="bottom" 
+                    align="center"
+                    formatter={(value) => <span style={{ color: '#333', fontSize: '12px' }}>{value}</span>}
+                  />
                   <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
-                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>

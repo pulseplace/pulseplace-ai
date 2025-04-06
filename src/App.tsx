@@ -20,6 +20,7 @@ import Pricing from "./pages/Pricing";
 import ROICalculator from "./pages/ROICalculator";
 import DashboardPreview from "./pages/DashboardPreview";
 import MetaTags from "./components/MetaTags";
+import StickyCta from "./components/StickyCta";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ const AnimatedRoutes = () => {
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <StickyCta />
       </motion.div>
     </AnimatePresence>
   );

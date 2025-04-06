@@ -32,7 +32,7 @@ const Navbar = () => {
     setIsMenuOpen(false);
   }, [location]);
 
-  const scrollWithOffset = (el: HTMLElement) => {
+  const scrollWithOffset = (el) => {
     const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
     const yOffset = -80; // Adjust this value based on your fixed header height
     window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
@@ -67,10 +67,18 @@ const Navbar = () => {
           >
             How It Works
           </HashLink>
-          <Link to="/methodology" className="text-gray-700 hover:text-pulse-600 transition-colors">Methodology</Link>
-          <Link to="/ai-engine" className="text-gray-700 hover:text-pulse-600 transition-colors">Our AI Engine</Link>
-          <Link to="/certification" className="text-gray-700 hover:text-pulse-600 transition-colors">Certification</Link>
-          <Link to="/about-us" className="text-gray-700 hover:text-pulse-600 transition-colors">About Us</Link>
+          <Link to="/methodology" className="text-gray-700 hover:text-pulse-600 transition-colors">
+            Methodology
+          </Link>
+          <Link to="/ai-engine" className="text-gray-700 hover:text-pulse-600 transition-colors">
+            Our AI Engine
+          </Link>
+          <Link to="/certification" className="text-gray-700 hover:text-pulse-600 transition-colors">
+            Certification
+          </Link>
+          <Link to="/about-us" className="text-gray-700 hover:text-pulse-600 transition-colors">
+            About Us
+          </Link>
           <HashLink 
             to="/#join-beta" 
             scroll={scrollWithOffset}

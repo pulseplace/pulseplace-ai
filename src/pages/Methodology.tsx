@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -146,6 +145,16 @@ const Methodology = () => {
               <h2 className="text-3xl font-bold mb-2">How Our AI Works</h2>
               <Separator className="w-24 mx-auto bg-pulse-500/50 h-1 rounded-full my-6" />
               <p className="text-xl text-gray-700 mb-12">Built With Integrity, Backed by Data</p>
+            </div>
+            
+            <div className="max-w-4xl mx-auto my-8">
+              <div className="bg-[#F1F0FB] rounded-xl p-6 md:p-8 shadow-sm">
+                <img 
+                  src="/lovable-uploads/693f7738-d96d-48e0-8d0f-d09d05c93a98.png" 
+                  alt="How Our AI Works: Sentiment engine processes pulse survey text, LLM synthesizes feedback into themes, Benchmarked vs. industry and historical trends" 
+                  className="w-full h-auto mx-auto"
+                />
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">

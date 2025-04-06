@@ -183,65 +183,19 @@ const Hero = () => {
             </div>
           </div>
           
-          {/* Hero Graphic with Core Features */}
+          {/* Image Area - Replacing the Dashboard Mockup */}
           <div className="w-full lg:w-1/2 relative">
-            <div className="w-full h-80 md:h-96 lg:h-[500px] relative overflow-hidden rounded-2xl bg-gradient-to-br from-pulse-100 to-pulse-50 shadow-lg">
-              {/* Dashboard Mockup */}
-              <div className="absolute top-10 left-1/2 transform -translate-x-1/2 w-[90%] h-[80%] bg-white rounded-xl shadow-lg overflow-hidden animate-float">
-                <div className="h-8 bg-pulse-100 w-full flex items-center px-4">
-                  <div className="flex space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex justify-between mb-4">
-                    <div className="w-32 h-8 bg-pulse-100 rounded-md"></div>
-                    <div className="w-24 h-8 bg-teal-100 rounded-md"></div>
-                  </div>
-                  
-                  {/* Feature Cards Grid */}
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    {coreFeatures.map((feature, index) => (
-                      <div key={index} className="bg-white rounded-lg shadow-md p-3 transform transition-all duration-300 hover:scale-105 hover:shadow-lg border border-gray-100">
-                        <div className="w-10 h-10 rounded-full bg-pulse-gradient flex items-center justify-center mb-2">
-                          {feature.icon}
-                        </div>
-                        <h4 className="text-sm font-semibold text-pulse-700">{feature.name}</h4>
-                        <p className="text-xs text-gray-500 mt-1">{feature.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Visualization Area */}
-                  <div className="h-32 bg-gray-50 rounded-lg p-3 border border-gray-100">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-xs font-medium text-pulse-700">Company PulseScore™</div>
-                      <div className="text-xs font-bold text-pulse-800">85/100</div>
-                    </div>
-                    <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-pulse-gradient w-[85%] rounded-full"></div>
-                    </div>
-                    <div className="mt-3 flex justify-between">
-                      <div className="text-xs text-gray-500">Industry Average: 72</div>
-                      <div className="text-xs text-teal-600 font-medium">+13 points</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="w-full h-80 md:h-96 lg:h-[500px] relative overflow-hidden rounded-2xl bg-gradient-to-br from-pulse-100 to-pulse-50 shadow-lg flex items-center justify-center">
+              {/* Placeholder for the uploaded diagram */}
+              <img 
+                src="/lovable-uploads/4f3c79fd-71b5-4a9d-9b51-8a7712a973f1.png" 
+                alt="How PulsePlace.ai works - Process diagram" 
+                className="max-w-full max-h-full object-contain p-6"
+              />
               
-              {/* Animated Elements */}
+              {/* Subtle background elements */}
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-teal-400 opacity-20 rounded-full animate-spin-slow"></div>
               <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-pulse-400 opacity-10 rounded-full animate-spin-slow"></div>
-              
-              {/* Floating Feature Tags */}
-              <div className="absolute top-1/4 right-4 bg-white px-3 py-1 rounded-full text-xs font-medium text-pulse-600 shadow-md animate-pulse">
-                Real-time Analysis
-              </div>
-              <div className="absolute bottom-1/4 left-4 bg-white px-3 py-1 rounded-full text-xs font-medium text-teal-600 shadow-md animate-pulse delay-500">
-                Employee Trust Score
-              </div>
             </div>
           </div>
         </div>

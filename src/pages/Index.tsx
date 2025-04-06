@@ -20,6 +20,7 @@ const Index = () => {
       <HowItWorks />
       <PulseScoreDemo />
       <CallToAction />
+      <JoinBeta />
       <Footer />
     </div>
   );

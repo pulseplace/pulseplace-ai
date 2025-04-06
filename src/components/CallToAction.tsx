@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { MessageCircle, ArrowRight } from 'lucide-react';
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from 'react-router-dom';
 
 const CallToAction = () => {
   const [name, setName] = useState('');
@@ -41,79 +41,11 @@ const CallToAction = () => {
           </h2>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center mt-10">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="bg-pulse-gradient hover:opacity-90 transition-all h-12 px-6 text-base">
-                  Join the Beta <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                <form onSubmit={handleSubmitRequest}>
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl">Join the Beta Program</DialogTitle>
-                    <DialogDescription>
-                      Be among the first to experience PulsePlace.ai and get your organization Pulse Certified.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
-                        Name
-                      </Label>
-                      <Input 
-                        id="name" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
-                        className="col-span-3" 
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="email" className="text-right">
-                        Email
-                      </Label>
-                      <Input 
-                        id="email" 
-                        type="email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        className="col-span-3" 
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="company" className="text-right">
-                        Company
-                      </Label>
-                      <Input 
-                        id="company" 
-                        value={company} 
-                        onChange={(e) => setCompany(e.target.value)} 
-                        className="col-span-3"
-                        required
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="message" className="text-right">
-                        Message
-                      </Label>
-                      <Textarea 
-                        id="message" 
-                        value={message} 
-                        onChange={(e) => setMessage(e.target.value)} 
-                        className="col-span-3"
-                        placeholder="Tell us about your organization and why you're interested in joining the beta."
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button type="submit" className="bg-pulse-gradient hover:opacity-90">
-                      Submit Request
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <Link to="/join-beta">
+              <Button className="bg-pulse-gradient hover:opacity-90 transition-all h-12 px-6 text-base w-full sm:w-auto">
+                Join the Beta <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
             
             <Dialog>
               <DialogTrigger asChild>

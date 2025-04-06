@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Methodology from "./pages/Methodology";
 import AIEngine from "./pages/AIEngine";
 import Certification from "./pages/Certification";
+import JoinBeta from "./pages/JoinBeta";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/methodology" element={<Methodology />} />
           <Route path="/ai-engine" element={<AIEngine />} />
           <Route path="/certification" element={<Certification />} />
+          <Route path="/join-beta" element={<JoinBeta />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

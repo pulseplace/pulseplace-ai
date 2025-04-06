@@ -131,7 +131,7 @@ const Methodology = () => {
             
             <div className="mt-16 max-w-4xl mx-auto">
               <img 
-                src="/lovable-uploads/da2df9b1-afa2-4019-be42-cbfdedf8740b.png" 
+                src="/lovable-uploads/802f6b9e-42e3-4397-ba07-c035bd53a988.png" 
                 alt="PulsePlace.ai Methodology Infographic"
                 className="w-full h-auto mx-auto rounded-lg shadow-md"
               />

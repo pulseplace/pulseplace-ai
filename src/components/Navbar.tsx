@@ -50,7 +50,9 @@ const Navbar = () => {
           >
             Join Beta
           </HashLink>
-          <Button className="bg-pulse-gradient hover:opacity-90 transition-all">Get Started</Button>
+          <Link to="/join-beta">
+            <Button className="bg-pulse-gradient hover:opacity-90 transition-all">Get Started</Button>
+          </Link>
         </div>
 
         {/* Mobile Navigation Toggle */}
@@ -122,9 +124,11 @@ const Navbar = () => {
             >
               Join Beta
             </HashLink>
-            <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full">
-              Get Started
-            </Button>
+            <Link to="/join-beta" onClick={() => setIsMenuOpen(false)}>
+              <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full">
+                Get Started
+              </Button>
+            </Link>
           </div>
         </div>
       )}

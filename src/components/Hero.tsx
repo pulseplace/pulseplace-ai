@@ -96,23 +96,20 @@ const Hero = () => {
               <Link to="/demo">
                 <Button 
                   variant="outline" 
-                  className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base"
+                  className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base w-full sm:w-auto"
                 >
                   Try Team Demo <Users className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               
-              <HashLink 
-                to="/#features" 
-                scroll={scrollWithOffset}
-              >
+              <Link to="/certification">
                 <Button 
                   variant="outline" 
-                  className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base"
+                  className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base w-full sm:w-auto"
                 >
                   Get Pulse Certified <ArrowUpRight className="ml-2 h-4 w-4" />
                 </Button>
-              </HashLink>
+              </Link>
             </div>
             
             <div className="flex items-center gap-4 pt-4">

@@ -65,7 +65,7 @@ const TeamPilotSection = () => (
                   <span>Benchmark your culture against industry standards</span>
                 </li>
               </ul>
-              <Link to="/demo" className="block w-full">
+              <Link to="/demo#pulse-score" className="block w-full">
                 <Button className="w-full bg-pulse-gradient">
                   Try HR Leader Demo <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -107,7 +107,7 @@ const TeamPilotSection = () => (
                   <span>Data-driven insights to build high-performing tech teams</span>
                 </li>
               </ul>
-              <Link to="/demo" className="block w-full">
+              <Link to="/demo#ai-insights" className="block w-full">
                 <Button className="w-full bg-pulse-gradient">
                   Try Tech Team Demo <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

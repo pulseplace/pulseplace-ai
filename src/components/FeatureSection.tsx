@@ -33,6 +33,12 @@ const features = [
 ];
 
 const FeatureSection = () => {
+  const scrollWithOffset = (el: HTMLElement) => {
+    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+    const yOffset = -80;
+    window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
+  };
+
   return (
     <section id="features" className="py-16 md:py-24 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -45,7 +51,7 @@ const FeatureSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {features.map((feature, index) => (
-            <HashLink key={index} to={feature.link} smooth className="block">
+            <Link key={index} to={feature.link} className="block">
               <Card className="border border-gray-200 hover:shadow-lg transition-shadow overflow-hidden group h-full">
                 <CardContent className="p-6">
                   <div className="mb-4 transform group-hover:scale-110 transition-transform">
@@ -62,7 +68,7 @@ const FeatureSection = () => {
                   </div>
                 </CardContent>
               </Card>
-            </HashLink>
+            </Link>
           ))}
         </div>
         

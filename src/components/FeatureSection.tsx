@@ -2,27 +2,32 @@
 import React from 'react';
 import { Activity, ChartBar, Award, Brain } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from 'react-router-dom';
 
 const features = [
   {
     icon: <Activity className="h-10 w-10 text-pulse-500" />,
     title: "PulseScore™",
-    description: "Real-time workplace culture rating powered by sentiment + retention analytics."
+    description: "Real-time workplace culture rating powered by sentiment + retention analytics.",
+    link: "/demo#pulse-score"
   },
   {
     icon: <ChartBar className="h-10 w-10 text-teal-500" />,
     title: "Culture Compass™",
-    description: "Benchmark your organization against your industry in areas like growth, flexibility, and inclusion."
+    description: "Benchmark your organization against your industry in areas like growth, flexibility, and inclusion.",
+    link: "/demo#culture-compass"
   },
   {
     icon: <Award className="h-10 w-10 text-pulse-600" />,
     title: "Pulse Certified",
-    description: "Earn digital badges and global recognition based on transparency, not testimonials."
+    description: "Earn digital badges and global recognition based on transparency, not testimonials.",
+    link: "/demo#pulse-certified"
   },
   {
     icon: <Brain className="h-10 w-10 text-teal-600" />,
     title: "AI Insights Engine",
-    description: "Get personalized action plans from our culture model trained on thousands of data points."
+    description: "Get personalized action plans from our culture model trained on thousands of data points.",
+    link: "/demo#ai-insights"
   }
 ];
 
@@ -39,19 +44,24 @@ const FeatureSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {features.map((feature, index) => (
-            <Card key={index} className="border border-gray-200 hover:shadow-lg transition-shadow overflow-hidden group">
-              <CardContent className="p-6">
-                <div className="mb-4 transform group-hover:scale-110 transition-transform">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold mb-2 group-hover:text-pulse-600 transition-colors">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600">
-                  {feature.description}
-                </p>
-              </CardContent>
-            </Card>
+            <Link key={index} to={feature.link} className="block">
+              <Card className="border border-gray-200 hover:shadow-lg transition-shadow overflow-hidden group h-full">
+                <CardContent className="p-6">
+                  <div className="mb-4 transform group-hover:scale-110 transition-transform">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 group-hover:text-pulse-600 transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600">
+                    {feature.description}
+                  </p>
+                  <div className="mt-4 text-pulse-600 font-medium group-hover:underline">
+                    Learn more
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
         

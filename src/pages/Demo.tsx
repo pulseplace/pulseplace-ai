@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowRight, CheckCircle, Clock, Copy, Mail, BarChart3, Upload, UserPlus, Users, Brain } from 'lucide-react';
+import { ArrowRight, CheckCircle, Clock, Copy, Mail, BarChart3, Upload, UserPlus, Users, Brain, Activity, ChartBar, Award, Target, HeartHandshake, Lightbulb } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
@@ -21,12 +20,23 @@ const Demo = () => {
   const [isInviting, setIsInviting] = useState(false);
   const [inviteComplete, setInviteComplete] = useState(false);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const element = document.getElementById(hash.substring(1));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, []);
 
   const handleInviteTeam = (e: React.FormEvent) => {
     e.preventDefault();
     setIsInviting(true);
     
-    // Simulate API call
     setTimeout(() => {
       setIsInviting(false);
       setInviteComplete(true);
@@ -34,7 +44,6 @@ const Demo = () => {
         title: "Team invited successfully",
         description: "Your team members will receive an email with instructions.",
       });
-      // Advance to the next tab after a short delay
       setTimeout(() => setActiveTab('collect'), 1000);
     }, 1500);
   };
@@ -84,6 +93,277 @@ const Demo = () => {
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 Walk through a complete pilot flow for a team of 10 — from setup to insights in minutes.
               </p>
+            </div>
+
+            <div className="mb-16">
+              <h2 className="text-2xl font-bold mb-8 text-center">Our Core Features</h2>
+              
+              <Card className="mb-10" id="pulse-score">
+                <CardContent className="p-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                      <div className="bg-pulse-100 p-4 w-16 h-16 rounded-lg flex items-center justify-center mb-4">
+                        <Activity className="h-8 w-8 text-pulse-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3 text-pulse-700">PulseScore™</h3>
+                      <p className="text-gray-700 mb-4">
+                        Our proprietary culture measurement system that generates a real-time score based on sentiment analysis, retention metrics, and employee engagement data.
+                      </p>
+                      <ul className="space-y-2 mb-6">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>AI-powered sentiment analysis of employee feedback</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Real-time updates based on continuous feedback</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Weighted scoring system for accurate culture measurement</span>
+                        </li>
+                      </ul>
+                      <Button className="bg-pulse-gradient">
+                        Try PulseScore Demo <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="relative bg-gray-50 p-6 rounded-lg">
+                      <div className="flex flex-col items-center">
+                        <div className="relative w-32 h-32 mb-4">
+                          <div className="w-full h-full rounded-full flex items-center justify-center text-4xl font-bold bg-white border-8 border-pulse-500">
+                            78
+                          </div>
+                        </div>
+                        <h4 className="text-xl font-semibold mb-2">Your PulseScore</h4>
+                        <Badge className="bg-blue-100 text-blue-800 mb-4">Growth Culture – Building Excellence</Badge>
+                        <div className="w-full space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Emotion & Trust (40%)</span>
+                              <span className="font-semibold">82/100</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-pulse-600 h-2 rounded-full" style={{ width: '82%' }}></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Engagement (30%)</span>
+                              <span className="font-semibold">75/100</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-teal-500 h-2 rounded-full" style={{ width: '75%' }}></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Culture Trust (30%)</span>
+                              <span className="font-semibold">73/100</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-blue-500 h-2 rounded-full" style={{ width: '73%' }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="mb-10" id="culture-compass">
+                <CardContent className="p-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div className="order-2 md:order-1 relative bg-gray-50 p-6 rounded-lg">
+                      <div className="flex flex-col items-center">
+                        <div className="bg-teal-100 p-4 rounded-full mb-4">
+                          <ChartBar className="h-8 w-8 text-teal-600" />
+                        </div>
+                        <h4 className="text-xl font-semibold mb-4">Industry Benchmarking</h4>
+                        <div className="w-full grid grid-cols-2 gap-4 mb-6">
+                          <div className="bg-white p-4 rounded-lg text-center">
+                            <p className="text-gray-600 text-sm mb-1">Your Score</p>
+                            <p className="text-2xl font-bold text-pulse-600">78</p>
+                          </div>
+                          <div className="bg-white p-4 rounded-lg text-center">
+                            <p className="text-gray-600 text-sm mb-1">Industry Avg</p>
+                            <p className="text-2xl font-bold">72</p>
+                          </div>
+                        </div>
+                        <div className="w-full space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Growth Opportunities</span>
+                              <span className="font-semibold">+12%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-green-500 h-2 rounded-full" style={{ width: '62%' }}></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Flexibility</span>
+                              <span className="font-semibold">+8%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-teal-500 h-2 rounded-full" style={{ width: '58%' }}></div>
+                            </div>
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Inclusivity</span>
+                              <span className="font-semibold">-3%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-red-500 h-2 rounded-full" style={{ width: '47%' }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="order-1 md:order-2">
+                      <div className="bg-teal-100 p-4 w-16 h-16 rounded-lg flex items-center justify-center mb-4">
+                        <ChartBar className="h-8 w-8 text-teal-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3 text-teal-700">Culture Compass™</h3>
+                      <p className="text-gray-700 mb-4">
+                        Compare your organizational culture metrics against industry benchmarks to identify strengths and improvement areas.
+                      </p>
+                      <ul className="space-y-2 mb-6">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Benchmark against similar companies in your industry</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Track progress across key culture dimensions</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Identify industry-specific cultural strengths and gaps</span>
+                        </li>
+                      </ul>
+                      <Button className="bg-teal-gradient">
+                        View Industry Benchmarks <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="mb-10" id="pulse-certified">
+                <CardContent className="p-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                      <div className="bg-pulse-100 p-4 w-16 h-16 rounded-lg flex items-center justify-center mb-4">
+                        <Award className="h-8 w-8 text-pulse-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3 text-pulse-700">Pulse Certified</h3>
+                      <p className="text-gray-700 mb-4">
+                        A transparent recognition program backed by real-time data, not testimonials or one-time surveys. Showcase your workplace excellence to the world.
+                      </p>
+                      <ul className="space-y-2 mb-6">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Digital badges for social media and career sites</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Quarterly validation to ensure ongoing excellence</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Public listing in the Pulse Certified directory</span>
+                        </li>
+                      </ul>
+                      <Button className="bg-pulse-gradient">
+                        Learn About Certification <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="bg-gray-50 p-6 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="bg-white p-8 rounded-full inline-flex items-center justify-center mb-4 border-4 border-pulse-500">
+                          <Award className="h-16 w-16 text-pulse-600" />
+                        </div>
+                        <h4 className="text-xl font-semibold mb-2">Pulse Certified 2025</h4>
+                        <Badge className="bg-pulse-100 text-pulse-800 mb-4">Lovable Workplace</Badge>
+                        <p className="text-gray-600 text-sm">
+                          Companies that maintain a PulseScore of 85+ for two consecutive quarters earn Pulse Certified status
+                        </p>
+                        <div className="grid grid-cols-3 gap-2 mt-4">
+                          <Badge variant="outline" className="bg-pulse-50">Transparent</Badge>
+                          <Badge variant="outline" className="bg-pulse-50">Data-Driven</Badge>
+                          <Badge variant="outline" className="bg-pulse-50">Verified</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="mb-10" id="ai-insights">
+                <CardContent className="p-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div className="order-2 md:order-1 bg-gray-50 p-6 rounded-lg">
+                      <div className="space-y-4">
+                        <div className="bg-white p-4 rounded-lg">
+                          <div className="flex gap-3 mb-2">
+                            <Brain className="h-6 w-6 text-pulse-600" />
+                            <h4 className="font-semibold">Career Development Insight</h4>
+                          </div>
+                          <p className="text-gray-700 text-sm">
+                            Implement personalized growth plans and quarterly career conversations to address the lack of clear progression paths.
+                          </p>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg">
+                          <div className="flex gap-3 mb-2">
+                            <Brain className="h-6 w-6 text-teal-600" />
+                            <h4 className="font-semibold">Cross-Department Collaboration</h4>
+                          </div>
+                          <p className="text-gray-700 text-sm">
+                            Create bi-weekly cross-functional meetings and a shared digital workspace to improve collaboration between departments.
+                          </p>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg">
+                          <div className="flex gap-3 mb-2">
+                            <Lightbulb className="h-6 w-6 text-amber-600" />
+                            <h4 className="font-semibold">Employee Recognition</h4>
+                          </div>
+                          <p className="text-gray-700 text-sm">
+                            Develop a structured peer recognition program with monthly awards to increase engagement and satisfaction.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="order-1 md:order-2">
+                      <div className="bg-teal-100 p-4 w-16 h-16 rounded-lg flex items-center justify-center mb-4">
+                        <Brain className="h-8 w-8 text-teal-600" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3 text-teal-700">AI Insights Engine</h3>
+                      <p className="text-gray-700 mb-4">
+                        Our AI analyzes thousands of data points to generate personalized action plans specific to your organization's culture needs.
+                      </p>
+                      <ul className="space-y-2 mb-6">
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Trained on data from thousands of companies</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Identifies patterns and trends in feedback</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                          <span>Generates actionable recommendations with timelines</span>
+                        </li>
+                      </ul>
+                      <Button className="bg-teal-gradient">
+                        See AI Recommendations <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

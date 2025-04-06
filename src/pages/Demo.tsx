@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowRight, CheckCircle, Clock, Copy, Mail, BarChart3, Upload, UserPlus, Users } from 'lucide-react';
+import { ArrowRight, CheckCircle, Clock, Copy, Mail, BarChart3, Upload, UserPlus, Users, Brain } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
@@ -417,21 +417,27 @@ const Demo = () => {
                             <span>Emotion & Trust (40%)</span>
                             <span className="font-semibold">82/100</span>
                           </div>
-                          <Progress value={82} className="h-2 bg-gray-100" indicatorClass="bg-green-500" />
+                          <div className="relative w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="absolute top-0 left-0 h-full w-[82%] bg-green-500 rounded-full" />
+                          </div>
                         </div>
                         <div>
                           <div className="flex justify-between text-sm mb-1">
                             <span>Engagement Stability (30%)</span>
                             <span className="font-semibold">75/100</span>
                           </div>
-                          <Progress value={75} className="h-2 bg-gray-100" indicatorClass="bg-blue-500" />
+                          <div className="relative w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="absolute top-0 left-0 h-full w-[75%] bg-blue-500 rounded-full" />
+                          </div>
                         </div>
                         <div>
                           <div className="flex justify-between text-sm mb-1">
                             <span>Culture Trust (30%)</span>
                             <span className="font-semibold">73/100</span>
                           </div>
-                          <Progress value={73} className="h-2 bg-gray-100" indicatorClass="bg-teal-500" />
+                          <div className="relative w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="absolute top-0 left-0 h-full w-[73%] bg-teal-500 rounded-full" />
+                          </div>
                         </div>
                       </div>
                     </div>

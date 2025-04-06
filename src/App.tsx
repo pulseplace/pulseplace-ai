@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Methodology from "./pages/Methodology";
 import AIEngine from "./pages/AIEngine";
+import Certification from "./pages/Certification";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/methodology" element={<Methodology />} />
           <Route path="/ai-engine" element={<AIEngine />} />
+          <Route path="/certification" element={<Certification />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

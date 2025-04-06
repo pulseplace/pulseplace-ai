@@ -22,6 +22,7 @@ const Navbar = () => {
           <a href="#how-it-works" className="text-gray-700 hover:text-pulse-600 transition-colors">How It Works</a>
           <Link to="/methodology" className="text-gray-700 hover:text-pulse-600 transition-colors">Methodology</Link>
           <Link to="/ai-engine" className="text-gray-700 hover:text-pulse-600 transition-colors">Our AI Engine</Link>
+          <Link to="/certification" className="text-gray-700 hover:text-pulse-600 transition-colors">Certification</Link>
           <a href="#join-beta" className="text-gray-700 hover:text-pulse-600 transition-colors">Join Beta</a>
           <Button className="bg-pulse-gradient hover:opacity-90 transition-all">Get Started</Button>
         </div>
@@ -70,6 +71,13 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Our AI Engine
+            </Link>
+            <Link 
+              to="/certification" 
+              className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Certification
             </Link>
             <a 
               href="#join-beta" 

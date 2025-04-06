@@ -78,7 +78,7 @@ const Navbar = () => {
             ) : (
               <Link 
                 key={index}
-                to={item.path} 
+                to={item.path}
                 className="text-gray-700 hover:text-pulse-600 transition-colors"
               >
                 {item.label}
@@ -128,7 +128,7 @@ const Navbar = () => {
                 ) : (
                   <Link 
                     key={index}
-                    to={item.path} 
+                    to={item.path}
                     className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >

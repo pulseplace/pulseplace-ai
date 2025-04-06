@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowUpRight, BarChart2, UserCheck, Users } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, BarChart2, UserCheck, Users, Activity, Brain, Award, ChartBar } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,29 @@ const Hero = () => {
       featuresElement.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  const coreFeatures = [
+    {
+      icon: <Activity className="h-6 w-6 text-white" />,
+      name: "PulseScore™",
+      description: "Real-time workplace culture rating"
+    },
+    {
+      icon: <ChartBar className="h-6 w-6 text-white" />,
+      name: "Culture Compass™",
+      description: "Benchmark against industry standards"
+    },
+    {
+      icon: <Award className="h-6 w-6 text-white" />,
+      name: "Pulse Certified",
+      description: "Transparent workplace recognition"
+    },
+    {
+      icon: <Brain className="h-6 w-6 text-white" />,
+      name: "AI Insights",
+      description: "Actionable culture improvement plans"
+    }
+  ];
 
   return (
     <div className="pt-28 pb-16 md:pt-36 md:pb-24 px-4">
@@ -159,7 +183,7 @@ const Hero = () => {
             </div>
           </div>
           
-          {/* Hero Graphic */}
+          {/* Hero Graphic with Core Features */}
           <div className="w-full lg:w-1/2 relative">
             <div className="w-full h-80 md:h-96 lg:h-[500px] relative overflow-hidden rounded-2xl bg-gradient-to-br from-pulse-100 to-pulse-50 shadow-lg">
               {/* Dashboard Mockup */}
@@ -176,27 +200,48 @@ const Hero = () => {
                     <div className="w-32 h-8 bg-pulse-100 rounded-md"></div>
                     <div className="w-24 h-8 bg-teal-100 rounded-md"></div>
                   </div>
-                  <div className="grid grid-cols-3 gap-4 mb-4">
-                    <div className="h-24 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
-                      <BarChart2 className="h-8 w-8 text-pulse-500 mb-2" />
-                      <div className="w-16 h-3 bg-gray-200 rounded-full"></div>
+                  
+                  {/* Feature Cards Grid */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    {coreFeatures.map((feature, index) => (
+                      <div key={index} className="bg-white rounded-lg shadow-md p-3 transform transition-all duration-300 hover:scale-105 hover:shadow-lg border border-gray-100">
+                        <div className="w-10 h-10 rounded-full bg-pulse-gradient flex items-center justify-center mb-2">
+                          {feature.icon}
+                        </div>
+                        <h4 className="text-sm font-semibold text-pulse-700">{feature.name}</h4>
+                        <p className="text-xs text-gray-500 mt-1">{feature.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Visualization Area */}
+                  <div className="h-32 bg-gray-50 rounded-lg p-3 border border-gray-100">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-xs font-medium text-pulse-700">Company PulseScore™</div>
+                      <div className="text-xs font-bold text-pulse-800">85/100</div>
                     </div>
-                    <div className="h-24 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
-                      <UserCheck className="h-8 w-8 text-teal-500 mb-2" />
-                      <div className="w-16 h-3 bg-gray-200 rounded-full"></div>
+                    <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-pulse-gradient w-[85%] rounded-full"></div>
                     </div>
-                    <div className="h-24 bg-gray-100 rounded-lg flex flex-col items-center justify-center">
-                      <Users className="h-8 w-8 text-pulse-600 mb-2" />
-                      <div className="w-16 h-3 bg-gray-200 rounded-full"></div>
+                    <div className="mt-3 flex justify-between">
+                      <div className="text-xs text-gray-500">Industry Average: 72</div>
+                      <div className="text-xs text-teal-600 font-medium">+13 points</div>
                     </div>
                   </div>
-                  <div className="h-32 bg-gray-100 rounded-lg"></div>
                 </div>
               </div>
               
-              {/* Decorative Elements */}
+              {/* Animated Elements */}
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-teal-400 opacity-20 rounded-full animate-spin-slow"></div>
               <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-pulse-400 opacity-10 rounded-full animate-spin-slow"></div>
+              
+              {/* Floating Feature Tags */}
+              <div className="absolute top-1/4 right-4 bg-white px-3 py-1 rounded-full text-xs font-medium text-pulse-600 shadow-md animate-pulse">
+                Real-time Analysis
+              </div>
+              <div className="absolute bottom-1/4 left-4 bg-white px-3 py-1 rounded-full text-xs font-medium text-teal-600 shadow-md animate-pulse delay-500">
+                Employee Trust Score
+              </div>
             </div>
           </div>
         </div>

@@ -96,3 +96,53 @@
     transform: rotate(360deg);
   }
 }
+
+/* Cursor animation */
+.cursor-pulse {
+  animation: cursor-pulsate 1.5s ease-in-out infinite;
+}
+
+@keyframes cursor-pulsate {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Interactive element animations */
+.feature-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Slider animation for PulseScore */
+.slider-highlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.slider-highlight::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transform: translateX(-100%);
+  animation: slide 2s ease-in-out infinite;
+}
+
+@keyframes slide {
+  to {
+    transform: translateX(100%);
+  }
+}

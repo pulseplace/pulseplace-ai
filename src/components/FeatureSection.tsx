@@ -3,6 +3,7 @@ import React from 'react';
 import { Activity, ChartBar, Award, Brain } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 
 const features = [
   {
@@ -44,7 +45,7 @@ const FeatureSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {features.map((feature, index) => (
-            <Link key={index} to={feature.link} className="block">
+            <HashLink key={index} to={feature.link} smooth className="block">
               <Card className="border border-gray-200 hover:shadow-lg transition-shadow overflow-hidden group h-full">
                 <CardContent className="p-6">
                   <div className="mb-4 transform group-hover:scale-110 transition-transform">
@@ -61,7 +62,7 @@ const FeatureSection = () => {
                   </div>
                 </CardContent>
               </Card>
-            </Link>
+            </HashLink>
           ))}
         </div>
         

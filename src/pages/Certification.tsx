@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BadgeCheck, BadgeDollarSign, BadgePercent, FileCheck, ShieldAlert, ShieldCheck, StarIcon, Trophy, CheckCircle2, Calendar, Zap, LucideArrowRight } from 'lucide-react';
+import { BadgeCheck, BadgeDollarSign, BadgePercent, FileCheck, ShieldAlert, ShieldCheck, StarIcon, Trophy, CheckCircle2, Calendar, Zap, LucideArrowRight, BarChart as ChartBar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

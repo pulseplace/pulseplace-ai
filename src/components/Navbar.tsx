@@ -67,7 +67,15 @@ const Navbar = () => {
           >
             How It Works
           </HashLink>
-          <Link to="/methodology" className="text-gray-700 hover:text-pulse-600 transition-colors">
+          <Link 
+            to="/methodology" 
+            className="text-gray-700 hover:text-pulse-600 transition-colors"
+            onClick={(e) => {
+              // Explicitly navigate to methodology page, preventing default just in case
+              e.preventDefault();
+              window.location.href = "/methodology";
+            }}
+          >
             Methodology
           </Link>
           <Link to="/ai-engine" className="text-gray-700 hover:text-pulse-600 transition-colors">
@@ -134,7 +142,11 @@ const Navbar = () => {
               <Link 
                 to="/methodology" 
                 className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  window.location.href = "/methodology";
+                }}
               >
                 Methodology
               </Link>

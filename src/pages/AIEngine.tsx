@@ -3,8 +3,8 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Shield, BarChart, Zap } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ArrowRight, Shield, BarChart, Zap, BrainCircuit, LineChart, Scale } from 'lucide-react';
 import AIDemoComponent from '@/components/AIDemoComponent';
 
 const AIEngine = () => {
@@ -26,22 +26,80 @@ const AIEngine = () => {
         </div>
       </div>
       
-      {/* Interactive AI Demo Section */}
+      {/* AI Core Technologies Section */}
       <div className="py-16 px-4 bg-white">
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Try Our AI Demo</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Core AI Technologies</h2>
             <p className="text-lg text-gray-700">
-              Experience how our AI turns employee feedback into actionable insights.
+              Our platform combines multiple AI technologies to deliver comprehensive culture insights.
             </p>
           </div>
           
-          <AIDemoComponent />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <Card className="border shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="bg-pulse-100 p-2 w-fit rounded-lg mb-2">
+                  <BrainCircuit className="h-5 w-5 text-pulse-600" />
+                </div>
+                <CardTitle>Large Language Models</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Custom-tuned LLMs analyze free-text responses to identify nuanced themes, sentiment, and actionable insights from employee feedback.
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="border shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="bg-pulse-100 p-2 w-fit rounded-lg mb-2">
+                  <LineChart className="h-5 w-5 text-pulse-600" />
+                </div>
+                <CardTitle>Pattern Recognition</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Our models identify recurring patterns across feedback data sets, surfacing hidden trends and culture indicators that might be missed.
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="border shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-2">
+                <div className="bg-pulse-100 p-2 w-fit rounded-lg mb-2">
+                  <Scale className="h-5 w-5 text-pulse-600" />
+                </div>
+                <CardTitle>Adaptive Benchmarking</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Continuously updated industry benchmarks allow for accurate comparisons and contextualization of your workplace culture data.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
       
-      {/* Visual Flow Section - Replaced with cards */}
+      {/* Interactive AI Demo Section */}
       <div className="py-16 px-4 bg-gray-50">
+        <div className="container mx-auto">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Experience Our AI in Action</h2>
+            <p className="text-lg text-gray-700">
+              Try our interactive demo to see how PulsePlace.ai transforms employee feedback into actionable insights.
+            </p>
+          </div>
+          
+          <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-sm">
+            <AIDemoComponent />
+          </div>
+        </div>
+      </div>
+      
+      {/* Visual Flow Section */}
+      <div className="py-16 px-4 bg-white">
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our AI Engine</h2>
@@ -101,10 +159,10 @@ const AIEngine = () => {
       </div>
       
       {/* Highlights Section */}
-      <div className="py-16 px-4 bg-white">
+      <div className="py-16 px-4 bg-gray-50">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="flex flex-col items-center text-center p-6 rounded-lg bg-gray-50 shadow-sm">
+            <div className="flex flex-col items-center text-center p-6 rounded-lg bg-white shadow-sm">
               <div className="bg-pulse-100 p-4 rounded-full mb-6">
                 <Zap className="h-8 w-8 text-pulse-600" />
               </div>
@@ -114,7 +172,7 @@ const AIEngine = () => {
               </p>
             </div>
             
-            <div className="flex flex-col items-center text-center p-6 rounded-lg bg-gray-50 shadow-sm">
+            <div className="flex flex-col items-center text-center p-6 rounded-lg bg-white shadow-sm">
               <div className="bg-pulse-100 p-4 rounded-full mb-6">
                 <BarChart className="h-8 w-8 text-pulse-600" />
               </div>
@@ -124,7 +182,7 @@ const AIEngine = () => {
               </p>
             </div>
             
-            <div className="flex flex-col items-center text-center p-6 rounded-lg bg-gray-50 shadow-sm">
+            <div className="flex flex-col items-center text-center p-6 rounded-lg bg-white shadow-sm">
               <div className="bg-pulse-100 p-4 rounded-full mb-6">
                 <Shield className="h-8 w-8 text-pulse-600" />
               </div>
@@ -138,7 +196,7 @@ const AIEngine = () => {
       </div>
       
       {/* Trust & Privacy */}
-      <div className="py-16 px-4 bg-gray-50">
+      <div className="py-16 px-4 bg-white">
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Ethical by Design</h2>

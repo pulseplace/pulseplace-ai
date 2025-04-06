@@ -6,6 +6,8 @@ import WhyPulsePlace from '@/components/WhyPulsePlace';
 import FeatureSection from '@/components/FeatureSection';
 import HowItWorks from '@/components/HowItWorks';
 import PulseScoreDemo from '@/components/PulseScoreDemo';
+import Testimonials from '@/components/Testimonials';
+import FAQ from '@/components/FAQ';
 import CallToAction from '@/components/CallToAction';
 import JoinBeta from '@/components/JoinBeta';
 import Footer from '@/components/Footer';
@@ -19,6 +21,8 @@ const Index = () => {
       <FeatureSection />
       <HowItWorks />
       <PulseScoreDemo />
+      <Testimonials />
+      <FAQ />
       <CallToAction />
       <JoinBeta />
       <Footer />

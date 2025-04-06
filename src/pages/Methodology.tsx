@@ -1,10 +1,12 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { SmilePlus, RefreshCw, Users, AlertTriangle, BarChart3, Brain, Shield, ChevronRight } from 'lucide-react';
+import { SmilePlus, RefreshCw, Users, AlertTriangle, BarChart3, Brain, Shield, ChevronRight, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const Methodology = () => {
   return (
@@ -64,11 +66,13 @@ const Methodology = () => {
             </div>
             
             <div className="mt-16 max-w-3xl mx-auto">
-              <div className="bg-pulse-50 rounded-xl p-6 text-center">
-                <p className="text-xl font-medium text-gray-800">
-                  PulseScore = 0.4 × Emotion Index + 0.3 × Engagement Index + 0.3 × Culture Trust Score
-                </p>
-              </div>
+              <Card className="bg-pulse-50">
+                <CardContent className="p-6 text-center">
+                  <p className="text-xl font-medium text-gray-800">
+                    PulseScore = 0.4 × Emotion Index + 0.3 × Engagement Index + 0.3 × Culture Trust Score
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>
@@ -129,11 +133,39 @@ const Methodology = () => {
             </div>
             
             <div className="mt-16 max-w-4xl mx-auto">
-              <img 
-                src="/lovable-uploads/802f6b9e-42e3-4397-ba07-c035bd53a988.png" 
-                alt="PulsePlace.ai Methodology Infographic"
-                className="w-full h-auto mx-auto rounded-lg shadow-md"
-              />
+              <div className="bg-white rounded-lg shadow-sm p-8">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-1/4">Score Range</TableHead>
+                      <TableHead className="w-1/4">Certification Level</TableHead>
+                      <TableHead className="w-2/4">Description</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-medium">85-100</TableCell>
+                      <TableCell className="text-pulse-600 font-semibold">Pulse Certified</TableCell>
+                      <TableCell>Top-tier with exceptional employee trust</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">70-84</TableCell>
+                      <TableCell className="text-teal-600 font-semibold">Growth Culture</TableCell>
+                      <TableCell>Strong momentum with improvement trajectory</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">50-69</TableCell>
+                      <TableCell className="text-orange-500 font-semibold">Developing</TableCell>
+                      <TableCell>Inconsistent metrics needing focused attention</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">Below 50</TableCell>
+                      <TableCell className="text-red-500 font-semibold">At Risk</TableCell>
+                      <TableCell>Critical workplace culture challenges</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </section>
@@ -149,11 +181,26 @@ const Methodology = () => {
             
             <div className="max-w-4xl mx-auto my-8">
               <div className="bg-[#F1F0FB] rounded-xl p-6 md:p-8 shadow-sm">
-                <img 
-                  src="/lovable-uploads/693f7738-d96d-48e0-8d0f-d09d05c93a98.png" 
-                  alt="How Our AI Works: Sentiment engine processes pulse survey text, LLM synthesizes feedback into themes, Benchmarked vs. industry and historical trends" 
-                  className="w-full h-auto mx-auto"
-                />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6">
+                  <div className="flex flex-col items-center text-center p-4 rounded-md bg-white shadow-sm">
+                    <h3 className="font-semibold mb-2">1. Data Collection</h3>
+                    <p className="text-sm text-gray-600">Sentiment analysis from pulse surveys</p>
+                    <div className="mt-4 text-pulse-600">
+                      <ArrowRight className="h-5 w-5 mx-auto" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 rounded-md bg-white shadow-sm">
+                    <h3 className="font-semibold mb-2">2. LLM Processing</h3>
+                    <p className="text-sm text-gray-600">AI synthesizes feedback into themes</p>
+                    <div className="mt-4 text-pulse-600">
+                      <ArrowRight className="h-5 w-5 mx-auto" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center text-center p-4 rounded-md bg-white shadow-sm">
+                    <h3 className="font-semibold mb-2">3. Benchmarking</h3>
+                    <p className="text-sm text-gray-600">Compared against industry standards</p>
+                  </div>
+                </div>
               </div>
             </div>
             

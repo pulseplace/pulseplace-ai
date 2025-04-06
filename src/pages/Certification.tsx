@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { BadgeCheck, BadgeDollarSign, BadgePercent, FileCheck, ShieldAlert, ShieldCheck, StarIcon, Trophy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -108,12 +108,33 @@ const Certification = () => {
               </div>
             </div>
             
-            <div className="flex justify-center my-8">
-              <img 
-                src="/lovable-uploads/802f6b9e-42e3-4397-ba07-c035bd53a988.png" 
-                alt="How PulseScore™ Measures What Matters" 
-                className="max-w-full md:max-w-2xl rounded-lg shadow-md"
-              />
+            <div className="mt-8 max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-1/5">Component</TableHead>
+                    <TableHead className="w-1/5">Weight</TableHead>
+                    <TableHead className="w-3/5">Measures</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-semibold">Emotion Index</TableCell>
+                    <TableCell>40%</TableCell>
+                    <TableCell>Employee sentiment, engagement, and satisfaction indicators</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-semibold">Engagement Stability</TableCell>
+                    <TableCell>30%</TableCell>
+                    <TableCell>Retention trends, absenteeism, and internal mobility patterns</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-semibold">Culture Trust Score</TableCell>
+                    <TableCell>30%</TableCell>
+                    <TableCell>DEI metrics, work flexibility, and onboarding effectiveness</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </div>
           </div>
         </section>

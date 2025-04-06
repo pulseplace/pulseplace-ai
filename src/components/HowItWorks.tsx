@@ -54,26 +54,50 @@ const HowItWorks = () => {
           </p>
         </div>
 
-        {/* Overview visualization */}
+        {/* Replace heavy image with lightweight UI */}
         <div className="max-w-5xl mx-auto mb-20">
           <div className="w-full flex justify-center">
             <div className="relative w-full bg-white rounded-xl shadow-md p-4 md:p-6">
-              <img 
-                src="/lovable-uploads/8ddd4a13-530a-46ac-909c-052283c1315d.png" 
-                alt="PulsePlace.ai workflow process: Employees complete surveys, AI analyzes responses, Company dashboard shows PulseScore, Certification issued, Rank published" 
-                className="w-full h-auto mx-auto"
-              />
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                {steps.map((step, index) => (
+                  <div key={step.id} className="flex flex-col items-center text-center">
+                    <div className="bg-pulse-gradient rounded-full h-14 w-14 flex items-center justify-center mb-4">
+                      {step.icon}
+                    </div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Step {step.id}</h3>
+                    <p className="text-sm text-gray-600">{step.title}</p>
+                    {index < steps.length - 1 && (
+                      <div className="hidden md:block mt-6 w-full flex justify-center">
+                        <ArrowRight className="text-pulse-300" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="order-2 lg:order-1">
-            <img 
-              src="/lovable-uploads/4f3c79fd-71b5-4a9d-9b51-8a7712a973f1.png" 
-              alt="PulsePlace Workflow: Employees complete surveys, AI analyzes responses, Company dashboard shows live score, Certification issued, Rank published" 
-              className="w-full h-auto"
-            />
+            {/* Replace second infographic with card-based UI */}
+            <div className="grid grid-cols-2 gap-4">
+              {steps.map((step) => (
+                <Card key={step.id} className={`border-l-4 ${step.id === activeStep ? 'border-l-pulse-500 bg-pulse-50' : 'border-l-gray-200'}`}>
+                  <CardContent className="p-4">
+                    <div className="flex space-x-3 items-start">
+                      <div className={`rounded-full h-10 w-10 flex items-center justify-center ${step.id === activeStep ? 'bg-pulse-gradient' : 'bg-gray-100'}`}>
+                        {step.icon}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-sm">{step.title}</h3>
+                        <p className="text-xs text-gray-600 mt-1">{step.description}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
           
           <div className="order-1 lg:order-2 space-y-8">

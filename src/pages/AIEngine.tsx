@@ -3,6 +3,7 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Shield, BarChart, Zap } from 'lucide-react';
 
 const AIEngine = () => {
@@ -24,7 +25,7 @@ const AIEngine = () => {
         </div>
       </div>
       
-      {/* Visual Flow Section */}
+      {/* Visual Flow Section - Replaced with cards */}
       <div className="py-16 px-4 bg-white">
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto text-center mb-12">
@@ -36,11 +37,49 @@ const AIEngine = () => {
           
           <div className="max-w-5xl mx-auto my-12">
             <div className="bg-[#F1F0FB] rounded-xl p-6 md:p-8 shadow-sm">
-              <img 
-                src="/lovable-uploads/693f7738-d96d-48e0-8d0f-d09d05c93a98.png" 
-                alt="How Our AI Works: Sentiment engine processes pulse survey text, LLM synthesizes feedback into themes, Benchmarked vs. industry and historical trends" 
-                className="w-full h-auto mx-auto"
-              />
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="border-none shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="bg-pulse-100 p-2 rounded-full mr-3">
+                        <Zap className="h-5 w-5 text-pulse-600" />
+                      </div>
+                      <h3 className="font-semibold">Input Processing</h3>
+                    </div>
+                    <p className="text-sm text-gray-600">Our sentiment engine processes employee pulse survey responses</p>
+                    <div className="flex justify-end mt-4 text-pulse-600">
+                      <ArrowRight className="h-5 w-5" />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="border-none shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="bg-pulse-100 p-2 rounded-full mr-3">
+                        <BarChart className="h-5 w-5 text-pulse-600" />
+                      </div>
+                      <h3 className="font-semibold">Theme Extraction</h3>
+                    </div>
+                    <p className="text-sm text-gray-600">LLMs synthesize feedback into recurring themes and key insights</p>
+                    <div className="flex justify-end mt-4 text-pulse-600">
+                      <ArrowRight className="h-5 w-5" />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="border-none shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="bg-pulse-100 p-2 rounded-full mr-3">
+                        <Shield className="h-5 w-5 text-pulse-600" />
+                      </div>
+                      <h3 className="font-semibold">Benchmarking</h3>
+                    </div>
+                    <p className="text-sm text-gray-600">Data is compared against industry and historical trends</p>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>

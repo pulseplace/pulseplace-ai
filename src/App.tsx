@@ -13,6 +13,8 @@ import JoinBeta from "./pages/JoinBeta";
 import NotFound from "./pages/NotFound";
 import AboutUs from "./pages/AboutUs";
 import Demo from "./pages/Demo";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -33,6 +35,8 @@ const App = () => {
               <Route path="/join-beta" element={<JoinBeta />} />
               <Route path="/about-us" element={<AboutUs />} />
               <Route path="/demo" element={<Demo />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

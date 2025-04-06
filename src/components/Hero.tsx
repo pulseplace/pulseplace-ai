@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowUpRight, BarChart2, UserCheck, Users } from 'lucide-react';
@@ -21,8 +20,8 @@ const Hero = () => {
     console.log('Request submitted:', { name, email, company, message });
     
     toast({
-      title: "Demo request submitted",
-      description: "Thank you! We'll contact you shortly to schedule your demo.",
+      title: "Beta registration submitted",
+      description: "Thank you! We'll be in touch soon with your beta access details.",
     });
     
     // Reset form
@@ -51,31 +50,30 @@ const Hero = () => {
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              <span className="block">Measure & Improve</span>
+              <span className="block">AI-Powered Rankings</span>
               <span className="bg-gradient-to-r from-pulse-600 to-teal-500 bg-clip-text text-transparent">
-                Workplace Culture
+                for the Most Loved
               </span>
-              <span className="block">in Real-Time</span>
+              <span className="block">Workplaces</span>
             </h1>
             
             <p className="text-lg text-gray-600 md:text-xl max-w-xl">
-              PulsePlace.ai provides AI-driven insights to help organizations build lovable, 
-              high-retention, high-performance workplace cultures.
+              PulsePlace.ai measures employee sentiment, trust, and culture in real time — and ranks companies who truly walk the talk.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className="bg-pulse-gradient hover:opacity-90 transition-all h-12 px-6 text-base">
-                    Request Demo <ArrowRight className="ml-2 h-4 w-4" />
+                    Join the Beta <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[500px]">
                   <form onSubmit={handleSubmitRequest}>
                     <DialogHeader>
-                      <DialogTitle className="text-2xl">Request a Demo</DialogTitle>
+                      <DialogTitle className="text-2xl">Join the Beta Program</DialogTitle>
                       <DialogDescription>
-                        Fill out the form below to schedule a personalized demo of PulsePlace.ai.
+                        Be among the first to experience PulsePlace.ai and get your organization Pulse Certified.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -125,7 +123,7 @@ const Hero = () => {
                           value={message} 
                           onChange={(e) => setMessage(e.target.value)} 
                           className="col-span-3"
-                          placeholder="Tell us about your organization and what you're looking for."
+                          placeholder="Tell us about your organization and why you're interested in joining the beta."
                         />
                       </div>
                     </div>
@@ -143,7 +141,7 @@ const Hero = () => {
                 className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base"
                 onClick={scrollToFeatures}
               >
-                Learn More <ArrowUpRight className="ml-2 h-4 w-4" />
+                Get Pulse Certified <ArrowUpRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
             

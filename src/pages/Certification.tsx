@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BadgeCheck, BadgeDollarSign, BadgePercent, FileCheck, StarIcon, Trophy } from 'lucide-react';
+import { BadgeCheck, BadgeDollarSign, BadgePercent, FileCheck, ShieldAlert, ShieldCheck, StarIcon, Trophy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -124,70 +124,62 @@ const Certification = () => {
             <h2 className="text-3xl font-semibold text-center mb-4">Certification Tiers</h2>
             <h3 className="text-xl text-center text-gray-700 mb-12">Where Does Your Organization Rank?</h3>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="border-t-4 border-t-teal-500 hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center mb-2">
-                    <Badge className="bg-teal-500">85-100</Badge>
-                    <Trophy className="h-6 w-6 text-teal-500" />
-                  </div>
-                  <CardTitle>Pulse Certified</CardTitle>
-                  <CardDescription>"Lovable Workplace"</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">
-                    Organizations with exceptional workplace cultures and strong employee trust.
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="flex flex-wrap justify-center gap-5 mb-10">
+              <img 
+                src="/lovable-uploads/39c4a4a6-826a-4eb5-a2d1-2eada2e61e6f.png" 
+                alt="PulsePlace Certification Tiers" 
+                className="max-w-full rounded-lg shadow-lg"
+              />
+            </div>
+            
+            <div className="grid md:grid-cols-4 gap-6 mt-10">
+              <div className="bg-blue-50 rounded-xl p-6 transition-all hover:shadow-md flex flex-col items-center text-center">
+                <div className="text-blue-900 mb-4">
+                  <Trophy className="h-14 w-14 mx-auto" />
+                </div>
+                <h3 className="text-2xl font-bold text-blue-900">85–100</h3>
+                <h4 className="text-lg font-semibold text-blue-900 mb-2">Pulse Certified</h4>
+                <p className="text-blue-800 font-medium">Lovable Workplace</p>
+                <p className="text-blue-700 mt-3 text-sm">
+                  Top-tier organizations with exceptional employee trust and culture metrics
+                </p>
+              </div>
               
-              <Card className="border-t-4 border-t-pulse-600 hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center mb-2">
-                    <Badge className="bg-pulse-600">70-84</Badge>
-                    <BadgeCheck className="h-6 w-6 text-pulse-600" />
-                  </div>
-                  <CardTitle>Growth Culture</CardTitle>
-                  <CardDescription>"On the Rise"</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">
-                    Organizations actively improving with positive momentum in key culture metrics.
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-blue-200 rounded-xl p-6 transition-all hover:shadow-md flex flex-col items-center text-center">
+                <div className="text-blue-800 mb-4">
+                  <ShieldCheck className="h-14 w-14 mx-auto" />
+                </div>
+                <h3 className="text-2xl font-bold text-blue-800">70–84</h3>
+                <h4 className="text-lg font-semibold text-blue-800 mb-2">Growth Culture</h4>
+                <p className="text-blue-700 font-medium">On the Rise</p>
+                <p className="text-blue-600 mt-3 text-sm">
+                  Organizations with strong momentum and clear improvement trajectories
+                </p>
+              </div>
               
-              <Card className="border-t-4 border-t-amber-500 hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center mb-2">
-                    <Badge className="bg-amber-500 hover:bg-amber-600">50-69</Badge>
-                    <BadgeDollarSign className="h-6 w-6 text-amber-500" />
-                  </div>
-                  <CardTitle>Developing</CardTitle>
-                  <CardDescription>"Needs Attention"</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">
-                    Organizations with inconsistent culture metrics that require focused improvement.
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-blue-600 rounded-xl p-6 transition-all hover:shadow-md flex flex-col items-center text-center">
+                <div className="text-white mb-4">
+                  <BadgePercent className="h-14 w-14 mx-auto" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">50–69</h3>
+                <h4 className="text-lg font-semibold text-white mb-2">Developing</h4>
+                <p className="text-blue-100 font-medium">Needs Attention</p>
+                <p className="text-blue-100 mt-3 text-sm">
+                  Organizations with inconsistent culture metrics that need focused improvement
+                </p>
+              </div>
               
-              <Card className="border-t-4 border-t-red-500 hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center mb-2">
-                    <Badge className="bg-red-500 hover:bg-red-600">Below 50</Badge>
-                    <BadgeDollarSign className="h-6 w-6 text-red-500" />
-                  </div>
-                  <CardTitle>At Risk</CardTitle>
-                  <CardDescription>"Critical Culture Risk"</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">
-                    Organizations facing significant culture challenges that need immediate intervention.
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-blue-900 rounded-xl p-6 transition-all hover:shadow-md flex flex-col items-center text-center">
+                <div className="text-white mb-4">
+                  <ShieldAlert className="h-14 w-14 mx-auto" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">Below 50</h3>
+                <h4 className="text-lg font-semibold text-white mb-2">At Risk</h4>
+                <p className="text-blue-100 font-medium">Critical Culture Risk</p>
+                <p className="text-blue-100 mt-3 text-sm">
+                  Organizations facing significant workplace culture challenges
+                </p>
+              </div>
             </div>
           </div>
         </section>

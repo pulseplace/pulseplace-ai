@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -11,6 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowRight, CheckCircle, Clock, Copy, Mail, BarChart3, Upload, UserPlus, Users, Brain, Activity, ChartBar, Award, Target, HeartHandshake, Lightbulb } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import { useToast } from '@/hooks/use-toast';
 
 const Demo = () => {
@@ -32,6 +34,12 @@ const Demo = () => {
       }
     }
   }, []);
+
+  const scrollWithOffset = (el: HTMLElement) => {
+    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+    const yOffset = -80; // Adjust this value based on your fixed header height
+    window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
+  };
 
   const handleInviteTeam = (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,9 +131,11 @@ const Demo = () => {
                           <span>Weighted scoring system for accurate culture measurement</span>
                         </li>
                       </ul>
-                      <Button className="bg-pulse-gradient">
-                        Try PulseScore Demo <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
+                      <HashLink smooth to="#pulse-score" scroll={scrollWithOffset}>
+                        <Button className="bg-pulse-gradient">
+                          Try PulseScore Demo <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </HashLink>
                     </div>
                     <div className="relative bg-gray-50 p-6 rounded-lg">
                       <div className="flex flex-col items-center">
@@ -243,9 +253,11 @@ const Demo = () => {
                           <span>Identify industry-specific cultural strengths and gaps</span>
                         </li>
                       </ul>
-                      <Button className="bg-teal-gradient">
-                        View Industry Benchmarks <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
+                      <HashLink smooth to="#culture-compass" scroll={scrollWithOffset}>
+                        <Button className="bg-teal-gradient">
+                          View Industry Benchmarks <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </HashLink>
                     </div>
                   </div>
                 </CardContent>
@@ -276,9 +288,11 @@ const Demo = () => {
                           <span>Public listing in the Pulse Certified directory</span>
                         </li>
                       </ul>
-                      <Button className="bg-pulse-gradient">
-                        Learn About Certification <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
+                      <HashLink smooth to="#pulse-certified" scroll={scrollWithOffset}>
+                        <Button className="bg-pulse-gradient">
+                          Learn About Certification <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </HashLink>
                     </div>
                     <div className="bg-gray-50 p-6 rounded-lg flex items-center justify-center">
                       <div className="text-center">
@@ -357,9 +371,11 @@ const Demo = () => {
                           <span>Generates actionable recommendations with timelines</span>
                         </li>
                       </ul>
-                      <Button className="bg-teal-gradient">
-                        See AI Recommendations <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
+                      <HashLink smooth to="#ai-insights" scroll={scrollWithOffset}>
+                        <Button className="bg-teal-gradient">
+                          See AI Recommendations <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </HashLink>
                     </div>
                   </div>
                 </CardContent>
@@ -873,3 +889,4 @@ const Demo = () => {
 };
 
 export default Demo;
+

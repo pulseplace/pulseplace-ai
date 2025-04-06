@@ -16,6 +16,9 @@ import AboutUs from "./pages/AboutUs";
 import Demo from "./pages/Demo";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import Pricing from "./pages/Pricing";
+import ROICalculator from "./pages/ROICalculator";
+import DashboardPreview from "./pages/DashboardPreview";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -38,6 +41,9 @@ const AnimatedRoutes = () => {
           <Route path="/methodology" element={<Methodology />} />
           <Route path="/ai-engine" element={<AIEngine />} />
           <Route path="/certification" element={<Certification />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/roi-calculator" element={<ROICalculator />} />
+          <Route path="/dashboard-preview" element={<DashboardPreview />} />
           <Route path="/join-beta" element={<JoinBeta />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/demo" element={<Demo />} />

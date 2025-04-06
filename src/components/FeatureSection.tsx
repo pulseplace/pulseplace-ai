@@ -11,28 +11,28 @@ const features = [
     icon: <Activity className="h-10 w-10 text-pulse-500" />,
     title: "PulseScore™",
     description: "Real-time workplace culture rating powered by sentiment + retention analytics.",
-    link: "/demo#pulse-score",
-    buttonText: "Try Demo"
+    link: "/dashboard-preview",
+    buttonText: "View Dashboard"
   },
   {
     icon: <ChartBar className="h-10 w-10 text-teal-500" />,
     title: "Culture Compass™",
     description: "Benchmark your organization against your industry in areas like growth, flexibility, and inclusion.",
-    link: "/demo#culture-compass",
-    buttonText: "See Benchmarks"
+    link: "/roi-calculator",
+    buttonText: "Calculate ROI"
   },
   {
     icon: <Award className="h-10 w-10 text-pulse-600" />,
     title: "Pulse Certified",
     description: "Earn digital badges and global recognition based on transparency, not testimonials.",
-    link: "/demo#pulse-certified",
+    link: "/certification",
     buttonText: "Get Certified"
   },
   {
     icon: <Brain className="h-10 w-10 text-teal-600" />,
     title: "AI Insights Engine",
     description: "Get personalized action plans from our culture model trained on thousands of data points.",
-    link: "/demo#ai-insights",
+    link: "/ai-engine",
     buttonText: "View Insights"
   }
 ];
@@ -78,6 +78,11 @@ const FeatureSection = () => {
         </div>
         
         <div className="text-center mt-16">
+          <Link to="/pricing">
+            <Button variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 mr-4">
+              View Pricing Plans
+            </Button>
+          </Link>
           <Link to="/methodology">
             <Button variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50">
               Learn About Our Methodology

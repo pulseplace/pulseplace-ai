@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BadgeCheck, BadgeDollarSign, BadgePercent, FileCheck, ShieldAlert, ShieldCheck, StarIcon, Trophy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -153,62 +154,7 @@ const Certification = () => {
               />
             </div>
             
-            <div className="grid md:grid-cols-4 gap-6 mt-10">
-              <div className="bg-blue-50 rounded-xl p-6 transition-all hover:shadow-md flex flex-col items-center text-center">
-                <div className="text-blue-900 mb-4">
-                  <Trophy className="h-14 w-14 mx-auto" />
-                </div>
-                <h3 className="text-2xl font-bold text-blue-900">85–100</h3>
-                <h4 className="text-lg font-semibold text-blue-900 mb-2">Pulse Certified</h4>
-                <p className="text-blue-800 font-medium">Lovable Workplace</p>
-                <p className="text-blue-700 mt-3 text-sm">
-                  Top-tier organizations with exceptional employee trust and culture metrics
-                </p>
-              </div>
-              
-              <div className="bg-blue-200 rounded-xl p-6 transition-all hover:shadow-md flex flex-col items-center text-center">
-                <div className="text-blue-800 mb-4">
-                  <ShieldCheck className="h-14 w-14 mx-auto" />
-                </div>
-                <h3 className="text-2xl font-bold text-blue-800">70–84</h3>
-                <h4 className="text-lg font-semibold text-blue-800 mb-2">Growth Culture</h4>
-                <p className="text-blue-700 font-medium">On the Rise</p>
-                <p className="text-blue-600 mt-3 text-sm">
-                  Organizations with strong momentum and clear improvement trajectories
-                </p>
-              </div>
-              
-              <div className="bg-blue-600 rounded-xl p-6 transition-all hover:shadow-md flex flex-col items-center text-center">
-                <div className="text-white mb-4">
-                  <BadgePercent className="h-14 w-14 mx-auto" />
-                </div>
-                <h3 className="text-2xl font-bold text-white">50–69</h3>
-                <h4 className="text-lg font-semibold text-white mb-2">Developing</h4>
-                <p className="text-blue-100 font-medium">Needs Attention</p>
-                <p className="text-blue-100 mt-3 text-sm">
-                  Organizations with inconsistent culture metrics that need focused improvement
-                </p>
-              </div>
-              
-              <div className="bg-blue-900 rounded-xl p-6 transition-all hover:shadow-md flex flex-col items-center text-center">
-                <div className="text-white mb-4">
-                  <ShieldAlert className="h-14 w-14 mx-auto" />
-                </div>
-                <h3 className="text-2xl font-bold text-white">Below 50</h3>
-                <h4 className="text-lg font-semibold text-white mb-2">At Risk</h4>
-                <p className="text-blue-100 font-medium">Critical Culture Risk</p>
-                <p className="text-blue-100 mt-3 text-sm">
-                  Organizations facing significant workplace culture challenges
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Success Story Section */}
-        <section className="py-16 bg-gradient-to-b from-blue-50 to-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
+            <div className="mt-10 max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
               <div className="flex flex-col items-center text-center">
                 <div className="mb-6 text-pulse-600">
                   <StarIcon className="h-12 w-12" />
@@ -225,7 +171,7 @@ const Certification = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-gradient-to-b from-blue-50 to-white">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-6">Ready to See Where You Stand?</h2>
             <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">

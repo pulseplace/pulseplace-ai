@@ -50,8 +50,21 @@ const HowItWorks = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Our step-by-step approach to measuring and improving workplace culture.
+            From survey to certification — see how PulsePlace.ai transforms workplace culture.
           </p>
+        </div>
+
+        {/* Overview visualization */}
+        <div className="max-w-5xl mx-auto mb-20">
+          <div className="w-full flex justify-center">
+            <div className="relative w-full bg-white rounded-xl shadow-md p-4 md:p-6">
+              <img 
+                src="/lovable-uploads/8ddd4a13-530a-46ac-909c-052283c1315d.png" 
+                alt="PulsePlace.ai workflow process: Employees complete surveys, AI analyzes responses, Company dashboard shows PulseScore, Certification issued, Rank published" 
+                className="w-full h-auto mx-auto"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

@@ -3,9 +3,16 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const scrollWithOffset = (el: HTMLElement) => {
+    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+    const yOffset = -80; // Adjust this value based on your fixed header height
+    window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
+  };
 
   return (
     <nav className="w-full py-4 bg-white/90 backdrop-blur-sm fixed top-0 z-50 shadow-sm">
@@ -18,13 +25,31 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          <a href="#features" className="text-gray-700 hover:text-pulse-600 transition-colors">Features</a>
-          <a href="#how-it-works" className="text-gray-700 hover:text-pulse-600 transition-colors">How It Works</a>
+          <HashLink 
+            to="/#features" 
+            scroll={scrollWithOffset}
+            className="text-gray-700 hover:text-pulse-600 transition-colors"
+          >
+            Features
+          </HashLink>
+          <HashLink 
+            to="/#how-it-works" 
+            scroll={scrollWithOffset}
+            className="text-gray-700 hover:text-pulse-600 transition-colors"
+          >
+            How It Works
+          </HashLink>
           <Link to="/methodology" className="text-gray-700 hover:text-pulse-600 transition-colors">Methodology</Link>
           <Link to="/ai-engine" className="text-gray-700 hover:text-pulse-600 transition-colors">Our AI Engine</Link>
           <Link to="/certification" className="text-gray-700 hover:text-pulse-600 transition-colors">Certification</Link>
           <Link to="/about-us" className="text-gray-700 hover:text-pulse-600 transition-colors">About Us</Link>
-          <a href="#join-beta" className="text-gray-700 hover:text-pulse-600 transition-colors">Join Beta</a>
+          <HashLink 
+            to="/#join-beta" 
+            scroll={scrollWithOffset}
+            className="text-gray-700 hover:text-pulse-600 transition-colors"
+          >
+            Join Beta
+          </HashLink>
           <Button className="bg-pulse-gradient hover:opacity-90 transition-all">Get Started</Button>
         </div>
 
@@ -45,20 +70,22 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white w-full py-4 px-4 shadow-lg animate-accordion-down">
           <div className="flex flex-col space-y-4">
-            <a 
-              href="#features" 
+            <HashLink 
+              to="/#features" 
+              scroll={scrollWithOffset}
               className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Features
-            </a>
-            <a 
-              href="#how-it-works" 
+            </HashLink>
+            <HashLink 
+              to="/#how-it-works" 
+              scroll={scrollWithOffset}
               className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               How It Works
-            </a>
+            </HashLink>
             <Link 
               to="/methodology" 
               className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
@@ -87,13 +114,14 @@ const Navbar = () => {
             >
               About Us
             </Link>
-            <a 
-              href="#join-beta" 
+            <HashLink 
+              to="/#join-beta" 
+              scroll={scrollWithOffset}
               className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Join Beta
-            </a>
+            </HashLink>
             <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full">
               Get Started
             </Button>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 
 const Hero = () => {
   const [name, setName] = useState('');
@@ -33,11 +34,10 @@ const Hero = () => {
     setMessage('');
   };
 
-  const scrollToFeatures = () => {
-    const featuresElement = document.getElementById('features');
-    if (featuresElement) {
-      featuresElement.scrollIntoView({ behavior: 'smooth' });
-    }
+  const scrollWithOffset = (el: HTMLElement) => {
+    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+    const yOffset = -80; // Adjust this value based on your fixed header height
+    window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
   };
 
   const coreFeatures = [
@@ -87,11 +87,11 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link to="/join-beta">
+              <HashLink to="/#join-beta" scroll={scrollWithOffset}>
                 <Button className="bg-pulse-gradient hover:opacity-90 transition-all h-12 px-6 text-base w-full sm:w-auto">
                   Join the Beta <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </Link>
+              </HashLink>
               
               <Link to="/demo">
                 <Button 
@@ -102,13 +102,17 @@ const Hero = () => {
                 </Button>
               </Link>
               
-              <Button 
-                variant="outline" 
-                className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base"
-                onClick={scrollToFeatures}
+              <HashLink 
+                to="/#features" 
+                scroll={scrollWithOffset}
               >
-                Get Pulse Certified <ArrowUpRight className="ml-2 h-4 w-4" />
-              </Button>
+                <Button 
+                  variant="outline" 
+                  className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base"
+                >
+                  Get Pulse Certified <ArrowUpRight className="ml-2 h-4 w-4" />
+                </Button>
+              </HashLink>
             </div>
             
             <div className="flex items-center gap-4 pt-4">

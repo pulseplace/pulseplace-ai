@@ -12,13 +12,13 @@ const HowItWorksIntro = () => {
           </p>
         </div>
         
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="w-full flex justify-center">
-            <div className="relative w-full max-w-lg bg-white rounded-xl shadow-md p-6 md:p-8">
+            <div className="relative w-full bg-white rounded-xl shadow-md p-4 md:p-6">
               <img 
-                src="/lovable-uploads/4f3c79fd-71b5-4a9d-9b51-8a7712a973f1.png" 
-                alt="PulsePlace.ai workflow process - From survey to certification" 
-                className="w-auto max-h-[700px] mx-auto"
+                src="/lovable-uploads/8ddd4a13-530a-46ac-909c-052283c1315d.png" 
+                alt="PulsePlace.ai workflow process: Employees complete surveys, AI analyzes responses, Company dashboard shows PulseScore, Certification issued, Rank published" 
+                className="w-full h-auto mx-auto"
               />
             </div>
           </div>

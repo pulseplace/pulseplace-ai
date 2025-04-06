@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ArrowRight } from 'lucide-react';
+import { MessageCircle, ArrowRight, Users } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,15 @@ const CallToAction = () => {
             <Link to="/join-beta">
               <Button className="bg-pulse-gradient hover:opacity-90 transition-all h-12 px-6 text-base w-full sm:w-auto">
                 Join the Beta <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            
+            <Link to="/demo">
+              <Button 
+                variant="outline" 
+                className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base"
+              >
+                Try Team Demo <Users className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             

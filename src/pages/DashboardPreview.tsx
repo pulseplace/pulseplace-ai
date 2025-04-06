@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 
 // Sample data for charts
 const pulseScoreData = [
@@ -23,11 +25,12 @@ const pulseScoreData = [
   { month: 'Aug', score: 86 },
 ];
 
+// Fixed engagement data with proper labels and values
 const engagementData = [
-  { name: 'Highly Engaged', value: 35 },
-  { name: 'Engaged', value: 40 },
-  { name: 'Neutral', value: 15 },
-  { name: 'Disengaged', value: 10 },
+  { name: 'Highly Engaged', value: 35, color: '#4ade80' },
+  { name: 'Engaged', value: 40, color: '#a3e635' },
+  { name: 'Neutral', value: 15, color: '#facc15' },
+  { name: 'Disengaged', value: 10, color: '#f87171' },
 ];
 
 const departmentData = [
@@ -129,7 +132,7 @@ const Sidebar = () => {
               key={i} 
               className={`flex items-center px-3 py-2 rounded-md text-sm ${
                 item.active ? "bg-pulse-50 text-pulse-700" : "text-gray-700 hover:bg-gray-100"
-              }`}
+              } cursor-pointer`}
             >
               {item.icon}
               {item.label}
@@ -150,7 +153,7 @@ const Sidebar = () => {
           ].map((item, i) => (
             <div 
               key={i} 
-              className="flex items-center px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100"
+              className="flex items-center px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
             >
               {item.icon}
               {item.label}
@@ -163,6 +166,15 @@ const Sidebar = () => {
 };
 
 const Header = () => {
+  const { toast } = useToast();
+  
+  const handleNotificationClick = () => {
+    toast({
+      title: "New Notifications",
+      description: "You have 3 unread notifications",
+    });
+  };
+  
   return (
     <header className="bg-white border-b py-4 px-6">
       <div className="flex items-center justify-between">
@@ -174,12 +186,17 @@ const Header = () => {
         </div>
         
         <div className="flex items-center gap-2 ml-auto">
-          <Button variant="ghost" size="icon" className="relative">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative"
+            onClick={handleNotificationClick}
+          >
             <BellRing className="h-5 w-5" />
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] flex items-center justify-center">3</span>
           </Button>
           
-          <div className="flex items-center ml-4">
+          <div className="flex items-center ml-4 cursor-pointer">
             <div className="w-8 h-8 rounded-full bg-pulse-100 flex items-center justify-center text-pulse-600">
               <User className="h-5 w-5" />
             </div>
@@ -196,6 +213,28 @@ const Header = () => {
 };
 
 const DashboardOverview = () => {
+  const { toast } = useToast();
+  
+  const handleExportClick = () => {
+    toast({
+      title: "Report Exported",
+      description: "Dashboard report has been exported to PDF",
+    });
+  };
+  
+  const handleScheduleClick = () => {
+    toast({
+      title: "Meeting Scheduled",
+      description: "A calendar invite has been sent to your email",
+    });
+  };
+  
+  const handleViewDetail = () => {
+    toast({
+      description: "Insight details would open in a full view",
+    });
+  };
+  
   return (
     <div className="p-6 bg-gray-50 flex-grow">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
@@ -204,10 +243,10 @@ const DashboardOverview = () => {
           <p className="text-gray-500">Pulse insights for August 2025</p>
         </div>
         <div className="flex gap-2 mt-4 md:mt-0">
-          <Button variant="outline" className="text-sm">
+          <Button variant="outline" className="text-sm" onClick={handleExportClick}>
             Export Report
           </Button>
-          <Button className="bg-pulse-gradient text-sm">
+          <Button className="bg-pulse-gradient text-sm" onClick={handleScheduleClick}>
             Schedule Meeting
           </Button>
         </div>
@@ -338,14 +377,15 @@ const DashboardOverview = () => {
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
+                    nameKey="name"
                     label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   >
-                    {engagementData.map((entry, index) => {
-                      const colors = ['#4ade80', '#a3e635', '#facc15', '#f87171'];
-                      return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
-                    })}
+                    {engagementData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -398,7 +438,11 @@ const DashboardOverview = () => {
                         <Badge className={insight.impact === 'high' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}>
                           {insight.impact} impact
                         </Badge>
-                        <Button variant="ghost" className="text-xs h-6 px-2">
+                        <Button 
+                          variant="ghost" 
+                          className="text-xs h-6 px-2"
+                          onClick={handleViewDetail}
+                        >
                           View Detail
                         </Button>
                       </div>
@@ -445,6 +489,21 @@ const DashboardOverview = () => {
 };
 
 const DashboardPreview = () => {
+  const { toast } = useToast();
+  
+  const handleRequestDemo = () => {
+    toast({
+      title: "Demo Request Sent",
+      description: "Our team will contact you shortly to schedule a full demo",
+    });
+  };
+  
+  const handleViewPricing = () => {
+    toast({
+      description: "Redirecting to pricing page",
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -462,12 +521,12 @@ const DashboardPreview = () => {
             
             <div className="flex flex-wrap gap-4 justify-center">
               <Link to="/join-beta">
-                <Button size="lg" className="bg-pulse-gradient hover:opacity-90">
+                <Button size="lg" className="bg-pulse-gradient hover:opacity-90" onClick={handleRequestDemo}>
                   Request Full Demo
                 </Button>
               </Link>
               <Link to="/pricing">
-                <Button size="lg" variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50">
+                <Button size="lg" variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50" onClick={handleViewPricing}>
                   View Pricing
                 </Button>
               </Link>
@@ -495,7 +554,7 @@ const DashboardPreview = () => {
                 customizable reports, and personalized AI recommendations.
               </p>
               <Link to="/join-beta">
-                <Button className="bg-pulse-gradient">
+                <Button className="bg-pulse-gradient" onClick={handleRequestDemo}>
                   Schedule a Live Demo
                 </Button>
               </Link>
@@ -563,12 +622,12 @@ const DashboardPreview = () => {
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <Link to="/pricing">
-                <Button size="lg" className="bg-pulse-gradient hover:opacity-90">
+                <Button size="lg" className="bg-pulse-gradient hover:opacity-90" onClick={handleViewPricing}>
                   View Pricing Plans
                 </Button>
               </Link>
               <Link to="/join-beta">
-                <Button size="lg" variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50">
+                <Button size="lg" variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50" onClick={handleRequestDemo}>
                   Request a Demo
                 </Button>
               </Link>

@@ -1,9 +1,44 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowUpRight, BarChart2, UserCheck, Users } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 const Hero = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [company, setCompany] = useState('');
+  const [message, setMessage] = useState('');
+  const { toast } = useToast();
+
+  const handleSubmitRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, this would send data to your backend
+    console.log('Request submitted:', { name, email, company, message });
+    
+    toast({
+      title: "Demo request submitted",
+      description: "Thank you! We'll contact you shortly to schedule your demo.",
+    });
+    
+    // Reset form
+    setName('');
+    setEmail('');
+    setCompany('');
+    setMessage('');
+  };
+
+  const scrollToFeatures = () => {
+    const featuresElement = document.getElementById('features');
+    if (featuresElement) {
+      featuresElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="pt-28 pb-16 md:pt-36 md:pb-24 px-4">
       <div className="container mx-auto">
@@ -29,10 +64,85 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button className="bg-pulse-gradient hover:opacity-90 transition-all h-12 px-6 text-base">
-                Request Demo <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="bg-pulse-gradient hover:opacity-90 transition-all h-12 px-6 text-base">
+                    Request Demo <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <form onSubmit={handleSubmitRequest}>
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl">Request a Demo</DialogTitle>
+                      <DialogDescription>
+                        Fill out the form below to schedule a personalized demo of PulsePlace.ai.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                          Name
+                        </Label>
+                        <Input 
+                          id="name" 
+                          value={name} 
+                          onChange={(e) => setName(e.target.value)} 
+                          className="col-span-3" 
+                          required
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="email" className="text-right">
+                          Email
+                        </Label>
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          value={email} 
+                          onChange={(e) => setEmail(e.target.value)} 
+                          className="col-span-3" 
+                          required
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="company" className="text-right">
+                          Company
+                        </Label>
+                        <Input 
+                          id="company" 
+                          value={company} 
+                          onChange={(e) => setCompany(e.target.value)} 
+                          className="col-span-3"
+                          required
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="message" className="text-right">
+                          Message
+                        </Label>
+                        <Textarea 
+                          id="message" 
+                          value={message} 
+                          onChange={(e) => setMessage(e.target.value)} 
+                          className="col-span-3"
+                          placeholder="Tell us about your organization and what you're looking for."
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit" className="bg-pulse-gradient hover:opacity-90">
+                        Submit Request
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+              
+              <Button 
+                variant="outline" 
+                className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base"
+                onClick={scrollToFeatures}
+              >
                 Learn More <ArrowUpRight className="ml-2 h-4 w-4" />
               </Button>
             </div>

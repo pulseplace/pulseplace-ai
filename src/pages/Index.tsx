@@ -12,6 +12,7 @@ import FAQ from '@/components/FAQ';
 import CallToAction from '@/components/CallToAction';
 import JoinBeta from '@/components/JoinBeta';
 import Footer from '@/components/Footer';
+import InteractiveDemo from '@/components/InteractiveDemo';
 import { Users, Building, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -128,6 +129,7 @@ const Index = () => {
       <WhyPulsePlace />
       <FeatureSection />
       <TeamPilotSection />
+      <InteractiveDemo />
       <LandingPageDemo />
       <HowItWorks />
       <PulseScoreDemo />

@@ -3,8 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { StrictMode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Index from "./pages/Index";
 import Methodology from "./pages/Methodology";
 import AIEngine from "./pages/AIEngine";
@@ -19,6 +20,37 @@ import TermsOfService from "./pages/TermsOfService";
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
 
+// Animation wrapper for page transitions
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Index />} />
+          <Route path="/methodology" element={<Methodology />} />
+          <Route path="/ai-engine" element={<AIEngine />} />
+          <Route path="/certification" element={<Certification />} />
+          <Route path="/join-beta" element={<JoinBeta />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/demo" element={<Demo />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 const App = () => {
   return (
     <StrictMode>
@@ -27,19 +59,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/methodology" element={<Methodology />} />
-              <Route path="/ai-engine" element={<AIEngine />} />
-              <Route path="/certification" element={<Certification />} />
-              <Route path="/join-beta" element={<JoinBeta />} />
-              <Route path="/about-us" element={<AboutUs />} />
-              <Route path="/demo" element={<Demo />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AnimatedRoutes />
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

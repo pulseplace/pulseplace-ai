@@ -1,12 +1,36 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Menu, X, ChevronDown } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const offset = window.scrollY;
+      if (offset > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Close mobile menu when route changes
+    setIsMenuOpen(false);
+  }, [location]);
 
   const scrollWithOffset = (el: HTMLElement) => {
     const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
@@ -14,8 +38,12 @@ const Navbar = () => {
     window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
   };
 
+  const navClasses = `w-full py-4 fixed top-0 z-50 transition-all duration-300 ${
+    scrolled ? 'bg-white/90 backdrop-blur-sm shadow-sm' : 'bg-transparent'
+  }`;
+
   return (
-    <nav className="w-full py-4 bg-white/90 backdrop-blur-sm fixed top-0 z-50 shadow-sm">
+    <nav className={navClasses}>
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
           <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-pulse-600 to-teal-500 bg-clip-text text-transparent">
@@ -68,70 +96,78 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white w-full py-4 px-4 shadow-lg animate-accordion-down">
-          <div className="flex flex-col space-y-4">
-            <HashLink 
-              to="/#features" 
-              scroll={scrollWithOffset}
-              className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Features
-            </HashLink>
-            <HashLink 
-              to="/#how-it-works" 
-              scroll={scrollWithOffset}
-              className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              How It Works
-            </HashLink>
-            <Link 
-              to="/methodology" 
-              className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Methodology
-            </Link>
-            <Link 
-              to="/ai-engine" 
-              className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Our AI Engine
-            </Link>
-            <Link 
-              to="/certification" 
-              className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Certification
-            </Link>
-            <Link 
-              to="/about-us" 
-              className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About Us
-            </Link>
-            <HashLink 
-              to="/#join-beta" 
-              scroll={scrollWithOffset}
-              className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Join Beta
-            </HashLink>
-            <Link to="/join-beta" onClick={() => setIsMenuOpen(false)}>
-              <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full">
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        </div>
-      )}
+      {/* Mobile Navigation Menu with Animation */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden bg-white w-full py-4 px-4 shadow-lg"
+          >
+            <div className="flex flex-col space-y-4">
+              <HashLink 
+                to="/#features" 
+                scroll={scrollWithOffset}
+                className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Features
+              </HashLink>
+              <HashLink 
+                to="/#how-it-works" 
+                scroll={scrollWithOffset}
+                className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                How It Works
+              </HashLink>
+              <Link 
+                to="/methodology" 
+                className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Methodology
+              </Link>
+              <Link 
+                to="/ai-engine" 
+                className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Our AI Engine
+              </Link>
+              <Link 
+                to="/certification" 
+                className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Certification
+              </Link>
+              <Link 
+                to="/about-us" 
+                className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About Us
+              </Link>
+              <HashLink 
+                to="/#join-beta" 
+                scroll={scrollWithOffset}
+                className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Join Beta
+              </HashLink>
+              <Link to="/join-beta" onClick={() => setIsMenuOpen(false)}>
+                <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };

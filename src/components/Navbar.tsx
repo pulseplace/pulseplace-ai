@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,16 +11,16 @@ const Navbar = () => {
     <nav className="w-full py-4 bg-white/90 backdrop-blur-sm fixed top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
-          <span className="text-2xl font-bold bg-gradient-to-r from-pulse-600 to-teal-500 bg-clip-text text-transparent">
+          <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-pulse-600 to-teal-500 bg-clip-text text-transparent">
             PulsePlace.ai
-          </span>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
           <a href="#features" className="text-gray-700 hover:text-pulse-600 transition-colors">Features</a>
           <a href="#how-it-works" className="text-gray-700 hover:text-pulse-600 transition-colors">How It Works</a>
-          <a href="#methodology" className="text-gray-700 hover:text-pulse-600 transition-colors">Methodology</a>
+          <Link to="/methodology" className="text-gray-700 hover:text-pulse-600 transition-colors">Methodology</Link>
           <a href="#join-beta" className="text-gray-700 hover:text-pulse-600 transition-colors">Join Beta</a>
           <Button className="bg-pulse-gradient hover:opacity-90 transition-all">Get Started</Button>
         </div>
@@ -55,13 +56,13 @@ const Navbar = () => {
             >
               How It Works
             </a>
-            <a 
-              href="#methodology" 
+            <Link 
+              to="/methodology" 
               className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Methodology
-            </a>
+            </Link>
             <a 
               href="#join-beta" 
               className="text-gray-700 hover:text-pulse-600 transition-colors py-2"

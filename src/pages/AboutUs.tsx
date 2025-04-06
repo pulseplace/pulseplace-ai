@@ -4,22 +4,24 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Building, Target, Users, HeartHandshake, ArrowRight } from 'lucide-react';
+import { Building, Target, Users, HeartHandshake, ArrowRight, Linkedin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AboutUs = () => {
   const teamMembers = [
     {
-      name: "Sarah Chen",
-      role: "CEO & Co-Founder",
-      bio: "Former Head of People Ops at Fortune 500 companies with 15+ years experience in workplace culture transformation.",
-      avatar: "SJ"
+      name: "Vishal Behal",
+      role: "Chief Visualizer & CEO",
+      bio: "Technology leader with over 20 years of experience in digital transformation, AI, and product innovation across global organizations.",
+      avatar: "VB",
+      linkedin: "https://www.linkedin.com/in/vishalbehal/"
     },
     {
-      name: "Michael Rodriguez",
-      role: "CTO & Co-Founder",
-      bio: "AI researcher and engineer specializing in NLP and sentiment analysis with experience at leading AI labs.",
-      avatar: "MR"
+      name: "Sharad Vajpayee",
+      role: "Chief Experience Officer",
+      bio: "Customer experience expert with a passion for creating meaningful digital experiences that bridge technology and human needs.",
+      avatar: "SV",
+      linkedin: "https://www.linkedin.com/in/sharadvajpayee/"
     },
     {
       name: "Priya Patel",
@@ -133,8 +135,15 @@ const AboutUs = () => {
                         <div className="h-14 w-14 bg-pulse-100 text-pulse-700 rounded-full flex items-center justify-center text-xl font-semibold mr-4">
                           {member.avatar}
                         </div>
-                        <div>
-                          <h3 className="text-xl font-semibold">{member.name}</h3>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-xl font-semibold">{member.name}</h3>
+                            {member.linkedin && (
+                              <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-pulse-600 hover:text-pulse-700 transition-colors">
+                                <Linkedin className="h-5 w-5" />
+                              </a>
+                            )}
+                          </div>
                           <p className="text-gray-600">{member.role}</p>
                         </div>
                       </div>

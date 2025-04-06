@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import WhyPulsePlace from '@/components/WhyPulsePlace';
 import FeatureSection from '@/components/FeatureSection';
+import LandingPageDemo from '@/components/LandingPageDemo';
 import HowItWorks from '@/components/HowItWorks';
 import PulseScoreDemo from '@/components/PulseScoreDemo';
 import Testimonials from '@/components/Testimonials';
@@ -19,6 +20,7 @@ const Index = () => {
       <Hero />
       <WhyPulsePlace />
       <FeatureSection />
+      <LandingPageDemo />
       <HowItWorks />
       <PulseScoreDemo />
       <Testimonials />

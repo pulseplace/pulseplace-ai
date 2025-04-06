@@ -6,6 +6,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { HelpCircle, Mail } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const faqs = [
   {
@@ -27,6 +29,14 @@ const faqs = [
   {
     question: "How does Pulse Certification work?",
     answer: "Organizations that achieve high PulseScores and demonstrate exceptional workplace cultures can earn Pulse Certification. This certification is based on objective data rather than subjective testimonials, making it a truly merit-based recognition."
+  },
+  {
+    question: "Is my company's data secure with PulsePlace.ai?",
+    answer: "Absolutely. We take data security very seriously. All data is encrypted, stored securely, and we never share your specific company data with others. Employee feedback is always anonymized to protect individual privacy."
+  },
+  {
+    question: "Can we customize the surveys for our specific workplace?",
+    answer: "Yes, while we have core metrics that enable benchmarking, PulsePlace.ai allows for customization of surveys to address your company's specific culture goals and areas of focus."
   }
 ];
 
@@ -54,6 +64,24 @@ const FAQ = () => {
               </AccordionItem>
             ))}
           </Accordion>
+          
+          <div className="mt-12 bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center">
+              <div className="bg-pulse-100 p-4 rounded-full text-pulse-600 mb-4 sm:mb-0 sm:mr-6">
+                <HelpCircle className="h-8 w-8" />
+              </div>
+              <div className="text-center sm:text-left">
+                <h3 className="text-xl font-semibold mb-2">Still have questions?</h3>
+                <p className="text-gray-600 mb-4">Our team is ready to help you understand how PulsePlace.ai can work for your organization.</p>
+                <Button 
+                  className="bg-pulse-600 hover:bg-pulse-700"
+                  onClick={() => window.location.href = "mailto:questions@pulseplace.ai"}
+                >
+                  <Mail className="mr-2 h-4 w-4" /> Contact Support
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

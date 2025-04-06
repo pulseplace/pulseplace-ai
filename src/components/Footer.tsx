@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -33,18 +34,18 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
               <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
-              <li><a href="#methodology" className="hover:text-white transition-colors">Methodology</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
+              <li><Link to="/methodology" className="hover:text-white transition-colors">Methodology</Link></li>
+              <li><Link to="/certification" className="hover:text-white transition-colors">Certification</Link></li>
             </ul>
           </div>
           
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Company</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+              <li><Link to="/about-us" className="hover:text-white transition-colors">About Us</Link></li>
+              <li><Link to="/ai-engine" className="hover:text-white transition-colors">Our AI Engine</Link></li>
+              <li><Link to="/join-beta" className="hover:text-white transition-colors">Join Beta</Link></li>
+              <li><a href="mailto:contact@pulseplace.ai" className="hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>
         </div>

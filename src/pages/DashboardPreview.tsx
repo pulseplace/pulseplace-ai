@@ -343,7 +343,7 @@ const DashboardOverview = () => {
                   >
                     {engagementData.map((entry, index) => {
                       const colors = ['#4ade80', '#a3e635', '#facc15', '#f87171'];
-                      return <Pie key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                      return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} dataKey="value" />;
                     })}
                   </Pie>
                   <Tooltip />

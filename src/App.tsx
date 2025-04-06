@@ -19,6 +19,7 @@ import TermsOfService from "./pages/TermsOfService";
 import Pricing from "./pages/Pricing";
 import ROICalculator from "./pages/ROICalculator";
 import DashboardPreview from "./pages/DashboardPreview";
+import MetaTags from "./components/MetaTags";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const App = () => {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+          <MetaTags />
           <Toaster />
           <Sonner />
           <BrowserRouter>

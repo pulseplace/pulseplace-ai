@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -343,7 +342,7 @@ const DashboardOverview = () => {
                   >
                     {engagementData.map((entry, index) => {
                       const colors = ['#4ade80', '#a3e635', '#facc15', '#f87171'];
-                      return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} dataKey="value" />;
+                      return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
                     })}
                   </Pie>
                   <Tooltip />

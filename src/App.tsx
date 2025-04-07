@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -72,16 +73,7 @@ const AnimatedRoutes = () => {
             <Route path="surveys" element={<Surveys />} />
             <Route path="surveys/new" element={<Surveys />} />
             <Route path="surveys/:surveyId" element={<Surveys />} />
-            {
-              path: "/dashboard/scoring-logic",
-              element: (
-                <ProtectedRoute>
-                  <DashboardLayout>
-                    <ScoringLogic />
-                  </DashboardLayout>
-                </ProtectedRoute>
-              ),
-            }
+            <Route path="scoring-logic" element={<ScoringLogic />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

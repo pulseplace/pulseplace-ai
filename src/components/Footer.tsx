@@ -20,7 +20,7 @@ const Footer = () => {
               <a href="https://twitter.com/pulseplaceai" className="hover:text-white transition-colors" aria-label="Twitter">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="https://linkedin.com/company/pulseplace" className="hover:text-white transition-colors" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/pulseplaceai/" className="hover:text-white transition-colors" aria-label="LinkedIn">
                 <Linkedin className="h-5 w-5" />
               </a>
               <a href="mailto:hello@pulseplace.ai" className="hover:text-white transition-colors" aria-label="Email">

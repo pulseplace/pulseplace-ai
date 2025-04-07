@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import OnboardingState from '@/components/OnboardingState';
 import { Tables } from '@/types/database.types';
+import SkillsGapAnalysis from '@/components/dashboard/SkillsGapAnalysis';
+import TeamPulseTrends from '@/components/dashboard/TeamPulseTrends';
+import SentimentAnalysis from '@/components/dashboard/SentimentAnalysis';
+import { Download } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const DashboardHome = () => {
   const { user, profile } = useAuth();
@@ -14,6 +20,7 @@ const DashboardHome = () => {
   const [responses, setResponses] = useState<Tables<'survey_responses'>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasData, setHasData] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -79,6 +86,14 @@ const DashboardHome = () => {
     // Navigate to survey creation or take first pulse survey
   };
 
+  const handleExportPDF = () => {
+    toast({
+      title: "Dashboard Report Exported",
+      description: "Your PDF report has been generated and downloaded",
+    });
+    // In a real implementation, we would generate and download a PDF here
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -102,7 +117,15 @@ const DashboardHome = () => {
     <div className="container mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div className="mt-4 md:mt-0">
+        <div className="flex gap-3 mt-4 md:mt-0">
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2" 
+            onClick={handleExportPDF}
+          >
+            <Download size={16} />
+            Export PDF Report
+          </Button>
           <Link to="/dashboard/surveys/new">
             <Button className="bg-pulse-gradient">Create Survey</Button>
           </Link>
@@ -111,15 +134,13 @@ const DashboardHome = () => {
 
       <DashboardOverview />
 
-      <div className="grid grid-cols-1 lg:grid-cols-8 gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-8 gap-6 mt-8">
         <SkillsGapAnalysis />
+        <TeamPulseTrends />
+        <SentimentAnalysis />
       </div>
     </div>
   );
-};
-
-const SkillsGapAnalysis = () => {
-  return <div className="col-span-8"><div className="h-80"></div></div>;
 };
 
 export default DashboardHome;

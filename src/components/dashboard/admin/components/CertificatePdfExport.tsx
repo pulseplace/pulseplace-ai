@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PulseScoreTier } from '@/types/scoring.types';
 import { useToast } from "@/hooks/use-toast";
-import { Download, FileDown, FilePdf } from 'lucide-react';
+import { Download, FileDown, File } from 'lucide-react';
 
 interface CertificateData {
   companyName: string;
@@ -120,7 +120,7 @@ const CertificatePdfExport: React.FC = () => {
                 <div className="text-sm text-gray-500 mb-4">
                   Your official PulsePlace™ certificate will be generated as a high-quality PDF
                 </div>
-                <FilePdf className="h-16 w-16 text-pulse-500 mx-auto" />
+                <File className="h-16 w-16 text-green-500 mx-auto" />
               </div>
             </div>
             

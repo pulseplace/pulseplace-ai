@@ -8,6 +8,7 @@ import AdminHRDashboard from '@/components/dashboard/admin/AdminHRDashboard';
 import EmbeddableBadgeWidget from '@/components/dashboard/badge/EmbeddableBadgeWidget';
 import CertificatePdfExport from '@/components/dashboard/admin/components/CertificatePdfExport';
 import CertificateVerification from '@/components/dashboard/admin/components/CertificateVerification';
+import CertificationSharing from '@/components/certification/CertificationSharing';
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -20,6 +21,15 @@ const CertificationEngine = () => {
   const [activeTab, setActiveTab] = useState('mapping');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Demo data for certification badge
+  const certificationData = {
+    companyName: 'Acme Corporation',
+    tier: 'pulse_certified' as const,
+    score: 88,
+    issueDate: 'April 7, 2025',
+    validUntil: 'April 7, 2026'
+  };
   
   useEffect(() => {
     // Check authentication
@@ -38,7 +48,7 @@ const CertificationEngine = () => {
     setError(null);
     
     // Simulate loading on certain data-heavy tabs
-    if (value === 'admin' || value === 'badge' || value === 'pdf' || value === 'verify') {
+    if (value === 'admin' || value === 'badge' || value === 'pdf' || value === 'verify' || value === 'sharing') {
       setIsLoading(true);
       
       // Simulate network request
@@ -60,6 +70,7 @@ const CertificationEngine = () => {
       case 'badge': return 'Badge Widget';
       case 'pdf': return 'PDF Certificate';
       case 'verify': return 'Certificate Verification';
+      case 'sharing': return 'Sharing Options';
       default: return tab.charAt(0).toUpperCase() + tab.slice(1);
     }
   };
@@ -94,6 +105,7 @@ const CertificationEngine = () => {
           <TabsTrigger value="badge">Badge Widget</TabsTrigger>
           <TabsTrigger value="pdf">PDF Certificate</TabsTrigger>
           <TabsTrigger value="verify">Verify Certificate</TabsTrigger>
+          <TabsTrigger value="sharing">Sharing Options</TabsTrigger>
         </TabsList>
         
         {isLoading ? (
@@ -117,7 +129,14 @@ const CertificationEngine = () => {
             </TabsContent>
             
             <TabsContent value="badge">
-              <EmbeddableBadgeWidget isLoading={false} />
+              <EmbeddableBadgeWidget 
+                companyName={certificationData.companyName}
+                tier={certificationData.tier}
+                score={certificationData.score}
+                issueDate={certificationData.issueDate}
+                validUntil={certificationData.validUntil}
+                isLoading={false}
+              />
             </TabsContent>
             
             <TabsContent value="pdf">
@@ -126,6 +145,16 @@ const CertificationEngine = () => {
             
             <TabsContent value="verify">
               <CertificateVerification />
+            </TabsContent>
+            
+            <TabsContent value="sharing">
+              <CertificationSharing
+                companyName={certificationData.companyName}
+                tier={certificationData.tier}
+                score={certificationData.score}
+                issueDate={certificationData.issueDate}
+                validUntil={certificationData.validUntil}
+              />
             </TabsContent>
           </>
         )}

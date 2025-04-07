@@ -7,19 +7,31 @@ import { Award, BarChart3, FileText, Settings, Users2 } from 'lucide-react';
 interface DashboardTabsProps {
   departmentStats: any[];
   recentCertifications: any[];
+  selectedTab?: string;
+  onTabChange?: (value: string) => void;
 }
 
 const DashboardTabs: React.FC<DashboardTabsProps> = ({ 
   departmentStats, 
-  recentCertifications 
+  recentCertifications,
+  selectedTab = 'overview',
+  onTabChange
 }) => {
-  const [activeTab, setActiveTab] = React.useState('overview');
+  const [activeTab, setActiveTab] = React.useState(selectedTab);
+  
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    if (onTabChange) {
+      onTabChange(value);
+    }
+  };
   
   return (
     <Tabs 
-      defaultValue="overview" 
+      defaultValue={selectedTab} 
       className="mt-6"
-      onValueChange={setActiveTab}
+      onValueChange={handleTabChange}
+      value={selectedTab}
     >
       <TabsList className="grid grid-cols-5 w-full max-w-3xl">
         <TabsTrigger value="overview" className="flex items-center gap-2">

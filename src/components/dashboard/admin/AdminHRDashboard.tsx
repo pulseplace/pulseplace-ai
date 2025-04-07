@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Tabs } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { 
   fetchAdminDashboardStats, 
@@ -13,7 +14,6 @@ import DashboardTabs from './components/DashboardTabs';
 import LoadingState from './components/LoadingState';
 import ErrorAlert from './components/ErrorAlert';
 import OverviewTabContent from './components/OverviewTabContent';
-import TabContent from './components/TabContent';
 import PlaceholderTabContent from './components/PlaceholderTabContent';
 
 const AdminHRDashboard = () => {
@@ -100,32 +100,37 @@ const AdminHRDashboard = () => {
         {error && <ErrorAlert message={error} />}
         
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-          <DashboardTabs selectedTab={selectedTab} onTabChange={setSelectedTab} />
+          <DashboardTabs 
+            departmentStats={departmentStats} 
+            recentCertifications={certifications}
+            selectedTab={selectedTab}
+            onTabChange={setSelectedTab}
+          />
           
-          <TabContent value="overview">
+          <TabsContent value="overview">
             <OverviewTabContent 
               stats={stats}
               departmentStats={departmentStats}
               certifications={certifications}
               onSendRemindersClick={handleSendReminderClick}
             />
-          </TabContent>
+          </TabsContent>
           
-          <TabContent value="surveys">
+          <TabsContent value="surveys">
             <PlaceholderTabContent text="Surveys tab content would go here with active and scheduled surveys" />
-          </TabContent>
+          </TabsContent>
           
-          <TabContent value="insights">
+          <TabsContent value="insights">
             <PlaceholderTabContent text="Insights tab would contain AI-generated insights and trend analysis" />
-          </TabContent>
+          </TabsContent>
           
-          <TabContent value="certifications">
+          <TabsContent value="certifications">
             <PlaceholderTabContent text="Certifications tab would show all past and current certifications" />
-          </TabContent>
+          </TabsContent>
           
-          <TabContent value="employees">
+          <TabsContent value="employees">
             <PlaceholderTabContent text="Employees tab would contain employee participation and individual insights" />
-          </TabContent>
+          </TabsContent>
         </Tabs>
       </CardContent>
     </Card>

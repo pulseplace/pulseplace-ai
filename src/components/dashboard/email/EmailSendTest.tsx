@@ -29,12 +29,12 @@ const EmailSendTest: React.FC = () => {
   const [certData, setCertData] = useState<MockPulseScoreData>({
     overallScore: 86,
     categoryScores: [
-      { category: 'emotion_index', score: 84, weight: 0.4 },
-      { category: 'engagement_stability', score: 87, weight: 0.3 },
-      { category: 'culture_trust', score: 85, weight: 0.3 }
+      { category: 'emotion_index' as ScoringCategory, score: 84, weight: 0.4 },
+      { category: 'engagement_stability' as ScoringCategory, score: 87, weight: 0.3 },
+      { category: 'culture_trust' as ScoringCategory, score: 85, weight: 0.3 }
     ],
     themeScores: [],
-    tier: 'pulse_certified',
+    tier: 'pulse_certified' as PulseScoreTier,
     insights: ["Your organization demonstrates strong leadership trust and team cohesion, with opportunities to enhance career development paths."],
     recommendedActions: []
   });

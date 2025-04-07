@@ -19,6 +19,12 @@ import TermsOfService from "./pages/TermsOfService";
 import Pricing from "./pages/Pricing";
 import ROICalculator from "./pages/ROICalculator";
 import DashboardPreview from "./pages/DashboardPreview";
+import Auth from "./pages/Auth";
+import DashboardHome from "./pages/dashboard/Home";
+import Surveys from "./pages/dashboard/Surveys";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import DashboardLayout from "./layouts/DashboardLayout";
 import MetaTags from "./components/MetaTags";
 import StickyCta from "./components/StickyCta";
 
@@ -28,6 +34,9 @@ const queryClient = new QueryClient();
 // Animation wrapper for page transitions
 const AnimatedRoutes = () => {
   const location = useLocation();
+  
+  // Don't show StickyCta on auth pages or dashboard
+  const hideStickyCta = location.pathname.includes('/auth') || location.pathname.includes('/dashboard');
   
   return (
     <AnimatePresence mode="wait">
@@ -51,10 +60,24 @@ const AnimatedRoutes = () => {
           <Route path="/demo" element={<Demo />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/auth" element={<Auth />} />
+          
+          {/* Dashboard Routes */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<DashboardHome />} />
+            <Route path="surveys" element={<Surveys />} />
+            <Route path="surveys/new" element={<Surveys />} />
+            <Route path="surveys/:surveyId" element={<Surveys />} />
+          </Route>
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <StickyCta />
+        {!hideStickyCta && <StickyCta />}
       </motion.div>
     </AnimatePresence>
   );
@@ -65,11 +88,13 @@ const App = () => {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <MetaTags />
-          <Toaster />
-          <Sonner />
           <BrowserRouter>
-            <AnimatedRoutes />
+            <AuthProvider>
+              <MetaTags />
+              <Toaster />
+              <Sonner />
+              <AnimatedRoutes />
+            </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BarChart, LayoutDashboard, MessageSquare, Settings, TrendingUp, Users, Calendar, FileText, Mail } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
@@ -55,7 +56,7 @@ const DashboardSidebar = () => {
             { icon: <Calendar className="h-4 w-4 mr-3" />, label: "Surveys" },
             { icon: <FileText className="h-4 w-4 mr-3" />, label: "Documentation" },
             { icon: <Settings className="h-4 w-4 mr-3" />, label: "Settings" },
-            { name: "Email Templates", href: "/dashboard/email-templates", icon: Mail },
+            { icon: <Mail className="h-4 w-4 mr-3" />, label: "Email Templates" },
           ].map((item, i) => (
             <button 
               key={i} 

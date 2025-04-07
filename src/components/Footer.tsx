@@ -14,7 +14,7 @@ const Footer = () => {
               Redefining what it means to be a 'Best Place to Work' through AI-powered tools and insights.
             </p>
             <div className="flex space-x-4">
-              <a href="https://github.com/dashboard" className="hover:text-white transition-colors" aria-label="GitHub">
+              <a href="https://github.com/pulseplace" className="hover:text-white transition-colors" aria-label="GitHub">
                 <Github className="h-5 w-5" />
               </a>
               <a href="https://twitter.com/pulseplaceai" className="hover:text-white transition-colors" aria-label="Twitter">

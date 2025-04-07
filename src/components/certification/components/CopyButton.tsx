@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Share2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CopyButtonProps {
@@ -11,6 +11,7 @@ interface CopyButtonProps {
   className?: string;
   size?: "default" | "sm" | "lg" | "icon";
   label?: string;
+  showShareIcon?: boolean;
 }
 
 const CopyButton: React.FC<CopyButtonProps> = ({ 
@@ -19,7 +20,8 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   variant = "outline", 
   className = "",
   size = "sm",
-  label = "Copy Code"
+  label = "Copy Code",
+  showShareIcon = false
 }) => {
   const [hasCopied, setHasCopied] = useState(false);
   
@@ -51,7 +53,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
               </>
             ) : (
               <>
-                <Copy className="h-4 w-4 mr-2" />
+                {showShareIcon ? <Share2 className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
                 {label}
               </>
             )}

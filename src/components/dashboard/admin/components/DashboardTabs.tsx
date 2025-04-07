@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import TabContent from './TabContent';
 import { Award, BarChart3, FileText, Settings, Users2 } from 'lucide-react';
 
 interface DashboardTabsProps {
@@ -52,46 +51,6 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
           <span className="hidden sm:inline">Settings</span>
         </TabsTrigger>
       </TabsList>
-
-      <TabsContent value="overview">
-        <TabContent 
-          activeTab="overview" 
-          departmentStats={departmentStats} 
-          recentCertifications={recentCertifications} 
-        />
-      </TabsContent>
-      
-      <TabsContent value="departments">
-        <TabContent 
-          activeTab="departments" 
-          departmentStats={departmentStats} 
-          recentCertifications={recentCertifications} 
-        />
-      </TabsContent>
-      
-      <TabsContent value="certifications">
-        <TabContent 
-          activeTab="certifications" 
-          departmentStats={departmentStats} 
-          recentCertifications={recentCertifications} 
-        />
-      </TabsContent>
-      
-      <TabsContent value="badge">
-        <TabContent 
-          activeTab="badge" 
-          departmentStats={departmentStats} 
-          recentCertifications={recentCertifications} 
-        />
-      </TabsContent>
-      
-      <TabsContent value="settings">
-        <TabContent 
-          activeTab="settings" 
-          departmentStats={departmentStats} 
-          recentCertifications={recentCertifications} 
-        />
-      </TabsContent>
     </Tabs>
   );
 };

@@ -9,20 +9,36 @@ interface TabContentProps {
   activeTab: string;
   departmentStats: any[];
   recentCertifications: any[];
-  children?: React.ReactNode;
-  value?: string;
 }
 
 const TabContent: React.FC<TabContentProps> = ({ 
   activeTab, 
-  departmentStats, 
-  recentCertifications,
-  children,
-  value
+  departmentStats,
+  recentCertifications 
 }) => {
-  // For Badge tab, show certification badge preview
+  const stats = {
+    overallScore: 86,
+    activeSurveys: 3,
+    responseRate: 78,
+    insightsGenerated: 12
+  };
+  
+  const handleSendReminderClick = () => {
+    console.log('Send reminder clicked');
+  };
+  
+  if (activeTab === 'overview') {
+    return (
+      <OverviewTabContent 
+        stats={stats}
+        departmentStats={departmentStats}
+        certifications={recentCertifications}
+        onSendRemindersClick={handleSendReminderClick}
+      />
+    );
+  }
+  
   if (activeTab === 'badge') {
-    // Sample badge data for preview
     const badgeData = {
       companyName: 'Acme Corporation',
       score: 88,
@@ -40,36 +56,11 @@ const TabContent: React.FC<TabContentProps> = ({
     );
   }
   
-  // If children are provided, render those
-  if (children) {
-    return <>{children}</>;
-  }
-  
-  // Otherwise, render appropriate placeholder content based on tab
-  let placeholderText = '';
-  
-  switch(activeTab) {
-    case 'overview':
-      return (
-        <div className="space-y-6">
-          {/* Overview content here */}
-          <p className="text-gray-500">Dashboard overview content will be displayed here</p>
-        </div>
-      );
-    case 'departments':
-      placeholderText = 'Department comparison and metrics will be displayed here';
-      break;
-    case 'certifications':
-      placeholderText = 'Certification reports and analytics will be displayed here';
-      break;
-    case 'settings':
-      placeholderText = 'Dashboard settings and configuration options';
-      break;
-    default:
-      placeholderText = 'Select a tab to view content';
-  }
-  
-  return <PlaceholderTabContent text={placeholderText} />;
+  return (
+    <PlaceholderTabContent 
+      text={`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} tab content would go here`} 
+    />
+  );
 };
 
 export default TabContent;

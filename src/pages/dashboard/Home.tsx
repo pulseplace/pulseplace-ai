@@ -7,11 +7,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import OnboardingState from '@/components/OnboardingState';
+import { Tables } from '@/types/database.types';
 
 const DashboardHome = () => {
   const { user, profile } = useAuth();
-  const [surveys, setSurveys] = useState<any[]>([]);
-  const [responses, setResponses] = useState<any[]>([]);
+  const [surveys, setSurveys] = useState<Tables<'pulse_surveys'>[]>([]);
+  const [responses, setResponses] = useState<Tables<'survey_responses'>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasData, setHasData] = useState(false);
 

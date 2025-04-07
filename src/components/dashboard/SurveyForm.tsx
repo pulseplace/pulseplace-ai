@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { Insertables } from '@/types/database.types';
 
 const surveySchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
@@ -38,17 +39,17 @@ const SurveyForm = () => {
 
     setIsLoading(true);
     try {
+      const surveyData: Insertables<'pulse_surveys'> = {
+        title: values.title,
+        description: values.description || null,
+        created_by: user.id,
+        company: profile.company,
+        department: values.department || null,
+      };
+
       const { data, error } = await supabase
         .from('pulse_surveys')
-        .insert([
-          {
-            title: values.title,
-            description: values.description,
-            created_by: user.id,
-            company: profile.company,
-            department: values.department || null,
-          },
-        ])
+        .insert([surveyData])
         .select();
 
       if (error) throw error;

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -15,21 +14,16 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
+import { Tables } from '@/types/database.types';
 
-interface Survey {
-  id: string;
-  title: string;
-  description: string | null;
-  department: string | null;
-  created_at: string;
-  is_active: boolean;
+interface SurveyWithCount extends Tables<'pulse_surveys'> {
   response_count?: number;
 }
 
 const SurveyList = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [surveys, setSurveys] = useState<Survey[]>([]);
+  const [surveys, setSurveys] = useState<SurveyWithCount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -23,40 +22,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow, format } from 'date-fns';
 import { toast } from 'sonner';
+import { Tables } from '@/types/database.types';
 
 interface SurveyDetailProps {
   surveyId: string;
 }
 
-interface Survey {
-  id: string;
-  title: string;
-  description: string | null;
-  department: string | null;
-  created_at: string;
-  updated_at: string;
-  is_active: boolean;
-  created_by: string;
-  company: string;
-}
-
-interface Response {
+interface ResponseWithUser {
   id: string;
   user_id: string;
   responses: any;
   sentiment_score: number | null;
   created_at: string;
   user: {
-    first_name: string;
-    last_name: string;
+    first_name: string | null;
+    last_name: string | null;
   } | null;
 }
 
 const SurveyDetail = ({ surveyId }: SurveyDetailProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [survey, setSurvey] = useState<Survey | null>(null);
-  const [responses, setResponses] = useState<Response[]>([]);
+  const [survey, setSurvey] = useState<Tables<'pulse_surveys'> | null>(null);
+  const [responses, setResponses] = useState<ResponseWithUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -83,7 +71,7 @@ const SurveyDetail = ({ surveyId }: SurveyDetailProps) => {
             responses,
             sentiment_score,
             created_at,
-            profiles:user_id (
+            profiles:profiles(
               first_name,
               last_name
             )
@@ -94,10 +82,12 @@ const SurveyDetail = ({ surveyId }: SurveyDetailProps) => {
         if (responsesError) throw responsesError;
 
         // Format the responses data
-        const formattedResponses = responsesData.map(response => ({
-          ...response,
-          user: response.profiles
-        }));
+        const formattedResponses = responsesData.map(response => {
+          return {
+            ...response,
+            user: response.profiles
+          };
+        });
 
         setResponses(formattedResponses);
       } catch (error) {
@@ -124,7 +114,7 @@ const SurveyDetail = ({ surveyId }: SurveyDetailProps) => {
 
       setSurvey({ ...survey, is_active: !survey.is_active });
       toast.success(`Survey ${survey.is_active ? 'closed' : 'activated'} successfully`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating survey status:', error);
       toast.error('Failed to update survey status');
     }

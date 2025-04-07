@@ -1,4 +1,3 @@
-
 import { ScoringTheme, SurveyQuestion, SurveyResponse, ThemeScore, CategoryScore, PulseScoreData, PulseScoreTier, SentimentAnalysis } from '@/types/scoring.types';
 
 // Mapping of question themes to categories
@@ -320,13 +319,13 @@ export const getFeedbackSynthesisPrompt = (surveyResponses: any): string => {
 };
 
 /**
- * Sample survey questions with weights and themes
+ * Sample survey questions with weights and themes, aligned with the thematic buckets
  */
 export const getSampleSurveyQuestions = (): SurveyQuestion[] => {
   return [
     {
       id: '1',
-      text: 'I trust our leadership team to make good decisions.',
+      text: 'I trust senior leaders to lead us successfully.',
       type: 'likert',
       theme: 'trust_in_leadership',
       weight: 1.2
@@ -340,35 +339,35 @@ export const getSampleSurveyQuestions = (): SurveyQuestion[] => {
     },
     {
       id: '3',
-      text: 'I feel safe to express my opinions, even when they differ from others.',
+      text: 'It\'s safe to take risks or admit mistakes here.',
       type: 'likert',
       theme: 'psychological_safety',
       weight: 1.5
     },
     {
       id: '4',
-      text: 'My team embraces diverse perspectives.',
+      text: 'I feel like I belong at this company.',
       type: 'likert',
       theme: 'inclusion_belonging',
       weight: 1.0
     },
     {
       id: '5',
-      text: 'I see myself working here one year from now.',
+      text: 'I see myself still working here in two years.',
       type: 'likert',
       theme: 'engagement_continuity',
       weight: 1.3
     },
     {
       id: '6',
-      text: 'I find my work meaningful and fulfilling.',
+      text: 'My work feels meaningful and fulfilling.',
       type: 'likert',
       theme: 'motivation_fulfillment',
       weight: 1.2
     },
     {
       id: '7',
-      text: 'I understand how my work contributes to our company mission.',
+      text: 'I believe in our mission and values.',
       type: 'likert',
       theme: 'mission_alignment',
       weight: 1.0

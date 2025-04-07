@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PulseScoreCalculator from '@/components/dashboard/PulseScoreCalculator';
+import ThematicBucketsInfo from '@/components/dashboard/ThematicBucketsInfo';
 import { useToast } from "@/hooks/use-toast";
 import { getFeedbackSynthesisPrompt } from '@/utils/scoring';
 import { Button } from "@/components/ui/button";
@@ -29,12 +30,17 @@ const ScoringLogic = () => {
       <Tabs defaultValue="calculator">
         <TabsList className="mb-6">
           <TabsTrigger value="calculator">Score Calculator</TabsTrigger>
+          <TabsTrigger value="thematicBuckets">Thematic Buckets</TabsTrigger>
           <TabsTrigger value="schema">Scoring Schema</TabsTrigger>
           <TabsTrigger value="prompts">AI Prompts</TabsTrigger>
         </TabsList>
         
         <TabsContent value="calculator">
           <PulseScoreCalculator />
+        </TabsContent>
+        
+        <TabsContent value="thematicBuckets">
+          <ThematicBucketsInfo />
         </TabsContent>
         
         <TabsContent value="schema">

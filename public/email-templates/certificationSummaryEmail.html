@@ -7,87 +7,192 @@
     <title>PulsePlace Certification Summary</title>
     <style>
       body {
-        font-family: 'Helvetica Neue', sans-serif;
-        background-color: #f4f6f8;
-        color: #333;
-        padding: 20px;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f8f9fa;
+        color: #1a1a2e;
         margin: 0;
+        padding: 0;
       }
       .container {
         background-color: #ffffff;
         max-width: 600px;
-        margin: 0 auto;
-        padding: 30px;
+        margin: 20px auto;
+        padding: 40px;
         border-radius: 12px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
       }
-      .logo {
-        width: 160px;
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        font-size: 36px;
+        color: #0f172a;
+        margin: 0;
+        font-weight: 800;
+      }
+      .greeting {
+        font-size: 24px;
         margin-bottom: 20px;
       }
-      .highlight {
-        font-size: 28px;
-        color: #1365ff;
-        font-weight: bold;
+      .intro {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 30px;
       }
-      .badge {
+      .pulse-score {
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        color: #0f172a;
+        margin: 30px 0 20px;
+      }
+      .certification-level {
         background-color: #e8f0fe;
-        padding: 12px 18px;
+        color: #1a1a2e;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-size: 18px;
+        font-weight: 600;
         display: inline-block;
-        border-radius: 6px;
-        font-weight: bold;
-        color: #1365ff;
-        margin-top: 10px;
+        margin: 0 auto 30px;
+        text-align: center;
       }
-      .section {
-        margin-top: 30px;
+      .level-wrapper {
+        text-align: center;
       }
-      .category {
-        background: #f1f4f9;
-        padding: 10px 16px;
-        border-radius: 8px;
-        margin-top: 8px;
+      .category-title {
+        font-size: 24px;
+        margin-bottom: 15px;
+      }
+      .category-table {
+        background-color: #f0f7ff;
+        border-radius: 10px;
+        padding: 20px;
+        width: 100%;
+        margin-bottom: 30px;
+      }
+      .category-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e1eaf8;
+      }
+      .category-row:last-child {
+        border-bottom: none;
+      }
+      .category-name {
+        font-weight: 500;
+      }
+      .category-score {
+        font-weight: 600;
+      }
+      .insight-title {
+        font-size: 24px;
+        margin-bottom: 15px;
+      }
+      .insight-text {
+        line-height: 1.6;
+        margin-bottom: 30px;
+      }
+      .badge-info {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .download-button {
+        background-color: #1a56db;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        display: inline-block;
+        text-align: center;
+        margin: 0 auto;
+      }
+      .button-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
       }
       .footer {
         margin-top: 40px;
-        font-size: 13px;
-        color: #888;
         text-align: center;
+        font-size: 14px;
+        color: #64748b;
+      }
+      .footer p {
+        margin: 5px 0;
+      }
+      .footer a {
+        color: #1a56db;
+        text-decoration: none;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <img src="https://pulseplace.ai/logo-dark.png" alt="PulsePlace Logo" class="logo" />
-      <p>Hello <strong>{{recipient_name}}</strong>,</p>
-
-      <p>We're thrilled to share your latest certification summary from <strong>PulsePlace.ai</strong>.</p>
-
-      <div class="section">
-        <p class="highlight">PulseScore™: {{pulse_score}} / 100</p>
-        <div class="badge">{{certification_level}}</div>
+      <div class="header">
+        <h1>PulsePlace.ai</h1>
       </div>
-
-      <div class="section">
-        <p><strong>Category Breakdown:</strong></p>
-        <div class="category">Trust & Psychological Safety: <strong>{{trust_score}}</strong></div>
-        <div class="category">Engagement & Retention: <strong>{{engagement_score}}</strong></div>
-        <div class="category">Mission & Belonging: <strong>{{culture_score}}</strong></div>
+      
+      <div class="greeting">
+        Hello {{recipient_name}},
       </div>
-
-      <div class="section">
-        <p><strong>AI Insight Summary:</strong><br />
-        "{{ai_summary}}"</p>
+      
+      <div class="intro">
+        We're thrilled to share your latest certification summary from PulsePlace.ai.
       </div>
-
-      <div class="section">
-        <p>You're now eligible to use the official <strong>Pulse Certified™</strong> badge on your website, LinkedIn, and careers page.</p>
-        <a href="{{badge_download_link}}" class="badge">Download Badge</a>
+      
+      <div class="pulse-score">
+        PulseScore®: {{pulse_score}} / 100
       </div>
-
+      
+      <div class="level-wrapper">
+        <div class="certification-level">
+          {{certification_level}}
+        </div>
+      </div>
+      
+      <div class="category-title">
+        Category Breakdown:
+      </div>
+      
+      <div class="category-table">
+        <div class="category-row">
+          <div class="category-name">Trust & Psychological Safety:</div>
+          <div class="category-score">{{trust_score}}</div>
+        </div>
+        <div class="category-row">
+          <div class="category-name">Engagement & Retention:</div>
+          <div class="category-score">{{engagement_score}}</div>
+        </div>
+        <div class="category-row">
+          <div class="category-name">Mission & Belonging:</div>
+          <div class="category-score">{{culture_score}}</div>
+        </div>
+      </div>
+      
+      <div class="insight-title">
+        AI Insight Summary:
+      </div>
+      
+      <div class="insight-text">
+        "{{ai_summary}}"
+      </div>
+      
+      <div class="badge-info">
+        You're now eligible to use the official Pulse Certified® badge on your website, LinkedIn, and careers page.
+      </div>
+      
+      <div class="button-wrapper">
+        <a href="{{badge_download_link}}" class="download-button">Download Badge</a>
+      </div>
+      
       <div class="footer">
-        PulsePlace.ai — Redefining workplace trust through data & AI<br />
-        This is an automated summary. For support, contact <a href="mailto:hello@pulseplace.ai">hello@pulseplace.ai</a>
+        <p>PulsePlace.ai — Redefining workplace trust through data & AI</p>
+        <p>This is an automated summary. For support, contact <a href="mailto:hello@pulseplace.ai">hello@pulseplace.ai</a></p>
       </div>
     </div>
   </body>

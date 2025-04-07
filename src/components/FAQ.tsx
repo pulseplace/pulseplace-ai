@@ -75,7 +75,7 @@ const FAQ = () => {
                 <p className="text-gray-600 mb-4">Our team is ready to help you understand how PulsePlace.ai can work for your organization.</p>
                 <Button 
                   className="bg-pulse-600 hover:bg-pulse-700"
-                  onClick={() => window.location.href = "mailto:questions@pulseplace.ai"}
+                  onClick={() => window.location.href = "mailto:hello@pulseplace.ai"}
                 >
                   <Mail className="mr-2 h-4 w-4" /> Contact Support
                 </Button>

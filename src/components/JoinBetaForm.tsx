@@ -66,7 +66,7 @@ const JoinBetaForm = () => {
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
-      toast.success("Thank you for joining our beta program! We'll be in touch soon.");
+      toast.success("Thank you for joining our beta program! We'll be in touch soon. If you have any questions, please email us at hello@pulseplace.ai");
       form.reset();
     }, 1500);
   };

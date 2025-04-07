@@ -14,16 +14,16 @@ const Footer = () => {
               Redefining what it means to be a 'Best Place to Work' through AI-powered tools and insights.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-white transition-colors" aria-label="GitHub">
+              <a href="https://github.com/pulseplace" className="hover:text-white transition-colors" aria-label="GitHub">
                 <Github className="h-5 w-5" />
               </a>
-              <a href="#" className="hover:text-white transition-colors" aria-label="Twitter">
+              <a href="https://twitter.com/pulseplaceai" className="hover:text-white transition-colors" aria-label="Twitter">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="hover:text-white transition-colors" aria-label="LinkedIn">
+              <a href="https://linkedin.com/company/pulseplace" className="hover:text-white transition-colors" aria-label="LinkedIn">
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a href="#" className="hover:text-white transition-colors" aria-label="Email">
+              <a href="mailto:hello@pulseplace.ai" className="hover:text-white transition-colors" aria-label="Email">
                 <Mail className="h-5 w-5" />
               </a>
             </div>
@@ -45,7 +45,7 @@ const Footer = () => {
               <li><Link to="/about-us" className="hover:text-white transition-colors">About Us</Link></li>
               <li><Link to="/ai-engine" className="hover:text-white transition-colors">Our AI Engine</Link></li>
               <li><Link to="/join-beta" className="hover:text-white transition-colors">Join Beta</Link></li>
-              <li><a href="mailto:contact@pulseplace.ai" className="hover:text-white transition-colors">Contact</a></li>
+              <li><a href="mailto:hello@pulseplace.ai" className="hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>
         </div>

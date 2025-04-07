@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +11,8 @@ import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import OnboardingState from "@/components/OnboardingState";
+import OnboardingForm, { OnboardingFormData } from "@/components/OnboardingForm";
 
 // Sample data for charts
 const pulseScoreData = [
@@ -234,6 +235,84 @@ const Header = () => {
         </div>
       </div>
     </header>
+  );
+};
+
+const OnboardingDemo = () => {
+  const { toast } = useToast();
+  const [currentState, setCurrentState] = useState('welcome');
+  
+  const handleButtonClick = () => {
+    if (currentState === 'welcome') {
+      setCurrentState('form');
+    } else if (currentState === 'emptyDashboard') {
+      setCurrentState('surveyThanks');
+      
+      // Simulate survey processing
+      setTimeout(() => {
+        setCurrentState('scoreLive');
+      }, 3000);
+    } else if (currentState === 'scoreLive') {
+      toast({
+        title: "Benchmarks",
+        description: "Viewing industry benchmarks..."
+      });
+    }
+  };
+  
+  const handleFormSubmit = (data: OnboardingFormData) => {
+    console.log("Form submitted:", data);
+    setCurrentState('surveyThanks');
+    
+    // Simulate survey processing
+    setTimeout(() => {
+      setCurrentState('scoreLive');
+    }, 3000);
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto my-12">
+      {currentState === 'welcome' && (
+        <OnboardingState stateType="welcome" onButtonClick={handleButtonClick} />
+      )}
+      
+      {currentState === 'form' && (
+        <OnboardingForm onFormSubmit={handleFormSubmit} />
+      )}
+      
+      {currentState === 'emptyDashboard' && (
+        <OnboardingState stateType="emptyDashboard" onButtonClick={handleButtonClick} />
+      )}
+      
+      {currentState === 'surveyThanks' && (
+        <OnboardingState stateType="surveyThanks" />
+      )}
+      
+      {currentState === 'scoreLive' && (
+        <OnboardingState stateType="scoreLive" onButtonClick={handleButtonClick} />
+      )}
+      
+      <div className="mt-12 text-center">
+        <p className="text-sm text-gray-500 mb-4">Demo Controls (Not visible in actual product)</p>
+        <div className="flex flex-wrap gap-2 justify-center">
+          <Button variant="outline" size="sm" onClick={() => setCurrentState('welcome')}>
+            Welcome State
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentState('form')}>
+            Onboarding Form
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentState('emptyDashboard')}>
+            Empty Dashboard
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentState('surveyThanks')}>
+            Post-Survey
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setCurrentState('scoreLive')}>
+            Score Live
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -521,6 +600,7 @@ const DashboardOverview = () => {
 
 const DashboardPreview = () => {
   const { toast } = useToast();
+  const [showDemo, setShowDemo] = useState(true);
   
   const handleRequestDemo = () => {
     toast({
@@ -533,6 +613,10 @@ const DashboardPreview = () => {
     toast({
       description: "Redirecting to pricing page",
     });
+  };
+  
+  const toggleDemo = () => {
+    setShowDemo(!showDemo);
   };
 
   return (
@@ -550,7 +634,7 @@ const DashboardPreview = () => {
               Experience the insights and analytics that will transform your workplace culture.
             </p>
             
-            <div className="flex flex-wrap gap-4 justify-center">
+            <div className="flex flex-wrap gap-4 justify-center mb-8">
               <Link to="/join-beta">
                 <Button size="lg" className="bg-pulse-gradient hover:opacity-90" onClick={handleRequestDemo}>
                   Request Full Demo
@@ -562,21 +646,35 @@ const DashboardPreview = () => {
                 </Button>
               </Link>
             </div>
+            
+            <div className="max-w-md mx-auto">
+              <Button 
+                variant="outline" 
+                onClick={toggleDemo} 
+                className="border-pulse-300 text-pulse-700 hover:bg-pulse-50"
+              >
+                {showDemo ? "Show Dashboard UI" : "Show Onboarding Flow"}
+              </Button>
+            </div>
           </div>
         </section>
         
         {/* Dashboard Preview Section */}
         <section className="py-8">
           <div className="container mx-auto px-4">
-            <Card className="overflow-hidden border-2 border-gray-200 shadow-xl">
-              <div className="flex flex-col md:flex-row">
-                <Sidebar />
-                <div className="flex flex-col flex-grow">
-                  <Header />
-                  <DashboardOverview />
+            {showDemo ? (
+              <OnboardingDemo />
+            ) : (
+              <Card className="overflow-hidden border-2 border-gray-200 shadow-xl">
+                <div className="flex flex-col md:flex-row">
+                  <Sidebar />
+                  <div className="flex flex-col flex-grow">
+                    <Header />
+                    <DashboardOverview />
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            )}
             
             <div className="mt-12 text-center">
               <h2 className="text-2xl font-bold mb-4">Experience the Full Dashboard</h2>

@@ -319,6 +319,37 @@ export const getFeedbackSynthesisPrompt = (surveyResponses: any): string => {
 };
 
 /**
+ * AI prompt template for open-ended feedback synthesis
+ */
+export const getOpenEndedFeedbackPrompt = (responses: string[]): string => {
+  return `
+  You are an organizational psychologist summarizing employee feedback.
+  Input: A list of open-ended responses to a workplace survey.
+  Task: Identify 3 key themes and rate the overall sentiment (Positive, Neutral, or Negative).
+  
+  Survey responses:
+  ${JSON.stringify(responses)}
+  
+  Return:
+  1. Key Themes (with supporting quotes)
+  2. Summary Tone
+  3. One-sentence cultural insight
+  
+  Format your response like this:
+  ---
+  Themes:
+  - Leadership Transparency: "Leaders are approachable and honest."
+  - Growth Concerns: "There aren't enough development paths."
+  - Team Spirit: "My team feels like a family."
+  
+  Sentiment: Neutral
+  
+  Insight: While team culture is strong, there's concern around leadership and career growth.
+  ---
+  `;
+};
+
+/**
  * Sample survey questions with weights and themes, aligned with the thematic buckets
  */
 export const getSampleSurveyQuestions = (): SurveyQuestion[] => {

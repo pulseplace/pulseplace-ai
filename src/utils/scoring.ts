@@ -17,12 +17,12 @@ const categoryWeights: Record<'emotion_index' | 'engagement_stability' | 'cultur
   culture_trust: 0.3
 };
 
-// Tier thresholds
+// Updated tier thresholds based on the image provided
 const tierThresholds = {
-  pulse_certified: 85,
-  growth_culture: 70,
-  developing: 50,
-  at_risk: 0
+  pulse_certified: 85, // 85-100
+  emerging_culture: 70, // 70-84
+  at_risk: 50, // 50-69
+  intervention_advised: 0 // < 50
 };
 
 /**
@@ -140,13 +140,13 @@ export const calculateOverallScore = (categoryScores: CategoryScore[]): number =
 };
 
 /**
- * Determine PulseScore tier
+ * Determine PulseScore tier based on updated certification levels
  */
 export const determineTier = (score: number): PulseScoreTier => {
   if (score >= tierThresholds.pulse_certified) return 'pulse_certified';
-  if (score >= tierThresholds.growth_culture) return 'growth_culture';
-  if (score >= tierThresholds.developing) return 'developing';
-  return 'at_risk';
+  if (score >= tierThresholds.emerging_culture) return 'emerging_culture';
+  if (score >= tierThresholds.at_risk) return 'at_risk';
+  return 'intervention_advised';
 };
 
 /**
@@ -275,18 +275,18 @@ export const calculatePulseScore = (
 };
 
 /**
- * Get tier display information
+ * Get tier display information with updated labels
  */
 export const getTierDisplay = (tier: PulseScoreTier): { label: string; color: string } => {
   switch (tier) {
     case 'pulse_certified':
-      return { label: 'Pulse Certified™ – Lovable Workplace', color: 'text-green-500' };
-    case 'growth_culture':
-      return { label: 'Growth Culture – Building Excellence', color: 'text-blue-500' };
-    case 'developing':
-      return { label: 'Developing – Needs Improvement', color: 'text-yellow-500' };
+      return { label: 'Pulse Certified™', color: 'text-green-500' };
+    case 'emerging_culture':
+      return { label: 'Emerging Culture', color: 'text-blue-500' };
     case 'at_risk':
-      return { label: 'At-Risk – Critical Culture Risk', color: 'text-red-500' };
+      return { label: 'At Risk', color: 'text-yellow-500' };
+    case 'intervention_advised':
+      return { label: 'Culture Intervention Advised', color: 'text-red-500' };
     default:
       return { label: 'Unknown', color: 'text-gray-500' };
   }

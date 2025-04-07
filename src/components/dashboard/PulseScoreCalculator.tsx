@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -10,23 +9,21 @@ import {
 } from '@/utils/scoring';
 import { SurveyQuestion, SurveyResponse, PulseScoreData } from '@/types/scoring.types';
 import { Activity, HelpCircle } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const PulseScoreCalculator = () => {
   const [questions] = useState<SurveyQuestion[]>(getSampleSurveyQuestions());
   const [responses, setResponses] = useState<SurveyResponse[]>([]);
   const [pulseScore, setPulseScore] = useState<PulseScoreData | null>(null);
   
-  // Initialize responses with default values
   useEffect(() => {
     const initialResponses = questions.map(q => ({
       questionId: q.id,
-      value: q.type === 'text' ? '' : 3, // Default to middle value for non-text
+      value: q.type === 'text' ? '' : 3,
     }));
     setResponses(initialResponses);
   }, [questions]);
   
-  // Calculate score whenever responses change
   useEffect(() => {
     if (responses.length === 0) return;
     
@@ -40,13 +37,12 @@ const PulseScoreCalculator = () => {
     );
   };
   
-  // Generate random responses for demo purposes
   const handleRandomize = () => {
     const randomResponses = questions.map(q => ({
       questionId: q.id,
       value: q.type === 'text' ? 
         'This is a sample text response.' : 
-        Math.floor(Math.random() * 5) + 1, // Random 1-5
+        Math.floor(Math.random() * 5) + 1,
     }));
     setResponses(randomResponses);
   };
@@ -140,8 +136,8 @@ const PulseScoreCalculator = () => {
                   style={{ 
                     borderColor: 
                       pulseScore.tier === 'pulse_certified' ? '#10b981' : 
-                      pulseScore.tier === 'growth_culture' ? '#3b82f6' : 
-                      pulseScore.tier === 'developing' ? '#f59e0b' : '#ef4444' 
+                      pulseScore.tier === 'emerging_culture' ? '#3b82f6' : 
+                      pulseScore.tier === 'at_risk' ? '#f59e0b' : '#ef4444' 
                   }}
                 >
                   {pulseScore.overallScore}

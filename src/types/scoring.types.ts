@@ -51,9 +51,9 @@ export interface PulseScoreData {
 
 export type PulseScoreTier = 
   | 'pulse_certified'
-  | 'growth_culture'
-  | 'developing'
-  | 'at_risk';
+  | 'emerging_culture'
+  | 'at_risk'
+  | 'intervention_advised';
 
 export interface SentimentAnalysis {
   score: number;

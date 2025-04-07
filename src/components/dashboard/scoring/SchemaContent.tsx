@@ -44,24 +44,56 @@ const SchemaContent = () => {
   
   "certification_tiers": {
     "pulse_certified": {
-      "min_score": 85,
-      "label": "Pulse Certified™ – Lovable Workplace"
+      "range": "85-100",
+      "label": "Pulse Certified™"
     },
-    "growth_culture": {
-      "min_score": 70,
-      "label": "Growth Culture – Building Excellence"
-    },
-    "developing": {
-      "min_score": 50,
-      "label": "Developing – Needs Improvement"
+    "emerging_culture": {
+      "range": "70-84",
+      "label": "Emerging Culture"
     },
     "at_risk": {
-      "min_score": 0,
-      "label": "At-Risk – Critical Culture Risk"
+      "range": "50-69",
+      "label": "At Risk"
+    },
+    "intervention_advised": {
+      "range": "< 50",
+      "label": "Culture Intervention Advised"
     }
   }
 }`}
             </pre>
+          </div>
+          
+          <div className="bg-gray-50 p-4 rounded-md">
+            <h3 className="font-semibold mb-2">Certification Logic</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white border rounded-lg">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="py-3 px-4 border-b font-semibold text-left">PulseScore</th>
+                    <th className="py-3 px-4 border-b font-semibold text-left">Certification Level</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="py-3 px-4 border-b">85–100</td>
+                    <td className="py-3 px-4 border-b text-green-600 font-medium">Pulse Certified™</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">70–84</td>
+                    <td className="py-3 px-4 border-b text-blue-600 font-medium">Emerging Culture</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">50–69</td>
+                    <td className="py-3 px-4 border-b text-yellow-600 font-medium">At Risk</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 border-b">&lt; 50</td>
+                    <td className="py-3 px-4 border-b text-red-600 font-medium">Culture Intervention Advised</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
                 
           <div className="bg-gray-50 p-4 rounded-md">

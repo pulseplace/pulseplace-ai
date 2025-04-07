@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -671,38 +670,4 @@ const AdvancedAnalytics = () => {
                     </ResponsiveContainer>
                     
                     <div className="space-y-4">
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                        <h4 className="text-sm font-medium text-amber-800 mb-2 flex items-center">
-                          <AlertTriangle className="h-4 w-4 mr-1" />
-                          Key Risk Indicators
-                        </h4>
-                        <ul className="text-xs text-amber-700 space-y-1 ml-6 list-disc">
-                          <li>Decreased survey response rates in Customer Support dept</li>
-                          <li>Negative sentiment around compensation in Sales team</li>
-                          <li>Work-life balance concerns increasing across all departments</li>
-                          <li>Career growth mentions up 15% in past quarter</li>
-                        </ul>
-                      </div>
-                      
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h4 className="text-sm font-medium text-blue-800 mb-2">AI-Powered Recommendations</h4>
-                        <ul className="text-xs text-blue-700 space-y-1 ml-6 list-disc">
-                          <li>Schedule 1-on-1s with high-risk employees in Customer Support</li>
-                          <li>Review compensation structure for Sales team</li>
-                          <li>Implement flexible work arrangements to improve work-life balance</li>
-                          <li>Develop more transparent career progression paths</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export default AdvancedAnalytics;
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded

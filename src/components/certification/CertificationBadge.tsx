@@ -74,8 +74,10 @@ const CertificationBadge: React.FC<CertificationBadgeProps> = ({
           <text x="50" y="32" fontFamily="Arial" fontWeight="bold" fontSize="12" fill={colors.textPrimary}>{tierInfo.label.toUpperCase()}</text>
           <text x="50" y="46" fontFamily="Arial" fontSize="10" fill={colors.textSecondary}>PulseScore: {score}/100</text>
           {customCta && (
-            <rect x="0" y="50" width="180" height="10" rx="0" fill={colors.stroke + "20"} />
-            <text x="90" y="57" fontFamily="Arial" fontSize="8" fill={colors.textPrimary} textAnchor="middle">{customCta}</text>
+            <>
+              <rect x="0" y="50" width="180" height="10" rx="0" fill={colors.stroke + "20"} />
+              <text x="90" y="57" fontFamily="Arial" fontSize="8" fill={colors.textPrimary} textAnchor="middle">{customCta}</text>
+            </>
           )}
           <defs>
             <linearGradient id="badge-gradient-compact" x1="0" y1="0" x2="180" y2="60" gradientUnits="userSpaceOnUse">
@@ -109,8 +111,10 @@ const CertificationBadge: React.FC<CertificationBadgeProps> = ({
         <text x="80" y="75" fontFamily="Arial" fontSize="10" fill={colors.textSecondary}>PulseScore: {score}/100</text>
         <text x="80" y="90" fontFamily="Arial" fontSize="10" fill={colors.textSecondary}>Valid: {issueDate} - {validUntil}</text>
         {customCta && (
-          <rect x="0" y="105" width="240" height="15" rx="0" fill={colors.stroke + "20"} />
-          <text x="120" y="115" fontFamily="Arial" fontSize="10" fill={colors.textPrimary} textAnchor="middle">{customCta}</text>
+          <>
+            <rect x="0" y="105" width="240" height="15" rx="0" fill={colors.stroke + "20"} />
+            <text x="120" y="115" fontFamily="Arial" fontSize="10" fill={colors.textPrimary} textAnchor="middle">{customCta}</text>
+          </>
         )}
         <defs>
           <linearGradient id="badge-gradient" x1="0" y1="0" x2="240" y2="120" gradientUnits="userSpaceOnUse">

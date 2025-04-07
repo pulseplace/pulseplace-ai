@@ -9,9 +9,9 @@ export const EmailTemplates = {
   /**
    * Gets the certification summary email HTML template
    * 
-   * @returns The HTML template as a string
+   * @returns The HTML template as a string or Promise<string>
    */
-  getCertificationSummaryTemplate: (): string => {
+  getCertificationSummaryTemplate: async (): Promise<string> => {
     try {
       // In a server environment, read from filesystem
       const templatePath = path.resolve(__dirname, '../components/dashboard/email/templates/certificationSummaryEmail.html');

@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, Check, Code } from 'lucide-react';
+import { Copy, Check, Code, Loader2 } from 'lucide-react';
 import { PulseScoreTier } from '@/types/scoring.types';
 import { getTierDisplay } from '@/utils/scoring';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface EmbeddableBadgeWidgetProps {
   companyName?: string;
@@ -14,6 +15,7 @@ interface EmbeddableBadgeWidgetProps {
   score?: number;
   issueDate?: string;
   validUntil?: string;
+  isLoading?: boolean;
 }
 
 const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
@@ -22,30 +24,37 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
   score = 86,
   issueDate = 'August 7, 2025',
   validUntil = 'August 7, 2026',
+  isLoading = false,
 }) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('preview');
   const [badgeType, setBadgeType] = useState('standard');
   const [hasCopied, setHasCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const tierInfo = getTierDisplay(tier);
   
   // Generate the embed code for the badge
   const generateEmbedCode = (): string => {
-    const baseUrl = 'https://pulseplace.ai/certification/verify';
-    const params = new URLSearchParams({
-      company: companyName,
-      tier: tier,
-      score: score.toString(),
-      issued: issueDate,
-      valid: validUntil,
-      style: badgeType
-    });
-    
-    return `<!-- PulsePlace Certification Badge -->
+    try {
+      const baseUrl = 'https://pulseplace.ai/certification/verify';
+      const params = new URLSearchParams({
+        company: companyName,
+        tier: tier,
+        score: score.toString(),
+        issued: issueDate,
+        valid: validUntil,
+        style: badgeType
+      });
+      
+      return `<!-- PulsePlace Certification Badge -->
 <script src="https://cdn.pulseplace.ai/badge.js" defer></script>
 <div class="pulseplace-badge" data-badge-url="${baseUrl}?${params.toString()}"></div>
 <!-- End PulsePlace Badge -->`;
+    } catch (err) {
+      setError('Error generating embed code. Please try again.');
+      return '';
+    }
   };
   
   // SVG code for different badge types
@@ -86,17 +95,27 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
   
   // Handle copy embed code button click
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(generateEmbedCode());
-    setHasCopied(true);
-    
-    toast({
-      title: "Embed Code Copied",
-      description: "Badge embed code has been copied to clipboard",
-    });
-    
-    setTimeout(() => {
-      setHasCopied(false);
-    }, 2000);
+    try {
+      navigator.clipboard.writeText(generateEmbedCode());
+      setHasCopied(true);
+      
+      toast({
+        title: "Embed Code Copied",
+        description: "Badge embed code has been copied to clipboard",
+        variant: "default",
+      });
+      
+      setTimeout(() => {
+        setHasCopied(false);
+      }, 2000);
+    } catch (err) {
+      setError('Failed to copy code to clipboard. Please try again.');
+      toast({
+        title: "Copy Failed",
+        description: "Could not copy code to clipboard",
+        variant: "destructive",
+      });
+    }
   };
   
   // Different badge type options
@@ -105,12 +124,23 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
     { id: 'compact', label: 'Compact' },
   ];
   
+  // Clear any errors when changing tabs or badge type
+  const clearErrors = () => {
+    if (error) setError(null);
+  };
+  
   return (
     <Card className="shadow-lg">
       <CardHeader>
         <CardTitle className="text-xl">Embeddable Certification Badge</CardTitle>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        
         <div className="mb-6 space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1 block">Badge Style</label>
@@ -120,7 +150,11 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
                   key={option.id}
                   variant={badgeType === option.id ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setBadgeType(option.id)}
+                  onClick={() => {
+                    setBadgeType(option.id);
+                    clearErrors();
+                  }}
+                  disabled={isLoading}
                 >
                   {option.label}
                 </Button>
@@ -129,26 +163,42 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
           </div>
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={(value) => {
+          setActiveTab(value);
+          clearErrors();
+        }} className="w-full">
           <TabsList className="grid grid-cols-2 mb-6">
             <TabsTrigger value="preview">Badge Preview</TabsTrigger>
             <TabsTrigger value="code">Embed Code</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="preview" className="flex justify-center p-4 border rounded-md bg-gray-50">
-            <div className="w-full max-w-md" dangerouslySetInnerHTML={{ __html: getBadgeSvg() }} />
+          <TabsContent value="preview" className="flex justify-center p-4 border rounded-md bg-gray-50 min-h-[180px]">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+              </div>
+            ) : (
+              <div className="w-full max-w-md" dangerouslySetInnerHTML={{ __html: getBadgeSvg() }} />
+            )}
           </TabsContent>
           
           <TabsContent value="code">
             <div className="relative">
-              <pre className="bg-gray-100 p-4 rounded-md overflow-auto text-xs">
-                {generateEmbedCode()}
-              </pre>
+              {isLoading ? (
+                <div className="flex items-center justify-center h-[150px]">
+                  <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                </div>
+              ) : (
+                <pre className="bg-gray-100 p-4 rounded-md overflow-auto text-xs min-h-[150px]">
+                  {generateEmbedCode()}
+                </pre>
+              )}
               <Button 
                 className="absolute top-2 right-2"
                 size="sm"
                 onClick={handleCopyCode}
                 variant="outline"
+                disabled={isLoading || !!error}
               >
                 {hasCopied ? (
                   <>

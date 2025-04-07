@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -82,10 +83,17 @@ const SurveyDetail = ({ surveyId }: SurveyDetailProps) => {
         if (responsesError) throw responsesError;
 
         // Format the responses data
-        const formattedResponses = responsesData.map(response => {
+        const formattedResponses: ResponseWithUser[] = responsesData.map(response => {
           return {
-            ...response,
-            user: response.profiles
+            id: response.id,
+            user_id: response.user_id || "",
+            responses: response.responses,
+            sentiment_score: response.sentiment_score,
+            created_at: response.created_at,
+            user: response.profiles && response.profiles.length > 0 ? {
+              first_name: response.profiles[0].first_name,
+              last_name: response.profiles[0].last_name
+            } : null
           };
         });
 

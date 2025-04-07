@@ -37,6 +37,8 @@ const DashboardHome = () => {
           .select(`
             id,
             survey_id,
+            user_id,
+            responses,
             created_at,
             sentiment_score,
             pulse_surveys (
@@ -47,7 +49,9 @@ const DashboardHome = () => {
           .order('created_at', { ascending: false });
 
         if (responsesError) throw responsesError;
-        setResponses(responsesData);
+        
+        // Need to cast the data to match our expected type
+        setResponses(responsesData as Tables<'survey_responses'>[]);
 
         // Check if we have any data
         setHasData(surveysData.length > 0 || responsesData.length > 0);

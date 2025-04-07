@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,6 +26,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 import MetaTags from "./components/MetaTags";
 import StickyCta from "./components/StickyCta";
+import ScoringLogic from '@/pages/dashboard/ScoringLogic';
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -72,6 +72,16 @@ const AnimatedRoutes = () => {
             <Route path="surveys" element={<Surveys />} />
             <Route path="surveys/new" element={<Surveys />} />
             <Route path="surveys/:surveyId" element={<Surveys />} />
+            {
+              path: "/dashboard/scoring-logic",
+              element: (
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <ScoringLogic />
+                  </DashboardLayout>
+                </ProtectedRoute>
+              ),
+            }
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

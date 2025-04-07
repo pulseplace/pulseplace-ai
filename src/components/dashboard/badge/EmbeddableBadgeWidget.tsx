@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, Check, Code, Loader2 } from 'lucide-react';
 import { PulseScoreTier } from '@/types/scoring.types';
@@ -29,6 +31,7 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('preview');
   const [badgeType, setBadgeType] = useState('standard');
+  const [customCta, setCustomCta] = useState("We're Pulse Certified!");
   const [hasCopied, setHasCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -46,6 +49,10 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
         valid: validUntil,
         style: badgeType
       });
+      
+      if (customCta) {
+        params.append('cta', customCta);
+      }
       
       return `<!-- PulsePlace Certification Badge -->
 <script src="https://cdn.pulseplace.ai/badge.js" defer></script>
@@ -66,6 +73,10 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
   <text x="80" y="60" font-family="Arial" font-size="12" fill="#4B5563">PulseScore: ${score}/100</text>
   <text x="80" y="75" font-family="Arial" font-size="10" fill="#6B7280">Issued: ${issueDate}</text>
   <text x="80" y="90" font-family="Arial" font-size="10" fill="#6B7280">Valid Until: ${validUntil}</text>
+  ${customCta ? `
+  <rect x="0" y="105" width="240" height="15" rx="0" fill="#22C55E20" />
+  <text x="120" y="115" font-family="Arial" font-size="10" fill="#22C55E" text-anchor="middle">${customCta}</text>
+  ` : ''}
   <defs>
     <linearGradient id="paint0_linear" x1="0" y1="0" x2="240" y2="120" gradientUnits="userSpaceOnUse">
       <stop stop-color="#F0FDF4" />
@@ -80,6 +91,10 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
   <rect x="20" y="23" width="20" height="20" rx="10" stroke="#22C55E" stroke-width="2" />
   <text x="50" y="32" font-family="Arial" font-weight="bold" font-size="12" fill="#22C55E">PULSE CERTIFIED™</text>
   <text x="50" y="46" font-family="Arial" font-size="10" fill="#4B5563">PulseScore: ${score}/100</text>
+  ${customCta ? `
+  <rect x="0" y="50" width="180" height="10" rx="0" fill="#22C55E20" />
+  <text x="90" y="57" font-family="Arial" font-size="8" fill="#22C55E" text-anchor="middle">${customCta}</text>
+  ` : ''}
   <defs>
     <linearGradient id="paint0_linear" x1="0" y1="0" x2="180" y2="60" gradientUnits="userSpaceOnUse">
       <stop stop-color="#F0FDF4" />
@@ -160,6 +175,18 @@ const EmbeddableBadgeWidget: React.FC<EmbeddableBadgeWidgetProps> = ({
                 </Button>
               ))}
             </div>
+          </div>
+          
+          <div>
+            <Label htmlFor="customCta" className="text-sm font-medium text-gray-700">Custom Badge Message (Optional)</Label>
+            <Input
+              id="customCta"
+              placeholder="e.g., We're Pulse Certified!"
+              value={customCta}
+              onChange={(e) => setCustomCta(e.target.value)}
+              className="mt-1"
+              disabled={isLoading}
+            />
           </div>
         </div>
         

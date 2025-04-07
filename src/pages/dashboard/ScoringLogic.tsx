@@ -6,6 +6,7 @@ import ThematicBucketsInfo from '@/components/dashboard/ThematicBucketsInfo';
 import SchemaContent from '@/components/dashboard/scoring/SchemaContent';
 import PromptsContent from '@/components/dashboard/scoring/PromptsContent';
 import AdvancedAnalytics from '@/components/dashboard/AdvancedAnalytics';
+import CertificationSharing from '@/components/certification/CertificationSharing';
 
 const ScoringLogic = () => {
   return (
@@ -20,6 +21,7 @@ const ScoringLogic = () => {
           <TabsTrigger value="prompts">AI Prompts</TabsTrigger>
           <TabsTrigger value="advanced">Advanced Analytics</TabsTrigger>
           <TabsTrigger value="predictive">Predictive Models</TabsTrigger>
+          <TabsTrigger value="sharing">Certification Sharing</TabsTrigger>
         </TabsList>
         
         <TabsContent value="calculator">
@@ -114,6 +116,16 @@ const ScoringLogic = () => {
               </ul>
             </div>
           </div>
+        </TabsContent>
+        
+        <TabsContent value="sharing">
+          <CertificationSharing 
+            companyName="Acme Corporation"
+            tier="pulse_certified"
+            score={86}
+            issueDate="August 7, 2025"
+            validUntil="August 7, 2026"
+          />
         </TabsContent>
       </Tabs>
     </div>

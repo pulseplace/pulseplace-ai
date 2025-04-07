@@ -11,6 +11,7 @@ import SkillsGapAnalysis from './SkillsGapAnalysis';
 import { CheckCircle2, Download, FileCheck, Share2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const DashboardUI = () => {
   const { toast } = useToast();
@@ -19,13 +20,6 @@ const DashboardUI = () => {
     toast({
       title: "Badge Downloaded",
       description: "Your certification badge has been downloaded",
-    });
-  };
-  
-  const handleShareCertification = () => {
-    toast({
-      title: "Share Options Opened",
-      description: "You can now share your certification with others",
     });
   };
   
@@ -105,15 +99,16 @@ const DashboardUI = () => {
                           <Download className="h-4 w-4 mr-2" />
                           Download Badge
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full justify-start"
-                          onClick={handleShareCertification}
-                        >
-                          <Share2 className="h-4 w-4 mr-2" />
-                          Share Certification
-                        </Button>
+                        <Link to="/dashboard/share-certification" className="w-full">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full justify-start hover:bg-pulse-50 hover:text-pulse-700 transition-colors"
+                          >
+                            <Share2 className="h-4 w-4 mr-2" />
+                            Share Certification
+                          </Button>
+                        </Link>
                         <Button 
                           variant="outline" 
                           size="sm" 
@@ -128,7 +123,7 @@ const DashboardUI = () => {
                   </div>
                   
                   <div className="bg-blue-50 p-4 rounded-lg text-blue-800 text-sm">
-                    <p><strong>Next steps:</strong> Generate your embeddable certification badge to display on your website and marketing materials. View the 'Badge Widget' tab in the Certification Engine to get your custom embed code.</p>
+                    <p><strong>Next steps:</strong> Generate your embeddable certification badge to display on your website and marketing materials. <Link to="/dashboard/share-certification" className="underline hover:text-blue-700">Share your certification</Link> with stakeholders and customers to highlight your commitment to workplace well-being.</p>
                   </div>
                 </CardContent>
               </Card>

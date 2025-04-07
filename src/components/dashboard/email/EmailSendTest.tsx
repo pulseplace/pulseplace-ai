@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { sendEmail } from "@/services/emailService";
+import { emailService } from "@/services/emailService"; // Updated import statement
 import { CategoryScore, MockPulseScoreData, PulseScoreTier, ScoringCategory, ThemeScore } from '@/types/scoring.types';
 
 interface EmailFormData {
@@ -51,11 +51,16 @@ const EmailSendTest: React.FC = () => {
     setIsSending(true);
     
     try {
-      await sendEmail({
+      // Updated to use emailService.sendEmail
+      const result = await emailService.sendEmail({
         to: formData.to,
         subject: formData.subject,
         html: formData.html
       });
+      
+      if (!result.success) {
+        throw new Error("Failed to send email");
+      }
       
       toast({
         title: "Email Sent Successfully",
@@ -111,7 +116,7 @@ const EmailSendTest: React.FC = () => {
             <div style="background-color: #f0f7ff; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
               ${certData.categoryScores.map(cat => `
                 <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e1eaf8;">
-                  <div>${cat.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}:</div>
+                  <div>${cat.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
                   <div style="font-weight: 600;">${cat.score}</div>
                 </div>
               `).join('')}
@@ -136,11 +141,16 @@ const EmailSendTest: React.FC = () => {
     `;
     
     try {
-      await sendEmail({
+      // Updated to use emailService.sendEmail
+      const result = await emailService.sendEmail({
         to: formData.to,
         subject: 'Your PulsePlace Certification Summary',
         html: certificationEmailHtml
       });
+      
+      if (!result.success) {
+        throw new Error("Failed to send email");
+      }
       
       toast({
         title: "Certification Email Sent",

@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import DashboardSidebar from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
 import DashboardOverview from './DashboardOverview';
@@ -18,6 +19,42 @@ const DashboardUI = () => {
           <div className="p-6">
             <div className="space-y-6">
               <DashboardOverview />
+              
+              {/* PulseScore Certification Status */}
+              <Card className="bg-gradient-to-r from-pulse-50 to-white border border-pulse-200">
+                <CardHeader className="pb-2">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between">
+                    <CardTitle className="text-xl">PulseScore™ Certification Status</CardTitle>
+                    <Badge className="bg-green-100 text-green-800 text-sm mt-2 md:mt-0">Pulse Certified™</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                      <div className="text-sm text-gray-500 mb-1">Overall Score</div>
+                      <div className="text-2xl font-bold text-green-600">86/100</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                      <div className="text-sm text-gray-500 mb-1">Emotion Index</div>
+                      <div className="text-2xl font-bold text-blue-600">82/100</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                      <div className="text-sm text-gray-500 mb-1">Engagement Stability</div>
+                      <div className="text-2xl font-bold text-purple-600">88/100</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                      <div className="text-sm text-gray-500 mb-1">Culture Trust</div>
+                      <div className="text-2xl font-bold text-teal-600">85/100</div>
+                    </div>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <h4 className="font-medium text-gray-900 mb-2">Certification Summary</h4>
+                    <p className="text-gray-600 text-sm">
+                      Your organization meets all requirements for PulsePlace Certification. Your scores exceed the minimum threshold of 85 overall and 75 for each category. Your organization is now eligible to display the Pulse Certified™ badge on your careers page and recruitment materials.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
               
               {/* Additional visualizations */}
               <div className="grid grid-cols-1 lg:grid-cols-8 gap-6">

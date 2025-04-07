@@ -1,13 +1,21 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getFeedbackSynthesisPrompt, getOpenEndedFeedbackPrompt } from '@/utils/scoring';
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  getFeedbackSynthesisPrompt, 
+  getOpenEndedFeedbackPrompt 
+} from '@/utils/scoring';
+import { Progress } from "@/components/ui/progress";
 
 const PromptsContent = () => {
   const { toast } = useToast();
+  const [feedbackInput, setFeedbackInput] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [progressValue, setProgressValue] = useState(0);
   
   const handleCopyPrompt = (promptType: string) => {
     let promptText = '';
@@ -27,6 +35,8 @@ const PromptsContent = () => {
       promptText = "Analyze the sentiment and key themes in this workplace survey response:\n\n\"{TEXT_RESPONSE}\"\n\nProvide the following:\n1. A sentiment score from 0 (extremely negative) to 100 (extremely positive)\n2. The primary emotion expressed (e.g., satisfaction, frustration, hope)\n3. Key themes mentioned (e.g., work-life balance, management, compensation)\n4. Any action items implied in the feedback\n\nFormat the response as JSON.";
     } else if (promptType === 'executive') {
       promptText = "Generate an executive summary of this organization's PulseScore™ results:\n\nOverall Score: {SCORE}/100\nTier: {TIER_LABEL}\nCategory Scores:\n- Emotion Index: {EMOTION_SCORE}\n- Engagement Stability: {ENGAGEMENT_SCORE}\n- Culture Trust: {CULTURE_SCORE}\n\nHighest Theme: {HIGHEST_THEME} ({HIGHEST_THEME_SCORE})\nLowest Theme: {LOWEST_THEME} ({LOWEST_THEME_SCORE})\n\nWrite a concise 3-paragraph executive summary that:\n1. Summarizes the overall culture health and strengths\n2. Identifies the most critical area for improvement\n3. Provides strategic recommendations for the leadership team\n\nKeep it concise, data-driven, and actionable.";
+    } else if (promptType === 'certification') {
+      promptText = "Evaluate the following organization's PulseScore metrics for certification eligibility:\n\nOverall PulseScore: {SCORE}/100\nEmotion Index: {EMOTION_SCORE}/100\nEngagement Stability: {ENGAGEMENT_SCORE}/100\nCulture Trust: {CULTURE_SCORE}/100\n\nCertification requires:\n1. Overall PulseScore of 85+ for Pulse Certified™ status\n2. No individual category below 75\n3. At least 60% survey participation rate\n\nDetermine if the organization qualifies for certification, and provide a detailed justification for your decision with specific recommendations for improvement where needed.";
     }
     
     navigator.clipboard.writeText(promptText);
@@ -35,6 +45,39 @@ const PromptsContent = () => {
       title: "Prompt copied!",
       description: "AI prompt template has been copied to clipboard.",
     });
+  };
+
+  const handleProcessFeedback = () => {
+    if (!feedbackInput.trim()) {
+      toast({
+        title: "Input required",
+        description: "Please enter feedback text to process.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+    setProgressValue(0);
+
+    // Simulate processing with progress updates
+    const interval = setInterval(() => {
+      setProgressValue(prev => {
+        const newValue = prev + 10;
+        if (newValue >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setIsProcessing(false);
+            toast({
+              title: "Feedback processed!",
+              description: "Sentiment analysis and theme extraction complete.",
+            });
+          }, 500);
+          return 100;
+        }
+        return newValue;
+      });
+    }, 300);
   };
 
   return (
@@ -46,9 +89,11 @@ const PromptsContent = () => {
         <Tabs defaultValue="feedback">
           <TabsList className="mb-4">
             <TabsTrigger value="feedback">Feedback Synthesis</TabsTrigger>
-            <TabsTrigger value="open-ended">Open-Ended Feedback</TabsTrigger>
+            <TabsTrigger value="open-ended">Open-Ended Analysis</TabsTrigger>
+            <TabsTrigger value="process">Process Feedback</TabsTrigger>
             <TabsTrigger value="sentiment">Sentiment Analysis</TabsTrigger>
             <TabsTrigger value="executive">Executive Summary</TabsTrigger>
+            <TabsTrigger value="certification">Certification</TabsTrigger>
           </TabsList>
           
           <TabsContent value="feedback" className="space-y-4">
@@ -117,6 +162,38 @@ Insight: While team culture is strong, there's concern around leadership and car
               </pre>
             </div>
           </TabsContent>
+
+          <TabsContent value="process" className="space-y-4">
+            <div className="bg-gray-50 p-4 rounded-md">
+              <h3 className="font-semibold mb-2">Process Open-Ended Feedback</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Enter free-text feedback to extract sentiment and themes using our AI analysis engine.
+              </p>
+              
+              <Textarea 
+                placeholder="Enter survey feedback text here..." 
+                className="min-h-[120px] mb-4"
+                value={feedbackInput}
+                onChange={(e) => setFeedbackInput(e.target.value)}
+                disabled={isProcessing}
+              />
+              
+              {isProcessing && (
+                <div className="space-y-2 mb-4">
+                  <p className="text-sm text-gray-600">Processing feedback...</p>
+                  <Progress value={progressValue} className="h-2" />
+                </div>
+              )}
+              
+              <Button 
+                onClick={handleProcessFeedback} 
+                className="w-full bg-pulse-gradient" 
+                disabled={isProcessing}
+              >
+                {isProcessing ? "Processing..." : "Analyze Feedback"}
+              </Button>
+            </div>
+          </TabsContent>
           
           <TabsContent value="sentiment" className="space-y-4">
             <div className="flex justify-end">
@@ -169,6 +246,32 @@ Write a concise 3-paragraph executive summary that:
 3. Provides strategic recommendations for the leadership team
 
 Keep it concise, data-driven, and actionable.`}
+              </pre>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="certification" className="space-y-4">
+            <div className="flex justify-end">
+              <Button onClick={() => handleCopyPrompt('certification')} variant="outline" size="sm">
+                Copy Prompt
+              </Button>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-md">
+              <h3 className="font-semibold mb-2">Certification Eligibility Prompt</h3>
+              <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm whitespace-pre-wrap">
+{`Evaluate the following organization's PulseScore metrics for certification eligibility:
+
+Overall PulseScore: {SCORE}/100
+Emotion Index: {EMOTION_SCORE}/100
+Engagement Stability: {ENGAGEMENT_SCORE}/100
+Culture Trust: {CULTURE_SCORE}/100
+
+Certification requires:
+1. Overall PulseScore of 85+ for Pulse Certified™ status
+2. No individual category below 75
+3. At least 60% survey participation rate
+
+Determine if the organization qualifies for certification, and provide a detailed justification for your decision with specific recommendations for improvement where needed.`}
               </pre>
             </div>
           </TabsContent>

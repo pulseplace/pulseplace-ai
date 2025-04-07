@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -41,6 +40,7 @@ const DashboardHome = () => {
             responses,
             created_at,
             sentiment_score,
+            pulse_score,
             pulse_surveys (
               title
             )
@@ -50,8 +50,18 @@ const DashboardHome = () => {
 
         if (responsesError) throw responsesError;
         
-        // Need to cast the data to match our expected type
-        setResponses(responsesData as Tables<'survey_responses'>[]);
+        // Cast the data to match our expected type
+        const typedResponses = responsesData.map(response => ({
+          id: response.id,
+          survey_id: response.survey_id,
+          user_id: response.user_id,
+          responses: response.responses,
+          created_at: response.created_at,
+          sentiment_score: response.sentiment_score,
+          pulse_score: response.pulse_score || null
+        })) as Tables<'survey_responses'>[];
+        
+        setResponses(typedResponses);
 
         // Check if we have any data
         setHasData(surveysData.length > 0 || responsesData.length > 0);
@@ -77,7 +87,6 @@ const DashboardHome = () => {
     );
   }
 
-  // Show onboarding if no data exists yet
   if (!hasData) {
     return (
       <div className="container mx-auto py-6">
@@ -109,7 +118,6 @@ const DashboardHome = () => {
   );
 };
 
-// Reuse the existing SkillsGapAnalysis component
 const SkillsGapAnalysis = () => {
   return <div className="col-span-8"><div className="h-80"></div></div>;
 };

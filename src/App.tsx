@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,15 +27,13 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import MetaTags from "./components/MetaTags";
 import StickyCta from "./components/StickyCta";
 import ScoringLogic from '@/pages/dashboard/ScoringLogic';
+import EmailTemplates from '@/pages/dashboard/EmailTemplates';
 
-// Create a new QueryClient instance
 const queryClient = new QueryClient();
 
-// Animation wrapper for page transitions
 const AnimatedRoutes = () => {
   const location = useLocation();
   
-  // Don't show StickyCta on auth pages or dashboard
   const hideStickyCta = location.pathname.includes('/auth') || location.pathname.includes('/dashboard');
   
   return (
@@ -63,7 +60,6 @@ const AnimatedRoutes = () => {
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/auth" element={<Auth />} />
           
-          {/* Dashboard Routes */}
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <DashboardLayout />
@@ -74,9 +70,9 @@ const AnimatedRoutes = () => {
             <Route path="surveys/new" element={<Surveys />} />
             <Route path="surveys/:surveyId" element={<Surveys />} />
             <Route path="scoring-logic" element={<ScoringLogic />} />
+            <Route path="email-templates" element={<EmailTemplates />} />
           </Route>
           
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
         {!hideStickyCta && <StickyCta />}

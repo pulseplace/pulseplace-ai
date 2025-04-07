@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { BarChart, LayoutDashboard, MessageSquare, Settings, TrendingUp, Users, Calendar, FileText } from 'lucide-react';
+import { BarChart, LayoutDashboard, MessageSquare, Settings, TrendingUp, Users, Calendar, FileText, Mail } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
@@ -56,6 +55,7 @@ const DashboardSidebar = () => {
             { icon: <Calendar className="h-4 w-4 mr-3" />, label: "Surveys" },
             { icon: <FileText className="h-4 w-4 mr-3" />, label: "Documentation" },
             { icon: <Settings className="h-4 w-4 mr-3" />, label: "Settings" },
+            { name: "Email Templates", href: "/dashboard/email-templates", icon: Mail },
           ].map((item, i) => (
             <button 
               key={i} 

@@ -97,11 +97,13 @@ export const submitSurveyResponse = async (
     const sentimentScore = calculateSentimentScore(formattedResponses);
 
     // 4. Prepare data to insert
+    const pulseScoreResult = calculateSamplePulseScore(sentimentScore);
+    
     const responseData: Insertables<'survey_responses'> = {
       survey_id: params.surveyId,
       responses: formattedResponses,
       sentiment_score: sentimentScore,
-      pulse_score: calculateSamplePulseScore(sentimentScore)
+      pulse_score: pulseScoreResult
     };
 
     // 5. Insert response

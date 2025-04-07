@@ -84,6 +84,7 @@ export interface Database {
           user_id: string | null
           responses: Json
           sentiment_score: number | null
+          pulse_score: Json | null
           created_at: string
         }
         Insert: {
@@ -92,6 +93,7 @@ export interface Database {
           user_id?: string | null
           responses: Json
           sentiment_score?: number | null
+          pulse_score?: Json | null
           created_at?: string
         }
         Update: {
@@ -100,6 +102,7 @@ export interface Database {
           user_id?: string | null
           responses?: Json
           sentiment_score?: number | null
+          pulse_score?: Json | null
           created_at?: string
         }
       }

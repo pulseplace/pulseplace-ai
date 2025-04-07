@@ -90,3 +90,17 @@ export interface DateRangeFilter {
   from: Date;
   to: Date;
 }
+
+// Fix for EmailSendTest component
+export interface MockPulseScoreData {
+  overallScore: number;
+  categoryScores: {
+    category: ScoringCategory;
+    score: number;
+    weight: number;
+  }[];
+  themeScores: ThemeScore[];
+  tier: PulseScoreTier;
+  insights: string[];
+  recommendedActions: string[];
+}

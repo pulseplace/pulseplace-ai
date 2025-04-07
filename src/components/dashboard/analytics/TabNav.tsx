@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TrendingUp, Layers, BarChart3, BrainCircuit, Brain } from 'lucide-react';
+import { TrendingUp, Layers, BarChart3, BrainCircuit, Brain, LineChart } from 'lucide-react';
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface TabNavProps {
@@ -10,7 +10,7 @@ interface TabNavProps {
 
 const TabNav: React.FC<TabNavProps> = ({ activeTab, onTabChange }) => {
   return (
-    <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-6">
+    <TabsList className="grid grid-cols-2 md:grid-cols-6 mb-6">
       <TabsTrigger value="trends" className="text-xs">
         <TrendingUp className="h-3.5 w-3.5 mr-1" />
         Time Trends
@@ -30,6 +30,10 @@ const TabNav: React.FC<TabNavProps> = ({ activeTab, onTabChange }) => {
       <TabsTrigger value="aiInsights" className="text-xs">
         <Brain className="h-3.5 w-3.5 mr-1" />
         AI Insights
+      </TabsTrigger>
+      <TabsTrigger value="predictions" className="text-xs">
+        <LineChart className="h-3.5 w-3.5 mr-1" />
+        Predictions
       </TabsTrigger>
     </TabsList>
   );

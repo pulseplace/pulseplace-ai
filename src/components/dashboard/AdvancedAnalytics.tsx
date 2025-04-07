@@ -5,7 +5,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { subDays, subMonths } from "date-fns";
 import { DateRangeFilter } from "@/types/scoring.types";
 
-// Importing the new components
+// Importing the components
 import AnalyticsHeader from './analytics/AnalyticsHeader';
 import DashboardControls from './analytics/DashboardControls';
 import TabNav from './analytics/TabNav';
@@ -14,6 +14,7 @@ import ThemesTabContent from './analytics/ThemesTabContent';
 import BenchmarksTabContent from './analytics/BenchmarksTabContent';
 import AttritionTabContent from './analytics/AttritionTabContent';
 import AIInsightsTabContent from './analytics/AIInsightsTabContent';
+import PredictionsTabContent from './analytics/PredictionsTabContent';
 
 const AdvancedAnalytics: React.FC = () => {
   const [activeTab, setActiveTab] = useState('trends');
@@ -89,6 +90,14 @@ const AdvancedAnalytics: React.FC = () => {
             {/* AI Insights Tab */}
             <TabsContent value="aiInsights">
               <AIInsightsTabContent />
+            </TabsContent>
+            
+            {/* Real-Time Predictions Tab */}
+            <TabsContent value="predictions">
+              <PredictionsTabContent
+                department={department}
+                dateRange={dateRange}
+              />
             </TabsContent>
           </Tabs>
         </CardContent>

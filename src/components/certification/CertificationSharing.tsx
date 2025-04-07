@@ -2,15 +2,17 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, Check, Code, Twitter, Linkedin, Globe, FileText, Download } from 'lucide-react';
-import CertificationBadge from './CertificationBadge';
+import { Globe, Twitter, Linkedin, FileText } from 'lucide-react';
 import { PulseScoreTier } from '@/types/scoring.types';
 import { getTierDisplay } from '@/utils/scoring';
+import HtmlEmbedTab from './components/HtmlEmbedTab';
+import LinkedInTab from './components/LinkedInTab';
+import TwitterTab from './components/TwitterTab';
+import NotionTab from './components/NotionTab';
 
 interface CertificationSharingProps {
   companyName: string;
@@ -41,63 +43,6 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
   });
   
   const tierInfo = getTierDisplay(tier);
-  
-  // Generate HTML embed code
-  const generateHtmlCode = (): string => {
-    const baseUrl = 'https://pulseplace.ai/certification/verify';
-    const params = new URLSearchParams({
-      company: companyName,
-      tier: tier,
-      score: score.toString(),
-      issued: issueDate,
-      valid: validUntil,
-      style: badgeSize,
-      cta: customCta || ''
-    });
-    
-    return `<!-- PulsePlace Certification Badge -->
-<script src="https://cdn.pulseplace.ai/badge.js" defer></script>
-<div class="pulseplace-badge" data-badge-url="${baseUrl}?${params.toString()}"></div>
-<!-- End PulsePlace Badge -->`;
-  };
-  
-  // Generate Notion embed code
-  const generateNotionCode = (): string => {
-    const baseUrl = 'https://pulseplace.ai/certification/embed';
-    const params = new URLSearchParams({
-      company: companyName,
-      tier: tier,
-      score: score.toString(),
-      issued: issueDate,
-      valid: validUntil,
-      style: 'notion',
-      cta: customCta || ''
-    });
-    
-    return `${baseUrl}?${params.toString()}`;
-  };
-  
-  // Generate LinkedIn post text
-  const generateLinkedInText = (): string => {
-    return `We're proud to announce that ${companyName} has been officially certified by PulsePlace with a PulseScore™ of ${score}/100! 
-
-This certification reflects our commitment to creating a positive workplace environment where employees can thrive. 
-
-Learn more about what makes us a great place to work: https://pulseplace.ai/certification/${encodeURIComponent(companyName)}
-
-#PulseCertified #WorkplaceCulture #EmployeeExperience`;
-  };
-  
-  // Generate Twitter/X post text
-  const generateTwitterText = (): string => {
-    return `🎉 ${companyName} is now Pulse Certified™ with a score of ${score}/100! 
-
-We're committed to creating a workplace where people thrive.
-
-Verify our certification: https://pulseplace.ai/c/${encodeURIComponent(companyName)}
-
-#PulseCertified #WorkplaceCulture`;
-  };
   
   // Handle copy button click
   const handleCopy = (type: string, text: string) => {
@@ -184,276 +129,62 @@ Verify our certification: https://pulseplace.ai/c/${encodeURIComponent(companyNa
           
           {/* HTML Embed Tab */}
           <TabsContent value="html">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-1/2">
-                <div className="bg-white p-4 border rounded-md mb-4 flex justify-center">
-                  <CertificationBadge 
-                    companyName={companyName}
-                    tier={tier}
-                    score={score}
-                    issueDate={issueDate}
-                    validUntil={validUntil}
-                    size={badgeSize as 'standard' | 'compact'}
-                    customCta={customCta}
-                  />
-                </div>
-                <Button 
-                  className="w-full"
-                  variant="outline"
-                  onClick={handleDownloadBadge}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Badge
-                </Button>
-              </div>
-              
-              <div className="md:w-1/2">
-                <div className="relative">
-                  <pre className="bg-gray-100 p-4 rounded-md overflow-auto text-xs h-[180px]">
-                    {generateHtmlCode()}
-                  </pre>
-                  <Button 
-                    className="absolute top-2 right-2"
-                    size="sm"
-                    onClick={() => handleCopy('html', generateHtmlCode())}
-                    variant="outline"
-                  >
-                    {hasCopied.html ? (
-                      <>
-                        <Check className="h-4 w-4 mr-2" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy Code
-                      </>
-                    )}
-                  </Button>
-                </div>
-                
-                <div className="mt-4 p-4 bg-blue-50 rounded-md text-sm text-blue-800">
-                  <h3 className="font-medium flex items-center gap-2 mb-2">
-                    <Code className="h-4 w-4" />
-                    Add to Your Website
-                  </h3>
-                  <ol className="space-y-2 pl-5 list-decimal">
-                    <li>Copy the HTML above</li>
-                    <li>Paste it into your website where you want the badge to appear</li>
-                    <li>The badge will automatically render on your site</li>
-                    <li>Works with most website builders including WordPress, Wix, and Squarespace</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
+            <HtmlEmbedTab
+              companyName={companyName}
+              tier={tier}
+              score={score}
+              issueDate={issueDate}
+              validUntil={validUntil}
+              badgeSize={badgeSize as 'standard' | 'compact'}
+              customCta={customCta}
+              onCopy={handleCopy}
+              onDownload={handleDownloadBadge}
+            />
           </TabsContent>
           
           {/* LinkedIn Tab */}
           <TabsContent value="linkedin">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-1/2">
-                <div className="bg-white p-4 border rounded-md mb-4 flex justify-center">
-                  <CertificationBadge 
-                    companyName={companyName}
-                    tier={tier}
-                    score={score}
-                    issueDate={issueDate}
-                    validUntil={validUntil}
-                    size={badgeSize as 'standard' | 'compact'}
-                    customCta={customCta}
-                    variant="linkedin"
-                  />
-                </div>
-                <Button 
-                  className="w-full"
-                  variant="outline"
-                  onClick={handleDownloadBadge}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Badge for LinkedIn
-                </Button>
-              </div>
-              
-              <div className="md:w-1/2">
-                <Label className="mb-2 block">LinkedIn Post Text</Label>
-                <div className="relative">
-                  <Textarea 
-                    className="h-[180px] text-sm font-normal" 
-                    value={generateLinkedInText()}
-                  />
-                  <Button 
-                    className="absolute top-2 right-2"
-                    size="sm"
-                    onClick={() => handleCopy('linkedin', generateLinkedInText())}
-                    variant="outline"
-                  >
-                    {hasCopied.linkedin ? (
-                      <>
-                        <Check className="h-4 w-4 mr-2" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy Text
-                      </>
-                    )}
-                  </Button>
-                </div>
-                
-                <div className="mt-4 p-4 bg-blue-50 rounded-md text-sm text-blue-800">
-                  <h3 className="font-medium flex items-center gap-2 mb-2">
-                    <Linkedin className="h-4 w-4" />
-                    Share on LinkedIn
-                  </h3>
-                  <ol className="space-y-2 pl-5 list-decimal">
-                    <li>Copy the text above</li>
-                    <li>Download the LinkedIn-optimized badge image</li>
-                    <li>Create a new LinkedIn post, paste the text, and upload the badge image</li>
-                    <li>Tag @PulsePlace to amplify your certification announcement</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
+            <LinkedInTab
+              companyName={companyName}
+              tier={tier}
+              score={score}
+              issueDate={issueDate}
+              validUntil={validUntil}
+              badgeSize={badgeSize as 'standard' | 'compact'}
+              customCta={customCta}
+              onCopy={handleCopy}
+              onDownload={handleDownloadBadge}
+            />
           </TabsContent>
           
           {/* Twitter/X Tab */}
           <TabsContent value="twitter">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-1/2">
-                <div className="bg-white p-4 border rounded-md mb-4 flex justify-center">
-                  <CertificationBadge 
-                    companyName={companyName}
-                    tier={tier}
-                    score={score}
-                    issueDate={issueDate}
-                    validUntil={validUntil}
-                    size={badgeSize as 'standard' | 'compact'}
-                    customCta={customCta}
-                    variant="twitter"
-                  />
-                </div>
-                <Button 
-                  className="w-full"
-                  variant="outline"
-                  onClick={handleDownloadBadge}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Badge for X/Twitter
-                </Button>
-              </div>
-              
-              <div className="md:w-1/2">
-                <Label className="mb-2 block">X/Twitter Post Text</Label>
-                <div className="relative">
-                  <Textarea 
-                    className="h-[180px] text-sm font-normal" 
-                    value={generateTwitterText()}
-                  />
-                  <Button 
-                    className="absolute top-2 right-2"
-                    size="sm"
-                    onClick={() => handleCopy('twitter', generateTwitterText())}
-                    variant="outline"
-                  >
-                    {hasCopied.twitter ? (
-                      <>
-                        <Check className="h-4 w-4 mr-2" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy Text
-                      </>
-                    )}
-                  </Button>
-                </div>
-                
-                <div className="mt-4 p-4 bg-blue-50 rounded-md text-sm text-blue-800">
-                  <h3 className="font-medium flex items-center gap-2 mb-2">
-                    <Twitter className="h-4 w-4" />
-                    Share on X/Twitter
-                  </h3>
-                  <ol className="space-y-2 pl-5 list-decimal">
-                    <li>Copy the text above</li>
-                    <li>Download the X/Twitter-optimized badge image</li>
-                    <li>Create a new post, paste the text, and upload the badge image</li>
-                    <li>Tag @PulsePlace to amplify your certification announcement</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
+            <TwitterTab
+              companyName={companyName}
+              tier={tier}
+              score={score}
+              issueDate={issueDate}
+              validUntil={validUntil}
+              badgeSize={badgeSize as 'standard' | 'compact'}
+              customCta={customCta}
+              onCopy={handleCopy}
+              onDownload={handleDownloadBadge}
+            />
           </TabsContent>
           
           {/* Notion Tab */}
           <TabsContent value="notion">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-1/2">
-                <div className="bg-white p-4 border rounded-md mb-4 flex justify-center">
-                  <CertificationBadge 
-                    companyName={companyName}
-                    tier={tier}
-                    score={score}
-                    issueDate={issueDate}
-                    validUntil={validUntil}
-                    size={badgeSize as 'standard' | 'compact'}
-                    customCta={customCta}
-                    variant="notion"
-                  />
-                </div>
-                <Button 
-                  className="w-full"
-                  variant="outline"
-                  onClick={handleDownloadBadge}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Badge
-                </Button>
-              </div>
-              
-              <div className="md:w-1/2">
-                <Label className="mb-2 block">Notion/Webflow Embed URL</Label>
-                <div className="relative">
-                  <Input
-                    value={generateNotionCode()}
-                    readOnly
-                    className="font-mono text-xs"
-                  />
-                  <Button 
-                    className="absolute top-0 right-0 h-full rounded-l-none"
-                    size="sm"
-                    onClick={() => handleCopy('notion', generateNotionCode())}
-                    variant="outline"
-                  >
-                    {hasCopied.notion ? (
-                      <>
-                        <Check className="h-4 w-4 mr-2" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy URL
-                      </>
-                    )}
-                  </Button>
-                </div>
-                
-                <div className="mt-4 p-4 bg-blue-50 rounded-md text-sm text-blue-800">
-                  <h3 className="font-medium flex items-center gap-2 mb-2">
-                    <FileText className="h-4 w-4" />
-                    Embed in Notion or Webflow
-                  </h3>
-                  <ol className="space-y-2 pl-5 list-decimal">
-                    <li>Copy the URL above</li>
-                    <li>In Notion: Create an embed block and paste the URL</li>
-                    <li>In Webflow: Add an embed element and paste the URL</li>
-                    <li>The badge will automatically appear in your document</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
+            <NotionTab
+              companyName={companyName}
+              tier={tier}
+              score={score}
+              issueDate={issueDate}
+              validUntil={validUntil}
+              badgeSize={badgeSize as 'standard' | 'compact'}
+              customCta={customCta}
+              onCopy={handleCopy}
+              onDownload={handleDownloadBadge}
+            />
           </TabsContent>
         </Tabs>
       </CardContent>

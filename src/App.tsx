@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,7 +30,7 @@ import MetaTags from "./components/MetaTags";
 import StickyCta from "./components/StickyCta";
 import ScoringLogic from '@/pages/dashboard/ScoringLogic';
 import EmailTemplates from '@/pages/dashboard/EmailTemplates';
-import CertificationSharing from "@/components/certification/CertificationSharing";
+import ShareCertification from '@/pages/dashboard/ShareCertification';
 
 const queryClient = new QueryClient();
 
@@ -77,7 +76,7 @@ const AnimatedRoutes = () => {
             <Route path="scoring-logic" element={<ScoringLogic />} />
             <Route path="email-templates" element={<EmailTemplates />} />
             <Route path="certification-engine" element={<CertificationEngine />} />
-            <Route path="share-certification" element={<ShareCertificationPage />} />
+            <Route path="share-certification" element={<ShareCertification />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
@@ -85,36 +84,6 @@ const AnimatedRoutes = () => {
         {!hideStickyCta && <StickyCta />}
       </motion.div>
     </AnimatePresence>
-  );
-};
-
-// Simple standalone page for certification sharing
-const ShareCertificationPage = () => {
-  // Demo data for certification badge
-  const certificationData = {
-    companyName: 'Acme Corporation',
-    tier: 'pulse_certified' as const,
-    score: 88,
-    issueDate: 'April 7, 2025',
-    validUntil: 'April 7, 2026'
-  };
-  
-  return (
-    <div className="container mx-auto py-6">
-      <h1 className="text-2xl font-bold mb-6">Share Your Certification</h1>
-      <div className="mb-6">
-        <p className="text-gray-600 mb-4">
-          Congratulations on achieving your PulseScore™ Certification! Use the tools below to share your achievement with stakeholders and promote your commitment to workplace well-being.
-        </p>
-      </div>
-      <CertificationSharing
-        companyName={certificationData.companyName}
-        tier={certificationData.tier}
-        score={certificationData.score}
-        issueDate={certificationData.issueDate}
-        validUntil={certificationData.validUntil}
-      />
-    </div>
   );
 };
 

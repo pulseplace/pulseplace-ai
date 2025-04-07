@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Check, Copy, Download, Loader, Mail } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
+import { useState } from 'react';
 
 interface EmailTemplateActionsProps {
   showHtml: boolean;
@@ -10,6 +10,7 @@ interface EmailTemplateActionsProps {
   onCopyHtml: () => void;
   onDownloadHtml: () => void;
   onSendTestEmail: () => Promise<void>;
+  isSending?: boolean;
 }
 
 const EmailTemplateActions: React.FC<EmailTemplateActionsProps> = ({
@@ -17,47 +18,26 @@ const EmailTemplateActions: React.FC<EmailTemplateActionsProps> = ({
   onToggleView,
   onCopyHtml,
   onDownloadHtml,
-  onSendTestEmail
+  onSendTestEmail,
+  isSending = false
 }) => {
-  const { toast } = useToast();
   const [isCopying, setIsCopying] = useState(false);
-  const [isSending, setIsSending] = useState(false);
 
-  const handleCopyHtml = async () => {
+  const handleCopyHtml = () => {
     setIsCopying(true);
-    try {
-      await onCopyHtml();
-      toast({
-        title: "Copied!",
-        description: "HTML has been copied to your clipboard",
-      });
-    } catch (error) {
-      toast({
-        title: "Copy failed",
-        description: "Could not copy HTML to clipboard",
-        variant: "destructive",
-      });
-    } finally {
-      // Show the copied icon for 1.5 seconds
-      setTimeout(() => {
-        setIsCopying(false);
-      }, 1500);
-    }
+    onCopyHtml();
+    
+    // Show the copied icon for 1.5 seconds
+    setTimeout(() => {
+      setIsCopying(false);
+    }, 1500);
   };
 
   const handleSendTestEmail = async () => {
-    setIsSending(true);
     try {
       await onSendTestEmail();
-      // The parent component will handle showing toast notifications
     } catch (error) {
-      toast({
-        title: "Sending failed",
-        description: "Could not send test email",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSending(false);
+      console.error("Error in handleSendTestEmail:", error);
     }
   };
 

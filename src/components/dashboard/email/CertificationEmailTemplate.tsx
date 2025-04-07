@@ -8,6 +8,7 @@ import EmailTemplateActions from './components/EmailTemplateActions';
 import EmailPreviewContent from './components/EmailPreviewContent';
 import HtmlCodePreview from './components/HtmlCodePreview';
 import { generateCertificationHtml } from './components/EmailHtmlGenerator';
+import { emailService } from '@/services/emailService';
 
 // Interface for the email template props
 interface CertificationEmailTemplateProps {
@@ -44,9 +45,10 @@ const CertificationEmailTemplate: React.FC<CertificationEmailTemplateProps> = ({
 }) => {
   const { toast } = useToast();
   const [showHtml, setShowHtml] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   
   const tierInfo = getTierDisplay(pulseScoreData.tier);
-  const certificationLevel = "Growth Culture";
+  const certificationLevel = tierInfo.label;
   
   // Generate HTML version of the email
   const generateHtmlEmail = () => {
@@ -82,18 +84,36 @@ const CertificationEmailTemplate: React.FC<CertificationEmailTemplateProps> = ({
   };
 
   const handleSendTestEmail = async (): Promise<void> => {
-    // Since this is a demo/template function, it only shows a toast notification
-    // In a real implementation, it would connect to a backend service
-    return new Promise<void>((resolve) => {
-      // Simulate a short delay to show the loading state
-      setTimeout(() => {
+    setIsSending(true);
+    
+    try {
+      // Use our email service to send the test email
+      const success = await emailService.sendEmail({
+        to: recipientEmail,
+        subject: `Your PulsePlace Certification: ${certificationLevel}`,
+        html: generateHtmlEmail(),
+        fromName: "PulsePlace Certification",
+        fromEmail: "certification@pulseplace.ai"
+      });
+      
+      if (success) {
         toast({
           title: "Test Email Sent",
           description: `A test email has been sent to ${recipientEmail}`,
         });
-        resolve();
-      }, 500);
-    });
+      } else {
+        throw new Error("Failed to send email");
+      }
+    } catch (error) {
+      console.error("Error sending test email:", error);
+      toast({
+        title: "Email Sending Failed",
+        description: "There was an error sending the test email. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
   
   const toggleHtmlView = () => {
@@ -110,6 +130,7 @@ const CertificationEmailTemplate: React.FC<CertificationEmailTemplateProps> = ({
           onCopyHtml={handleCopyHtml}
           onDownloadHtml={handleDownloadHtml}
           onSendTestEmail={handleSendTestEmail}
+          isSending={isSending}
         />
       </CardHeader>
       <CardContent>

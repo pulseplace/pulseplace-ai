@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { prepareCertificationEmail } from '@/utils/emailTemplates';
+import { generateCertificationHtml } from '@/components/dashboard/email/components/EmailHtmlGenerator';
 import { PulseScoreData } from '@/types/scoring.types';
 import { getTierDisplay } from '@/utils/scoring';
 
@@ -18,6 +18,8 @@ interface GenericEmailRequest {
   fromName?: string;
   fromEmail?: string;
   replyTo?: string;
+  templateId?: string;
+  variables?: Record<string, any>;
 }
 
 /**
@@ -36,36 +38,22 @@ export const emailService = {
     pulseScoreData: PulseScoreData
   ): Promise<boolean> => {
     try {
-      // Get category scores for the email
-      const trustScore = pulseScoreData.categoryScores.find(
-        c => c.category === 'emotion_index'
-      );
-      const engagementScore = pulseScoreData.categoryScores.find(
-        c => c.category === 'engagement_stability'
-      );
-      const cultureScore = pulseScoreData.categoryScores.find(
-        c => c.category === 'culture_trust'
-      );
-      
-      // Prepare email template with recipient data
-      const emailHtml = await prepareCertificationEmail({
-        recipient_name: recipient.name,
-        pulse_score: pulseScoreData.overallScore.toString(),
-        certification_level: getTierDisplay(pulseScoreData.tier).label,
-        trust_score: trustScore ? `${Math.round(trustScore.score)}/100` : 'N/A',
-        engagement_score: engagementScore ? `${Math.round(engagementScore.score)}/100` : 'N/A',
-        culture_score: cultureScore ? `${Math.round(cultureScore.score)}/100` : 'N/A',
-        ai_summary: pulseScoreData.insights.join(' '),
-        badge_download_link: `https://app.pulseplace.ai/certification/badge/${pulseScoreData.tier}`
-      });
-      
+      const tierInfo = getTierDisplay(pulseScoreData.tier);
       console.log('Preparing to send certification email to:', recipient.email);
+      
+      // Generate the HTML for the certification email
+      const emailHtml = generateCertificationHtml({
+        recipientName: recipient.name,
+        companyName: recipient.company || 'Your Company',
+        pulseScoreData: pulseScoreData,
+        certificationLevel: tierInfo.label
+      });
       
       // Send email using our Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: {
           to: recipient.email,
-          subject: `Your PulsePlace Certification: ${getTierDisplay(pulseScoreData.tier).label}`,
+          subject: `Your PulsePlace Certification: ${tierInfo.label}`,
           html: emailHtml,
           fromName: "PulsePlace Certification",
           fromEmail: "certification@pulseplace.ai",
@@ -115,6 +103,37 @@ export const emailService = {
     } catch (error) {
       console.error('Failed to send email:', error);
       return { success: false };
+    }
+  },
+  
+  /**
+   * Test email sending functionality
+   * 
+   * @param to Recipient email address
+   * @param subject Email subject
+   * @returns Promise resolving to success status
+   */
+  sendTestEmail: async (to: string, subject: string = "PulsePlace Test Email"): Promise<boolean> => {
+    try {
+      const testHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #22c55e;">PulsePlace Test Email</h1>
+          <p>This is a test email from PulsePlace.</p>
+          <p>If you're receiving this, email sending is working correctly!</p>
+          <p>Time sent: ${new Date().toLocaleString()}</p>
+        </div>
+      `;
+      
+      const result = await emailService.sendEmail({
+        to,
+        subject,
+        html: testHtml
+      });
+      
+      return result.success;
+    } catch (error) {
+      console.error('Failed to send test email:', error);
+      return false;
     }
   }
 };

@@ -1,236 +1,190 @@
 
-import React from 'react';
 import { PulseScoreData } from '@/types/scoring.types';
+import { getTierDisplay } from '@/utils/scoring';
 
-export interface EmailTemplateProps {
+interface CertificationEmailProps {
   recipientName: string;
   companyName: string;
   pulseScoreData: PulseScoreData;
   certificationLevel: string;
+  badgeDownloadUrl?: string;
 }
 
 /**
- * Generates HTML version of the certification email
- * 
- * @param props Email template properties
- * @returns HTML string for the email
+ * Generates HTML for certification emails
  */
 export const generateCertificationHtml = ({
   recipientName,
   companyName,
   pulseScoreData,
-  certificationLevel
-}: EmailTemplateProps): string => {
-  // Format dates
-  const certificationDate = new Date().toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-  const expirationDate = new Date();
-  expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-  const formattedExpirationDate = expirationDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
+  certificationLevel,
+  badgeDownloadUrl = 'https://app.pulseplace.ai/certification/badge'
+}: CertificationEmailProps): string => {
+  const tierInfo = getTierDisplay(pulseScoreData.tier);
+  const emotionScore = pulseScoreData.categoryScores.find(c => c.category === 'emotion_index');
+  const engagementScore = pulseScoreData.categoryScores.find(c => c.category === 'engagement_stability');
+  const cultureScore = pulseScoreData.categoryScores.find(c => c.category === 'culture_trust');
+  
   return `<!DOCTYPE html>
-<html lang="en" style="margin: 0; padding: 0;">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PulsePlace Certification Summary</title>
-    <style>
-      body {
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-        background-color: #f8f9fa;
-        color: #1a1a2e;
-        margin: 0;
-        padding: 0;
-      }
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your PulsePlace Certification</title>
+  <style>
+    body { 
+      font-family: 'Arial', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafb;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .header img {
+      max-width: 150px;
+      margin-bottom: 20px;
+    }
+    .content {
+      padding: 20px 0;
+    }
+    .certification-badge {
+      background-color: #f0fdf4;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+      border: 1px solid #dcfce7;
+    }
+    .score-bar {
+      background-color: #f3f4f6;
+      height: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+    .score-fill {
+      height: 100%;
+      background-color: #22c55e;
+      border-radius: 5px;
+    }
+    .scores {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+    .score-card {
+      flex: 1;
+      background-color: #f9fafb;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 0 5px;
+      text-align: center;
+    }
+    .footer {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .button {
+      display: inline-block;
+      background-color: #22c55e;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .insights {
+      background-color: #f0f9ff;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      border: 1px solid #e0f2fe;
+    }
+    @media only screen and (max-width: 600px) {
       .container {
-        background-color: #ffffff;
-        max-width: 600px;
-        margin: 20px auto;
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-      .header h1 {
-        font-size: 36px;
-        color: #0f172a;
-        margin: 0;
-        font-weight: 800;
-      }
-      .greeting {
-        font-size: 24px;
-        margin-bottom: 20px;
-      }
-      .intro {
-        font-size: 18px;
-        line-height: 1.5;
-        margin-bottom: 30px;
-      }
-      .pulse-score {
-        font-size: 32px;
-        font-weight: bold;
-        text-align: center;
-        color: #0f172a;
-        margin: 30px 0 20px;
-      }
-      .certification-level {
-        background-color: #e8f0fe;
-        color: #1a1a2e;
-        padding: 12px 25px;
-        border-radius: 50px;
-        font-size: 18px;
-        font-weight: 600;
-        display: inline-block;
-        margin: 0 auto 30px;
-        text-align: center;
-      }
-      .level-wrapper {
-        text-align: center;
-      }
-      .category-title {
-        font-size: 24px;
-        margin-bottom: 15px;
-      }
-      .category-table {
-        background-color: #f0f7ff;
-        border-radius: 10px;
-        padding: 20px;
         width: 100%;
-        margin-bottom: 30px;
+        padding: 10px;
       }
-      .category-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #e1eaf8;
+      .scores {
+        flex-direction: column;
       }
-      .category-row:last-child {
-        border-bottom: none;
-      }
-      .category-name {
-        font-weight: 500;
-      }
-      .category-score {
-        font-weight: 600;
-      }
-      .insight-title {
-        font-size: 24px;
-        margin-bottom: 15px;
-      }
-      .insight-text {
-        line-height: 1.6;
-        margin-bottom: 30px;
-      }
-      .badge-info {
-        font-size: 18px;
-        line-height: 1.5;
-        margin-bottom: 20px;
-      }
-      .download-button {
-        background-color: #1a56db;
-        color: white;
-        padding: 15px 30px;
-        border-radius: 50px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 16px;
-        display: inline-block;
-        text-align: center;
-        margin: 0 auto;
-      }
-      .button-wrapper {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-      .footer {
-        margin-top: 40px;
-        text-align: center;
-        font-size: 14px;
-        color: #64748b;
-      }
-      .footer p {
+      .score-card {
         margin: 5px 0;
       }
-      .footer a {
-        color: #1a56db;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>PulsePlace.ai</h1>
-      </div>
-      
-      <div class="greeting">
-        Hello ${recipientName},
-      </div>
-      
-      <div class="intro">
-        We're thrilled to share your latest certification summary from PulsePlace.ai.
-      </div>
-      
-      <div class="pulse-score">
-        PulseScore®: ${pulseScoreData.overallScore} / 100
-      </div>
-      
-      <div class="level-wrapper">
-        <div class="certification-level">
-          ${certificationLevel}
-        </div>
-      </div>
-      
-      <div class="category-title">
-        Category Breakdown:
-      </div>
-      
-      <div class="category-table">
-        <div class="category-row">
-          <div class="category-name">Trust & Psychological Safety:</div>
-          <div class="category-score">${Math.round(pulseScoreData.categoryScores.find(c => c.category === 'culture_trust')?.score || 0)}</div>
-        </div>
-        <div class="category-row">
-          <div class="category-name">Engagement & Retention:</div>
-          <div class="category-score">${Math.round(pulseScoreData.categoryScores.find(c => c.category === 'engagement_stability')?.score || 0)}</div>
-        </div>
-        <div class="category-row">
-          <div class="category-name">Mission & Belonging:</div>
-          <div class="category-score">${Math.round(pulseScoreData.categoryScores.find(c => c.category === 'emotion_index')?.score || 0)}</div>
-        </div>
-      </div>
-      
-      <div class="insight-title">
-        AI Insight Summary:
-      </div>
-      
-      <div class="insight-text">
-        "${pulseScoreData.insights[0]}"
-      </div>
-      
-      <div class="badge-info">
-        You're now eligible to use the official Pulse Certified® badge on your website, LinkedIn, and careers page.
-      </div>
-      
-      <div class="button-wrapper">
-        <a href="https://app.pulseplace.ai/certification/badge/${pulseScoreData.tier}" class="download-button">Download Badge</a>
-      </div>
-      
-      <div class="footer">
-        <p>PulsePlace.ai — Redefining workplace trust through data & AI</p>
-        <p>This is an automated summary. For support, contact <a href="mailto:hello@pulseplace.ai">hello@pulseplace.ai</a></p>
-      </div>
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://app.pulseplace.ai/logo.png" alt="PulsePlace Logo">
+      <h1>Your PulsePlace Certification</h1>
     </div>
-  </body>
+    
+    <div class="content">
+      <p>Dear ${recipientName},</p>
+      
+      <p>Congratulations! We're pleased to announce that <strong>${companyName}</strong> has achieved the <strong>${certificationLevel}</strong> certification from PulsePlace.</p>
+      
+      <div class="certification-badge">
+        <h2>${tierInfo.label}</h2>
+        <p>PulseScore: ${pulseScoreData.overallScore}/100</p>
+        <div class="score-bar">
+          <div class="score-fill" style="width: ${pulseScoreData.overallScore}%;"></div>
+        </div>
+      </div>
+      
+      <p>This certification is based on an analysis of your organization's employee experience and culture data. Here's a breakdown of your scores:</p>
+      
+      <div class="scores">
+        <div class="score-card">
+          <h3>Trust & Safety</h3>
+          <p>${emotionScore ? Math.round(emotionScore.score) : 'N/A'}/100</p>
+        </div>
+        <div class="score-card">
+          <h3>Engagement</h3>
+          <p>${engagementScore ? Math.round(engagementScore.score) : 'N/A'}/100</p>
+        </div>
+        <div class="score-card">
+          <h3>Culture</h3>
+          <p>${cultureScore ? Math.round(cultureScore.score) : 'N/A'}/100</p>
+        </div>
+      </div>
+      
+      <div class="insights">
+        <h3>AI Insights</h3>
+        <p>${pulseScoreData.insights.join(' ')}</p>
+      </div>
+      
+      <p>Your organization has demonstrated a strong commitment to creating a positive workplace environment. This certification is valid for one year and can be displayed on your website, social media, and recruitment materials.</p>
+      
+      <p style="text-align: center;">
+        <a href="${badgeDownloadUrl}" class="button">Download Your Certification Badge</a>
+      </p>
+    </div>
+    
+    <div class="footer">
+      <p>This certification is valid until one year from today's date.</p>
+      <p>PulsePlace | Measuring and improving workplace culture | <a href="https://pulseplace.ai">pulseplace.ai</a></p>
+    </div>
+  </div>
+</body>
 </html>`;
 };

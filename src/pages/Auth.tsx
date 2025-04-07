@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,12 +26,22 @@ const signupSchema = z.object({
   lastName: z.string().min(1, { message: "Last name is required" }),
   company: z.string().min(1, { message: "Company is required" }),
   role: z.string().min(1, { message: "Role is required" }),
+  department: z.string().optional(),
 });
 
 const Auth = () => {
   const [activeTab, setActiveTab] = useState("login");
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -49,14 +60,17 @@ const Auth = () => {
       lastName: "",
       company: "",
       role: "",
+      department: "",
     },
   });
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
+    setError(null);
     setIsLoading(true);
     try {
       await signIn(values.email, values.password);
-    } catch (error) {
+    } catch (error: any) {
+      setError(error.message || 'An error occurred during sign in');
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -64,6 +78,7 @@ const Auth = () => {
   };
 
   const handleSignup = async (values: z.infer<typeof signupSchema>) => {
+    setError(null);
     setIsLoading(true);
     try {
       const userData = {
@@ -71,9 +86,11 @@ const Auth = () => {
         last_name: values.lastName,
         company: values.company,
         role: values.role,
+        department: values.department
       };
       await signUp(values.email, values.password, userData);
-    } catch (error) {
+    } catch (error: any) {
+      setError(error.message || 'An error occurred during sign up');
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -93,6 +110,12 @@ const Auth = () => {
               Access your dashboard and PulseScore™
             </p>
           </div>
+
+          {error && (
+            <Alert className="mb-6 bg-red-50 border-red-200">
+              <AlertDescription className="text-red-800">{error}</AlertDescription>
+            </Alert>
+          )}
 
           <Card className="w-full">
             <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
@@ -222,19 +245,34 @@ const Auth = () => {
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={signupForm.control}
-                        name="role"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Role</FormLabel>
-                            <FormControl>
-                              <Input placeholder="HR Manager" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={signupForm.control}
+                          name="role"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Role</FormLabel>
+                              <FormControl>
+                                <Input placeholder="HR Manager" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={signupForm.control}
+                          name="department"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Department (Optional)</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Human Resources" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                       <Button type="submit" className="w-full bg-pulse-gradient" disabled={isLoading}>
                         {isLoading ? "Creating account..." : "Create account"}
                       </Button>

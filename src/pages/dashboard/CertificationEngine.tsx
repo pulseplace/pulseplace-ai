@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import QuestionThemeMapping from '@/components/dashboard/mapping/QuestionThemeMapping';
 import AIWorkflowChart from '@/components/dashboard/mapping/AIWorkflowChart';
@@ -7,14 +7,27 @@ import CertificationEmailTemplate from '@/components/dashboard/email/Certificati
 import AdminHRDashboard from '@/components/dashboard/admin/AdminHRDashboard';
 import EmbeddableBadgeWidget from '@/components/dashboard/badge/EmbeddableBadgeWidget';
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from '@/contexts/AuthContext';
 
 const CertificationEngine = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('mapping');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    // Check authentication
+    if (!user) {
+      setError("You must be logged in to access the certification engine.");
+      return;
+    }
+    
+    // Clear error if user is authenticated
+    setError(null);
+  }, [user]);
   
   // Demo function to simulate data loading when changing tabs
   const handleTabChange = (value: string) => {
@@ -38,12 +51,23 @@ const CertificationEngine = () => {
     }
   };
   
+  const handleError = (err: Error) => {
+    console.error('Certification Engine Error:', err);
+    setError(err.message || 'An error occurred. Please try again.');
+    toast({
+      title: "Error",
+      description: err.message || 'An error occurred. Please try again.',
+      variant: "destructive",
+    });
+  };
+  
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-2xl font-bold mb-6">PulseScore™ Certification Engine</h1>
       
       {error && (
         <Alert variant="destructive" className="mb-6">
+          <AlertTriangle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}

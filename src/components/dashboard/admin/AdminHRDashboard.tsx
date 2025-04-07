@@ -1,15 +1,71 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart, Calendar, CheckCircle2, Clock, Download, FileText, Filter, Mail, RefreshCw, Search, User, UserCheck, Users } from 'lucide-react';
+import { 
+  AlertTriangle, BarChart, Calendar, CheckCircle2, Download, FileText, 
+  Loader2, Mail, RefreshCw, Search, Users, UserCheck 
+} from 'lucide-react';
+import { 
+  fetchAdminDashboardStats, 
+  fetchDepartmentStats, 
+  fetchRecentCertifications,
+  DepartmentStats,
+  CertificationSummary
+} from './AdminDashboardService';
 
 const AdminHRDashboard = () => {
   const { toast } = useToast();
   const [selectedTab, setSelectedTab] = useState('overview');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // State for dashboard data
+  const [stats, setStats] = useState({
+    overallScore: 0,
+    activeSurveys: 0,
+    responseRate: 0,
+    insightsGenerated: 0
+  });
+  const [departmentStats, setDepartmentStats] = useState<DepartmentStats[]>([]);
+  const [certifications, setCertifications] = useState<CertificationSummary[]>([]);
+  
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+  
+  const loadDashboardData = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Load all data in parallel
+      const [overallStats, departments, recentCerts] = await Promise.all([
+        fetchAdminDashboardStats(),
+        fetchDepartmentStats(),
+        fetchRecentCertifications()
+      ]);
+      
+      setStats(overallStats);
+      setDepartmentStats(departments);
+      setCertifications(recentCerts);
+    } catch (err: any) {
+      console.error('Error loading dashboard data:', err);
+      setError(err.message || 'Failed to load dashboard data');
+      toast({
+        title: "Error",
+        description: "Failed to load dashboard data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   const handleExportClick = () => {
     toast({
@@ -25,6 +81,25 @@ const AdminHRDashboard = () => {
     });
   };
   
+  const handleRefreshData = async () => {
+    await loadDashboardData();
+    toast({
+      title: "Data Refreshed",
+      description: "Dashboard data has been updated",
+    });
+  };
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-10 w-10 animate-spin text-pulse-600" />
+          <p className="mt-4 text-gray-600">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -38,7 +113,7 @@ const AdminHRDashboard = () => {
               <Download className="h-4 w-4 mr-2" />
               Export Data
             </Button>
-            <Button size="sm" className="bg-pulse-gradient">
+            <Button size="sm" className="bg-pulse-gradient" onClick={handleRefreshData}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh Data
             </Button>
@@ -46,6 +121,13 @@ const AdminHRDashboard = () => {
         </div>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
           <TabsList className="grid grid-cols-3 md:grid-cols-5 mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -65,7 +147,7 @@ const AdminHRDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-gray-500">Overall PulseScore™</p>
-                        <div className="text-2xl font-bold text-green-600">86/100</div>
+                        <div className="text-2xl font-bold text-green-600">{stats.overallScore}/100</div>
                       </div>
                       <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
                         <BarChart className="h-6 w-6 text-green-600" />
@@ -82,14 +164,14 @@ const AdminHRDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-gray-500">Active Surveys</p>
-                        <div className="text-2xl font-bold text-blue-600">3</div>
+                        <div className="text-2xl font-bold text-blue-600">{stats.activeSurveys}</div>
                       </div>
                       <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
                         <FileText className="h-6 w-6 text-blue-600" />
                       </div>
                     </div>
                     <div className="mt-2 text-xs text-gray-500">
-                      <span>2 closing in next 7 days</span>
+                      <span>{Math.min(stats.activeSurveys, 2)} closing in next 7 days</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -99,7 +181,7 @@ const AdminHRDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-gray-500">Response Rate</p>
-                        <div className="text-2xl font-bold text-purple-600">78%</div>
+                        <div className="text-2xl font-bold text-purple-600">{stats.responseRate}%</div>
                       </div>
                       <div className="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
                         <UserCheck className="h-6 w-6 text-purple-600" />
@@ -116,14 +198,14 @@ const AdminHRDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm text-gray-500">Insights Generated</p>
-                        <div className="text-2xl font-bold text-teal-600">42</div>
+                        <div className="text-2xl font-bold text-teal-600">{stats.insightsGenerated}</div>
                       </div>
                       <div className="h-12 w-12 bg-teal-100 rounded-full flex items-center justify-center">
                         <Search className="h-6 w-6 text-teal-600" />
                       </div>
                     </div>
                     <div className="mt-2 text-xs text-gray-500">
-                      <span>12 new this month</span>
+                      <span>{Math.floor(stats.insightsGenerated / 3)} new this month</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -173,39 +255,29 @@ const AdminHRDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell>Aug 15, 2025</TableCell>
-                        <TableCell>Engineering</TableCell>
-                        <TableCell>88/100</TableCell>
-                        <TableCell>
-                          <Badge className="bg-green-100 text-green-800">Pulse Certified™</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Jul 22, 2025</TableCell>
-                        <TableCell>Marketing</TableCell>
-                        <TableCell>82/100</TableCell>
-                        <TableCell>
-                          <Badge className="bg-blue-100 text-blue-800">Emerging Culture</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Jul 10, 2025</TableCell>
-                        <TableCell>Customer Support</TableCell>
-                        <TableCell>91/100</TableCell>
-                        <TableCell>
-                          <Badge className="bg-green-100 text-green-800">Pulse Certified™</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        </TableCell>
-                      </TableRow>
+                      {certifications.map((cert, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{cert.date}</TableCell>
+                          <TableCell>{cert.department}</TableCell>
+                          <TableCell>{cert.score}/100</TableCell>
+                          <TableCell>
+                            <Badge className={
+                              cert.level === 'Pulse Certified™' 
+                                ? 'bg-green-100 text-green-800' 
+                                : cert.level === 'At Risk'
+                                  ? 'bg-red-100 text-red-800'
+                                  : 'bg-blue-100 text-blue-800'
+                            }>
+                              {cert.level}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className="bg-green-100 text-green-800">
+                              {cert.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </CardContent>
@@ -218,51 +290,24 @@ const AdminHRDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Engineering</span>
-                        <span className="text-sm text-gray-500">88/100</span>
+                    {departmentStats.map((dept, index) => (
+                      <div key={index}>
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium">{dept.department}</span>
+                          <span className="text-sm text-gray-500">{dept.score}/100</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                          <div 
+                            className={`h-2.5 rounded-full ${
+                              dept.score >= 85 ? 'bg-green-600' : 
+                              dept.score >= 70 ? 'bg-blue-600' : 
+                              dept.score >= 50 ? 'bg-yellow-600' : 'bg-red-600'
+                            }`} 
+                            style={{ width: `${dept.score}%` }}
+                          ></div>
+                        </div>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-green-600 h-2.5 rounded-full" style={{ width: '88%' }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Marketing</span>
-                        <span className="text-sm text-gray-500">82/100</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '82%' }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Customer Support</span>
-                        <span className="text-sm text-gray-500">91/100</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-green-600 h-2.5 rounded-full" style={{ width: '91%' }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Sales</span>
-                        <span className="text-sm text-gray-500">76/100</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '76%' }}></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">HR</span>
-                        <span className="text-sm text-gray-500">86/100</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div className="bg-green-600 h-2.5 rounded-full" style={{ width: '86%' }}></div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>

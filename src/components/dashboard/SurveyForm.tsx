@@ -9,10 +9,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Insertables } from '@/types/database.types';
+import { createSurvey } from '@/services/surveyService';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const surveySchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
@@ -24,39 +25,45 @@ const SurveyForm = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const form = useForm<z.infer<typeof surveySchema>>({
     resolver: zodResolver(surveySchema),
     defaultValues: {
       title: "",
       description: "",
-      department: "",
+      department: profile?.department || "",
     },
   });
 
+  React.useEffect(() => {
+    if (profile) {
+      // Prefill department from user profile if available
+      form.setValue('department', profile.department || '');
+    }
+  }, [profile, form]);
+
   const onSubmit = async (values: z.infer<typeof surveySchema>) => {
-    if (!user || !profile) return;
+    if (!user) {
+      setError("You must be logged in to create a survey");
+      return;
+    }
 
     setIsLoading(true);
+    setError(null);
+
     try {
-      const surveyData: Insertables<'pulse_surveys'> = {
+      await createSurvey({
         title: values.title,
-        description: values.description || null,
-        created_by: user.id,
-        company: profile.company,
-        department: values.department || null,
-      };
-
-      const { data, error } = await supabase
-        .from('pulse_surveys')
-        .insert([surveyData])
-        .select();
-
-      if (error) throw error;
+        description: values.description,
+        department: values.department,
+      });
 
       toast.success('Survey created successfully!');
       navigate('/dashboard/surveys');
     } catch (error: any) {
+      console.error('Error creating survey:', error);
+      setError(error.message || 'Failed to create survey');
       toast.error(error.message || 'Failed to create survey');
     } finally {
       setIsLoading(false);
@@ -72,6 +79,13 @@ const SurveyForm = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField

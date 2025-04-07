@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { addDays, subDays, subMonths } from "date-fns";
+import { DateRange } from "react-day-picker";
 
 export function DatePickerWithRange({
   date,
@@ -82,8 +83,11 @@ export function DatePickerWithRange({
           <Calendar
             mode="range"
             selected={{ from: date.from, to: date.to || date.from }}
-            onSelect={(range) => setDate(range || { from: new Date(), to: null })}
+            onSelect={(selectedRange: DateRange | undefined) => 
+              selectedRange ? setDate({ from: selectedRange.from as Date, to: selectedRange.to as Date || null }) : null
+            }
             numberOfMonths={2}
+            className="pointer-events-auto"
           />
         </PopoverContent>
       </Popover>

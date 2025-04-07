@@ -27,65 +27,91 @@ import {
   Download, Filter, Calendar, BarChart3, PieChart as PieChartIcon,
   LineChart as LineChartIcon, ArrowUpRight, Layers, AlertTriangle,
   FileText, Users, TrendingUp, BrainCircuit, Settings, Pin,
-  FileSpreadsheet, FilePdf, Save, Brain, Clock, MapPin,
+  FileSpreadsheet, Save, Brain, Clock, MapPin,
   Eye, EyeOff, Calculator, BarChart2, Sparkles, Info
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { addDays, format, subDays, subMonths } from "date-fns";
 import * as z from "zod";
 
-// Date picker needed for range selection
-const DatePickerWithRange = ({ date, setDate }) => {
-  return (
-    <div className="grid gap-2">
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id="date"
-            variant={"outline"}
-            className="w-full justify-start text-left font-normal"
-          >
-            <Calendar className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
-                </>
-              ) : (
-                format(date.from, "LLL dd, y")
-              )
-            ) : (
-              <span>Pick a date range</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          {/* Calendar would go here - placeholder for now */}
-          <div className="p-3">
-            <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start text-xs" 
-                onClick={() => setDate({ from: subDays(new Date(), 30), to: new Date() })}>
-                Last 30 days
-              </Button>
-              <Button variant="outline" className="w-full justify-start text-xs"
-                onClick={() => setDate({ from: subDays(new Date(), 90), to: new Date() })}>
-                Last 90 days
-              </Button>
-              <Button variant="outline" className="w-full justify-start text-xs"
-                onClick={() => setDate({ from: subDays(new Date(), 180), to: new Date() })}>
-                Last 180 days
-              </Button>
-              <Button variant="outline" className="w-full justify-start text-xs"
-                onClick={() => setDate({ from: subMonths(new Date(), 12), to: new Date() })}>
-                Last 12 months
-              </Button>
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
-    </div>
-  )
+// Sample data - in a real app this would be fetched from an API
+const trendData = [
+  { month: 'Jan', pulseScore: 81, sentiment: 77, responseRate: 85, benchmark: 76 },
+  { month: 'Feb', pulseScore: 82, sentiment: 78, responseRate: 82, benchmark: 76 },
+  { month: 'Mar', pulseScore: 80, sentiment: 76, responseRate: 80, benchmark: 77 },
+  { month: 'Apr', pulseScore: 79, sentiment: 74, responseRate: 83, benchmark: 77 },
+  { month: 'May', pulseScore: 81, sentiment: 77, responseRate: 86, benchmark: 78 },
+  { month: 'Jun', pulseScore: 83, sentiment: 79, responseRate: 84, benchmark: 78 },
+  { month: 'Jul', pulseScore: 84, sentiment: 81, responseRate: 85, benchmark: 79 },
+  { month: 'Aug', pulseScore: 85, sentiment: 82, responseRate: 87, benchmark: 79 },
+  { month: 'Sep', pulseScore: 87, sentiment: 83, responseRate: 88, benchmark: 80 },
+  { month: 'Oct', pulseScore: 86, sentiment: 82, responseRate: 86, benchmark: 80 },
+  { month: 'Nov', pulseScore: 85, sentiment: 81, responseRate: 85, benchmark: 81 },
+  { month: 'Dec', pulseScore: 86, sentiment: 82, responseRate: 87, benchmark: 81 }
+];
+
+const themeData = [
+  { name: 'Work-Life Balance', frequency: 245, sentiment: 78 },
+  { name: 'Career Growth', frequency: 190, sentiment: 65 },
+  { name: 'Team Dynamics', frequency: 210, sentiment: 82 },
+  { name: 'Management', frequency: 180, sentiment: 77 },
+  { name: 'Compensation', frequency: 150, sentiment: 60 },
+  { name: 'Culture', frequency: 220, sentiment: 86 },
+  { name: 'Tools & Resources', frequency: 160, sentiment: 73 },
+];
+
+const benchmarkData = [
+  { name: 'Overall Score', value: 86, benchmark: 78 },
+  { name: 'Emotion Index', value: 82, benchmark: 74 },
+  { name: 'Engagement', value: 88, benchmark: 77 },
+  { name: 'Trust', value: 85, benchmark: 76 },
+  { name: 'Alignment', value: 81, benchmark: 73 },
+  { name: 'Recognition', value: 83, benchmark: 75 },
+];
+
+const attritionData = [
+  { id: 1, department: 'Engineering', risk: 'low', score: 15, employees: 42 },
+  { id: 2, department: 'Sales', risk: 'medium', score: 35, employees: 24 },
+  { id: 3, department: 'Customer Support', risk: 'high', score: 72, employees: 18 },
+  { id: 4, department: 'Marketing', risk: 'medium', score: 45, employees: 12 },
+  { id: 5, department: 'HR', risk: 'low', score: 20, employees: 8 },
+  { id: 6, department: 'Product', risk: 'low', score: 18, employees: 15 },
+];
+
+// AI-driven insights
+const aiInsights = {
+  topConcerns: [
+    "Work-life balance continues to be the most mentioned concern",
+    "Career advancement opportunities seen as limited",
+    "Compensation packages viewed as below market value"
+  ],
+  predictiveFlags: [
+    { department: "Customer Support", issue: "Trust Score trending down", severity: "high" },
+    { department: "Sales", issue: "Engagement dropped 8% this month", severity: "medium" },
+    { department: "Marketing", issue: "Response rate falling", severity: "low" }
+  ],
+  recommendedActions: [
+    "Schedule listening sessions with Customer Support team",
+    "Review Sales team quarterly objectives and recognition program",
+    "Implement flexible working arrangements to improve work-life balance"
+  ]
 };
+
+// Dashboard colors
+const COLORS = {
+  pulseScore: '#9B87F5',
+  sentiment: '#22C55E',
+  responseRate: '#3B82F6',
+  benchmark: '#94A3B8',
+  low: '#22C55E',
+  medium: '#EAB308',
+  high: '#EF4444',
+  secondary: '#6E59A5',
+  tertiary: '#1EAEDB',
+};
+
+// Color array for pie charts
+const PIE_COLORS = ['#9B87F5', '#22C55E', '#3B82F6', '#EAB308', '#EC4899', '#6366F1', '#14B8A6'];
 
 const AdvancedAnalytics = () => {
   const { toast } = useToast();
@@ -109,85 +135,6 @@ const AdvancedAnalytics = () => {
     engagementRetention: false,
     benchmarks: true
   });
-  
-  // Sample data - in a real app this would be fetched from an API
-  const trendData = [
-    { month: 'Jan', pulseScore: 81, sentiment: 77, responseRate: 85, benchmark: 76 },
-    { month: 'Feb', pulseScore: 82, sentiment: 78, responseRate: 82, benchmark: 76 },
-    { month: 'Mar', pulseScore: 80, sentiment: 76, responseRate: 80, benchmark: 77 },
-    { month: 'Apr', pulseScore: 79, sentiment: 74, responseRate: 83, benchmark: 77 },
-    { month: 'May', pulseScore: 81, sentiment: 77, responseRate: 86, benchmark: 78 },
-    { month: 'Jun', pulseScore: 83, sentiment: 79, responseRate: 84, benchmark: 78 },
-    { month: 'Jul', pulseScore: 84, sentiment: 81, responseRate: 85, benchmark: 79 },
-    { month: 'Aug', pulseScore: 85, sentiment: 82, responseRate: 87, benchmark: 79 },
-    { month: 'Sep', pulseScore: 87, sentiment: 83, responseRate: 88, benchmark: 80 },
-    { month: 'Oct', pulseScore: 86, sentiment: 82, responseRate: 86, benchmark: 80 },
-    { month: 'Nov', pulseScore: 85, sentiment: 81, responseRate: 85, benchmark: 81 },
-    { month: 'Dec', pulseScore: 86, sentiment: 82, responseRate: 87, benchmark: 81 }
-  ];
-  
-  const themeData = [
-    { name: 'Work-Life Balance', frequency: 245, sentiment: 78 },
-    { name: 'Career Growth', frequency: 190, sentiment: 65 },
-    { name: 'Team Dynamics', frequency: 210, sentiment: 82 },
-    { name: 'Management', frequency: 180, sentiment: 77 },
-    { name: 'Compensation', frequency: 150, sentiment: 60 },
-    { name: 'Culture', frequency: 220, sentiment: 86 },
-    { name: 'Tools & Resources', frequency: 160, sentiment: 73 },
-  ];
-  
-  const benchmarkData = [
-    { name: 'Overall Score', value: 86, benchmark: 78 },
-    { name: 'Emotion Index', value: 82, benchmark: 74 },
-    { name: 'Engagement', value: 88, benchmark: 77 },
-    { name: 'Trust', value: 85, benchmark: 76 },
-    { name: 'Alignment', value: 81, benchmark: 73 },
-    { name: 'Recognition', value: 83, benchmark: 75 },
-  ];
-  
-  const attritionData = [
-    { id: 1, department: 'Engineering', risk: 'low', score: 15, employees: 42 },
-    { id: 2, department: 'Sales', risk: 'medium', score: 35, employees: 24 },
-    { id: 3, department: 'Customer Support', risk: 'high', score: 72, employees: 18 },
-    { id: 4, department: 'Marketing', risk: 'medium', score: 45, employees: 12 },
-    { id: 5, department: 'HR', risk: 'low', score: 20, employees: 8 },
-    { id: 6, department: 'Product', risk: 'low', score: 18, employees: 15 },
-  ];
-  
-  // AI-driven insights
-  const aiInsights = {
-    topConcerns: [
-      "Work-life balance continues to be the most mentioned concern",
-      "Career advancement opportunities seen as limited",
-      "Compensation packages viewed as below market value"
-    ],
-    predictiveFlags: [
-      { department: "Customer Support", issue: "Trust Score trending down", severity: "high" },
-      { department: "Sales", issue: "Engagement dropped 8% this month", severity: "medium" },
-      { department: "Marketing", issue: "Response rate falling", severity: "low" }
-    ],
-    recommendedActions: [
-      "Schedule listening sessions with Customer Support team",
-      "Review Sales team quarterly objectives and recognition program",
-      "Implement flexible working arrangements to improve work-life balance"
-    ]
-  };
-  
-  // Dashboard colors
-  const COLORS = {
-    pulseScore: '#9B87F5',
-    sentiment: '#22C55E',
-    responseRate: '#3B82F6',
-    benchmark: '#94A3B8',
-    low: '#22C55E',
-    medium: '#EAB308',
-    high: '#EF4444',
-    secondary: '#6E59A5',
-    tertiary: '#1EAEDB',
-  };
-  
-  // Color array for pie charts
-  const PIE_COLORS = ['#9B87F5', '#22C55E', '#3B82F6', '#EAB308', '#EC4899', '#6366F1', '#14B8A6'];
   
   // Custom tooltip content
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -289,7 +236,7 @@ const AdvancedAnalytics = () => {
                 onClick={() => handleExport('pdf')}
                 className="text-xs"
               >
-                <FilePdf className="h-3.5 w-3.5 mr-1" />
+                <FileText className="h-3.5 w-3.5 mr-1" />
                 PDF
               </Button>
               <Button
@@ -509,7 +456,7 @@ const AdvancedAnalytics = () => {
                         )}
                         {/* Threshold reference line */}
                         <ReferenceLine y={60} stroke="red" strokeDasharray="3 3">
-                          <Label value="At Risk Threshold" position="insideBottomRight" />
+                          <Label position="insideBottomRight">At Risk Threshold</Label>
                         </ReferenceLine>
                       </LineChart>
                     ) : chartType === 'bar' ? (
@@ -592,9 +539,9 @@ const AdvancedAnalytics = () => {
                           <td className="px-4 py-2 text-sm">{trendData[trendData.length - 1].benchmark}</td>
                           <td className="px-4 py-2 text-sm">
                             <span className={
-                              calculateZScore(trendData[trendData.length - 1].pulseScore, trendData[trendData.length - 1].benchmark) > 1 
+                              Number(calculateZScore(trendData[trendData.length - 1].pulseScore, trendData[trendData.length - 1].benchmark)) > 1 
                                 ? "text-green-600" 
-                                : calculateZScore(trendData[trendData.length - 1].pulseScore, trendData[trendData.length - 1].benchmark) < -1
+                                : Number(calculateZScore(trendData[trendData.length - 1].pulseScore, trendData[trendData.length - 1].benchmark)) < -1
                                   ? "text-red-600"
                                   : "text-amber-600"
                             }>
@@ -1015,7 +962,7 @@ const AdvancedAnalytics = () => {
                               <div className="text-xs">Trust + Engagement Combined</div>
                               <div className="text-xs font-medium">
                                 {/* If combined score < 60%, show warning */}
-                                {(benchmarkData[2].value + benchmarkData[3].value) / 2 < 60 ? (
+                                {((benchmarkData[2].value + benchmarkData[3].value) / 2) < 60 ? (
                                   <span className="text-red-600 flex items-center">
                                     <AlertTriangle className="h-3 w-3 mr-1" />
                                     At Risk ({(benchmarkData[2].value + benchmarkData[3].value) / 2}%)
@@ -1029,7 +976,7 @@ const AdvancedAnalytics = () => {
                             </div>
                             <div className="w-full h-2 bg-gray-200 rounded-full">
                               <div 
-                                className={`h-2 rounded-full ${(benchmarkData[2].value + benchmarkData[3].value) / 2 < 60 ? 'bg-red-500' : 'bg-green-500'}`} 
+                                className={`h-2 rounded-full ${((benchmarkData[2].value + benchmarkData[3].value) / 2) < 60 ? 'bg-red-500' : 'bg-green-500'}`} 
                                 style={{ width: `${(benchmarkData[2].value + benchmarkData[3].value) / 2}%` }}
                               ></div>
                             </div>
@@ -1156,3 +1103,4 @@ const AdvancedAnalytics = () => {
 };
 
 export default AdvancedAnalytics;
+

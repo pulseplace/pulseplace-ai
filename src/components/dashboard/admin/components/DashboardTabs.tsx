@@ -17,10 +17,7 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
   selectedTab = 'overview',
   onTabChange
 }) => {
-  const [activeTab, setActiveTab] = React.useState(selectedTab);
-  
   const handleTabChange = (value: string) => {
-    setActiveTab(value);
     if (onTabChange) {
       onTabChange(value);
     }

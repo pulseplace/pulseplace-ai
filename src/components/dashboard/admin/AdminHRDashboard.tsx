@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { 
   fetchAdminDashboardStats, 
@@ -88,6 +87,42 @@ const AdminHRDashboard = () => {
     return <LoadingState />;
   }
   
+  const renderTabContent = () => {
+    switch (selectedTab) {
+      case 'overview':
+        return (
+          <OverviewTabContent 
+            stats={stats}
+            departmentStats={departmentStats}
+            certifications={certifications}
+            onSendRemindersClick={handleSendReminderClick}
+          />
+        );
+      case 'departments':
+        return <PlaceholderTabContent text="Departments tab would show department-specific metrics and insights" />;
+      case 'certifications':
+        return <PlaceholderTabContent text="Certifications tab would show all past and current certifications" />;
+      case 'badge':
+        return (
+          <PlaceholderTabContent 
+            text="Preview your certification badge and get embed code"
+            showBadge={true}
+            badgeData={{
+              companyName: 'Acme Corporation',
+              score: 88,
+              tier: 'Pulse Certified™',
+              issueDate: 'April 7, 2025',
+              validUntil: 'April 7, 2026'
+            }}
+          />
+        );
+      case 'settings':
+        return <PlaceholderTabContent text="Settings tab would contain dashboard configuration options" />;
+      default:
+        return <PlaceholderTabContent text="Select a tab to view content" />;
+    }
+  };
+  
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -99,39 +134,14 @@ const AdminHRDashboard = () => {
       <CardContent>
         {error && <ErrorAlert message={error} />}
         
-        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-          <DashboardTabs 
-            departmentStats={departmentStats} 
-            recentCertifications={certifications}
-            selectedTab={selectedTab}
-            onTabChange={setSelectedTab}
-          />
-          
-          <TabsContent value="overview">
-            <OverviewTabContent 
-              stats={stats}
-              departmentStats={departmentStats}
-              certifications={certifications}
-              onSendRemindersClick={handleSendReminderClick}
-            />
-          </TabsContent>
-          
-          <TabsContent value="surveys">
-            <PlaceholderTabContent text="Surveys tab content would go here with active and scheduled surveys" />
-          </TabsContent>
-          
-          <TabsContent value="insights">
-            <PlaceholderTabContent text="Insights tab would contain AI-generated insights and trend analysis" />
-          </TabsContent>
-          
-          <TabsContent value="certifications">
-            <PlaceholderTabContent text="Certifications tab would show all past and current certifications" />
-          </TabsContent>
-          
-          <TabsContent value="employees">
-            <PlaceholderTabContent text="Employees tab would contain employee participation and individual insights" />
-          </TabsContent>
-        </Tabs>
+        <DashboardTabs 
+          departmentStats={departmentStats} 
+          recentCertifications={certifications}
+          selectedTab={selectedTab}
+          onTabChange={setSelectedTab}
+        />
+        
+        {renderTabContent()}
       </CardContent>
     </Card>
   );

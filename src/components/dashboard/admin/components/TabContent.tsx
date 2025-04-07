@@ -1,6 +1,9 @@
+
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import PlaceholderTabContent from './PlaceholderTabContent';
+import OverviewTabContent from './OverviewTabContent';
+import { DepartmentStats, CertificationSummary } from '../AdminDashboardService';
 
 interface TabContentProps {
   activeTab: string;
@@ -23,7 +26,7 @@ const TabContent: React.FC<TabContentProps> = ({
     const badgeData = {
       companyName: 'Acme Corporation',
       score: 88,
-      tier: 'pulse_certified',
+      tier: 'Pulse Certified™',
       issueDate: 'April 7, 2025',
       validUntil: 'April 7, 2026'
     };

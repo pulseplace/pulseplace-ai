@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Mail } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { emailService } from '@/services/emailService';
 
 const EmailSendTest: React.FC = () => {
   const { toast } = useToast();
@@ -28,26 +28,23 @@ const EmailSendTest: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-email', {
-        body: {
-          to: email,
-          subject: subject,
-          html: content,
-          fromName: "PulsePlace",
-          fromEmail: "test@pulseplace.ai"
-        }
+      const result = await emailService.sendEmail({
+        to: email,
+        subject: subject,
+        html: content,
+        fromName: "PulsePlace Test",
+        fromEmail: "test@pulseplace.ai"
       });
 
-      if (error) {
-        console.error('Error sending test email:', error);
-        throw new Error(error.message || 'Failed to send email');
+      if (!result.success) {
+        throw new Error('Failed to send email');
       }
 
       toast({
         title: "Email Sent",
         description: `Test email was sent to ${email}`,
       });
-      console.log('Email sent successfully:', data);
+      console.log('Email sent successfully:', result.data);
     } catch (error) {
       console.error('Failed to send test email:', error);
       toast({

@@ -10,6 +10,16 @@ interface EmailRecipient {
   company?: string;
 }
 
+interface GenericEmailRequest {
+  to: string | string[];
+  subject: string;
+  html: string;
+  text?: string;
+  fromName?: string;
+  fromEmail?: string;
+  replyTo?: string;
+}
+
 /**
  * Service for sending emails via MailerSend through a Supabase Edge Function
  */
@@ -73,6 +83,38 @@ export const emailService = {
     } catch (error) {
       console.error('Failed to send certification email:', error);
       return false;
+    }
+  },
+
+  /**
+   * Sends a generic email using the edge function
+   * 
+   * @param emailRequest Email request configuration
+   * @returns Promise resolving to success status and response data
+   */
+  sendEmail: async (emailRequest: GenericEmailRequest): Promise<{success: boolean, data?: any}> => {
+    try {
+      console.log('Sending email to:', emailRequest.to);
+      
+      const { data, error } = await supabase.functions.invoke('send-email', {
+        body: {
+          ...emailRequest,
+          fromName: emailRequest.fromName || "PulsePlace",
+          fromEmail: emailRequest.fromEmail || "no-reply@pulseplace.ai",
+          replyTo: emailRequest.replyTo || "support@pulseplace.ai"
+        }
+      });
+      
+      if (error) {
+        console.error('Failed to send email:', error);
+        return { success: false };
+      }
+      
+      console.log('Email sent successfully:', data);
+      return { success: true, data };
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      return { success: false };
     }
   }
 };

@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, Award, Buildings, ArrowRight } from 'lucide-react';
+import { Search, Filter, Award, Building2, ArrowRight } from 'lucide-react';
 import CertifiedCompanyGrid from '@/components/certification/CertifiedCompanyGrid';
 import CertificationHero from '@/components/certification/CertificationHero';
 import { Link } from 'react-router-dom';
@@ -40,7 +39,7 @@ const CertificationShowcase = () => {
                 <Select value={industryFilter} onValueChange={setIndustryFilter}>
                   <SelectTrigger className="w-full">
                     <div className="flex items-center">
-                      <Buildings className="mr-2 h-4 w-4 text-gray-500" />
+                      <Building2 className="mr-2 h-4 w-4 text-gray-500" />
                       <SelectValue placeholder="Industry" />
                     </div>
                   </SelectTrigger>

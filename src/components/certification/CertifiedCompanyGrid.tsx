@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -68,7 +67,7 @@ const MOCK_CERTIFIED_COMPANIES = [
     id: 6,
     name: 'TechNova',
     industry: 'tech',
-    logo: '/placeholder.svg', 
+    logo: '/placeholder.svg',
     tier: 'pulse_certified',
     score: 91,
     region: 'na',

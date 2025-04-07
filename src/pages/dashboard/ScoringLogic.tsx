@@ -66,17 +66,21 @@ const ScoringLogic = () => {
   "categories": {
     "emotion_index": {
       "weight": 0.4,
-      "themes": ["inclusion_belonging", "motivation_fulfillment"]
+      "description": "Average score across all questions"
     },
     "engagement_stability": {
       "weight": 0.3,
-      "themes": ["mission_alignment", "engagement_continuity"]
+      "description": "Average of engagement_continuity and motivation_fulfillment themes",
+      "themes": ["motivation_fulfillment", "engagement_continuity"]
     },
     "culture_trust": {
       "weight": 0.3,
-      "themes": ["trust_in_leadership", "psychological_safety"]
+      "description": "Average of trust_in_leadership, psychological_safety, and inclusion_belonging themes",
+      "themes": ["trust_in_leadership", "psychological_safety", "inclusion_belonging"]
     }
   },
+  
+  "pulse_score_formula": "0.4 * emotion_index + 0.3 * engagement_stability + 0.3 * culture_trust",
   
   "certification_tiers": {
     "pulse_certified": {
@@ -145,14 +149,14 @@ const ScoringLogic = () => {
   // 3. Calculate category scores
   category_scores = {}
   for each category, config in categories:
-    category_themes = config.themes
-    category_scores[category] = average of theme_scores for category_themes
+    if category == "emotion_index":
+      category_scores[category] = average of ALL normalized_responses
+    else:
+      category_themes = config.themes
+      category_scores[category] = average of theme_scores for category_themes
   
   // 4. Calculate overall weighted score
-  overall_score = 0
-  for each category, score in category_scores:
-    weight = categories[category].weight
-    overall_score += score * weight
+  overall_score = 0.4 * emotion_index + 0.3 * engagement_stability + 0.3 * culture_trust
   
   // 5. Determine certification tier
   tier = determine_tier(overall_score)

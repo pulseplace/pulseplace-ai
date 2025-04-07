@@ -4,9 +4,9 @@ import { ScoringTheme, SurveyQuestion, SurveyResponse, ThemeScore, CategoryScore
 const themesToCategories: Record<ScoringTheme, 'emotion_index' | 'engagement_stability' | 'culture_trust'> = {
   trust_in_leadership: 'culture_trust',
   psychological_safety: 'culture_trust',
-  inclusion_belonging: 'emotion_index',
-  motivation_fulfillment: 'emotion_index',
-  mission_alignment: 'engagement_stability',
+  inclusion_belonging: 'culture_trust',
+  motivation_fulfillment: 'engagement_stability',
+  mission_alignment: 'emotion_index',
   engagement_continuity: 'engagement_stability'
 };
 

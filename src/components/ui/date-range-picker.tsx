@@ -12,13 +12,14 @@ import {
 } from "@/components/ui/popover";
 import { addDays, subDays, subMonths } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { DateRangeFilter } from "@/types/scoring.types";
 
 export function DatePickerWithRange({
   date,
   setDate,
 }: {
-  date: { from: Date; to: Date | null };
-  setDate: React.Dispatch<React.SetStateAction<{ from: Date; to: Date | null }>>;
+  date: DateRangeFilter;
+  setDate: React.Dispatch<React.SetStateAction<DateRangeFilter>>;
 }) {
   return (
     <div className="grid gap-2">
@@ -82,12 +83,12 @@ export function DatePickerWithRange({
           </div>
           <Calendar
             mode="range"
-            selected={{ from: date.from, to: date.to || date.from }}
+            selected={{ from: date.from, to: date.to }}
             onSelect={(selectedRange: DateRange | undefined) => {
               if (selectedRange?.from) {
                 setDate({ 
                   from: selectedRange.from, 
-                  to: selectedRange.to || null 
+                  to: selectedRange.to || date.from
                 });
               }
             }}

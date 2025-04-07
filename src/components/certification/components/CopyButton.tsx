@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Copy, Check } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface CopyButtonProps {
   text: string;
@@ -23,33 +24,44 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   const [hasCopied, setHasCopied] = useState(false);
   
   const handleCopy = () => {
-    onCopy(text);
-    setHasCopied(true);
-    
-    setTimeout(() => {
-      setHasCopied(false);
-    }, 2000);
+    navigator.clipboard.writeText(text).then(() => {
+      onCopy(text);
+      setHasCopied(true);
+      
+      setTimeout(() => {
+        setHasCopied(false);
+      }, 2000);
+    });
   };
   
   return (
-    <Button 
-      onClick={handleCopy}
-      variant={variant}
-      size={size}
-      className={className}
-    >
-      {hasCopied ? (
-        <>
-          <Check className="h-4 w-4 mr-2" />
-          Copied
-        </>
-      ) : (
-        <>
-          <Copy className="h-4 w-4 mr-2" />
-          {label}
-        </>
-      )}
-    </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button 
+            onClick={handleCopy}
+            variant={variant}
+            size={size}
+            className={`transition-all duration-300 ${className}`}
+          >
+            {hasCopied ? (
+              <>
+                <Check className="h-4 w-4 mr-2 text-green-500" />
+                <span className="animate-fade-in">Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4 mr-2" />
+                {label}
+              </>
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{hasCopied ? "Copied!" : "Copy to clipboard"}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 

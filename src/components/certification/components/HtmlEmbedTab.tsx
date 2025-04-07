@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Download } from 'lucide-react';
-import { Code } from 'lucide-react';
+import { Download, Code } from 'lucide-react';
 import CertificationBadge from '../CertificationBadge';
 import CopyButton from './CopyButton';
 import { generateHtmlCode } from '../utils/sharingCodeGenerators';
@@ -44,7 +43,7 @@ const HtmlEmbedTab: React.FC<HtmlEmbedTabProps> = ({
   return (
     <div className="flex flex-col md:flex-row gap-6">
       <div className="md:w-1/2">
-        <div className="bg-white p-4 border rounded-md mb-4 flex justify-center">
+        <div className="bg-white p-4 border rounded-md mb-4 flex justify-center shadow-sm hover:shadow-md transition-all duration-300">
           <CertificationBadge 
             companyName={companyName}
             tier={tier}
@@ -56,7 +55,7 @@ const HtmlEmbedTab: React.FC<HtmlEmbedTabProps> = ({
           />
         </div>
         <Button 
-          className="w-full"
+          className="w-full hover:scale-[1.02] transition-transform duration-200"
           variant="outline"
           onClick={onDownload}
         >
@@ -67,17 +66,17 @@ const HtmlEmbedTab: React.FC<HtmlEmbedTabProps> = ({
       
       <div className="md:w-1/2">
         <div className="relative">
-          <pre className="bg-gray-100 p-4 rounded-md overflow-auto text-xs h-[180px]">
+          <pre className="bg-gray-100 p-4 rounded-md overflow-auto text-xs h-[180px] border border-gray-200 shadow-inner">
             {htmlCode}
           </pre>
           <CopyButton 
-            className="absolute top-2 right-2"
+            className="absolute top-2 right-2 shadow-sm"
             text={htmlCode}
             onCopy={(text) => onCopy('html', text)}
           />
         </div>
         
-        <div className="mt-4 p-4 bg-blue-50 rounded-md text-sm text-blue-800">
+        <div className="mt-4 p-4 bg-blue-50 rounded-md text-sm text-blue-800 border border-blue-100 shadow-sm">
           <h3 className="font-medium flex items-center gap-2 mb-2">
             <Code className="h-4 w-4" />
             Add to Your Website

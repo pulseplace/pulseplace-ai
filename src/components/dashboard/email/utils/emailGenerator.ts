@@ -1,0 +1,101 @@
+
+import { EmailPersonalization } from '../components/PersonalizationForm';
+
+/**
+ * Generates HTML email template based on personalization data
+ */
+export const generateHtmlEmail = (personalization: EmailPersonalization): string => {
+  return `<!DOCTYPE html>
+<html lang="en" style="margin: 0; padding: 0;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PulsePlace Certification Summary</title>
+    <style>
+      body {
+        font-family: 'Helvetica Neue', sans-serif;
+        background-color: #f4f6f8;
+        color: #333;
+        padding: 20px;
+        margin: 0;
+      }
+      .container {
+        background-color: #ffffff;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      }
+      .logo {
+        width: 160px;
+        margin-bottom: 20px;
+      }
+      .highlight {
+        font-size: 28px;
+        color: #1365ff;
+        font-weight: bold;
+      }
+      .badge {
+        background-color: #e8f0fe;
+        padding: 12px 18px;
+        display: inline-block;
+        border-radius: 6px;
+        font-weight: bold;
+        color: #1365ff;
+        margin-top: 10px;
+      }
+      .section {
+        margin-top: 30px;
+      }
+      .category {
+        background: #f1f4f9;
+        padding: 10px 16px;
+        border-radius: 8px;
+        margin-top: 8px;
+      }
+      .footer {
+        margin-top: 40px;
+        font-size: 13px;
+        color: #888;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <img src="https://pulseplace.ai/logo-dark.png" alt="PulsePlace Logo" class="logo" />
+      <p>Hello <strong>${personalization.recipient_name}</strong>,</p>
+
+      <p>We're thrilled to share your latest certification summary from <strong>PulsePlace.ai</strong>.</p>
+
+      <div class="section">
+        <p class="highlight">PulseScore™: ${personalization.pulse_score} / 100</p>
+        <div class="badge">${personalization.certification_level}</div>
+      </div>
+
+      <div class="section">
+        <p><strong>Category Breakdown:</strong></p>
+        <div class="category">Trust & Psychological Safety: <strong>${personalization.trust_score}</strong></div>
+        <div class="category">Engagement & Retention: <strong>${personalization.engagement_score}</strong></div>
+        <div class="category">Mission & Belonging: <strong>${personalization.culture_score}</strong></div>
+      </div>
+
+      <div class="section">
+        <p><strong>AI Insight Summary:</strong><br />
+        "${personalization.ai_summary}"</p>
+      </div>
+
+      <div class="section">
+        <p>You're now eligible to use the official <strong>Pulse Certified™</strong> badge on your website, LinkedIn, and careers page.</p>
+        <a href="${personalization.badge_download_link}" class="badge">Download Badge</a>
+      </div>
+
+      <div class="footer">
+        PulsePlace.ai — Redefining workplace trust through data & AI<br />
+        This is an automated summary. For support, contact <a href="mailto:hello@pulseplace.ai">hello@pulseplace.ai</a>
+      </div>
+    </div>
+  </body>
+</html>`;
+};

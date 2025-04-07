@@ -83,9 +83,14 @@ export function DatePickerWithRange({
           <Calendar
             mode="range"
             selected={{ from: date.from, to: date.to || date.from }}
-            onSelect={(selectedRange: DateRange | undefined) => 
-              selectedRange ? setDate({ from: selectedRange.from as Date, to: selectedRange.to as Date || null }) : null
-            }
+            onSelect={(selectedRange: DateRange | undefined) => {
+              if (selectedRange?.from) {
+                setDate({ 
+                  from: selectedRange.from, 
+                  to: selectedRange.to || null 
+                });
+              }
+            }}
             numberOfMonths={2}
             className="pointer-events-auto"
           />

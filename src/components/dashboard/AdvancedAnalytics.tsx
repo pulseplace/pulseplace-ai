@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,18 +20,20 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
   ResponsiveContainer, RadarChart, Radar, PolarGrid, 
   PolarAngleAxis, PolarRadiusAxis, ScatterChart, Scatter,
-  ReferenceLine
+  ReferenceLine, Label as RechartsLabel
 } from 'recharts';
 import { 
   Download, Filter, Calendar, BarChart3, PieChart as PieChartIcon,
   LineChart as LineChartIcon, ArrowUpRight, Layers, AlertTriangle,
   FileText, Users, TrendingUp, BrainCircuit, Settings, Pin,
   FileSpreadsheet, Save, Brain, Clock, MapPin,
-  Eye, EyeOff, Calculator, BarChart2, Sparkles, Info
+  Eye, EyeOff, Calculator, BarChart2, Sparkles, Info,
+  FilePdf
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { addDays, format, subDays, subMonths } from "date-fns";
 import * as z from "zod";
+import { DateRangeFilter } from "@/types/scoring.types";
 
 // Sample data - in a real app this would be fetched from an API
 const trendData = [
@@ -118,7 +119,7 @@ const AdvancedAnalytics = () => {
   const [activeTab, setActiveTab] = useState('trends');
   
   // Interactive filtering options
-  const [dateRange, setDateRange] = useState({ 
+  const [dateRange, setDateRange] = useState<DateRangeFilter>({ 
     from: subDays(new Date(), 90), 
     to: new Date() 
   });
@@ -236,7 +237,7 @@ const AdvancedAnalytics = () => {
                 onClick={() => handleExport('pdf')}
                 className="text-xs"
               >
-                <FileText className="h-3.5 w-3.5 mr-1" />
+                <FilePdf className="h-3.5 w-3.5 mr-1" />
                 PDF
               </Button>
               <Button
@@ -456,7 +457,7 @@ const AdvancedAnalytics = () => {
                         )}
                         {/* Threshold reference line */}
                         <ReferenceLine y={60} stroke="red" strokeDasharray="3 3">
-                          <Label position="insideBottomRight">At Risk Threshold</Label>
+                          <RechartsLabel value="At Risk Threshold" position="insideBottomRight" />
                         </ReferenceLine>
                       </LineChart>
                     ) : chartType === 'bar' ? (
@@ -693,414 +694,4 @@ const AdvancedAnalytics = () => {
                       <thead>
                         <tr>
                           <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Your Score</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Industry Avg</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Difference</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {benchmarkData.map((item, index) => (
-                          <tr key={index}>
-                            <td className="px-4 py-2 text-sm">{item.name}</td>
-                            <td className="px-4 py-2 text-sm">{item.value}</td>
-                            <td className="px-4 py-2 text-sm">{item.benchmark}</td>
-                            <td className="px-4 py-2 text-sm">
-                              <span className={`${item.value > item.benchmark ? 'text-green-600' : 'text-red-600'} flex items-center`}>
-                                {item.value > item.benchmark ? '+' : ''}{item.value - item.benchmark}
-                                {item.value > item.benchmark ? (
-                                  <ArrowUpRight className="h-3 w-3 ml-1 text-green-600" />
-                                ) : (
-                                  <ArrowUpRight className="h-3 w-3 ml-1 text-red-600 transform rotate-90" />
-                                )}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  
-                  <div className="bg-white p-4 rounded-lg border">
-                    <h3 className="text-sm font-medium mb-4">Percentile Ranking</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs font-medium">Overall Score</span>
-                          <span className="text-xs font-medium">82nd Percentile</span>
-                        </div>
-                        <div className="w-full h-2 bg-gray-200 rounded-full">
-                          <div className="h-2 bg-pulse-600 rounded-full" style={{ width: '82%' }}></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs font-medium">Emotion Index</span>
-                          <span className="text-xs font-medium">78th Percentile</span>
-                        </div>
-                        <div className="w-full h-2 bg-gray-200 rounded-full">
-                          <div className="h-2 bg-pulse-600 rounded-full" style={{ width: '78%' }}></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs font-medium">Engagement</span>
-                          <span className="text-xs font-medium">85th Percentile</span>
-                        </div>
-                        <div className="w-full h-2 bg-gray-200 rounded-full">
-                          <div className="h-2 bg-pulse-600 rounded-full" style={{ width: '85%' }}></div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs font-medium">Trust</span>
-                          <span className="text-xs font-medium">80th Percentile</span>
-                        </div>
-                        <div className="w-full h-2 bg-gray-200 rounded-full">
-                          <div className="h-2 bg-pulse-600 rounded-full" style={{ width: '80%' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-            
-            {/* Attrition Prediction Tab */}
-            <TabsContent value="attrition">
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div className="bg-white p-4 rounded-lg border shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-medium">Overall Attrition Risk</h3>
-                      <div className="flex items-center gap-1">
-                        <div className="h-3 w-3 rounded-full bg-amber-500"></div>
-                        <span className="text-xs font-medium">Medium</span>
-                      </div>
-                    </div>
-                    <div className="text-3xl font-bold mt-2">24%</div>
-                    <div className="mt-2 text-xs text-gray-500">Predicted turnover in next 6 months</div>
-                  </div>
-                  
-                  <div className="bg-white p-4 rounded-lg border shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-medium">High Risk Employees</h3>
-                      <AlertTriangle className="h-4 w-4 text-red-500" />
-                    </div>
-                    <div className="text-3xl font-bold mt-2">18</div>
-                    <div className="mt-2 text-xs text-gray-500">Employees showing critical risk patterns</div>
-                  </div>
-                  
-                  <div className="bg-white p-4 rounded-lg border shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-medium">Departments at Risk</h3>
-                      <Users className="h-4 w-4 text-amber-500" />
-                    </div>
-                    <div className="text-3xl font-bold mt-2">2</div>
-                    <div className="mt-2 text-xs text-gray-500">Departments with above-average risk</div>
-                  </div>
-                </div>
-                
-                <div className="bg-white p-4 rounded-lg border">
-                  <h3 className="text-sm font-medium mb-4">Attrition Risk by Department</h3>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead>
-                        <tr>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Score</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employees</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {attritionData.map((item) => (
-                          <tr key={item.id}>
-                            <td className="px-4 py-2 text-sm">{item.department}</td>
-                            <td className="px-4 py-2">
-                              <span
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  item.risk === 'high'
-                                    ? 'bg-red-100 text-red-800'
-                                    : item.risk === 'medium'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-green-100 text-green-800'
-                                }`}
-                              >
-                                {item.risk.charAt(0).toUpperCase() + item.risk.slice(1)}
-                              </span>
-                            </td>
-                            <td className="px-4 py-2 text-sm">{item.score}/100</td>
-                            <td className="px-4 py-2 text-sm">{item.employees}</td>
-                            <td className="px-4 py-2">
-                              <div className="w-full h-2 bg-gray-200 rounded-full">
-                                <div 
-                                  className="h-2 rounded-full" 
-                                  style={{ 
-                                    width: `${item.score}%`,
-                                    backgroundColor: getRiskColor(item.risk)
-                                  }}
-                                ></div>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                
-                <div className="bg-white p-4 rounded-lg border">
-                  <h3 className="text-sm font-medium mb-4">Contributing Factors to Attrition Risk</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart 
-                        data={[
-                          { name: 'Work-Life Balance', value: 78 },
-                          { name: 'Career Growth', value: 65 },
-                          { name: 'Compensation', value: 52 },
-                          { name: 'Management', value: 45 },
-                          { name: 'Team Dynamics', value: 38 },
-                        ]}
-                        layout="vertical"
-                        margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis type="number" domain={[0, 100]} />
-                        <YAxis type="category" dataKey="name" width={100} />
-                        <Tooltip />
-                        <Bar dataKey="value" name="Impact Score" fill={COLORS.secondary} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                    
-                    <div className="space-y-4">
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                        <h4 className="text-sm font-medium text-amber-800 mb-2 flex items-center">
-                          <AlertTriangle className="h-4 w-4 mr-1" />
-                          Key Risk Indicators
-                        </h4>
-                        <ul className="text-xs text-amber-700 space-y-1 ml-6 list-disc">
-                          <li>Decreased survey response rates in Customer Support dept</li>
-                          <li>Negative sentiment around compensation in Sales team</li>
-                          <li>Work-life balance concerns increasing across all departments</li>
-                          <li>Career growth mentions up 15% in past quarter</li>
-                        </ul>
-                      </div>
-                      
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h4 className="text-sm font-medium text-blue-800 mb-2">AI-Powered Recommendations</h4>
-                        <ul className="text-xs text-blue-700 space-y-1 ml-6 list-disc">
-                          <li>Schedule 1-on-1s with high-risk employees in Customer Support</li>
-                          <li>Review compensation structure for Sales team</li>
-                          <li>Implement flexible work arrangements to improve work-life balance</li>
-                          <li>Develop more transparent career progression paths</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* AI Insights Tab */}
-            <TabsContent value="aiInsights">
-              <div className="space-y-4">
-                <div className="bg-white p-4 rounded-lg border shadow-sm">
-                  <div className="flex items-center mb-4">
-                    <Brain className="h-5 w-5 mr-2 text-purple-600" />
-                    <h3 className="text-lg font-medium">AI-Generated Insights & Predictions</h3>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-4">
-                      <Card className="p-4 border border-purple-200 bg-purple-50">
-                        <h4 className="text-sm font-semibold mb-2 flex items-center">
-                          <Sparkles className="h-3.5 w-3.5 mr-1 text-purple-600" />
-                          Top 3 Concerns (Last 30 Days)
-                        </h4>
-                        <ul className="space-y-2">
-                          {aiInsights.topConcerns.map((concern, idx) => (
-                            <li key={idx} className="flex items-start">
-                              <span className="inline-block w-5 h-5 flex-shrink-0 rounded-full bg-purple-100 text-purple-800 text-xs flex items-center justify-center mr-2 mt-0.5">
-                                {idx + 1}
-                              </span>
-                              <span className="text-sm text-gray-700">{concern}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </Card>
-                      
-                      <Card className="p-4 border-l-4 border-l-red-500 bg-white">
-                        <h4 className="text-sm font-semibold mb-2 flex items-center">
-                          <AlertTriangle className="h-3.5 w-3.5 mr-1 text-red-500" />
-                          Critical Predictions
-                        </h4>
-                        <div className="space-y-2">
-                          {aiInsights.predictiveFlags.map((flag, idx) => (
-                            <div key={idx} className="flex items-start">
-                              <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${getSeverityColor(flag.severity)} mr-2 mt-0.5`}>
-                                {flag.severity.toUpperCase()}
-                              </span>
-                              <div className="text-sm">
-                                <span className="font-medium">{flag.department}:</span> {flag.issue}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </Card>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <Card className="p-4 border border-blue-200 bg-blue-50">
-                        <h4 className="text-sm font-semibold mb-2 flex items-center">
-                          <Calculator className="h-3.5 w-3.5 mr-1 text-blue-600" />
-                          At-Risk Assessment
-                        </h4>
-                        <div className="space-y-3">
-                          <div>
-                            <div className="flex justify-between items-center mb-1">
-                              <div className="text-xs">Trust + Engagement Combined</div>
-                              <div className="text-xs font-medium">
-                                {/* If combined score < 60%, show warning */}
-                                {((benchmarkData[2].value + benchmarkData[3].value) / 2) < 60 ? (
-                                  <span className="text-red-600 flex items-center">
-                                    <AlertTriangle className="h-3 w-3 mr-1" />
-                                    At Risk ({(benchmarkData[2].value + benchmarkData[3].value) / 2}%)
-                                  </span>
-                                ) : (
-                                  <span className="text-green-600">
-                                    Healthy ({(benchmarkData[2].value + benchmarkData[3].value) / 2}%)
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="w-full h-2 bg-gray-200 rounded-full">
-                              <div 
-                                className={`h-2 rounded-full ${((benchmarkData[2].value + benchmarkData[3].value) / 2) < 60 ? 'bg-red-500' : 'bg-green-500'}`} 
-                                style={{ width: `${(benchmarkData[2].value + benchmarkData[3].value) / 2}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <div className="flex justify-between items-center mb-1">
-                              <div className="text-xs">Predicted Turnover (6 months)</div>
-                              <div className="text-xs font-medium">24%</div>
-                            </div>
-                            <div className="w-full h-2 bg-gray-200 rounded-full">
-                              <div className="h-2 rounded-full bg-amber-500" style={{ width: '24%' }}></div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center text-xs text-gray-600 mt-1">
-                            <Info className="h-3 w-3 mr-1" />
-                            <span>Based on predictive modeling of 28 engagement signals</span>
-                          </div>
-                        </div>
-                      </Card>
-                      
-                      <Card className="p-4 border border-green-200 bg-green-50">
-                        <h4 className="text-sm font-semibold mb-2 flex items-center">
-                          <BarChart2 className="h-3.5 w-3.5 mr-1 text-green-600" />
-                          AI-Recommended Actions
-                        </h4>
-                        <ul className="space-y-2">
-                          {aiInsights.recommendedActions.map((action, idx) => (
-                            <li key={idx} className="flex items-start">
-                              <span className="inline-block w-5 h-5 flex-shrink-0 rounded-full bg-green-100 text-green-800 text-xs flex items-center justify-center mr-2 mt-0.5">
-                                {idx + 1}
-                              </span>
-                              <span className="text-sm text-gray-700">{action}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </Card>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-                    <div className="text-xs text-gray-500 flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      Last analyzed: Today at 9:45 AM
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      className="text-xs"
-                      onClick={() => toast({
-                        title: "AI Insights Generated",
-                        description: "AI has refreshed insights with the latest data"
-                      })}
-                    >
-                      <Sparkles className="h-3 w-3 mr-1" />
-                      Refresh Insights
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Engagement vs Retention Heatmap - Only show if enabled */}
-                {visibleMetrics.engagementRetention && (
-                  <div className="bg-white p-4 rounded-lg border">
-                    <h3 className="text-sm font-medium mb-4">Engagement vs. Retention Heatmap</h3>
-                    <div className="h-[300px] flex items-center justify-center">
-                      <div className="relative h-full w-full">
-                        <div className="absolute top-0 left-0 right-0 bottom-0 grid grid-cols-5 grid-rows-5 gap-1">
-                          {Array.from({ length: 25 }).map((_, i) => {
-                            const row = Math.floor(i / 5);
-                            const col = i % 5;
-                            const value = 100 - (row * 20) + (col * 5);
-                            let bgColor = 'bg-green-100';
-                            if (value < 40) bgColor = 'bg-red-100';
-                            else if (value < 60) bgColor = 'bg-red-50';
-                            else if (value < 70) bgColor = 'bg-amber-100';
-                            else if (value < 80) bgColor = 'bg-amber-50';
-                            else if (value < 90) bgColor = 'bg-green-50';
-                            
-                            return (
-                              <div 
-                                key={i} 
-                                className={`${bgColor} flex items-center justify-center rounded border`}
-                                style={{ opacity: 0.3 + (value / 100) * 0.7 }}
-                              >
-                                <span className="text-[10px] font-medium">{value}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <div className="absolute top-1/2 left-0 transform -translate-y-1/2 -rotate-90 text-xs font-medium text-gray-500">
-                          Retention Rate
-                        </div>
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-xs font-medium text-gray-500">
-                          Engagement Score
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-center mt-4">
-                      <div className="flex space-x-4">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 bg-red-100 mr-1"></div>
-                          <span className="text-xs">High Risk</span>
-                        </div>
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 bg-amber-100 mr-1"></div>
-                          <span className="text-xs">Medium Risk</span>
-                        </div>
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 bg-green-100 mr-1"></div>
-                          <span className="text-xs">Low Risk</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export default AdvancedAnalytics;
-
+                          <th className="px-4 py-2 text-left

@@ -81,10 +81,18 @@ const CertificationEmailTemplate: React.FC<CertificationEmailTemplateProps> = ({
     });
   };
 
-  const handleSendTestEmail = () => {
-    toast({
-      title: "Test Email Sent",
-      description: `A test email has been sent to ${recipientEmail}`,
+  const handleSendTestEmail = async (): Promise<void> => {
+    // Since this is a demo/template function, it only shows a toast notification
+    // In a real implementation, it would connect to a backend service
+    return new Promise<void>((resolve) => {
+      // Simulate a short delay to show the loading state
+      setTimeout(() => {
+        toast({
+          title: "Test Email Sent",
+          description: `A test email has been sent to ${recipientEmail}`,
+        });
+        resolve();
+      }, 500);
     });
   };
   

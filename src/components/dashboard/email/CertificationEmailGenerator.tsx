@@ -60,11 +60,18 @@ const CertificationEmailGenerator: React.FC<CertificationEmailGeneratorProps> = 
     });
   };
 
-  const handleSendTestEmail = () => {
+  const handleSendTestEmail = async (): Promise<void> => {
     // This would connect to a backend service to actually send the email
-    toast({
-      title: "Test Email Sent",
-      description: `A test email has been sent to ${personalization.recipient_name}`,
+    // Using Promise.resolve() to ensure it returns a Promise<void>
+    return new Promise<void>((resolve) => {
+      // Simulate a short delay to show the loading state
+      setTimeout(() => {
+        toast({
+          title: "Test Email Sent",
+          description: `A test email has been sent to ${personalization.recipient_name}`,
+        });
+        resolve();
+      }, 500);
     });
   };
 

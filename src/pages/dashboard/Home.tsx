@@ -11,6 +11,7 @@ import { Tables } from '@/types/database.types';
 import SkillsGapAnalysis from '@/components/dashboard/SkillsGapAnalysis';
 import TeamPulseTrends from '@/components/dashboard/TeamPulseTrends';
 import SentimentAnalysis from '@/components/dashboard/SentimentAnalysis';
+import AdvancedAnalytics from '@/components/dashboard/AdvancedAnalytics';
 import { Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -139,6 +140,8 @@ const DashboardHome = () => {
         <TeamPulseTrends />
         <SentimentAnalysis />
       </div>
+      
+      <AdvancedAnalytics />
     </div>
   );
 };

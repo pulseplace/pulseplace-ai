@@ -5,6 +5,7 @@ import PulseScoreCalculator from '@/components/dashboard/PulseScoreCalculator';
 import ThematicBucketsInfo from '@/components/dashboard/ThematicBucketsInfo';
 import SchemaContent from '@/components/dashboard/scoring/SchemaContent';
 import PromptsContent from '@/components/dashboard/scoring/PromptsContent';
+import AdvancedAnalytics from '@/components/dashboard/AdvancedAnalytics';
 
 const ScoringLogic = () => {
   return (
@@ -17,6 +18,7 @@ const ScoringLogic = () => {
           <TabsTrigger value="thematicBuckets">Thematic Buckets</TabsTrigger>
           <TabsTrigger value="schema">Scoring Schema</TabsTrigger>
           <TabsTrigger value="prompts">AI Prompts</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced Analytics</TabsTrigger>
         </TabsList>
         
         <TabsContent value="calculator">
@@ -33,6 +35,10 @@ const ScoringLogic = () => {
         
         <TabsContent value="prompts">
           <PromptsContent />
+        </TabsContent>
+        
+        <TabsContent value="advanced">
+          <AdvancedAnalytics />
         </TabsContent>
       </Tabs>
     </div>

@@ -6,10 +6,13 @@ import AIWorkflowChart from '@/components/dashboard/mapping/AIWorkflowChart';
 import CertificationEmailTemplate from '@/components/dashboard/email/CertificationEmailTemplate';
 import AdminHRDashboard from '@/components/dashboard/admin/AdminHRDashboard';
 import EmbeddableBadgeWidget from '@/components/dashboard/badge/EmbeddableBadgeWidget';
+import CertificatePdfExport from '@/components/dashboard/admin/components/CertificatePdfExport';
+import CertificateVerification from '@/components/dashboard/admin/components/CertificateVerification';
 import { useToast } from "@/hooks/use-toast";
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from '@/contexts/AuthContext';
+import LoadingState from '@/components/dashboard/admin/components/LoadingState';
 
 const CertificationEngine = () => {
   const { toast } = useToast();
@@ -35,7 +38,7 @@ const CertificationEngine = () => {
     setError(null);
     
     // Simulate loading on certain data-heavy tabs
-    if (value === 'admin' || value === 'badge') {
+    if (value === 'admin' || value === 'badge' || value === 'pdf' || value === 'verify') {
       setIsLoading(true);
       
       // Simulate network request
@@ -44,10 +47,20 @@ const CertificationEngine = () => {
         
         // Success toast notification
         toast({
-          title: `${value === 'admin' ? 'Admin Dashboard' : 'Badge Widget'} Loaded`,
+          title: `${getTabTitle(value)} Loaded`,
           description: "Data loaded successfully",
         });
       }, 1000);
+    }
+  };
+  
+  const getTabTitle = (tab: string): string => {
+    switch (tab) {
+      case 'admin': return 'Admin Dashboard';
+      case 'badge': return 'Badge Widget';
+      case 'pdf': return 'PDF Certificate';
+      case 'verify': return 'Certificate Verification';
+      default: return tab.charAt(0).toUpperCase() + tab.slice(1);
     }
   };
   
@@ -79,15 +92,12 @@ const CertificationEngine = () => {
           <TabsTrigger value="email">Email Template</TabsTrigger>
           <TabsTrigger value="admin">Admin Dashboard</TabsTrigger>
           <TabsTrigger value="badge">Badge Widget</TabsTrigger>
+          <TabsTrigger value="pdf">PDF Certificate</TabsTrigger>
+          <TabsTrigger value="verify">Verify Certificate</TabsTrigger>
         </TabsList>
         
         {isLoading ? (
-          <div className="flex items-center justify-center h-[400px]">
-            <div className="text-center">
-              <Loader2 className="h-10 w-10 animate-spin text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Loading {activeTab === 'admin' ? 'Admin Dashboard' : 'Badge Widget'}...</p>
-            </div>
-          </div>
+          <LoadingState />
         ) : (
           <>
             <TabsContent value="mapping">
@@ -108,6 +118,14 @@ const CertificationEngine = () => {
             
             <TabsContent value="badge">
               <EmbeddableBadgeWidget isLoading={false} />
+            </TabsContent>
+            
+            <TabsContent value="pdf">
+              <CertificatePdfExport />
+            </TabsContent>
+            
+            <TabsContent value="verify">
+              <CertificateVerification />
             </TabsContent>
           </>
         )}

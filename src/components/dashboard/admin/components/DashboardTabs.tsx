@@ -1,51 +1,89 @@
 
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TabContent from './TabContent';
+import { Award, BarChart3, FileText, Settings, Users2 } from 'lucide-react';
 
 interface DashboardTabsProps {
-  selectedTab: string;
-  onTabChange: (value: string) => void;
+  departmentStats: any[];
+  recentCertifications: any[];
 }
 
-const DashboardTabs: React.FC<DashboardTabsProps> = ({ selectedTab, onTabChange }) => {
+const DashboardTabs: React.FC<DashboardTabsProps> = ({ 
+  departmentStats, 
+  recentCertifications 
+}) => {
+  const [activeTab, setActiveTab] = React.useState('overview');
+  
   return (
-    <TabsList className="grid grid-cols-3 md:grid-cols-5 mb-6">
-      <TabsTrigger 
-        value="overview" 
-        onClick={() => onTabChange('overview')}
-        data-state={selectedTab === 'overview' ? 'active' : 'inactive'}
-      >
-        Overview
-      </TabsTrigger>
-      <TabsTrigger 
-        value="surveys" 
-        onClick={() => onTabChange('surveys')}
-        data-state={selectedTab === 'surveys' ? 'active' : 'inactive'}
-      >
-        Surveys
-      </TabsTrigger>
-      <TabsTrigger 
-        value="insights" 
-        onClick={() => onTabChange('insights')}
-        data-state={selectedTab === 'insights' ? 'active' : 'inactive'}
-      >
-        Insights
-      </TabsTrigger>
-      <TabsTrigger 
-        value="certifications" 
-        onClick={() => onTabChange('certifications')}
-        data-state={selectedTab === 'certifications' ? 'active' : 'inactive'}
-      >
-        Certifications
-      </TabsTrigger>
-      <TabsTrigger 
-        value="employees" 
-        onClick={() => onTabChange('employees')}
-        data-state={selectedTab === 'employees' ? 'active' : 'inactive'}
-      >
-        Employees
-      </TabsTrigger>
-    </TabsList>
+    <Tabs 
+      defaultValue="overview" 
+      className="mt-6"
+      onValueChange={setActiveTab}
+    >
+      <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+        <TabsTrigger value="overview" className="flex items-center gap-2">
+          <BarChart3 className="h-4 w-4" />
+          <span className="hidden sm:inline">Overview</span>
+        </TabsTrigger>
+        <TabsTrigger value="departments" className="flex items-center gap-2">
+          <Users2 className="h-4 w-4" />
+          <span className="hidden sm:inline">Departments</span>
+        </TabsTrigger>
+        <TabsTrigger value="certifications" className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          <span className="hidden sm:inline">Reports</span>
+        </TabsTrigger>
+        <TabsTrigger value="badge" className="flex items-center gap-2">
+          <Award className="h-4 w-4" />
+          <span className="hidden sm:inline">Badge</span>
+        </TabsTrigger>
+        <TabsTrigger value="settings" className="flex items-center gap-2">
+          <Settings className="h-4 w-4" />
+          <span className="hidden sm:inline">Settings</span>
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="overview">
+        <TabContent 
+          activeTab="overview" 
+          departmentStats={departmentStats} 
+          recentCertifications={recentCertifications} 
+        />
+      </TabsContent>
+      
+      <TabsContent value="departments">
+        <TabContent 
+          activeTab="departments" 
+          departmentStats={departmentStats} 
+          recentCertifications={recentCertifications} 
+        />
+      </TabsContent>
+      
+      <TabsContent value="certifications">
+        <TabContent 
+          activeTab="certifications" 
+          departmentStats={departmentStats} 
+          recentCertifications={recentCertifications} 
+        />
+      </TabsContent>
+      
+      <TabsContent value="badge">
+        <TabContent 
+          activeTab="badge" 
+          departmentStats={departmentStats} 
+          recentCertifications={recentCertifications} 
+        />
+      </TabsContent>
+      
+      <TabsContent value="settings">
+        <TabContent 
+          activeTab="settings" 
+          departmentStats={departmentStats} 
+          recentCertifications={recentCertifications} 
+        />
+      </TabsContent>
+    </Tabs>
   );
 };
 

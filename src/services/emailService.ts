@@ -1,4 +1,5 @@
 
+import { supabase } from '@/integrations/supabase/client';
 import { prepareCertificationEmail } from '@/utils/emailTemplates';
 import { PulseScoreData } from '@/types/scoring.types';
 import { getTierDisplay } from '@/utils/scoring';
@@ -10,11 +11,11 @@ interface EmailRecipient {
 }
 
 /**
- * Service for sending emails via Postmark
+ * Service for sending emails via MailerSend through a Supabase Edge Function
  */
 export const emailService = {
   /**
-   * Sends a certification summary email via Postmark
+   * Sends a certification summary email via MailerSend
    * 
    * @param recipient The email recipient information
    * @param pulseScoreData The pulse score data for the certification
@@ -48,29 +49,26 @@ export const emailService = {
         badge_download_link: `https://app.pulseplace.ai/certification/badge/${pulseScoreData.tier}`
       });
       
-      // In a real implementation, this would call the Postmark API
-      console.log(`Prepared email for ${recipient.email} with Postmark template`);
+      console.log('Preparing to send certification email to:', recipient.email);
       
-      // Example of how to use with Postmark API
-      // const response = await fetch('https://api.postmarkapp.com/email', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'X-Postmark-Server-Token': 'your-postmark-server-token'
-      //   },
-      //   body: JSON.stringify({
-      //     From: 'certification@pulseplace.ai',
-      //     To: recipient.email,
-      //     Subject: `Your PulsePlace Certification: ${getTierDisplay(pulseScoreData.tier).label}`,
-      //     HtmlBody: emailHtml,
-      //     MessageStream: 'outbound'
-      //   })
-      // });
+      // Send email using our Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to: recipient.email,
+          subject: `Your PulsePlace Certification: ${getTierDisplay(pulseScoreData.tier).label}`,
+          html: emailHtml,
+          fromName: "PulsePlace Certification",
+          fromEmail: "certification@pulseplace.ai",
+          replyTo: "support@pulseplace.ai"
+        }
+      });
       
-      // const result = await response.json();
-      // return result.ErrorCode === 0;
+      if (error) {
+        console.error('Failed to send certification email:', error);
+        return false;
+      }
       
-      // For now, simulate success
+      console.log('Certification email sent successfully:', data);
       return true;
     } catch (error) {
       console.error('Failed to send certification email:', error);

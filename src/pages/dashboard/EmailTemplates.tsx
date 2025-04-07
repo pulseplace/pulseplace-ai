@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ExternalLink } from 'lucide-react';
 import CertificationEmailTemplate from '@/components/dashboard/email/CertificationEmailTemplate';
 import CertificationEmailGenerator from '@/components/dashboard/email/CertificationEmailGenerator';
+import EmailSendTest from '@/components/dashboard/email/EmailSendTest';
 
 const EmailTemplates = () => {
   const { toast } = useToast();
@@ -32,6 +33,7 @@ const EmailTemplates = () => {
         <TabsList className="mb-4">
           <TabsTrigger value="generator">Custom Generator</TabsTrigger>
           <TabsTrigger value="standard">Standard Template</TabsTrigger>
+          <TabsTrigger value="test">Email Tester</TabsTrigger>
           <TabsTrigger value="postmark">Postmark Integration</TabsTrigger>
         </TabsList>
         
@@ -41,6 +43,10 @@ const EmailTemplates = () => {
         
         <TabsContent value="standard">
           <CertificationEmailTemplate />
+        </TabsContent>
+
+        <TabsContent value="test">
+          <EmailSendTest />
         </TabsContent>
         
         <TabsContent value="postmark">

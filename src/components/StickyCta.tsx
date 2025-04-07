@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const StickyCta = () => {
   const location = useLocation();
-  const isKeyPage = ['/', '/certification', '/join-beta', '/methodology', '/ai-engine'].includes(location.pathname);
+  const isKeyPage = ['/', '/certification', '/join-beta', '/methodology', '/ai-engine', '/showcase'].includes(location.pathname);
   
   if (!isKeyPage) return null;
   

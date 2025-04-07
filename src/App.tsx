@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Methodology from "./pages/Methodology";
 import AIEngine from "./pages/AIEngine";
 import Certification from "./pages/Certification";
+import CertificationShowcase from "./pages/CertificationShowcase";
 import JoinBeta from "./pages/JoinBeta";
 import NotFound from "./pages/NotFound";
 import AboutUs from "./pages/AboutUs";
@@ -50,6 +51,7 @@ const AnimatedRoutes = () => {
           <Route path="/methodology" element={<Methodology />} />
           <Route path="/ai-engine" element={<AIEngine />} />
           <Route path="/certification" element={<Certification />} />
+          <Route path="/showcase" element={<CertificationShowcase />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/roi-calculator" element={<ROICalculator />} />
           <Route path="/dashboard-preview" element={<DashboardPreview />} />

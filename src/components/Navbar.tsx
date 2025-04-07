@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from 'lucide-react';
@@ -50,6 +49,7 @@ const Navbar = () => {
     { type: 'link', label: 'Methodology', path: '/methodology' },
     { type: 'link', label: 'Our AI Engine', path: '/ai-engine' },
     { type: 'link', label: 'Certification', path: '/certification' },
+    { type: 'link', label: 'Showcase', path: '/showcase' },
     { type: 'link', label: 'About Us', path: '/about-us' },
     { type: 'hash-link', label: 'Join Beta', path: '/#join-beta' },
   ];

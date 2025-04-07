@@ -2,10 +2,28 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { ExternalLink } from 'lucide-react';
 import CertificationEmailTemplate from '@/components/dashboard/email/CertificationEmailTemplate';
 import CertificationEmailGenerator from '@/components/dashboard/email/CertificationEmailGenerator';
 
 const EmailTemplates = () => {
+  const { toast } = useToast();
+  
+  const handlePostmarkTemplateClick = () => {
+    // Open template in new tab
+    window.open('/email-templates/certificationSummaryEmail.html', '_blank');
+  };
+  
+  const handlePostmarkDocsClick = () => {
+    window.open('https://postmarkapp.com/support/article/1117-how-do-i-create-and-use-templates', '_blank');
+    toast({
+      title: "Postmark Documentation",
+      description: "Opened Postmark documentation in a new tab",
+    });
+  };
+
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-2xl font-bold mb-6">Email Templates</h1>
@@ -14,6 +32,7 @@ const EmailTemplates = () => {
         <TabsList className="mb-4">
           <TabsTrigger value="generator">Custom Generator</TabsTrigger>
           <TabsTrigger value="standard">Standard Template</TabsTrigger>
+          <TabsTrigger value="postmark">Postmark Integration</TabsTrigger>
         </TabsList>
         
         <TabsContent value="generator">
@@ -22,6 +41,57 @@ const EmailTemplates = () => {
         
         <TabsContent value="standard">
           <CertificationEmailTemplate />
+        </TabsContent>
+        
+        <TabsContent value="postmark">
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl">Postmark Template Integration</CardTitle>
+              <CardDescription>
+                Use our pre-built HTML template with Postmark for sending certification emails
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <h3 className="font-medium text-lg mb-2">Certification Summary Template</h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    This template is designed for Postmark integration and includes all necessary variables for 
+                    certification summary emails.
+                  </p>
+                  <div className="flex gap-3">
+                    <Button onClick={handlePostmarkTemplateClick}>
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Template
+                    </Button>
+                    <Button variant="outline" onClick={handlePostmarkDocsClick}>
+                      Postmark Docs
+                    </Button>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-lg mb-2">Integration Steps</h3>
+                  <ol className="list-decimal pl-5 space-y-2">
+                    <li>Log into your Postmark account</li>
+                    <li>Go to Templates → Click "Add Template"</li>
+                    <li>Choose "Paste HTML"</li>
+                    <li>Copy-paste the full HTML template from the "View Template" button above</li>
+                    <li>Replace the placeholder tags like {'{{pulse_score}}'}, {'{{recipient_name}}'}, etc. with Postmark's template syntax</li>
+                    <li>Save your template</li>
+                    <li>Use Postmark's API with our email service to send the certification emails</li>
+                  </ol>
+                </div>
+                
+                <div className="bg-blue-50 p-4 rounded-md text-blue-800">
+                  <p className="text-sm">
+                    <strong>Pro Tip:</strong> You can upload the PulsePlace logo directly to Postmark assets for 
+                    better email delivery performance instead of linking to external image sources.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
       

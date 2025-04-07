@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -17,7 +16,7 @@ const Footer = () => {
               <a href="https://github.com/pulseplace" className="hover:text-white transition-colors" aria-label="GitHub">
                 <Github className="h-5 w-5" />
               </a>
-              <a href="https://twitter.com/pulseplaceai" className="hover:text-white transition-colors" aria-label="Twitter">
+              <a href="https://x.com/PulsePlaceAi" className="hover:text-white transition-colors" aria-label="X (Twitter)">
                 <Twitter className="h-5 w-5" />
               </a>
               <a href="https://www.linkedin.com/company/pulseplaceai/" className="hover:text-white transition-colors" aria-label="LinkedIn">

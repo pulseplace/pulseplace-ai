@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { FileSpreadsheet, FilePdf } from 'lucide-react';
+import { FileSpreadsheet, FileText, Save } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
 interface ExportButtonsProps {
@@ -44,7 +44,7 @@ const ExportButtons: React.FC<ExportButtonsProps> = ({ className }) => {
         onClick={() => handleExport('pdf')}
         className="text-xs"
       >
-        <FilePdf className="h-3.5 w-3.5 mr-1" />
+        <FileText className="h-3.5 w-3.5 mr-1" />
         PDF
       </Button>
       <Button
@@ -56,7 +56,7 @@ const ExportButtons: React.FC<ExportButtonsProps> = ({ className }) => {
         })}
         className="text-xs"
       >
-        <FilePdf className="h-3.5 w-3.5 mr-1" />
+        <Save className="h-3.5 w-3.5 mr-1" />
         Save
       </Button>
     </div>

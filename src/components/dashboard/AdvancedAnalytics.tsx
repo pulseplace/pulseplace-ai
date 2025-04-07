@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,40 +11,119 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, 
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
   ResponsiveContainer, RadarChart, Radar, PolarGrid, 
-  PolarAngleAxis, PolarRadiusAxis, ScatterChart, Scatter
+  PolarAngleAxis, PolarRadiusAxis, ScatterChart, Scatter,
+  ReferenceLine
 } from 'recharts';
 import { 
   Download, Filter, Calendar, BarChart3, PieChart as PieChartIcon,
   LineChart as LineChartIcon, ArrowUpRight, Layers, AlertTriangle,
-  FileText, Users, TrendingUp, BrainCircuit
+  FileText, Users, TrendingUp, BrainCircuit, Settings, Pin,
+  FileSpreadsheet, FilePdf, Save, Brain, Clock, MapPin,
+  Eye, EyeOff, Calculator, BarChart2, Sparkles, Info
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { addDays, format, subDays, subMonths } from "date-fns";
+import * as z from "zod";
+
+// Date picker needed for range selection
+const DatePickerWithRange = ({ date, setDate }) => {
+  return (
+    <div className="grid gap-2">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            id="date"
+            variant={"outline"}
+            className="w-full justify-start text-left font-normal"
+          >
+            <Calendar className="mr-2 h-4 w-4" />
+            {date?.from ? (
+              date.to ? (
+                <>
+                  {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+                </>
+              ) : (
+                format(date.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pick a date range</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          {/* Calendar would go here - placeholder for now */}
+          <div className="p-3">
+            <div className="space-y-2">
+              <Button variant="outline" className="w-full justify-start text-xs" 
+                onClick={() => setDate({ from: subDays(new Date(), 30), to: new Date() })}>
+                Last 30 days
+              </Button>
+              <Button variant="outline" className="w-full justify-start text-xs"
+                onClick={() => setDate({ from: subDays(new Date(), 90), to: new Date() })}>
+                Last 90 days
+              </Button>
+              <Button variant="outline" className="w-full justify-start text-xs"
+                onClick={() => setDate({ from: subDays(new Date(), 180), to: new Date() })}>
+                Last 180 days
+              </Button>
+              <Button variant="outline" className="w-full justify-start text-xs"
+                onClick={() => setDate({ from: subMonths(new Date(), 12), to: new Date() })}>
+                Last 12 months
+              </Button>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  )
+};
 
 const AdvancedAnalytics = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('trends');
-  const [timePeriod, setTimePeriod] = useState('1year');
+  
+  // Interactive filtering options
+  const [dateRange, setDateRange] = useState({ 
+    from: subDays(new Date(), 90), 
+    to: new Date() 
+  });
   const [department, setDepartment] = useState('all');
+  const [location, setLocation] = useState('all');
   const [chartType, setChartType] = useState('line');
+  
+  // Customizable dashboard options
+  const [visibleMetrics, setVisibleMetrics] = useState({
+    pulseScore: true,
+    categoryBreakdown: true,
+    aiInsights: true,
+    participationRate: true,
+    engagementRetention: false,
+    benchmarks: true
+  });
   
   // Sample data - in a real app this would be fetched from an API
   const trendData = [
-    { month: 'Jan', pulseScore: 81, sentiment: 77, responseRate: 85 },
-    { month: 'Feb', pulseScore: 82, sentiment: 78, responseRate: 82 },
-    { month: 'Mar', pulseScore: 80, sentiment: 76, responseRate: 80 },
-    { month: 'Apr', pulseScore: 79, sentiment: 74, responseRate: 83 },
-    { month: 'May', pulseScore: 81, sentiment: 77, responseRate: 86 },
-    { month: 'Jun', pulseScore: 83, sentiment: 79, responseRate: 84 },
-    { month: 'Jul', pulseScore: 84, sentiment: 81, responseRate: 85 },
-    { month: 'Aug', pulseScore: 85, sentiment: 82, responseRate: 87 },
-    { month: 'Sep', pulseScore: 87, sentiment: 83, responseRate: 88 },
-    { month: 'Oct', pulseScore: 86, sentiment: 82, responseRate: 86 },
-    { month: 'Nov', pulseScore: 85, sentiment: 81, responseRate: 85 },
-    { month: 'Dec', pulseScore: 86, sentiment: 82, responseRate: 87 }
+    { month: 'Jan', pulseScore: 81, sentiment: 77, responseRate: 85, benchmark: 76 },
+    { month: 'Feb', pulseScore: 82, sentiment: 78, responseRate: 82, benchmark: 76 },
+    { month: 'Mar', pulseScore: 80, sentiment: 76, responseRate: 80, benchmark: 77 },
+    { month: 'Apr', pulseScore: 79, sentiment: 74, responseRate: 83, benchmark: 77 },
+    { month: 'May', pulseScore: 81, sentiment: 77, responseRate: 86, benchmark: 78 },
+    { month: 'Jun', pulseScore: 83, sentiment: 79, responseRate: 84, benchmark: 78 },
+    { month: 'Jul', pulseScore: 84, sentiment: 81, responseRate: 85, benchmark: 79 },
+    { month: 'Aug', pulseScore: 85, sentiment: 82, responseRate: 87, benchmark: 79 },
+    { month: 'Sep', pulseScore: 87, sentiment: 83, responseRate: 88, benchmark: 80 },
+    { month: 'Oct', pulseScore: 86, sentiment: 82, responseRate: 86, benchmark: 80 },
+    { month: 'Nov', pulseScore: 85, sentiment: 81, responseRate: 85, benchmark: 81 },
+    { month: 'Dec', pulseScore: 86, sentiment: 82, responseRate: 87, benchmark: 81 }
   ];
   
   const themeData = [
@@ -74,11 +154,31 @@ const AdvancedAnalytics = () => {
     { id: 6, department: 'Product', risk: 'low', score: 18, employees: 15 },
   ];
   
+  // AI-driven insights
+  const aiInsights = {
+    topConcerns: [
+      "Work-life balance continues to be the most mentioned concern",
+      "Career advancement opportunities seen as limited",
+      "Compensation packages viewed as below market value"
+    ],
+    predictiveFlags: [
+      { department: "Customer Support", issue: "Trust Score trending down", severity: "high" },
+      { department: "Sales", issue: "Engagement dropped 8% this month", severity: "medium" },
+      { department: "Marketing", issue: "Response rate falling", severity: "low" }
+    ],
+    recommendedActions: [
+      "Schedule listening sessions with Customer Support team",
+      "Review Sales team quarterly objectives and recognition program",
+      "Implement flexible working arrangements to improve work-life balance"
+    ]
+  };
+  
   // Dashboard colors
   const COLORS = {
     pulseScore: '#9B87F5',
     sentiment: '#22C55E',
     responseRate: '#3B82F6',
+    benchmark: '#94A3B8',
     low: '#22C55E',
     medium: '#EAB308',
     high: '#EF4444',
@@ -128,6 +228,35 @@ const AdvancedAnalytics = () => {
         return COLORS.low;
     }
   };
+
+  // AI insight severity color
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+  
+  // Toggle visible metrics
+  const toggleMetric = (metric: string) => {
+    setVisibleMetrics({
+      ...visibleMetrics,
+      [metric]: !visibleMetrics[metric as keyof typeof visibleMetrics]
+    });
+  };
+
+  // Calculate statistical significance
+  const calculateZScore = (value: number, benchmark: number) => {
+    // Simplified z-score calculation (assumes standard deviation of 10)
+    const stdDev = 10;
+    return ((value - benchmark) / stdDev).toFixed(2);
+  };
   
   return (
     <div className="space-y-6">
@@ -142,7 +271,7 @@ const AdvancedAnalytics = () => {
                 onClick={() => handleExport('csv')}
                 className="text-xs"
               >
-                <FileText className="h-3.5 w-3.5 mr-1" />
+                <FileSpreadsheet className="h-3.5 w-3.5 mr-1" />
                 CSV
               </Button>
               <Button
@@ -151,7 +280,7 @@ const AdvancedAnalytics = () => {
                 onClick={() => handleExport('excel')}
                 className="text-xs"
               >
-                <FileText className="h-3.5 w-3.5 mr-1" />
+                <FileSpreadsheet className="h-3.5 w-3.5 mr-1" />
                 Excel
               </Button>
               <Button
@@ -160,8 +289,20 @@ const AdvancedAnalytics = () => {
                 onClick={() => handleExport('pdf')}
                 className="text-xs"
               >
-                <Download className="h-3.5 w-3.5 mr-1" />
+                <FilePdf className="h-3.5 w-3.5 mr-1" />
                 PDF
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toast({
+                  title: "Dashboard Saved",
+                  description: "Custom dashboard configuration saved"
+                })}
+                className="text-xs"
+              >
+                <Save className="h-3.5 w-3.5 mr-1" />
+                Save
               </Button>
             </div>
           </div>
@@ -170,20 +311,10 @@ const AdvancedAnalytics = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div>
               <Label className="text-xs font-medium mb-1 block">Time Period</Label>
-              <Select 
-                value={timePeriod} 
-                onValueChange={setTimePeriod}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select time period" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="3months">Last 3 Months</SelectItem>
-                  <SelectItem value="6months">Last 6 Months</SelectItem>
-                  <SelectItem value="1year">Last Year</SelectItem>
-                  <SelectItem value="2years">Last 2 Years</SelectItem>
-                </SelectContent>
-              </Select>
+              <DatePickerWithRange 
+                date={dateRange}
+                setDate={setDateRange}
+              />
             </div>
             
             <div>
@@ -207,6 +338,25 @@ const AdvancedAnalytics = () => {
             </div>
             
             <div>
+              <Label className="text-xs font-medium mb-1 block">Location</Label>
+              <Select 
+                value={location} 
+                onValueChange={setLocation}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Locations</SelectItem>
+                  <SelectItem value="sf">San Francisco, CA</SelectItem>
+                  <SelectItem value="nyc">New York, NY</SelectItem>
+                  <SelectItem value="london">London, UK</SelectItem>
+                  <SelectItem value="remote">Remote</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
               <Label className="text-xs font-medium mb-1 block">Chart Type</Label>
               <Select 
                 value={chartType} 
@@ -223,17 +373,35 @@ const AdvancedAnalytics = () => {
                 </SelectContent>
               </Select>
             </div>
-            
-            <div className="flex items-end">
-              <Button className="w-full" size="sm">
-                <Filter className="h-3.5 w-3.5 mr-1" />
-                Apply Filters
-              </Button>
-            </div>
           </div>
+
+          {/* Customizable Dashboard Controls */}
+          <Card className="p-3 mb-4 border border-dashed">
+            <div className="flex flex-wrap gap-3">
+              <div className="text-sm font-medium flex items-center mr-2">
+                <Settings className="w-3.5 h-3.5 mr-1" /> 
+                Customize Dashboard:
+              </div>
+              {Object.entries(visibleMetrics).map(([key, value]) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <Checkbox 
+                    id={`show-${key}`} 
+                    checked={value}
+                    onCheckedChange={() => toggleMetric(key)}
+                  />
+                  <label
+                    htmlFor={`show-${key}`}
+                    className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </Card>
           
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-6">
+            <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-6">
               <TabsTrigger value="trends" className="text-xs">
                 <TrendingUp className="h-3.5 w-3.5 mr-1" />
                 Time Trends
@@ -250,40 +418,54 @@ const AdvancedAnalytics = () => {
                 <BrainCircuit className="h-3.5 w-3.5 mr-1" />
                 Attrition Prediction
               </TabsTrigger>
+              <TabsTrigger value="aiInsights" className="text-xs">
+                <Brain className="h-3.5 w-3.5 mr-1" />
+                AI Insights
+              </TabsTrigger>
             </TabsList>
             
             {/* Time Trends Tab */}
             <TabsContent value="trends">
               <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <Card className="p-4 shadow-sm">
-                    <div className="text-sm font-medium mb-1">PulseScore™</div>
-                    <div className="text-2xl font-bold">{trendData[trendData.length - 1].pulseScore}</div>
-                    <div className="text-xs text-green-600 flex items-center mt-1">
-                      <ArrowUpRight className="h-3 w-3 mr-1" />
-                      5% from previous period
-                    </div>
-                  </Card>
-                  <Card className="p-4 shadow-sm">
-                    <div className="text-sm font-medium mb-1">Sentiment Score</div>
-                    <div className="text-2xl font-bold">{trendData[trendData.length - 1].sentiment}</div>
-                    <div className="text-xs text-green-600 flex items-center mt-1">
-                      <ArrowUpRight className="h-3 w-3 mr-1" />
-                      3% from previous period
-                    </div>
-                  </Card>
-                  <Card className="p-4 shadow-sm">
-                    <div className="text-sm font-medium mb-1">Response Rate</div>
-                    <div className="text-2xl font-bold">{trendData[trendData.length - 1].responseRate}%</div>
-                    <div className="text-xs text-green-600 flex items-center mt-1">
-                      <ArrowUpRight className="h-3 w-3 mr-1" />
-                      2% from previous period
-                    </div>
-                  </Card>
-                </div>
+                {visibleMetrics.pulseScore && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Card className="p-4 shadow-sm">
+                      <div className="text-sm font-medium mb-1">PulseScore™</div>
+                      <div className="text-2xl font-bold">{trendData[trendData.length - 1].pulseScore}</div>
+                      <div className="text-xs text-green-600 flex items-center mt-1">
+                        <ArrowUpRight className="h-3 w-3 mr-1" />
+                        5% from previous period
+                      </div>
+                    </Card>
+                    <Card className="p-4 shadow-sm">
+                      <div className="text-sm font-medium mb-1">Sentiment Score</div>
+                      <div className="text-2xl font-bold">{trendData[trendData.length - 1].sentiment}</div>
+                      <div className="text-xs text-green-600 flex items-center mt-1">
+                        <ArrowUpRight className="h-3 w-3 mr-1" />
+                        3% from previous period
+                      </div>
+                    </Card>
+                    <Card className="p-4 shadow-sm">
+                      <div className="text-sm font-medium mb-1">Response Rate</div>
+                      <div className="text-2xl font-bold">{trendData[trendData.length - 1].responseRate}%</div>
+                      <div className="text-xs text-green-600 flex items-center mt-1">
+                        <ArrowUpRight className="h-3 w-3 mr-1" />
+                        2% from previous period
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 
                 <div className="bg-white p-4 rounded-lg border h-[400px]">
-                  <h3 className="text-sm font-medium mb-4">PulseScore™ Trends Over Time</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-sm font-medium">PulseScore™ Trends Over Time</h3>
+                    {visibleMetrics.benchmarks && (
+                      <div className="flex items-center">
+                        <div className="h-2 w-2 bg-gray-400 mr-1"></div>
+                        <span className="text-xs text-gray-500">Industry Benchmark</span>
+                      </div>
+                    )}
+                  </div>
                   <ResponsiveContainer width="100%" height="90%">
                     {chartType === 'line' ? (
                       <LineChart data={trendData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -315,6 +497,20 @@ const AdvancedAnalytics = () => {
                           name="Response Rate"
                           strokeWidth={2}
                         />
+                        {visibleMetrics.benchmarks && (
+                          <Line 
+                            type="monotone" 
+                            dataKey="benchmark" 
+                            stroke={COLORS.benchmark}
+                            strokeDasharray="5 5" 
+                            name="Industry Benchmark"
+                            strokeWidth={1}
+                          />
+                        )}
+                        {/* Threshold reference line */}
+                        <ReferenceLine y={60} stroke="red" strokeDasharray="3 3">
+                          <Label value="At Risk Threshold" position="insideBottomRight" />
+                        </ReferenceLine>
                       </LineChart>
                     ) : chartType === 'bar' ? (
                       <BarChart data={trendData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -326,6 +522,9 @@ const AdvancedAnalytics = () => {
                         <Bar dataKey="pulseScore" fill={COLORS.pulseScore} name="PulseScore" />
                         <Bar dataKey="sentiment" fill={COLORS.sentiment} name="Sentiment" />
                         <Bar dataKey="responseRate" fill={COLORS.responseRate} name="Response Rate" />
+                        {visibleMetrics.benchmarks && (
+                          <Bar dataKey="benchmark" fill={COLORS.benchmark} name="Industry Benchmark" />
+                        )}
                       </BarChart>
                     ) : chartType === 'radar' ? (
                       <RadarChart outerRadius={150} width={500} height={350} data={trendData}>
@@ -335,6 +534,9 @@ const AdvancedAnalytics = () => {
                         <Radar name="PulseScore" dataKey="pulseScore" stroke={COLORS.pulseScore} fill={COLORS.pulseScore} fillOpacity={0.6} />
                         <Radar name="Sentiment" dataKey="sentiment" stroke={COLORS.sentiment} fill={COLORS.sentiment} fillOpacity={0.6} />
                         <Radar name="Response Rate" dataKey="responseRate" stroke={COLORS.responseRate} fill={COLORS.responseRate} fillOpacity={0.6} />
+                        {visibleMetrics.benchmarks && (
+                          <Radar name="Industry Benchmark" dataKey="benchmark" stroke={COLORS.benchmark} fill={COLORS.benchmark} fillOpacity={0.4} />
+                        )}
                         <Legend />
                         <Tooltip content={<CustomTooltip />} />
                       </RadarChart>
@@ -367,6 +569,61 @@ const AdvancedAnalytics = () => {
                       </PieChart>
                     )}
                   </ResponsiveContainer>
+                </div>
+
+                {/* Statistical Significance */}
+                <div className="bg-white p-4 rounded-lg border">
+                  <h3 className="text-sm font-medium mb-4">Statistical Significance Analysis</h3>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead>
+                        <tr>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metric</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Value</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Benchmark</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Z-Score</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">% Change (MoM)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        <tr>
+                          <td className="px-4 py-2 text-sm">PulseScore™</td>
+                          <td className="px-4 py-2 text-sm">{trendData[trendData.length - 1].pulseScore}</td>
+                          <td className="px-4 py-2 text-sm">{trendData[trendData.length - 1].benchmark}</td>
+                          <td className="px-4 py-2 text-sm">
+                            <span className={
+                              calculateZScore(trendData[trendData.length - 1].pulseScore, trendData[trendData.length - 1].benchmark) > 1 
+                                ? "text-green-600" 
+                                : calculateZScore(trendData[trendData.length - 1].pulseScore, trendData[trendData.length - 1].benchmark) < -1
+                                  ? "text-red-600"
+                                  : "text-amber-600"
+                            }>
+                              {calculateZScore(trendData[trendData.length - 1].pulseScore, trendData[trendData.length - 1].benchmark)}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2 text-sm text-green-600">+1.2%</td>
+                        </tr>
+                        <tr>
+                          <td className="px-4 py-2 text-sm">Sentiment</td>
+                          <td className="px-4 py-2 text-sm">{trendData[trendData.length - 1].sentiment}</td>
+                          <td className="px-4 py-2 text-sm">76</td>
+                          <td className="px-4 py-2 text-sm">
+                            <span className="text-green-600">0.60</span>
+                          </td>
+                          <td className="px-4 py-2 text-sm text-green-600">+1.0%</td>
+                        </tr>
+                        <tr>
+                          <td className="px-4 py-2 text-sm">Response Rate</td>
+                          <td className="px-4 py-2 text-sm">{trendData[trendData.length - 1].responseRate}%</td>
+                          <td className="px-4 py-2 text-sm">82%</td>
+                          <td className="px-4 py-2 text-sm">
+                            <span className="text-green-600">0.50</span>
+                          </td>
+                          <td className="px-4 py-2 text-sm text-green-600">+2.3%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </TabsContent>
@@ -670,4 +927,232 @@ const AdvancedAnalytics = () => {
                     </ResponsiveContainer>
                     
                     <div className="space-y-4">
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                        <h4 className="text-sm font-medium text-amber-800 mb-2 flex items-center">
+                          <AlertTriangle className="h-4 w-4 mr-1" />
+                          Key Risk Indicators
+                        </h4>
+                        <ul className="text-xs text-amber-700 space-y-1 ml-6 list-disc">
+                          <li>Decreased survey response rates in Customer Support dept</li>
+                          <li>Negative sentiment around compensation in Sales team</li>
+                          <li>Work-life balance concerns increasing across all departments</li>
+                          <li>Career growth mentions up 15% in past quarter</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <h4 className="text-sm font-medium text-blue-800 mb-2">AI-Powered Recommendations</h4>
+                        <ul className="text-xs text-blue-700 space-y-1 ml-6 list-disc">
+                          <li>Schedule 1-on-1s with high-risk employees in Customer Support</li>
+                          <li>Review compensation structure for Sales team</li>
+                          <li>Implement flexible work arrangements to improve work-life balance</li>
+                          <li>Develop more transparent career progression paths</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* AI Insights Tab */}
+            <TabsContent value="aiInsights">
+              <div className="space-y-4">
+                <div className="bg-white p-4 rounded-lg border shadow-sm">
+                  <div className="flex items-center mb-4">
+                    <Brain className="h-5 w-5 mr-2 text-purple-600" />
+                    <h3 className="text-lg font-medium">AI-Generated Insights & Predictions</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-4">
+                      <Card className="p-4 border border-purple-200 bg-purple-50">
+                        <h4 className="text-sm font-semibold mb-2 flex items-center">
+                          <Sparkles className="h-3.5 w-3.5 mr-1 text-purple-600" />
+                          Top 3 Concerns (Last 30 Days)
+                        </h4>
+                        <ul className="space-y-2">
+                          {aiInsights.topConcerns.map((concern, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <span className="inline-block w-5 h-5 flex-shrink-0 rounded-full bg-purple-100 text-purple-800 text-xs flex items-center justify-center mr-2 mt-0.5">
+                                {idx + 1}
+                              </span>
+                              <span className="text-sm text-gray-700">{concern}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </Card>
+                      
+                      <Card className="p-4 border-l-4 border-l-red-500 bg-white">
+                        <h4 className="text-sm font-semibold mb-2 flex items-center">
+                          <AlertTriangle className="h-3.5 w-3.5 mr-1 text-red-500" />
+                          Critical Predictions
+                        </h4>
+                        <div className="space-y-2">
+                          {aiInsights.predictiveFlags.map((flag, idx) => (
+                            <div key={idx} className="flex items-start">
+                              <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${getSeverityColor(flag.severity)} mr-2 mt-0.5`}>
+                                {flag.severity.toUpperCase()}
+                              </span>
+                              <div className="text-sm">
+                                <span className="font-medium">{flag.department}:</span> {flag.issue}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <Card className="p-4 border border-blue-200 bg-blue-50">
+                        <h4 className="text-sm font-semibold mb-2 flex items-center">
+                          <Calculator className="h-3.5 w-3.5 mr-1 text-blue-600" />
+                          At-Risk Assessment
+                        </h4>
+                        <div className="space-y-3">
+                          <div>
+                            <div className="flex justify-between items-center mb-1">
+                              <div className="text-xs">Trust + Engagement Combined</div>
+                              <div className="text-xs font-medium">
+                                {/* If combined score < 60%, show warning */}
+                                {(benchmarkData[2].value + benchmarkData[3].value) / 2 < 60 ? (
+                                  <span className="text-red-600 flex items-center">
+                                    <AlertTriangle className="h-3 w-3 mr-1" />
+                                    At Risk ({(benchmarkData[2].value + benchmarkData[3].value) / 2}%)
+                                  </span>
+                                ) : (
+                                  <span className="text-green-600">
+                                    Healthy ({(benchmarkData[2].value + benchmarkData[3].value) / 2}%)
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="w-full h-2 bg-gray-200 rounded-full">
+                              <div 
+                                className={`h-2 rounded-full ${(benchmarkData[2].value + benchmarkData[3].value) / 2 < 60 ? 'bg-red-500' : 'bg-green-500'}`} 
+                                style={{ width: `${(benchmarkData[2].value + benchmarkData[3].value) / 2}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <div className="flex justify-between items-center mb-1">
+                              <div className="text-xs">Predicted Turnover (6 months)</div>
+                              <div className="text-xs font-medium">24%</div>
+                            </div>
+                            <div className="w-full h-2 bg-gray-200 rounded-full">
+                              <div className="h-2 rounded-full bg-amber-500" style={{ width: '24%' }}></div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center text-xs text-gray-600 mt-1">
+                            <Info className="h-3 w-3 mr-1" />
+                            <span>Based on predictive modeling of 28 engagement signals</span>
+                          </div>
+                        </div>
+                      </Card>
+                      
+                      <Card className="p-4 border border-green-200 bg-green-50">
+                        <h4 className="text-sm font-semibold mb-2 flex items-center">
+                          <BarChart2 className="h-3.5 w-3.5 mr-1 text-green-600" />
+                          AI-Recommended Actions
+                        </h4>
+                        <ul className="space-y-2">
+                          {aiInsights.recommendedActions.map((action, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <span className="inline-block w-5 h-5 flex-shrink-0 rounded-full bg-green-100 text-green-800 text-xs flex items-center justify-center mr-2 mt-0.5">
+                                {idx + 1}
+                              </span>
+                              <span className="text-sm text-gray-700">{action}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </Card>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                    <div className="text-xs text-gray-500 flex items-center">
+                      <Clock className="h-3 w-3 mr-1" />
+                      Last analyzed: Today at 9:45 AM
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="text-xs"
+                      onClick={() => toast({
+                        title: "AI Insights Generated",
+                        description: "AI has refreshed insights with the latest data"
+                      })}
+                    >
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Refresh Insights
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Engagement vs Retention Heatmap - Only show if enabled */}
+                {visibleMetrics.engagementRetention && (
+                  <div className="bg-white p-4 rounded-lg border">
+                    <h3 className="text-sm font-medium mb-4">Engagement vs. Retention Heatmap</h3>
+                    <div className="h-[300px] flex items-center justify-center">
+                      <div className="relative h-full w-full">
+                        <div className="absolute top-0 left-0 right-0 bottom-0 grid grid-cols-5 grid-rows-5 gap-1">
+                          {Array.from({ length: 25 }).map((_, i) => {
+                            const row = Math.floor(i / 5);
+                            const col = i % 5;
+                            const value = 100 - (row * 20) + (col * 5);
+                            let bgColor = 'bg-green-100';
+                            if (value < 40) bgColor = 'bg-red-100';
+                            else if (value < 60) bgColor = 'bg-red-50';
+                            else if (value < 70) bgColor = 'bg-amber-100';
+                            else if (value < 80) bgColor = 'bg-amber-50';
+                            else if (value < 90) bgColor = 'bg-green-50';
+                            
+                            return (
+                              <div 
+                                key={i} 
+                                className={`${bgColor} flex items-center justify-center rounded border`}
+                                style={{ opacity: 0.3 + (value / 100) * 0.7 }}
+                              >
+                                <span className="text-[10px] font-medium">{value}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <div className="absolute top-1/2 left-0 transform -translate-y-1/2 -rotate-90 text-xs font-medium text-gray-500">
+                          Retention Rate
+                        </div>
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-xs font-medium text-gray-500">
+                          Engagement Score
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-center mt-4">
+                      <div className="flex space-x-4">
+                        <div className="flex items-center">
+                          <div className="w-3 h-3 bg-red-100 mr-1"></div>
+                          <span className="text-xs">High Risk</span>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-3 h-3 bg-amber-100 mr-1"></div>
+                          <span className="text-xs">Medium Risk</span>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-3 h-3 bg-green-100 mr-1"></div>
+                          <span className="text-xs">Low Risk</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default AdvancedAnalytics;

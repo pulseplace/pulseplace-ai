@@ -61,3 +61,32 @@ export interface SentimentAnalysis {
   themes: string[];
   keyPhrases: string[];
 }
+
+export interface AIInsight {
+  concernCategory: string;
+  concernText: string;
+  severity: 'high' | 'medium' | 'low';
+  impactArea: string;
+  recommendedAction: string;
+}
+
+export interface PredictiveFlag {
+  department: string;
+  issue: string;
+  severity: 'high' | 'medium' | 'low';
+  predictedImpact: number;
+}
+
+export interface DashboardMetricVisibility {
+  pulseScore: boolean;
+  categoryBreakdown: boolean;
+  aiInsights: boolean;
+  participationRate: boolean;
+  engagementRetention: boolean;
+  benchmarks: boolean;
+}
+
+export interface DateRangeFilter {
+  from: Date;
+  to: Date;
+}

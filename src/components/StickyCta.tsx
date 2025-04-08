@@ -11,11 +11,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { emailService } from '@/services/emailService';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const StickyCta = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { currentStep, isStepCompleted } = useOnboarding();
+  const isMobile = useIsMobile();
   
   const [showDialog, setShowDialog] = useState(false);
   const [name, setName] = useState('');
@@ -149,12 +151,12 @@ const StickyCta = () => {
   
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50 animate-fade-in">
+      <div className={`fixed ${isMobile ? 'bottom-20 right-4' : 'bottom-6 right-6'} z-30 animate-fade-in`}>
         {ctaConfig.link ? (
           <Link to={ctaConfig.link}>
             <Button 
-              className="bg-pulse-gradient hover:opacity-90 transition-all font-medium px-4 py-2 shadow-lg rounded-full group"
-              size="lg"
+              className={`bg-pulse-gradient hover:opacity-90 transition-all font-medium px-4 py-2 shadow-lg rounded-full group ${isMobile ? 'text-sm' : ''}`}
+              size={isMobile ? "default" : "lg"}
             >
               {ctaConfig.text}
               {ctaConfig.icon}
@@ -162,8 +164,8 @@ const StickyCta = () => {
           </Link>
         ) : (
           <Button 
-            className="bg-pulse-gradient hover:opacity-90 transition-all font-medium px-4 py-2 shadow-lg rounded-full group"
-            size="lg"
+            className={`bg-pulse-gradient hover:opacity-90 transition-all font-medium px-4 py-2 shadow-lg rounded-full group ${isMobile ? 'text-sm' : ''}`}
+            size={isMobile ? "default" : "lg"}
             onClick={ctaConfig.action}
           >
             {ctaConfig.text}

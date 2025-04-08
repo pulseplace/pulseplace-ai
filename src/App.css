@@ -1,4 +1,3 @@
-
 #root {
   margin: 0 auto;
   text-align: center;
@@ -159,4 +158,47 @@ html {
 
 .animate-bounce {
   animation: bounce 1.4s infinite ease-in-out;
+}
+
+/* Mobile UI element stacking */
+.z-index-hierarchy {
+  --z-base: 10;
+  --z-overlay: 20;
+  --z-dropdown: 30;
+  --z-sticky: 40;
+  --z-fixed: 50;
+  --z-modal: 60;
+  --z-popover: 70;
+  --z-tooltip: 80;
+}
+
+/* Mobile friendly adjustments */
+@media screen and (max-width: 768px) {
+  .fixed-bottom-elements {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 4rem; /* Add space for browser navigation bar */
+  }
+  
+  .mobile-safe-area {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+  
+  /* Adjust z-index for mobile components */
+  .feedback-button {
+    z-index: 40;
+  }
+  
+  .pulsebot-button {
+    z-index: 40;
+  }
+  
+  .sticky-cta {
+    z-index: 30;
+  }
+  
+  .chat-container {
+    z-index: 50;
+  }
 }

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { emailService } from '@/services/emailService';
 import { useAuth } from '@/contexts/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const FeedbackButton = () => {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ const FeedbackButton = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isMobile = useIsMobile();
 
   // Auto-populate user details if logged in
   React.useEffect(() => {
@@ -96,7 +98,7 @@ const FeedbackButton = () => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button 
-          className="fixed bottom-6 left-6 z-50 rounded-full bg-pulse-600 hover:bg-pulse-700 shadow-lg p-3 h-auto"
+          className={`fixed ${isMobile ? 'bottom-16 left-4' : 'bottom-6 left-6'} z-40 rounded-full bg-pulse-600 hover:bg-pulse-700 shadow-lg p-3 h-auto`}
           size="icon"
           aria-label="Provide feedback"
         >

@@ -3,6 +3,7 @@ import React from 'react';
 import { Sparkles, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface FloatingChatButtonProps {
   open: boolean;
@@ -10,23 +11,25 @@ interface FloatingChatButtonProps {
 }
 
 export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ open, toggleChat }) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-2">
+    <div className={`fixed ${isMobile ? 'bottom-16 right-4' : 'bottom-6 right-6'} z-40 flex flex-col items-end space-y-2`}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <button
               onClick={toggleChat}
               className={cn(
-                'h-14 w-14 rounded-full shadow-lg transition-all duration-300',
+                `h-12 w-12 ${isMobile ? 'md:h-14 md:w-14' : 'h-14 w-14'} rounded-full shadow-lg transition-all duration-300`,
                 open ? 'bg-gray-600 hover:bg-gray-700' : 'bg-pulse-gradient animate-pulse hover:bg-pulse-700'
               )}
               aria-label={open ? "Close chat" : "Talk to PulseBot"}
             >
               {open ? (
-                <X className="h-6 w-6 text-white mx-auto" />
+                <X className="h-5 w-5 md:h-6 md:w-6 text-white mx-auto" />
               ) : (
-                <Sparkles className="h-6 w-6 text-white mx-auto" />
+                <Sparkles className="h-5 w-5 md:h-6 md:w-6 text-white mx-auto" />
               )}
             </button>
           </TooltipTrigger>

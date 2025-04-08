@@ -14,7 +14,7 @@ export default function PulseBotChat() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'bot', content: 'Hi! I'm your PulsePlace Assistant. Ask me anything about surveys, PulseScore, or certification.' }
+    { role: 'bot', content: "Hi! I'm your PulsePlace Assistant. Ask me anything about surveys, PulseScore, or certification." }
   ]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);

@@ -14,7 +14,6 @@ import InsightsTabContent from './admin/InsightsTabContent';
 import CertificationTabContent from './admin/CertificationTabContent';
 import { DateRangeFilter } from '@/components/ui/date-range-picker';
 
-// Mock data for demonstration
 const DEMO_DEPARTMENTS = [
   "All Departments", "Engineering", "Marketing", "Sales", "Customer Support", "Human Resources"
 ];
@@ -57,7 +56,6 @@ const TeamAdminDashboard: React.FC = () => {
     ]
   });
   
-  // Simulated data loading
   useEffect(() => {
     loadDashboardData();
   }, []);
@@ -67,11 +65,8 @@ const TeamAdminDashboard: React.FC = () => {
     setError(null);
     
     try {
-      // In a real implementation, fetch data from your API with applied filters
-      // For now, simulate a network request
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Generate mock team members
       const mockTeamMembers: TeamMember[] = [];
       const departments = department === 'All Departments' 
         ? DEMO_DEPARTMENTS.filter(d => d !== 'All Departments') 
@@ -93,12 +88,10 @@ const TeamAdminDashboard: React.FC = () => {
       
       setTeamMembers(mockTeamMembers);
       
-      // Calculate summary statistics
       const completed = mockTeamMembers.filter(m => m.surveyStatus === 'completed').length;
       const pending = mockTeamMembers.filter(m => m.surveyStatus === 'pending').length;
       const participationRate = Math.round((completed / mockTeamMembers.length) * 100);
       
-      // Generate random theme scores that are somewhat realistic
       const baseScore = 65 + Math.floor(Math.random() * 20);
       const themeScores = [
         { theme: "Trust & Safety", score: baseScore + Math.floor(Math.random() * 15) },
@@ -108,7 +101,6 @@ const TeamAdminDashboard: React.FC = () => {
         { theme: "Wellbeing", score: baseScore + 5 + Math.floor(Math.random() * 15) },
       ];
       
-      // Calculate average score
       const averageScore = Math.round(
         themeScores.reduce((sum, theme) => sum + theme.score, 0) / themeScores.length
       );
@@ -121,16 +113,13 @@ const TeamAdminDashboard: React.FC = () => {
         themeScores
       });
       
-      // Try to generate insights
       try {
-        // Only show loading state for initial load, not for refresh
         if (!insights) {
           const generatedInsights = await insightsService.generateTestInsight();
           setInsights(generatedInsights);
         }
       } catch (insightError) {
         console.error("Failed to generate insights:", insightError);
-        // Don't set error state for insights failures
       }
       
     } catch (err: any) {
@@ -165,16 +154,13 @@ const TeamAdminDashboard: React.FC = () => {
       description: "Your CSV export is being prepared and will download shortly.",
     });
     
-    // Simulate CSV export
     setTimeout(() => {
-      // Generate CSV content from team members and statistics
       const csvHeader = "Name,Email,Department,Status,Last Active\n";
       const csvRows = teamMembers.map(member => 
         `"${member.name}","${member.email}","${member.department}","${member.surveyStatus}","${member.lastActive}"`
       ).join("\n");
       const csvContent = csvHeader + csvRows;
       
-      // Create and trigger download
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -193,16 +179,11 @@ const TeamAdminDashboard: React.FC = () => {
       description: "Your PDF report is being generated and will download shortly.",
     });
     
-    // In a real implementation, we would use a PDF library like jsPDF
-    // For now, simulate the download
     setTimeout(() => {
       toast({
         title: "PDF Generated",
         description: "Your report has been downloaded",
       });
-      
-      // In a real implementation, we would generate and download an actual PDF
-      // This is just a placeholder for demonstration
     }, 1500);
   };
   
@@ -226,11 +207,8 @@ const TeamAdminDashboard: React.FC = () => {
     
     setIsRefreshing(true);
     try {
-      // In a real implementation, send an actual certificate email
-      // For demo, just show success message
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Prepare certification email
       const certificateHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #4338ca; text-align: center;">Tayana Solutions PulseScore™ Certification</h1>
@@ -274,7 +252,6 @@ const TeamAdminDashboard: React.FC = () => {
         </div>
       `;
       
-      // Send certificate email
       await emailService.sendEmail({
         to: "hr@tayanasolutions.com",
         subject: "Tayana Solutions - PulseScore™ Certification",
@@ -328,7 +305,6 @@ const TeamAdminDashboard: React.FC = () => {
         teamMembersCount={teamMembers.length}
       />
       
-      {/* Advanced filters */}
       <TeamAdminFilters
         dateRange={dateRange}
         setDateRange={setDateRange}
@@ -339,7 +315,6 @@ const TeamAdminDashboard: React.FC = () => {
         onClose={() => handleRefreshData()}
       />
       
-      {/* Summary statistics */}
       <TeamSummaryStats
         participationRate={summaryStats.participationRate}
         averageScore={summaryStats.averageScore}

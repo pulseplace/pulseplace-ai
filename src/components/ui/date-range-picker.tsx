@@ -13,6 +13,7 @@ import {
 import { addDays, subDays, subMonths } from "date-fns";
 import { DateRange } from "react-day-picker";
 
+// Update the interface to make properties optional
 export interface DateRangeFilter {
   from: Date | undefined;
   to: Date | undefined;

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Select, 
@@ -8,14 +7,8 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { DatePickerWithRange, DateRangeFilter } from "@/components/ui/date-range-picker";
 import { X } from 'lucide-react';
-import { DateRange } from "react-day-picker";
-
-interface DateRangeFilter {
-  from: Date | undefined;
-  to: Date | undefined;
-}
 
 interface TeamAdminFiltersProps {
   dateRange: DateRangeFilter;

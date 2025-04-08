@@ -23,6 +23,7 @@ import DashboardFilter from './DashboardFilter';
 import { useDashboard } from '@/contexts/DashboardContext';
 import CertificationJourney from './CertificationJourney';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import TaskList from './TaskList';
 
 const DashboardOverview = () => {
   const { toast } = useToast();
@@ -103,6 +104,11 @@ const DashboardOverview = () => {
       </div>
       
       {showFilters && <DashboardFilter onClose={() => setShowFilters(false)} />}
+      
+      {/* Task List */}
+      <div className="mb-6">
+        <TaskList />
+      </div>
       
       {/* Certification Journey (if applicable) */}
       {showCertificationJourney && <CertificationJourney className="mb-6" />}

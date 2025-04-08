@@ -1,4 +1,3 @@
-
 /**
  * Calculate response rate based on survey and response data
  * @param surveys Survey data
@@ -50,25 +49,54 @@ export const calculateDashboardStats = (surveys: any[], responses: any[]): {
  * @param userId User ID for the demo data
  * @returns Demo survey and stats
  */
-export const generateDemoData = (userId: string | undefined) => {
-  const surveyData = [{
-    id: '1',
-    title: 'Demo Survey',
-    description: 'This is a demo survey loaded after timeout',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    created_by: userId || 'demo-user',
-    company: 'Demo Company',
-    department: 'All Departments',
-    is_active: true
-  }];
-  
-  const statsData = {
-    pulseScore: 75,
-    responseRate: 60,
-    employeesEngaged: 12,
-    insightsGenerated: 8
+export const generateDemoData = (userId?: string) => {
+  // Create some demo surveys
+  const demoSurveys = [
+    {
+      id: 'demo-survey-1',
+      title: 'Q1 Employee Pulse Check',
+      description: 'Quarterly pulse check for employee well-being and satisfaction',
+      created_by: userId || 'demo-user',
+      company: 'Demo Company',
+      department: 'All Departments',
+      created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+      updated_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      is_active: true,
+      is_anonymous: true
+    },
+    {
+      id: 'demo-survey-2',
+      title: 'Engineering Team Check-in',
+      description: 'Monthly check-in on team collaboration and project status',
+      created_by: userId || 'demo-user',
+      company: 'Demo Company',
+      department: 'Engineering',
+      created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days ago
+      updated_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+      is_active: false,
+      is_anonymous: false
+    },
+    {
+      id: 'demo-survey-3',
+      title: 'Onboarding Experience Survey',
+      description: 'Feedback on new hire onboarding process',
+      created_by: userId || 'demo-user',
+      company: 'Demo Company',
+      department: 'HR',
+      created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
+      updated_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      is_active: true,
+      is_anonymous: true
+    }
+  ];
+
+  // Generate demo stats
+  const demoStats = {
+    pulseScore: 72,
+    responseRate: 68,
+    employeesEngaged: 152,
+    insightsGenerated: 24
   };
-  
-  return { surveys: surveyData, stats: statsData };
+
+  return { surveys: demoSurveys, stats: demoStats };
 };

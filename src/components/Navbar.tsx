@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -12,21 +12,27 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const offset = window.scrollY;
-      if (offset > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
+  // Memoize the scroll handler to avoid recreating on each render
+  const handleScroll = useCallback(() => {
+    const offset = window.scrollY;
+    if (offset > 50) {
+      setScrolled(true);
+    } else {
+      setScrolled(false);
+    }
+  }, []);
 
+  useEffect(() => {
+    // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
+    
+    // Initialize scroll state on mount
+    handleScroll();
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [handleScroll]);
 
   useEffect(() => {
     // Close mobile menu when route changes
@@ -40,7 +46,7 @@ const Navbar = () => {
   };
 
   const navClasses = `w-full py-4 fixed top-0 z-50 transition-all duration-300 ${
-    scrolled ? 'bg-white/90 backdrop-blur-sm shadow-sm' : 'bg-transparent'
+    scrolled ? 'bg-white/95 backdrop-blur-sm shadow-sm' : 'bg-transparent'
   }`;
 
   // Helper function to check if a path is active
@@ -125,7 +131,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-white w-full py-4 px-4 shadow-lg"
+            className="md:hidden bg-white w-full py-4 px-4 shadow-lg max-h-[80vh] overflow-y-auto"
           >
             <div className="flex flex-col space-y-4">
               {navItems.map((item, index) => (

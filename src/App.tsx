@@ -1,6 +1,6 @@
 
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import { Toaster } from "@/components/ui/sonner";
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -54,6 +54,7 @@ function App() {
             <TaskProvider>
               <Suspense fallback={<LoadingState />}>
                 <Routes>
+                  {/* Public Routes */}
                   <Route path="/" element={<Home />} />
                   <Route path="/pricing" element={<Pricing />} />
                   <Route path="/demo" element={<Demo />} />
@@ -61,7 +62,7 @@ function App() {
                   <Route path="/certification" element={<Certification />} />
                   <Route path="/certified-companies" element={<CertificationShowcase />} />
                   <Route path="/showcase" element={<CertificationShowcase />} />
-                  <Route path="/about-us" element={<AboutUs />} />
+                  <Route path="/about-us" element={<Navigate to="/about" replace />} />
                   <Route path="/join-beta" element={<JoinBeta />} />
                   <Route path="/preview-dashboard" element={<DashboardPreview />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -93,6 +94,9 @@ function App() {
                     <Route path="team-admin" element={<TeamAdmin />} />
                     <Route path="bulk-upload" element={<BulkTeamUpload />} />
                     <Route path="llm-insights" element={<LLMInsights />} />
+                    
+                    {/* Add fallback route for dashboard to prevent 404s within dashboard */}
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
                   </Route>
                   
                   {/* 404 - Not Found */}

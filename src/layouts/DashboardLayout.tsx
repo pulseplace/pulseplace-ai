@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { PanelLeft } from 'lucide-react';
+import { PanelLeft, Loader2 } from 'lucide-react';
 
 const DashboardLayout = () => {
   const { profile, user } = useAuth();
@@ -15,9 +15,19 @@ const DashboardLayout = () => {
   const { toast } = useToast();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarMobileOpen, setSidebarMobileOpen] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+
+  // Handle page loading state
+  useEffect(() => {
+    setIsPageLoading(true);
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   // Check for certification-related paths to provide contextual help
-  React.useEffect(() => {
+  useEffect(() => {
     const path = location.pathname;
     if (path.includes('share-certification') || path.includes('certification-engine')) {
       // Show a helpful toast for certification pages on first visit
@@ -35,6 +45,11 @@ const DashboardLayout = () => {
     }
   }, [location.pathname, toast]);
 
+  // Close mobile sidebar when route changes
+  useEffect(() => {
+    setSidebarMobileOpen(false);
+  }, [location.pathname]);
+
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
@@ -44,7 +59,7 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Mobile sidebar overlay */}
       {sidebarMobileOpen && (
         <div 
@@ -62,7 +77,16 @@ const DashboardLayout = () => {
       
       <div className="flex flex-col flex-1 overflow-hidden">
         <DashboardHeader onMobileMenuClick={toggleMobileSidebar} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 relative">
+          {isPageLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10">
+              <div className="flex flex-col items-center">
+                <Loader2 className="h-8 w-8 animate-spin text-pulse-600" />
+                <p className="mt-2 text-gray-600">Loading...</p>
+              </div>
+            </div>
+          ) : null}
           <Outlet />
         </main>
       </div>

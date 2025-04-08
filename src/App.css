@@ -54,6 +54,18 @@
   .bg-pulse-gradient {
     margin-right: 10px;
   }
+  
+  /* Ensure buttons are properly sized on Safari */
+  button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  /* Fix for buttons being cut off at edges */
+  .flex-wrap > * {
+    margin-bottom: 0.5rem;
+  }
 }
 
 /* Fix for elements being cut off at edges */
@@ -68,4 +80,26 @@
 html, body {
   overflow-x: hidden;
   width: 100%;
+  min-height: 100%;
+  position: relative;
+}
+
+/* Improve dashboard UI smoothness */
+.dashboard-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Prevent content jumping when scrollbar appears/disappears */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Smooth transitions for loading states */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

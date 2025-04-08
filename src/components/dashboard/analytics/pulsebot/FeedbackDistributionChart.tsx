@@ -16,12 +16,14 @@ interface FeedbackDistributionChartProps {
   positive: number;
   negative: number;
   isLoading: boolean;
+  fullSize?: boolean; // Added optional fullSize prop
 }
 
 const FeedbackDistributionChart: React.FC<FeedbackDistributionChartProps> = ({ 
   positive, 
   negative, 
-  isLoading 
+  isLoading,
+  fullSize = false // Default to false if not provided
 }) => {
   return (
     <Card>
@@ -35,7 +37,7 @@ const FeedbackDistributionChart: React.FC<FeedbackDistributionChartProps> = ({
             <Skeleton className="h-52 w-full" />
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={fullSize ? 400 : 250}>
             <BarChart
               data={[
                 { name: 'Positive', value: positive },

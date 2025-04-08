@@ -26,6 +26,7 @@ interface LanguageDistributionChartProps {
     percentage: number;
   }[];
   isLoading: boolean;
+  fullSize?: boolean; // Added optional fullSize prop
 }
 
 // Chart colors
@@ -33,7 +34,8 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#FF6B6B'
 
 const LanguageDistributionChart: React.FC<LanguageDistributionChartProps> = ({ 
   languageBreakdown, 
-  isLoading 
+  isLoading,
+  fullSize = false // Default to false if not provided
 }) => {
   return (
     <Card>
@@ -48,7 +50,7 @@ const LanguageDistributionChart: React.FC<LanguageDistributionChartProps> = ({
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={fullSize ? 400 : 300}>
               <PieChart>
                 <Pie
                   data={languageBreakdown}
@@ -56,7 +58,7 @@ const LanguageDistributionChart: React.FC<LanguageDistributionChartProps> = ({
                   nameKey="language"
                   cx="50%"
                   cy="50%"
-                  outerRadius={80}
+                  outerRadius={fullSize ? 120 : 80}
                   label={({ language, percentage }) => `${language}: ${percentage.toFixed(1)}%`}
                 >
                   {languageBreakdown.map((entry, index) => (

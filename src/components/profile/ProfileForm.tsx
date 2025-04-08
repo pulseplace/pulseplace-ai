@@ -5,23 +5,44 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
+import FormFieldWithValidation from "@/components/ui/form-field-with-validation";
 
+// Enhanced validation schema with detailed error messages
 const profileSchema = z.object({
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
-  company: z.string().min(1, "Company name is required"),
-  department: z.string().optional(),
-  role: z.string().min(1, "Role is required"),
+  first_name: z.string()
+    .min(1, "First name is required")
+    .max(50, "First name must be less than 50 characters"),
+  last_name: z.string()
+    .min(1, "Last name is required")
+    .max(50, "Last name must be less than 50 characters"),
+  company: z.string()
+    .min(1, "Company name is required")
+    .max(100, "Company name must be less than 100 characters"),
+  department: z.string()
+    .max(100, "Department must be less than 100 characters")
+    .optional(),
+  role: z.string()
+    .min(1, "Role is required")
+    .max(100, "Role must be less than 100 characters"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
+
+const departments = [
+  { value: "HR", label: "Human Resources" },
+  { value: "IT", label: "IT" },
+  { value: "Finance", label: "Finance" },
+  { value: "Marketing", label: "Marketing" },
+  { value: "Sales", label: "Sales" },
+  { value: "Operations", label: "Operations" },
+  { value: "Executive", label: "Executive" },
+  { value: "Other", label: "Other" }
+];
 
 const ProfileForm: React.FC = () => {
   const { profile, user, refreshProfile } = useAuth();
@@ -30,6 +51,7 @@ const ProfileForm: React.FC = () => {
   
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
+    mode: "onChange", // Enable real-time validation
     defaultValues: {
       first_name: profile?.first_name || "",
       last_name: profile?.last_name || "",
@@ -82,100 +104,51 @@ const ProfileForm: React.FC = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
+              <FormFieldWithValidation
                 control={form.control}
                 name="first_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="First Name"
+                required
               />
               
-              <FormField
+              <FormFieldWithValidation
                 control={form.control}
                 name="last_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Last Name"
+                required
               />
             </div>
             
-            <FormField
+            <FormFieldWithValidation
               control={form.control}
               name="company"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Company Name"
+              required
             />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
+              <FormFieldWithValidation
                 control={form.control}
                 name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Role"
+                placeholder="Your position in the company"
+                required
               />
               
-              <FormField
+              <FormFieldWithValidation
                 control={form.control}
                 name="department"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Department (Optional)</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a department" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="HR">Human Resources</SelectItem>
-                        <SelectItem value="IT">IT</SelectItem>
-                        <SelectItem value="Finance">Finance</SelectItem>
-                        <SelectItem value="Marketing">Marketing</SelectItem>
-                        <SelectItem value="Sales">Sales</SelectItem>
-                        <SelectItem value="Operations">Operations</SelectItem>
-                        <SelectItem value="Executive">Executive</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Department"
+                type="select"
+                selectOptions={departments}
+                placeholder="Select a department"
               />
             </div>
             
             <Button 
               type="submit" 
               className="w-full md:w-auto bg-pulse-gradient"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !form.formState.isValid}
             >
               {isSubmitting ? (
                 <>

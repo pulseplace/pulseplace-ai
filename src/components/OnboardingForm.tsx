@@ -2,13 +2,13 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { ArrowRight } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import FormFieldWithValidation from "./ui/form-field-with-validation";
 
 const industries = [
   "Technology",
@@ -35,9 +35,26 @@ export interface OnboardingFormData {
   industry: string;
 }
 
+// Create schema for validation
+const formSchema = z.object({
+  email: z.string()
+    .email("Please enter a valid email address")
+    .min(1, "Email is required"),
+  companyName: z.string()
+    .min(2, "Company name must be at least 2 characters")
+    .max(100, "Company name must be less than 100 characters"),
+  role: z.string()
+    .min(2, "Role must be at least 2 characters")
+    .max(100, "Role must be less than 100 characters"),
+  industry: z.string()
+    .min(1, "Please select an industry")
+});
+
 const OnboardingForm = ({ onFormSubmit }: OnboardingFormProps) => {
   const { toast } = useToast();
   const form = useForm<OnboardingFormData>({
+    resolver: zodResolver(formSchema),
+    mode: "onChange", // Enable real-time validation
     defaultValues: {
       email: "",
       companyName: "",
@@ -54,6 +71,11 @@ const OnboardingForm = ({ onFormSubmit }: OnboardingFormProps) => {
     onFormSubmit(data);
   };
 
+  const industryOptions = industries.map(industry => ({
+    value: industry,
+    label: industry
+  }));
+
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -62,72 +84,53 @@ const OnboardingForm = ({ onFormSubmit }: OnboardingFormProps) => {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <FormField
+            <FormFieldWithValidation
               control={form.control}
               name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Your work email (we'll never spam you)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="jane@company.com" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
+              label="Your work email"
+              placeholder="jane@company.com"
+              type="email"
+              description="We'll never spam you or share your email"
+              required
             />
             
-            <FormField
+            <FormFieldWithValidation
               control={form.control}
               name="companyName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization name you want scored</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Acme Corporation" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
+              label="Organization name you want scored"
+              placeholder="Acme Corporation"
+              required
             />
             
-            <FormField
+            <FormFieldWithValidation
               control={form.control}
               name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>e.g., HR Head, People Ops, Founder</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Chief People Officer" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
+              label="Your role"
+              placeholder="Chief People Officer"
+              description="e.g., HR Head, People Ops, Founder"
+              required
             />
             
-            <FormField
+            <FormFieldWithValidation
               control={form.control}
               name="industry"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Optional, helps with benchmarking</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your industry" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {industries.map((industry) => (
-                        <SelectItem key={industry} value={industry}>
-                          {industry}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
+              label="Industry"
+              description="Helps with benchmarking"
+              type="select"
+              selectOptions={industryOptions}
+              placeholder="Select your industry"
+              required
             />
             
-            <Button type="submit" className="w-full bg-pulse-gradient">
-              Get Your PulseScore <ArrowRight className="ml-2 h-4 w-4" />
+            <Button 
+              type="submit" 
+              className="w-full bg-pulse-gradient"
+              disabled={!form.formState.isValid || form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? 
+                "Processing..." : 
+                <>Get Your PulseScore <ArrowRight className="ml-2 h-4 w-4" /></>
+              }
             </Button>
           </form>
         </Form>

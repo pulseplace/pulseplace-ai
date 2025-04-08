@@ -25,6 +25,7 @@ import DashboardHome from "./pages/dashboard/Home";
 import Surveys from "./pages/dashboard/Surveys";
 import CertificationEngine from "./pages/dashboard/CertificationEngine";
 import { AuthProvider } from "./contexts/AuthContext";
+import { DashboardProvider } from "./contexts/DashboardContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 import MetaTags from "./components/MetaTags";
@@ -68,7 +69,9 @@ const AnimatedRoutes = () => {
           
           <Route path="/dashboard" element={
             <ProtectedRoute>
-              <DashboardLayout />
+              <DashboardProvider>
+                <DashboardLayout />
+              </DashboardProvider>
             </ProtectedRoute>
           }>
             <Route index element={<DashboardHome />} />

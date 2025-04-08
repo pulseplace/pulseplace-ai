@@ -7,68 +7,56 @@ import {
   TrendingUp, 
   Award 
 } from 'lucide-react';
+import { useDashboard } from '@/contexts/DashboardContext';
 
 interface StatsRowProps {
   timeRange?: string;
 }
 
 const StatsRow: React.FC<StatsRowProps> = ({ timeRange = '30days' }) => {
-  // Calculate stats based on time range
-  const getStats = () => {
+  const { stats } = useDashboard();
+  
+  // Get previous period stats based on time range
+  // In a real app, this would come from historical data in the database
+  const getPreviousStats = () => {
     switch(timeRange) {
       case '7days':
         return {
-          pulseScore: 85,
-          previousPulseScore: 83,
-          responseRate: 92,
-          previousResponseRate: 90,
-          employeesEngaged: 148,
-          previousEmployeesEngaged: 142,
-          insights: 12,
-          previousInsights: 8
+          pulseScore: stats.pulseScore - 2,
+          responseRate: stats.responseRate - 2,
+          employeesEngaged: stats.employeesEngaged - 6,
+          insightsGenerated: stats.insightsGenerated - 4
         };
       case '90days':
         return {
-          pulseScore: 83,
-          previousPulseScore: 76,
-          responseRate: 87,
-          previousResponseRate: 72,
-          employeesEngaged: 235,
-          previousEmployeesEngaged: 180,
-          insights: 42,
-          previousInsights: 28
+          pulseScore: stats.pulseScore - 7,
+          responseRate: stats.responseRate - 15,
+          employeesEngaged: stats.employeesEngaged - 55,
+          insightsGenerated: stats.insightsGenerated - 14
         };
       case 'year':
         return {
-          pulseScore: 87,
-          previousPulseScore: 68,
-          responseRate: 85,
-          previousResponseRate: 65,
-          employeesEngaged: 280,
-          previousEmployeesEngaged: 140,
-          insights: 96,
-          previousInsights: 48
+          pulseScore: stats.pulseScore - 19,
+          responseRate: stats.responseRate - 20,
+          employeesEngaged: Math.round(stats.employeesEngaged / 2),
+          insightsGenerated: Math.round(stats.insightsGenerated / 2)
         };
       case '30days':
       default:
         return {
-          pulseScore: 86,
-          previousPulseScore: 82,
-          responseRate: 89,
-          previousResponseRate: 85,
-          employeesEngaged: 212,
-          previousEmployeesEngaged: 195,
-          insights: 24,
-          previousInsights: 18
+          pulseScore: stats.pulseScore - 4,
+          responseRate: stats.responseRate - 4,
+          employeesEngaged: stats.employeesEngaged - 17,
+          insightsGenerated: stats.insightsGenerated - 6
         };
     }
   };
   
-  const stats = getStats();
-  const pulseScoreChange = stats.pulseScore - stats.previousPulseScore;
-  const responseRateChange = stats.responseRate - stats.previousResponseRate;
-  const employeesChange = stats.employeesEngaged - stats.previousEmployeesEngaged;
-  const insightsChange = stats.insights - stats.previousInsights;
+  const previousStats = getPreviousStats();
+  const pulseScoreChange = stats.pulseScore - previousStats.pulseScore;
+  const responseRateChange = stats.responseRate - previousStats.responseRate;
+  const employeesChange = stats.employeesEngaged - previousStats.employeesEngaged;
+  const insightsChange = stats.insightsGenerated - previousStats.insightsGenerated;
   
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -137,7 +125,7 @@ const StatsRow: React.FC<StatsRowProps> = ({ timeRange = '30days' }) => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm text-gray-500 mb-1">AI Insights Generated</p>
-              <p className="text-2xl font-bold">{stats.insights}</p>
+              <p className="text-2xl font-bold">{stats.insightsGenerated}</p>
               <p className="text-xs mt-1">
                 <span className={insightsChange >= 0 ? "text-green-600" : "text-red-600"}>
                   {insightsChange >= 0 ? "▲" : "▼"} {Math.abs(insightsChange)}

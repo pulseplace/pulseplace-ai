@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { 
   Download, 
   Filter, 
-  BarChart, 
   Calendar 
 } from 'lucide-react';
 import { 
@@ -21,9 +20,11 @@ import EngagementChart from './EngagementChart';
 import AIInsights from './AIInsights';
 import ActivityFeed from './ActivityFeed';
 import DashboardFilter from './DashboardFilter';
+import { useDashboard } from '@/contexts/DashboardContext';
 
 const DashboardOverview = () => {
   const { toast } = useToast();
+  const { refreshData } = useDashboard();
   const [showFilters, setShowFilters] = useState(false);
   const [timeRange, setTimeRange] = useState('30days');
   
@@ -50,16 +51,21 @@ const DashboardOverview = () => {
   const handleFilterToggle = () => {
     setShowFilters(!showFilters);
   };
+
+  const handleTimeRangeChange = (value: string) => {
+    setTimeRange(value);
+    refreshData(); // Refresh data when time range changes
+  };
   
   return (
     <div className="p-6 bg-gray-50 flex-grow">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Dashboard Overview</h1>
-          <p className="text-gray-500">Pulse insights for August 2025</p>
+          <p className="text-gray-500">Pulse insights for April 2025</p>
         </div>
         <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-          <Select value={timeRange} onValueChange={setTimeRange}>
+          <Select value={timeRange} onValueChange={handleTimeRangeChange}>
             <SelectTrigger className="w-[160px]">
               <Calendar className="h-4 w-4 mr-2" />
               <SelectValue placeholder="Select timeframe" />

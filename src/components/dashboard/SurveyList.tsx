@@ -13,66 +13,32 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
-import { getSurveys, getSurveyResponses } from '@/services/surveyService';
-import { Tables } from '@/types/database.types';
 import { AlertTriangle, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-
-interface SurveyWithCount extends Tables<'pulse_surveys'> {
-  response_count: number;
-}
+import { useDashboard } from '@/contexts/DashboardContext';
 
 const SurveyList = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const [surveys, setSurveys] = useState<SurveyWithCount[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { surveys, responses, isLoading, error, refreshData } = useDashboard();
+  const [surveysWithCounts, setSurveysWithCounts] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchSurveys = async () => {
-      if (!user) return;
+    refreshData();
+  }, []);
 
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        // Fetch surveys
-        const surveysData = await getSurveys();
-        
-        // Get response counts for each survey
-        const surveysWithCounts = await Promise.all(
-          surveysData.map(async (survey) => {
-            try {
-              const responses = await getSurveyResponses(survey.id);
-              return {
-                ...survey,
-                response_count: responses.length
-              };
-            } catch (err) {
-              console.error(`Error fetching responses for survey ${survey.id}:`, err);
-              return {
-                ...survey,
-                response_count: 0
-              };
-            }
-          })
-        );
-
-        setSurveys(surveysWithCounts);
-      } catch (err: any) {
-        console.error('Error fetching surveys:', err);
-        setError(err.message || 'Failed to load surveys');
-        toast.error('Failed to load surveys');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSurveys();
-  }, [user]);
+  // Process surveys to add response counts
+  useEffect(() => {
+    if (surveys && responses) {
+      const processedSurveys = surveys.map(survey => {
+        const responseCount = responses.filter(r => r.survey_id === survey.id).length;
+        return {
+          ...survey,
+          response_count: responseCount
+        };
+      });
+      setSurveysWithCounts(processedSurveys);
+    }
+  }, [surveys, responses]);
 
   if (isLoading) {
     return (
@@ -104,7 +70,7 @@ const SurveyList = () => {
           </Alert>
         )}
         
-        {surveys.length === 0 ? (
+        {surveysWithCounts.length === 0 ? (
           <div className="text-center py-8">
             <h3 className="text-lg font-medium text-gray-900 mb-2">No surveys yet</h3>
             <p className="text-gray-500 mb-4">Create your first pulse survey to start gathering feedback</p>
@@ -125,7 +91,7 @@ const SurveyList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {surveys.map((survey) => (
+              {surveysWithCounts.map((survey) => (
                 <TableRow key={survey.id}>
                   <TableCell className="font-medium">
                     <Link to={`/dashboard/surveys/${survey.id}`} className="hover:text-pulse-600">

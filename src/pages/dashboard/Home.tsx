@@ -1,12 +1,11 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useDashboard } from '@/contexts/DashboardContext';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
-import { Tables } from '@/types/database.types';
 import { Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useOnboarding } from '@/hooks/useOnboarding';
@@ -14,71 +13,13 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 const DashboardHome = () => {
   const { user, profile } = useAuth();
   const { hasSurveys, isStepCompleted } = useOnboarding();
-  const [surveys, setSurveys] = useState<Tables<'pulse_surveys'>[]>([]);
-  const [responses, setResponses] = useState<Tables<'survey_responses'>[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasData, setHasData] = useState(false);
+  const { surveys, responses, isLoading, refreshData } = useDashboard();
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      if (!user) return;
-
-      try {
-        // Fetch surveys
-        const { data: surveysData, error: surveysError } = await supabase
-          .from('pulse_surveys')
-          .select('*')
-          .limit(5)
-          .order('created_at', { ascending: false });
-
-        if (surveysError) throw surveysError;
-        setSurveys(surveysData);
-
-        // Fetch responses
-        const { data: responsesData, error: responsesError } = await supabase
-          .from('survey_responses')
-          .select(`
-            id,
-            survey_id,
-            user_id,
-            responses,
-            created_at,
-            sentiment_score,
-            pulse_score,
-            pulse_surveys (
-              title
-            )
-          `)
-          .limit(10)
-          .order('created_at', { ascending: false });
-
-        if (responsesError) throw responsesError;
-        
-        // Cast the data to match our expected type
-        const typedResponses = responsesData.map(response => ({
-          id: response.id,
-          survey_id: response.survey_id,
-          user_id: response.user_id,
-          responses: response.responses,
-          created_at: response.created_at,
-          sentiment_score: response.sentiment_score,
-          pulse_score: response.pulse_score || null
-        })) as Tables<'survey_responses'>[];
-        
-        setResponses(typedResponses);
-
-        // Check if we have any data
-        setHasData(surveysData.length > 0 || responsesData.length > 0);
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-  }, [user]);
+    // Refresh data when the component mounts
+    refreshData();
+  }, []);
 
   const handleExportPDF = () => {
     toast({

@@ -13,25 +13,24 @@ import {
   Filter, 
   RefreshCw, 
   AlertTriangle,
-  CheckCircle 
+  CheckCircle,
+  FileText
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { emailService } from '@/services/emailService';
 import { insightsService } from '@/services/insightsService';
+import TeamAdminFilters from './admin/TeamAdminFilters';
+import TeamExportOptions from './admin/TeamExportOptions';
+import TeamSummaryStats from './admin/TeamSummaryStats';
 
 // Mock data for demonstration
 const DEMO_DEPARTMENTS = [
   "All Departments", "Engineering", "Marketing", "Sales", "Customer Support", "Human Resources"
 ];
 
-const DEMO_TIME_PERIODS = [
-  { value: "7d", label: "Last 7 days" },
-  { value: "30d", label: "Last 30 days" },
-  { value: "90d", label: "Last 90 days" },
-  { value: "6m", label: "Last 6 months" },
-  { value: "1y", label: "Last year" },
+const PULSE_CATEGORIES = [
+  "all", "trust", "engagement", "culture", "growth", "wellbeing"
 ];
 
 interface TeamMember {
@@ -48,24 +47,41 @@ const TeamAdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [department, setDepartment] = useState('All Departments');
-  const [timePeriod, setTimePeriod] = useState('30d');
+  const [pulseCategoryFilter, setPulseCategoryFilter] = useState('all');
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
+    from: new Date(new Date().setDate(new Date().getDate() - 30)),
+    to: new Date()
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [insights, setInsights] = useState<any>(null);
+  const [summaryStats, setSummaryStats] = useState({
+    participationRate: 0,
+    averageScore: 0,
+    completedSurveys: 0,
+    pendingSurveys: 0,
+    themeScores: [
+      { theme: "Trust & Safety", score: 0 },
+      { theme: "Engagement", score: 0 },
+      { theme: "Culture", score: 0 },
+      { theme: "Growth & Development", score: 0 },
+      { theme: "Wellbeing", score: 0 },
+    ]
+  });
   
   // Simulated data loading
   useEffect(() => {
     loadDashboardData();
-  }, [department, timePeriod]);
+  }, []);
   
   const loadDashboardData = async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // In a real implementation, fetch data from your API
+      // In a real implementation, fetch data from your API with applied filters
       // For now, simulate a network request
       await new Promise(resolve => setTimeout(resolve, 1500));
       
@@ -90,6 +106,34 @@ const TeamAdminDashboard: React.FC = () => {
       });
       
       setTeamMembers(mockTeamMembers);
+      
+      // Calculate summary statistics
+      const completed = mockTeamMembers.filter(m => m.surveyStatus === 'completed').length;
+      const pending = mockTeamMembers.filter(m => m.surveyStatus === 'pending').length;
+      const participationRate = Math.round((completed / mockTeamMembers.length) * 100);
+      
+      // Generate random theme scores that are somewhat realistic
+      const baseScore = 65 + Math.floor(Math.random() * 20);
+      const themeScores = [
+        { theme: "Trust & Safety", score: baseScore + Math.floor(Math.random() * 15) },
+        { theme: "Engagement", score: baseScore - 5 + Math.floor(Math.random() * 15) },
+        { theme: "Culture", score: baseScore + 2 + Math.floor(Math.random() * 15) },
+        { theme: "Growth & Development", score: baseScore - 8 + Math.floor(Math.random() * 15) },
+        { theme: "Wellbeing", score: baseScore + 5 + Math.floor(Math.random() * 15) },
+      ];
+      
+      // Calculate average score
+      const averageScore = Math.round(
+        themeScores.reduce((sum, theme) => sum + theme.score, 0) / themeScores.length
+      );
+      
+      setSummaryStats({
+        participationRate,
+        averageScore,
+        completedSurveys: completed,
+        pendingSurveys: pending,
+        themeScores
+      });
       
       // Try to generate insights
       try {
@@ -122,28 +166,57 @@ const TeamAdminDashboard: React.FC = () => {
       await loadDashboardData();
       toast({
         title: "Data Refreshed",
-        description: "Dashboard data has been updated",
+        description: "Dashboard data has been updated with current filters",
       });
     } finally {
       setIsRefreshing(false);
     }
   };
   
-  const handleExportData = () => {
+  const handleExportCSV = () => {
     toast({
       title: "Export Started",
-      description: "Your data export is being prepared and will download shortly.",
+      description: "Your CSV export is being prepared and will download shortly.",
     });
     
-    // Simulate export download
+    // Simulate CSV export
     setTimeout(() => {
-      const element = document.createElement("a");
-      element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent("Team data export"));
-      element.setAttribute("download", `team-data-${new Date().toISOString().split('T')[0]}.csv`);
-      element.style.display = "none";
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+      // Generate CSV content from team members and statistics
+      const csvHeader = "Name,Email,Department,Status,Last Active\n";
+      const csvRows = teamMembers.map(member => 
+        `"${member.name}","${member.email}","${member.department}","${member.surveyStatus}","${member.lastActive}"`
+      ).join("\n");
+      const csvContent = csvHeader + csvRows;
+      
+      // Create and trigger download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `tayana-team-pulse-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, 1000);
+  };
+  
+  const handleExportPDF = () => {
+    toast({
+      title: "PDF Export Started",
+      description: "Your PDF report is being generated and will download shortly.",
+    });
+    
+    // In a real implementation, we would use a PDF library like jsPDF
+    // For now, simulate the download
+    setTimeout(() => {
+      toast({
+        title: "PDF Generated",
+        description: "Your report has been downloaded",
+      });
+      
+      // In a real implementation, we would generate and download an actual PDF
+      // This is just a placeholder for demonstration
     }, 1500);
   };
   
@@ -220,7 +293,7 @@ const TeamAdminDashboard: React.FC = () => {
           
           <div style="background-color: #f0f7ff; border-radius: 10px; padding: 15px; margin: 20px 0;">
             <p style="font-size: 18px; font-weight: bold; text-align: center;">
-              Overall Score: 82/100 - Pulse Certified™
+              Overall Score: ${summaryStats.averageScore}/100 - Pulse Certified™
             </p>
           </div>
           
@@ -296,9 +369,11 @@ const TeamAdminDashboard: React.FC = () => {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map(i => (
-            <Skeleton key={i} className="h-40" />
+        <Skeleton className="h-40" />
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map(i => (
+            <Skeleton key={i} className="h-32" />
           ))}
         </div>
         
@@ -306,12 +381,6 @@ const TeamAdminDashboard: React.FC = () => {
       </div>
     );
   }
-  
-  // Calculate stats
-  const completedCount = teamMembers.filter(m => m.surveyStatus === 'completed').length;
-  const pendingCount = teamMembers.filter(m => m.surveyStatus === 'pending').length;
-  const notSentCount = teamMembers.filter(m => m.surveyStatus === 'not_sent').length;
-  const completionRate = Math.round((completedCount / (teamMembers.length || 1)) * 100);
   
   return (
     <div className="space-y-8">
@@ -322,32 +391,11 @@ const TeamAdminDashboard: React.FC = () => {
         </div>
         
         <div className="flex flex-wrap gap-2">
-          <Select value={department} onValueChange={setDepartment}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select Department" />
-            </SelectTrigger>
-            <SelectContent>
-              {DEMO_DEPARTMENTS.map(dept => (
-                <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select value={timePeriod} onValueChange={setTimePeriod}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Time Period" />
-            </SelectTrigger>
-            <SelectContent>
-              {DEMO_TIME_PERIODS.map(period => (
-                <SelectItem key={period.value} value={period.value}>{period.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Button variant="outline" onClick={handleExportData} disabled={isRefreshing}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
+          <TeamExportOptions 
+            onExportCSV={handleExportCSV}
+            onExportPDF={handleExportPDF}
+            dataAvailable={teamMembers.length > 0}
+          />
           
           <Button onClick={handleRefreshData} disabled={isRefreshing}>
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -363,95 +411,27 @@ const TeamAdminDashboard: React.FC = () => {
         </Alert>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Survey Completion</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="text-2xl font-bold">{completionRate}%</div>
-              <div className="text-muted-foreground">{completedCount}/{teamMembers.length} team members</div>
-            </div>
-            <div className="mt-4 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-pulse-gradient rounded-full" 
-                style={{ width: `${completionRate}%` }}
-              ></div>
-            </div>
-            <div className="grid grid-cols-3 gap-2 mt-4 text-xs text-center">
-              <div>
-                <div className="font-bold">{completedCount}</div>
-                <div className="text-green-600">Completed</div>
-              </div>
-              <div>
-                <div className="font-bold">{pendingCount}</div>
-                <div className="text-amber-600">Pending</div>
-              </div>
-              <div>
-                <div className="font-bold">{notSentCount}</div>
-                <div className="text-gray-500">Not Sent</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">PulseScore™</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="text-2xl font-bold">82/100</div>
-              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">
-                Pulse Certified™
-              </span>
-            </div>
-            <div className="mt-4 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-pulse-gradient rounded-full" 
-                style={{ width: '82%' }}
-              ></div>
-            </div>
-            <div className="grid grid-cols-3 gap-2 mt-4 text-xs text-center">
-              <div>
-                <div className="font-bold">85</div>
-                <div className="text-purple-600">Trust & Safety</div>
-              </div>
-              <div>
-                <div className="font-bold">78</div>
-                <div className="text-blue-600">Engagement</div>
-              </div>
-              <div>
-                <div className="font-bold">84</div>
-                <div className="text-indigo-600">Culture</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col space-y-2">
-              <Button onClick={handleSendReminders} variant="outline" className="justify-start">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Send Reminders ({pendingCount})
-              </Button>
-              <Button onClick={handleBulkInvite} variant="outline" className="justify-start">
-                <Users className="h-4 w-4 mr-2" />
-                Bulk Invite Team
-              </Button>
-              <Button onClick={handleSendCertificate} variant="outline" className="justify-start">
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Send Certificate
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Advanced filters */}
+      <TeamAdminFilters
+        department={department}
+        setDepartment={setDepartment}
+        pulseCategoryFilter={pulseCategoryFilter}
+        setPulseCategoryFilter={setPulseCategoryFilter}
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+        onRefresh={handleRefreshData}
+        departments={DEMO_DEPARTMENTS}
+        isRefreshing={isRefreshing}
+      />
+      
+      {/* Summary statistics */}
+      <TeamSummaryStats
+        participationRate={summaryStats.participationRate}
+        averageScore={summaryStats.averageScore}
+        completedSurveys={summaryStats.completedSurveys}
+        pendingSurveys={summaryStats.pendingSurveys}
+        themeScores={summaryStats.themeScores}
+      />
       
       <Card>
         <CardHeader>
@@ -570,8 +550,10 @@ const TeamAdminDashboard: React.FC = () => {
                 <div className="mb-8 mx-auto max-w-md p-6 border rounded-lg shadow-sm bg-white">
                   <h3 className="text-xl font-bold mb-4">PulseScore™ Certification</h3>
                   <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg p-8 mb-4">
-                    <div className="text-3xl font-bold mb-1">82/100</div>
-                    <div className="font-medium">Pulse Certified™</div>
+                    <div className="text-3xl font-bold mb-1">{summaryStats.averageScore}/100</div>
+                    <div className="font-medium">
+                      {summaryStats.averageScore >= 80 ? 'Pulse Certified™' : 'In Progress'}
+                    </div>
                   </div>
                   <p className="text-gray-500 mb-2">Tayana Solutions</p>
                   <p className="text-gray-500 text-sm">Valid until April 8, 2026</p>
@@ -582,7 +564,8 @@ const TeamAdminDashboard: React.FC = () => {
                     <Download className="h-4 w-4 mr-2" />
                     Send Certificate
                   </Button>
-                  <Button variant="outline" onClick={handleExportData}>
+                  <Button variant="outline" onClick={handleExportPDF}>
+                    <FileText className="h-4 w-4 mr-2" />
                     Download Report
                   </Button>
                 </div>

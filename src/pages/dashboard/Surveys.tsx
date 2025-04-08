@@ -1,15 +1,16 @@
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import SurveyList from '@/components/dashboard/SurveyList';
 import SurveyForm from '@/components/dashboard/SurveyForm';
 import SurveyDetail from '@/components/dashboard/SurveyDetail';
 
 const Surveys = () => {
-  const { surveyId, action } = useParams();
-
+  const { surveyId } = useParams();
+  const location = useLocation();
+  
   // Show survey form if creating a new survey
-  if (action === 'new') {
+  if (location.pathname.endsWith('/new')) {
     return (
       <div className="container mx-auto">
         <h1 className="text-2xl font-bold mb-6">Create New Survey</h1>

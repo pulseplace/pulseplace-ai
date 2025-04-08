@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDistanceToNow } from 'date-fns';
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2, Shield, Eye } from 'lucide-react';
 import { useDashboard } from '@/contexts/DashboardContext';
 
 const SurveyList = () => {
@@ -24,7 +24,7 @@ const SurveyList = () => {
 
   useEffect(() => {
     refreshData();
-  }, []);
+  }, [refreshData]);
 
   // Process surveys to add response counts
   useEffect(() => {
@@ -52,7 +52,7 @@ const SurveyList = () => {
   }
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
           <CardTitle>Pulse Surveys</CardTitle>
@@ -79,48 +79,72 @@ const SurveyList = () => {
             </Button>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Responses</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {surveysWithCounts.map((survey) => (
-                <TableRow key={survey.id}>
-                  <TableCell className="font-medium">
-                    <Link to={`/dashboard/surveys/${survey.id}`} className="hover:text-pulse-600">
-                      {survey.title}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{survey.department || 'All'}</TableCell>
-                  <TableCell>
-                    {formatDistanceToNow(new Date(survey.created_at), { addSuffix: true })}
-                  </TableCell>
-                  <TableCell>{survey.response_count}</TableCell>
-                  <TableCell>
-                    <Badge className={survey.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                      {survey.is_active ? 'Active' : 'Closed'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => navigate(`/dashboard/surveys/${survey.id}`)}
-                    >
-                      View
-                    </Button>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Department</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead>Responses</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Anonymity</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {surveysWithCounts.map((survey) => (
+                  <TableRow key={survey.id}>
+                    <TableCell className="font-medium">
+                      <Link to={`/dashboard/surveys/${survey.id}`} className="hover:text-pulse-600">
+                        {survey.title}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{survey.department || 'All'}</TableCell>
+                    <TableCell>
+                      {formatDistanceToNow(new Date(survey.created_at), { addSuffix: true })}
+                    </TableCell>
+                    <TableCell>{survey.response_count}</TableCell>
+                    <TableCell>
+                      <Badge className={survey.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                        {survey.is_active ? 'Active' : 'Closed'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        className={`flex items-center gap-1 ${
+                          survey.is_anonymous 
+                            ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                            : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                        }`}
+                      >
+                        {survey.is_anonymous ? (
+                          <>
+                            <Shield className="h-3 w-3" />
+                            <span>Anonymous</span>
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="h-3 w-3" />
+                            <span>Identified</span>
+                          </>
+                        )}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => navigate(`/dashboard/surveys/${survey.id}`)}
+                      >
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BellRing, PanelLeft, User, ChevronDown, LogOut, Settings, HelpCircle } from 'lucide-react';
+import { BellRing, PanelLeft, User, ChevronDown, LogOut, Settings, HelpCircle, Menu } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,7 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const DashboardHeader = () => {
+interface DashboardHeaderProps {
+  onMobileMenuClick?: () => void;
+}
+
+const DashboardHeader = ({ onMobileMenuClick }: DashboardHeaderProps) => {
   const { toast } = useToast();
   const { user, profile, signOut } = useAuth();
   const { progressPercentage } = useOnboarding();
@@ -25,13 +29,6 @@ const DashboardHeader = () => {
     toast({
       title: "New Notifications",
       description: `You have ${unreadNotifications} unread notifications`,
-    });
-  };
-
-  const handleSidebarToggle = () => {
-    toast({
-      title: "Sidebar Toggle",
-      description: "This would toggle the sidebar visibility on mobile",
     });
   };
   
@@ -58,13 +55,15 @@ const DashboardHeader = () => {
   };
   
   return (
-    <header className="bg-white border-b py-4 px-6">
+    <header className="bg-white border-b py-2 md:py-4 px-4 md:px-6">
       <div className="flex items-center justify-between">
-        <div className="md:hidden flex items-center">
-          <Button variant="ghost" size="icon" onClick={handleSidebarToggle}>
-            <PanelLeft className="h-5 w-5" />
+        <div className="flex items-center">
+          <Button variant="ghost" size="icon" onClick={onMobileMenuClick} className="md:hidden mr-2">
+            <Menu className="h-5 w-5" />
           </Button>
-          <span className="ml-2 font-bold">Dashboard</span>
+          <Link to="/dashboard" className="text-xl font-bold md:text-2xl bg-gradient-to-r from-pulse-600 to-teal-500 bg-clip-text text-transparent">
+            PulsePlace.ai
+          </Link>
         </div>
         
         <div className="flex items-center gap-2 ml-auto">
@@ -96,7 +95,7 @@ const DashboardHeader = () => {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center ml-4 cursor-pointer focus:outline-none">
+              <button className="flex items-center ml-2 md:ml-4 cursor-pointer focus:outline-none">
                 <div className="w-8 h-8 rounded-full bg-pulse-100 flex items-center justify-center text-pulse-600">
                   <User className="h-5 w-5" />
                 </div>
@@ -106,7 +105,7 @@ const DashboardHeader = () => {
                   </p>
                   <p className="text-xs text-gray-500">{profile?.role || 'Account'}</p>
                 </div>
-                <ChevronDown className="h-4 w-4 ml-2 text-gray-400" />
+                <ChevronDown className="h-4 w-4 ml-1 md:ml-2 text-gray-400" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">

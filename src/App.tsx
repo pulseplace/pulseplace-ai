@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
@@ -79,6 +78,8 @@ function App() {
                   >
                     <Route index element={<DashboardHome />} />
                     <Route path="surveys" element={<Surveys />} />
+                    <Route path="surveys/:surveyId" element={<Surveys />} />
+                    <Route path="surveys/new" element={<Surveys />} />
                     <Route path="share" element={<ShareCertification />} />
                     <Route path="scoring" element={<ScoringLogic />} />
                     <Route path="certification-engine" element={<CertificationEngine />} />

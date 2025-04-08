@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import FeatureSection from '@/components/FeatureSection';
 import { Button } from "@/components/ui/button";
 import { BrandMessage } from '@/components/BrandMessage';
 import MetaTags from '@/components/MetaTags';
@@ -102,8 +103,11 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Features Section */}
+      <FeatureSection />
+
       {/* How It Works Section */}
-      <section className="py-16 bg-gray-50 px-4">
+      <section className="py-16 bg-gray-50 px-4" id="how-it-works">
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -169,7 +173,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-4" id="join-beta">
         <div className="container mx-auto max-w-5xl">
           <div className="bg-pulse-gradient text-white rounded-2xl p-8 md:p-12 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">

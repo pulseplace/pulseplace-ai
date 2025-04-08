@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +9,9 @@ import { Search, Filter, Award, Building2, ArrowRight } from 'lucide-react';
 import CertifiedCompanyGrid from '@/components/certification/CertifiedCompanyGrid';
 import CertificationHero from '@/components/certification/CertificationHero';
 import { Link } from 'react-router-dom';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import MetaTags from '@/components/MetaTags';
 
 const CertificationShowcase = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,8 +21,16 @@ const CertificationShowcase = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <MetaTags 
+        title="Certified Companies | PulsePlace.ai"
+        description="Browse companies recognized for exceptional workplace culture with PulsePlace certification."
+      />
+      <Navbar />
+      
       {/* Hero Section */}
-      <CertificationHero />
+      <div className="pt-20">
+        <CertificationHero />
+      </div>
       
       {/* Filter Section */}
       <section className="py-8 px-4 md:px-6 max-w-7xl mx-auto">
@@ -156,6 +168,8 @@ const CertificationShowcase = () => {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };

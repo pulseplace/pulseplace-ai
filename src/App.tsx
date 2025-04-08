@@ -46,10 +46,10 @@ const LLMInsights = lazy(() => import('@/pages/dashboard/LLMInsights'));
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <DashboardProvider>
-          <TaskProvider>
-            <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
+          <DashboardProvider>
+            <TaskProvider>
               <Suspense fallback={<LoadingState />}>
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -93,11 +93,11 @@ function App() {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
-            </BrowserRouter>
-            <Toaster position="top-right" />
-          </TaskProvider>
-        </DashboardProvider>
-      </AuthProvider>
+              <Toaster position="top-right" />
+            </TaskProvider>
+          </DashboardProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }

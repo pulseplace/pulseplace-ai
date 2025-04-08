@@ -10,7 +10,7 @@ interface MetaTagsProps {
 }
 
 const MetaTags: React.FC<MetaTagsProps> = ({
-  title = "PulsePlace.ai - AI-powered workplace culture certification",
+  title = "PulsePlace.ai - Make Workplaces Worth Working In",
   description = "PulsePlace.ai is an AI-powered certification engine for workplace culture and people-first organizations.",
   imageUrl = "/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png",
   url = "https://pulseplace.ai"

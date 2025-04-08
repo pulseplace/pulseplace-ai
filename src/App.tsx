@@ -24,6 +24,7 @@ import NotFound from './pages/NotFound';
 import StickyCta from './components/StickyCta';
 import { TaskProvider } from './contexts/TaskContext';
 import MetaTags from './components/MetaTags';
+import Home from './pages/Home';
 
 function App() {
   const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ function App() {
                 </Helmet>
                 <Routes>
                   {/* Public Routes */}
+                  <Route path="/" element={<Home />} />
                   <Route path="/join-beta" element={<JoinBeta />} />
                   <Route path="/methodology" element={<Methodology />} />
                   <Route path="/pricing" element={<Pricing />} />
@@ -59,9 +61,6 @@ function App() {
                     <Route path="email-templates" element={<EmailTemplates />} />
                     <Route path="certification-engine" element={<CertificationEngine />} />
                   </Route>
-                  
-                  {/* Home page route - redirect to join-beta for now */}
-                  <Route path="/" element={<Navigate to="/join-beta" replace />} />
                   
                   {/* Not Found Route */}
                   <Route path="*" element={<NotFound />} />

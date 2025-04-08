@@ -17,10 +17,18 @@ const StickyCta = () => {
   
   // Determine where to send the user based on their auth status and onboarding progress
   const getCtaConfig = () => {
+    // If on homepage, show the "Get Pulse Certified" CTA
+    if (location.pathname === '/') {
+      return {
+        text: "Get Pulse Certified",
+        link: "/certification"
+      };
+    }
+    
     // If not logged in, point to beta signup
     if (!user) {
       return {
-        text: "Get Pulse Certified",
+        text: "Join the Private Beta",
         link: "/join-beta"
       };
     }

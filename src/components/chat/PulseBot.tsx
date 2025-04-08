@@ -2,10 +2,11 @@
 import React, { useRef, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatbotContext';
 import { Button } from '@/components/ui/button';
-import { X, MessageCircle, Bot } from 'lucide-react';
+import { X, MessageCircle, Bot, HelpCircle } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { cn } from '@/lib/utils';
+import { Separator } from "@/components/ui/separator";
 
 const PulseBot: React.FC = () => {
   const { messages, isLoading, isChatOpen, sendMessage, toggleChat } = useChat();
@@ -20,21 +21,28 @@ const PulseBot: React.FC = () => {
 
   return (
     <>
-      {/* Floating chat button */}
-      <Button
-        onClick={toggleChat}
-        className={cn(
-          'fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg',
-          isChatOpen ? 'bg-gray-600' : 'bg-pulse-gradient animate-pulse'
+      {/* Floating chat button with label */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-2">
+        {!isChatOpen && (
+          <div className="bg-white rounded-full px-3 py-1 shadow-md mb-1">
+            <span className="text-sm font-medium text-gray-700">Need Help?</span>
+          </div>
         )}
-      >
-        {isChatOpen ? (
-          <X className="h-6 w-6" />
-        ) : (
-          <MessageCircle className="h-6 w-6" />
-        )}
-        <span className="sr-only">Toggle chat</span>
-      </Button>
+        <Button
+          onClick={toggleChat}
+          className={cn(
+            'h-14 w-14 rounded-full shadow-lg transition-all duration-300',
+            isChatOpen ? 'bg-gray-600 hover:bg-gray-700' : 'bg-pulse-gradient animate-pulse hover:bg-pulse-700'
+          )}
+          aria-label={isChatOpen ? "Close chat" : "Open chat"}
+        >
+          {isChatOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <HelpCircle className="h-6 w-6" />
+          )}
+        </Button>
+      </div>
 
       {/* Chat dialog */}
       <div
@@ -49,7 +57,7 @@ const PulseBot: React.FC = () => {
         <div className="flex items-center justify-between px-4 py-3 bg-pulse-gradient text-white rounded-t-lg">
           <div className="flex items-center space-x-2">
             <Bot className="h-5 w-5" />
-            <h3 className="font-semibold">PulseBot Assistant</h3>
+            <h3 className="font-semibold">PulsePlace Assistant</h3>
           </div>
           <Button
             variant="ghost"
@@ -70,14 +78,16 @@ const PulseBot: React.FC = () => {
           
           {/* Typing indicator */}
           {isLoading && (
-            <div className="flex items-center space-x-2 text-gray-500">
+            <div className="flex items-center space-x-2 text-gray-500 my-2">
               <div className="w-8 h-8 rounded-full bg-pulse-600 flex items-center justify-center text-white">
                 <Bot className="h-4 w-4" />
               </div>
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 rounded-full bg-pulse-600 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 rounded-full bg-pulse-600 animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 rounded-full bg-pulse-600 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              <div className="bg-gray-100 px-4 py-2 rounded-lg">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 rounded-full bg-pulse-600 animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 rounded-full bg-pulse-600 animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 rounded-full bg-pulse-600 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
               </div>
             </div>
           )}

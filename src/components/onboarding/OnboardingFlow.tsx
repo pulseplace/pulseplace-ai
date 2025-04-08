@@ -1,16 +1,25 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useOnboarding, OnboardingStep } from '@/hooks/useOnboarding';
 import OnboardingState from '@/components/OnboardingState';
 import OnboardingForm from '@/components/OnboardingForm';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
 
 const OnboardingFlow: React.FC = () => {
-  const { currentStep, isLoading, goToNextStep } = useOnboarding();
+  const { 
+    currentStep, 
+    isLoading, 
+    goToNextStep,
+    goToStep,
+    completedSteps,
+    progressPercentage,
+    isStepCompleted
+  } = useOnboarding();
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -37,6 +46,15 @@ const OnboardingFlow: React.FC = () => {
       </div>
     );
   }
+
+  // Define steps for the progress tracker
+  const steps: { key: OnboardingStep; label: string }[] = [
+    { key: 'welcome', label: 'Welcome' },
+    { key: 'company-profile', label: 'Company Profile' },
+    { key: 'first-survey', label: 'First Survey' },
+    { key: 'results-calculation', label: 'Results' },
+    { key: 'certification', label: 'Certification' }
+  ];
   
   const renderStepContent = () => {
     switch (currentStep) {
@@ -93,6 +111,45 @@ const OnboardingFlow: React.FC = () => {
   
   return (
     <div className="container mx-auto py-6 max-w-4xl">
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Onboarding Progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Progress value={progressPercentage()} className="h-2 mb-4" />
+          <div className="flex justify-between mt-2">
+            {steps.map((step) => (
+              <div 
+                key={step.key} 
+                className={`flex flex-col items-center cursor-pointer transition-colors ${
+                  currentStep === step.key 
+                    ? 'text-pulse-700 font-medium' 
+                    : isStepCompleted(step.key) 
+                      ? 'text-green-600'
+                      : 'text-gray-400'
+                }`}
+                onClick={() => isStepCompleted(step.key) && goToStep(step.key)}
+              >
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${
+                  currentStep === step.key 
+                    ? 'bg-pulse-100 text-pulse-700 border-2 border-pulse-600' 
+                    : isStepCompleted(step.key) 
+                      ? 'bg-green-100 text-green-600'
+                      : 'bg-gray-100 text-gray-400'
+                }`}>
+                  {isStepCompleted(step.key) ? (
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : (
+                    <span>{steps.indexOf(step) + 1}</span>
+                  )}
+                </div>
+                <span className="text-xs text-center">{step.label}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+      
       {renderStepContent()}
       
       {currentStep !== 'welcome' && currentStep !== 'company-profile' && (

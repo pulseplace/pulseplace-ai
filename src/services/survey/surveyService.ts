@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { createSurveyResponse } from './surveyResponseService';
 import { Survey, CreateSurveyParams } from './types';
 
 export const surveyService = {

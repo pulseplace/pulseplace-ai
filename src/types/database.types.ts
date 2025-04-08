@@ -53,6 +53,7 @@ export interface Database {
           created_at: string
           updated_at: string
           is_active: boolean
+          is_anonymous: boolean
         }
         Insert: {
           id?: string
@@ -64,6 +65,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
           is_active?: boolean
+          is_anonymous?: boolean
         }
         Update: {
           id?: string
@@ -75,6 +77,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
           is_active?: boolean
+          is_anonymous?: boolean
         }
       }
       survey_responses: {

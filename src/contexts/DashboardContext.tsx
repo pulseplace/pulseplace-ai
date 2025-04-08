@@ -1,23 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { Tables } from '@/types/database.types';
-import { toast } from 'sonner';
 
-interface DashboardContextType {
-  surveys: Tables<'pulse_surveys'>[];
-  responses: any[]; // Using any for flexibility with response data
-  stats: {
-    pulseScore: number;
-    responseRate: number;
-    employeesEngaged: number;
-    insightsGenerated: number;
-  };
-  isLoading: boolean;
-  error: string | null;
-  refreshData: () => Promise<void>;
-  forceRefresh: () => void;
-}
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { DashboardContextType } from '@/types/dashboard.types';
+import { useDashboardData } from '@/hooks/useDashboardData';
+import { useLoadingTimeout } from '@/hooks/useLoadingTimeout';
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
@@ -35,181 +21,28 @@ interface DashboardProviderProps {
 
 export const DashboardProvider = ({ children }: DashboardProviderProps) => {
   const { user } = useAuth();
-  const [surveys, setSurveys] = useState<Tables<'pulse_surveys'>[]>([]);
-  const [responses, setResponses] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [refreshCounter, setRefreshCounter] = useState(0);
-  const [stats, setStats] = useState({
-    pulseScore: 0,
-    responseRate: 0,
-    employeesEngaged: 0,
-    insightsGenerated: 0
+  
+  // Use the custom hook to handle dashboard data
+  const {
+    surveys,
+    responses,
+    stats,
+    isLoading,
+    error,
+    refreshData,
+    forceRefresh
+  } = useDashboardData(user?.id);
+  
+  // Handle timeout fallback
+  useLoadingTimeout({
+    isLoading,
+    surveys,
+    setSurveys: (s) => {},  // Empty function as we're using useDashboardData
+    setResponses: (r) => {}, // Empty function as we're using useDashboardData
+    setStats: (s) => {}, // Empty function as we're using useDashboardData
+    setIsLoading: (l) => {}, // Empty function as we're using useDashboardData
+    userId: user?.id
   });
-  
-  // Force refresh function for manual retries
-  const forceRefresh = () => {
-    console.log('Force refresh triggered');
-    setRefreshCounter(prev => prev + 1);
-  };
-  
-  // Add a timeout to prevent infinite loading state
-  useEffect(() => {
-    // If loading continues for more than 8 seconds, force it to stop loading
-    const timeoutId = setTimeout(() => {
-      if (isLoading) {
-        console.log('Force ending loading state after timeout');
-        setIsLoading(false);
-        
-        // Set some mock data for demo purposes
-        if (surveys.length === 0) {
-          // Create a survey object that matches the Tables<'pulse_surveys'> type
-          setSurveys([
-            {
-              id: '1',
-              title: 'Demo Survey',
-              description: 'This is a demo survey loaded after timeout',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              created_by: user?.id || 'demo-user',
-              company: 'Demo Company',
-              department: 'All Departments',
-              is_active: true
-            }
-          ]);
-          setResponses([]);
-          setStats({
-            pulseScore: 75,
-            responseRate: 60,
-            employeesEngaged: 12,
-            insightsGenerated: 8
-          });
-        }
-      }
-    }, 8000); // 8 second timeout
-    
-    return () => clearTimeout(timeoutId);
-  }, [isLoading, surveys.length, user?.id]);
-
-  // Calculate response rate (mock calculation for demo)
-  const calculateResponseRate = (surveys: any[], responses: any[]) => {
-    if (!surveys || surveys.length === 0) return 0;
-    
-    // In a real app, you would count actual invitations sent
-    const estimatedInvitations = surveys.length * 10; // Assume 10 invitations per survey
-    const actualResponses = responses?.length || 0;
-    
-    return Math.min(Math.round((actualResponses / Math.max(estimatedInvitations, 1)) * 100), 100);
-  };
-
-  // Initialize data when user changes or refresh counter changes
-  useEffect(() => {
-    console.log('User or refresh counter changed, fetching dashboard data...');
-    if (user) {
-      fetchDashboardData();
-    } else {
-      // If no user, don't try to fetch data but make sure we're not in loading state
-      setIsLoading(false);
-    }
-  }, [user, refreshCounter]);
-
-  const fetchDashboardData = async () => {
-    if (!user) {
-      console.log('No user, setting isLoading to false');
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      console.log('Fetching dashboard data...');
-      
-      // Fetch surveys
-      const { data: surveysData, error: surveysError } = await supabase
-        .from('pulse_surveys')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (surveysError) throw surveysError;
-      console.log('Surveys data fetched:', surveysData?.length || 0, 'surveys');
-      setSurveys(surveysData || []);
-
-      // Fetch responses
-      const { data: responsesData, error: responsesError } = await supabase
-        .from('survey_responses')
-        .select(`
-          id,
-          survey_id,
-          user_id,
-          responses,
-          created_at,
-          sentiment_score,
-          pulse_score,
-          pulse_surveys (
-            title
-          )
-        `)
-        .order('created_at', { ascending: false });
-
-      if (responsesError) throw responsesError;
-      console.log('Responses data fetched:', responsesData?.length || 0, 'responses');
-      setResponses(responsesData || []);
-
-      // Calculate stats
-      let totalPulseScore = 0;
-      let scoreCount = 0;
-
-      responsesData?.forEach(response => {
-        if (response.pulse_score && response.pulse_score.overallScore) {
-          totalPulseScore += response.pulse_score.overallScore;
-          scoreCount++;
-        }
-      });
-
-      // Calculate and set stats
-      const calculatedStats = {
-        pulseScore: scoreCount > 0 ? Math.round(totalPulseScore / scoreCount) : 0,
-        responseRate: calculateResponseRate(surveysData, responsesData),
-        employeesEngaged: new Set(responsesData?.map(r => r.user_id) || []).size,
-        insightsGenerated: Math.min(responsesData?.length * 2 || 0, 30) // Mock value for insights
-      };
-      
-      console.log('Stats calculated:', calculatedStats);
-      setStats(calculatedStats);
-    } catch (err: any) {
-      console.error('Error fetching dashboard data:', err);
-      setError(err.message || 'Failed to load dashboard data');
-      
-      // Use demo data if error occurs
-      setSurveys([
-        {
-          id: '1',
-          title: 'Sample Survey',
-          description: 'This is a sample survey (demo data)',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          created_by: user?.id || 'demo-user',
-          company: 'Demo Company',
-          department: 'All Departments',
-          is_active: true
-        }
-      ]);
-      
-      setStats({
-        pulseScore: 70,
-        responseRate: 65,
-        employeesEngaged: 15,
-        insightsGenerated: 10
-      });
-      
-      toast.error('Failed to load dashboard data - displaying demo data');
-    } finally {
-      console.log('Finished fetching dashboard data, setting isLoading to false');
-      setIsLoading(false);
-    }
-  };
 
   const value = {
     surveys,
@@ -217,7 +50,7 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
     stats,
     isLoading,
     error,
-    refreshData: fetchDashboardData,
+    refreshData,
     forceRefresh
   };
 

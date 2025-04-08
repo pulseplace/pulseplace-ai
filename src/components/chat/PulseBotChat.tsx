@@ -137,7 +137,8 @@ export default function PulseBotChat() {
       </div>
 
       {/* Typing indicator styles */}
-      <style jsx>{`
+      <style>
+        {`
         .typing-indicator {
           display: flex;
           align-items: center;
@@ -168,7 +169,8 @@ export default function PulseBotChat() {
             transform: translateY(-5px);
           }
         }
-      `}</style>
+        `}
+      </style>
     </>
   );
 }

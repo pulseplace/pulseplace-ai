@@ -25,3 +25,12 @@ enabled = true
 
 [functions.send-certification]
 verify_jwt = true
+
+[functions.send-email]
+verify_jwt = true
+
+[functions.send-certification-email]
+verify_jwt = true
+
+[functions.generate-pdf-report]
+verify_jwt = true

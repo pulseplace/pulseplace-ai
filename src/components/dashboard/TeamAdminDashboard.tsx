@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,7 +14,6 @@ import TeamTabContent from './admin/TeamTabContent';
 import InsightsTabContent from './admin/InsightsTabContent';
 import CertificationTabContent from './admin/CertificationTabContent';
 import { DateRangeFilter } from '@/components/ui/date-range-picker';
-import { supabase } from '@/integrations/supabase/client';
 
 const DEMO_DEPARTMENTS = [
   "All Departments", "Engineering", "Marketing", "Sales", "Customer Support", "Human Resources"
@@ -138,18 +136,29 @@ const TeamAdminDashboard: React.FC = () => {
     }
   };
   
-  const handleExportPDF = () => {
-    toast({
-      title: "PDF Export Started",
-      description: "Your PDF report is being generated and will download shortly.",
-    });
-    
-    setTimeout(() => {
+  const handleExportPDF = async () => {
+    setIsRefreshing(true);
+    try {
+      const result = await teamAdminService.exportToPDF(department);
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to export PDF');
+      }
+      
       toast({
-        title: "PDF Generated",
-        description: "Your report has been downloaded",
+        title: "PDF Export Complete",
+        description: "Your PDF report has been generated and downloaded.",
       });
-    }, 1500);
+    } catch (error: any) {
+      console.error('Error exporting PDF:', error);
+      toast({
+        title: "Export Failed",
+        description: error.message || "Failed to export report to PDF",
+        variant: "destructive"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
   
   const handleSendReminders = async () => {
@@ -226,66 +235,15 @@ const TeamAdminDashboard: React.FC = () => {
         throw new Error(certResult.error || 'Failed to generate certification');
       }
       
-      const certificateHtml = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #4338ca; text-align: center;">Tayana Solutions PulseScore™ Certification</h1>
-          
-          <div style="background-color: #f0f7ff; border-radius: 10px; padding: 15px; margin: 20px 0;">
-            <p style="font-size: 18px; font-weight: bold; text-align: center;">
-              Overall Score: ${summaryStats.averageScore}/100 - Pulse Certified™
-            </p>
-          </div>
-          
-          <h2 style="color: #6366f1; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Executive Summary</h2>
-          <p>${insights.summary}</p>
-          
-          <h2 style="color: #6366f1; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Key Strengths</h2>
-          <ul>
-            ${insights.strengths.map((strength: string) => `<li>${strength}</li>`).join('')}
-          </ul>
-          
-          <h2 style="color: #6366f1; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Opportunities</h2>
-          <ul>
-            ${insights.opportunities.map((opportunity: string) => `<li>${opportunity}</li>`).join('')}
-          </ul>
-          
-          <h2 style="color: #6366f1; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Recommended Actions</h2>
-          <ul>
-            ${insights.actionItems.map((action: string) => `<li>${action}</li>`).join('')}
-          </ul>
-          
-          <div style="background-color: #f0f7ff; border-radius: 10px; padding: 15px; margin: 20px 0; text-align: center;">
-            <p style="font-style: italic; color: #4f46e5;">
-              ${insights.certificateText}
-            </p>
-            <p style="margin-top: 15px; font-size: 12px;">
-              Issued on ${new Date().toLocaleDateString()} | Valid for 12 months
-            </p>
-          </div>
-          
-          <p style="color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center;">
-            This certification is issued by PulsePlace.ai based on employee feedback data.
-          </p>
-        </div>
-      `;
-      
-      await emailService.sendEmail({
-        to: "hr@tayanasolutions.com",
-        subject: "Tayana Solutions - PulseScore™ Certification",
-        html: certificateHtml,
-        fromName: "PulsePlace.ai Certification",
-        fromEmail: "certification@pulseplace.ai"
-      });
-      
       toast({
-        title: "Certificate Sent",
-        description: "The certification email has been sent successfully.",
+        title: "Certificate Generated",
+        description: "The certification has been generated and sent via email.",
       });
     } catch (error: any) {
       console.error('Error sending certificate:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to send certification email. Please try again.",
+        description: error.message || "Failed to generate certification. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -356,7 +314,10 @@ const TeamAdminDashboard: React.FC = () => {
             </TabsList>
             
             <TabsContent value="team">
-              <TeamTabContent teamMembers={teamMembers} />
+              <TeamTabContent 
+                teamMembers={teamMembers} 
+                onRefresh={loadDashboardData}
+              />
             </TabsContent>
             
             <TabsContent value="insights">

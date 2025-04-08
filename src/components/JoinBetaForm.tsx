@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle, ArrowRight } from 'lucide-react';
 import FormFieldWithValidation from "@/components/ui/form-field-with-validation";
 import useFormValidation from "@/hooks/useFormValidation";
 
@@ -56,6 +56,8 @@ const industries = [
 
 const JoinBetaForm = () => {
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [userName, setUserName] = useState("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -94,10 +96,48 @@ const JoinBetaForm = () => {
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
-      toast.success("Thank you for joining our beta program! We'll be in touch soon. If you have any questions, please email us at hello@pulseplace.ai");
+      setSubmitted(true);
+      setUserName(values.name.split(' ')[0]); // Get first name
+      toast.success("Thank you for joining our beta program! We'll be in touch soon.");
       form.reset();
     }, 1500);
   };
+
+  if (submitted) {
+    return (
+      <Card className="max-w-3xl mx-auto shadow-xl border-0">
+        <CardContent className="p-8 text-center">
+          <div className="flex flex-col items-center space-y-6 py-8">
+            <CheckCircle className="h-20 w-20 text-green-500" />
+            <h2 className="text-3xl font-bold">You're in, {userName}!</h2>
+            <p className="text-xl text-gray-600 max-w-md">
+              We'll send your private beta invite within 48 hours. Great workplaces don't guess — they pulse.
+            </p>
+            
+            <div className="mt-8 space-y-6 w-full max-w-md">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-medium text-lg mb-2">What happens next?</h3>
+                <ol className="text-left space-y-3 pl-5">
+                  <li className="list-decimal">You'll receive an email invitation within 48 hours</li>
+                  <li className="list-decimal">Click the link to activate your account</li>
+                  <li className="list-decimal">Get access to your PulsePlace dashboard</li>
+                  <li className="list-decimal">Start your journey to certification</li>
+                </ol>
+              </div>
+              
+              <Button 
+                className="w-full bg-pulse-gradient hover:opacity-90 transition-all"
+                onClick={() => setSubmitted(false)}
+              >
+                Register another company
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="max-w-3xl mx-auto shadow-xl border-0">

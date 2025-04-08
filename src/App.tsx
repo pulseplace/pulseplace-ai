@@ -35,6 +35,7 @@ function App() {
           <DashboardProvider>
             <ThemeProvider>
               <TaskProvider>
+                <MetaTags />
                 <Helmet>
                   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 </Helmet>
@@ -48,6 +49,7 @@ function App() {
                   <Route path="/about-us" element={<AboutUs />} />
                   <Route path="/certification" element={<Certification />} />
                   <Route path="/showcase" element={<CertificationShowcase />} />
+                  <Route path="/certified" element={<Navigate to="/showcase" replace />} />
                   
                   {/* Dashboard Routes */}
                   <Route path="/dashboard" element={<DashboardLayout />}>

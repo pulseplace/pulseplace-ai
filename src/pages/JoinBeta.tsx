@@ -3,6 +3,7 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import JoinBetaForm from '@/components/JoinBetaForm';
+import { BrandMessage } from '@/components/BrandMessage';
 
 const JoinBetaPage = () => {
   return (
@@ -10,18 +11,25 @@ const JoinBetaPage = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Join the Future of Workplace Culture
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-pulse-600 to-teal-500 bg-clip-text text-transparent">
+            Be among the first to build a soulful, AI-powered workplace
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Be among the first organizations to experience PulsePlace.ai and transform how you measure, understand, and improve your workplace culture.
+            Join our private beta and get early access to PulseScore certification. Transform how you measure, understand, and improve your workplace culture.
           </p>
         </div>
         
         <JoinBetaForm />
         
+        <div className="mt-16">
+          <BrandMessage 
+            message="Great workplaces don't guess culture — they listen to it."
+            className="text-center italic text-lg mb-8"
+          />
+        </div>
+        
         <div className="mt-20 bg-white rounded-xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold mb-6 text-center">Why Join Our Beta Program?</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center">What Beta Users Receive</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
@@ -31,7 +39,7 @@ const JoinBetaPage = () => {
                 </svg>
               </div>
               <h3 className="font-bold text-lg mb-2">Early Access</h3>
-              <p className="text-gray-600">Be the first to use our cutting-edge AI tools for workplace culture measurement.</p>
+              <p className="text-gray-600">First to use our cutting-edge AI tools with priority onboarding and support.</p>
             </div>
             
             <div className="text-center">
@@ -42,7 +50,7 @@ const JoinBetaPage = () => {
                 </svg>
               </div>
               <h3 className="font-bold text-lg mb-2">Priority Certification</h3>
-              <p className="text-gray-600">Get prioritized for Pulse Certification and showcase your workplace excellence.</p>
+              <p className="text-gray-600">Get fast-tracked for PulseScore Certification to showcase your workplace excellence.</p>
             </div>
             
             <div className="text-center">
@@ -56,7 +64,7 @@ const JoinBetaPage = () => {
                 </svg>
               </div>
               <h3 className="font-bold text-lg mb-2">Shape the Product</h3>
-              <p className="text-gray-600">Provide feedback that directly influences the development of PulsePlace.ai.</p>
+              <p className="text-gray-600">Your feedback directly influences our development, helping create a product truly built for people.</p>
             </div>
           </div>
         </div>

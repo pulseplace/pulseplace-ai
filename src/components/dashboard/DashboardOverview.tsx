@@ -21,10 +21,13 @@ import AIInsights from './AIInsights';
 import ActivityFeed from './ActivityFeed';
 import DashboardFilter from './DashboardFilter';
 import { useDashboard } from '@/contexts/DashboardContext';
+import CertificationJourney from './CertificationJourney';
+import { useOnboarding } from '@/hooks/useOnboarding';
 
 const DashboardOverview = () => {
   const { toast } = useToast();
   const { refreshData } = useDashboard();
+  const { isStepCompleted } = useOnboarding();
   const [showFilters, setShowFilters] = useState(false);
   const [timeRange, setTimeRange] = useState('30days');
   
@@ -56,6 +59,10 @@ const DashboardOverview = () => {
     setTimeRange(value);
     refreshData(); // Refresh data when time range changes
   };
+  
+  // Only show the certification journey if they've started but not completed
+  const showCertificationJourney = isStepCompleted('first-survey') && 
+                                 !isStepCompleted('certification');
   
   return (
     <div className="p-6 bg-gray-50 flex-grow">
@@ -96,6 +103,9 @@ const DashboardOverview = () => {
       </div>
       
       {showFilters && <DashboardFilter onClose={() => setShowFilters(false)} />}
+      
+      {/* Certification Journey (if applicable) */}
+      {showCertificationJourney && <CertificationJourney className="mb-6" />}
       
       {/* Stats Row */}
       <StatsRow timeRange={timeRange} />

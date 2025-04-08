@@ -9,11 +9,14 @@ import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { ArrowRight } from 'lucide-react';
 
 const DashboardHome = () => {
   const { user, profile } = useAuth();
-  const { hasSurveys, isStepCompleted } = useOnboarding();
-  const { surveys, responses, isLoading, refreshData } = useDashboard();
+  const { hasSurveys, isStepCompleted, progressPercentage, currentStep } = useOnboarding();
+  const { surveys, responses, isLoading, refreshData, stats } = useDashboard();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -46,6 +49,9 @@ const DashboardHome = () => {
     );
   }
 
+  // Show journey progress for users who are in progress
+  const showJourneyProgress = isStepCompleted('first-survey') && !isStepCompleted('certification');
+
   return (
     <div className="container mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
@@ -70,6 +76,32 @@ const DashboardHome = () => {
         </div>
       </div>
 
+      {showJourneyProgress && (
+        <Card className="mb-6 bg-gradient-to-r from-pulse-50 to-white border border-pulse-100">
+          <CardContent className="pt-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+              <div>
+                <h3 className="text-lg font-medium">Certification Journey</h3>
+                <p className="text-sm text-gray-500">Continue your progress toward Pulse Certification™</p>
+              </div>
+              <Link to={currentStep === 'results-calculation' 
+                ? '/dashboard/certification-engine' 
+                : '/dashboard/share-certification'}>
+                <Button size="sm" className="mt-2 md:mt-0 bg-pulse-gradient">
+                  Continue Journey <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+            <Progress value={progressPercentage()} className="h-2 mt-4" />
+            <div className="flex justify-between mt-1 text-xs text-gray-500">
+              <span>Survey Complete</span>
+              <span>Results Processing</span>
+              <span>Certification</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <DashboardOverview />
 
       {/* Dashboard stat summary */}
@@ -87,17 +119,32 @@ const DashboardHome = () => {
         <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
           <h3 className="font-medium mb-2">Average Pulse Score</h3>
           <p className="text-2xl font-bold">
-            {responses.length > 0 
-              ? Math.round(responses.reduce((sum, r) => {
-                  const score = typeof r.pulse_score === 'object' && r.pulse_score && 'overallScore' in r.pulse_score 
-                    ? Number(r.pulse_score.overallScore) 
-                    : 0;
-                  return sum + score;
-                }, 0) / responses.length)
-              : 'N/A'}
+            {stats.pulseScore > 0 
+              ? stats.pulseScore
+              : (responses.length > 0 
+                ? Math.round(responses.reduce((sum, r) => {
+                    const score = typeof r.pulse_score === 'object' && r.pulse_score && 'overallScore' in r.pulse_score 
+                      ? Number(r.pulse_score.overallScore) 
+                      : 0;
+                    return sum + score;
+                  }, 0) / responses.length)
+                : 'N/A')}
           </p>
         </div>
       </div>
+
+      {isStepCompleted('certification') && (
+        <div className="mt-8">
+          <Link to="/dashboard/share-certification">
+            <Button variant="outline" className="w-full py-6 border-dashed border-2 hover:bg-pulse-50 hover:border-pulse-200 transition-colors">
+              <div className="flex flex-col items-center">
+                <span className="text-lg font-medium mb-1">View & Share Your Pulse Certification™</span>
+                <span className="text-sm text-gray-500">Access your badge, embed code, and email templates</span>
+              </div>
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

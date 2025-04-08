@@ -1,82 +1,110 @@
 
 import React from 'react';
 import { PulseScoreData } from '@/types/scoring.types';
+import { getTierDisplay } from '@/utils/scoring';
 
 interface EmailPreviewContentProps {
   recipientName: string;
+  companyName?: string;
   pulseScoreData: PulseScoreData;
   certificationLevel: string;
 }
 
 const EmailPreviewContent: React.FC<EmailPreviewContentProps> = ({
   recipientName,
+  companyName,
   pulseScoreData,
   certificationLevel
 }) => {
+  const tierInfo = getTierDisplay(pulseScoreData.tier);
+  
   return (
-    <div className="p-8 max-w-2xl mx-auto">
-      <div className="text-center mb-6">
-        <div className="text-3xl font-bold text-slate-900 mb-4">PulsePlace.ai</div>
+    <div className="p-8">
+      <div className="mb-6 text-center">
+        <img 
+          src="/lovable-uploads/da2df9b1-afa2-4019-be42-cbfdedf8740b.png" 
+          alt="PulsePlace" 
+          width="180" 
+          className="mx-auto mb-4"
+        />
       </div>
       
-      <div className="text-2xl mb-4">Hello {recipientName},</div>
-      
-      <div className="text-lg mb-6">
-        We're thrilled to share your latest certification summary from PulsePlace.ai.
+      <div className="mb-6">
+        <p className="mb-4">Dear {recipientName},</p>
+        <p className="mb-4">
+          Congratulations! {companyName || 'Your organization'} has officially achieved 
+          <strong className="text-pulse-700"> {certificationLevel}</strong> status with PulsePlace.
+        </p>
+        <p className="mb-4">
+          This certification reflects your organization's commitment to creating a healthy, 
+          engaging workplace culture based on real employee feedback.
+        </p>
       </div>
       
-      <div className="text-center my-6">
-        <div className="text-3xl font-bold text-slate-900 mb-3">
-          PulseScore®: {pulseScoreData.overallScore} / 100
+      <div className="mb-6 p-4 bg-gray-50 rounded-md">
+        <h2 className="text-xl font-bold mb-3 text-center">Your PulseScore™ Results</h2>
+        
+        <div className="mb-4 text-center">
+          <span className="text-4xl font-bold text-pulse-600">{pulseScoreData.overallScore}</span>
+          <span className="text-gray-500">/100</span>
         </div>
-        <div className="inline-block bg-blue-50 text-slate-800 px-6 py-2 rounded-full font-semibold">
-          {certificationLevel}
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          {pulseScoreData.categoryScores.map((category) => (
+            <div key={category.category} className="text-center p-3 bg-white rounded-md shadow-sm">
+              <div className="text-sm text-gray-500 mb-1">
+                {category.category.split('_').map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ')}
+              </div>
+              <div className="text-lg font-semibold">
+                {category.score}
+                <span className="text-xs text-gray-400">/100</span>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-      
-      <div className="my-6">
-        <div className="text-xl font-semibold mb-3">Category Breakdown:</div>
-        <div className="bg-blue-50 rounded-lg p-4">
-          <div className="flex justify-between py-2 border-b border-blue-100">
-            <div>Trust & Psychological Safety:</div>
-            <div className="font-semibold">{Math.round(pulseScoreData.categoryScores.find(c => c.category === 'culture_trust')?.score || 0)}</div>
-          </div>
-          <div className="flex justify-between py-2 border-b border-blue-100">
-            <div>Engagement & Retention:</div>
-            <div className="font-semibold">{Math.round(pulseScoreData.categoryScores.find(c => c.category === 'engagement_stability')?.score || 0)}</div>
-          </div>
-          <div className="flex justify-between py-2">
-            <div>Mission & Belonging:</div>
-            <div className="font-semibold">{Math.round(pulseScoreData.categoryScores.find(c => c.category === 'emotion_index')?.score || 0)}</div>
-          </div>
+        
+        <div className="p-3 bg-white rounded-md shadow-sm mb-4">
+          <h3 className="text-sm font-medium mb-2">Key Insights:</h3>
+          <ul className="text-sm space-y-2 pl-4 list-disc">
+            {pulseScoreData.insights.map((insight, index) => (
+              <li key={index}>{insight}</li>
+            ))}
+          </ul>
         </div>
-      </div>
-      
-      <div className="my-6">
-        <div className="text-xl font-semibold mb-3">AI Insight Summary:</div>
-        <div className="text-slate-700">
-          "{pulseScoreData.insights[0]}"
-        </div>
-      </div>
-      
-      <div className="my-6">
-        <div className="text-lg mb-4">
-          You're now eligible to use the official Pulse Certified® badge on your website, LinkedIn, and careers page.
-        </div>
+        
         <div className="text-center">
-          <a 
-            href="#" 
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-full font-semibold no-underline hover:bg-blue-700 transition-colors"
-          >
-            Download Badge
-          </a>
+          <span className="inline-block px-3 py-1 rounded-full text-sm font-medium" 
+            style={{
+              backgroundColor: tierInfo.bgColor,
+              color: tierInfo.textColor
+            }}>
+            {certificationLevel}
+          </span>
         </div>
       </div>
       
-      <div className="mt-10 text-center text-gray-500 text-sm">
-        <p>PulsePlace.ai — Redefining workplace trust through data & AI</p>
-        <p className="mt-1">
-          This is an automated summary. For support, contact <a href="mailto:hello@pulseplace.ai" className="text-blue-600">hello@pulseplace.ai</a>
+      <div className="mb-6">
+        <h3 className="text-md font-bold mb-2">Next Steps:</h3>
+        <ol className="list-decimal pl-5 space-y-2 text-sm">
+          <li>Download your certification badge to display on your careers page and recruitment materials</li>
+          <li>Share your certification status on LinkedIn and other social channels</li>
+          <li>Schedule a feedback session with your team to discuss the insights</li>
+        </ol>
+      </div>
+      
+      <div className="text-center mb-6">
+        <a href="#" className="inline-block bg-pulse-600 text-white px-6 py-3 rounded-md font-medium text-sm">
+          View Your Full Certification Dashboard
+        </a>
+      </div>
+      
+      <div className="text-sm text-gray-500 border-t pt-4">
+        <p>Thank you for being part of the PulsePlace community.</p>
+        <p className="mt-2">
+          The PulsePlace Team<br />
+          <a href="mailto:support@pulseplace.ai" className="text-pulse-600">support@pulseplace.ai</a>
         </p>
       </div>
     </div>

@@ -8,8 +8,9 @@ import { useOnboarding, OnboardingStep } from '@/hooks/useOnboarding';
 import OnboardingState from '@/components/OnboardingState';
 import OnboardingForm from '@/components/OnboardingForm';
 import OnboardingStepIndicator from './OnboardingStepIndicator';
-import { Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowLeft, ArrowRight, Check, HelpCircle, X } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const OnboardingFlow: React.FC = () => {
   const { 
@@ -85,10 +86,22 @@ const OnboardingFlow: React.FC = () => {
     switch (currentStep) {
       case 'welcome':
         return (
-          <OnboardingState 
-            stateType="welcome" 
-            onButtonClick={goToNextStep} 
-          />
+          <div>
+            <Alert className="mb-6 bg-blue-50 border-blue-200">
+              <AlertDescription className="flex items-start gap-2">
+                <HelpCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                <span>
+                  Welcome to your certification journey! This guided process will help you
+                  establish your workplace culture baseline and earn your Pulse Certification™.
+                  The entire process takes approximately 15-20 minutes.
+                </span>
+              </AlertDescription>
+            </Alert>
+            <OnboardingState 
+              stateType="welcome" 
+              onButtonClick={goToNextStep} 
+            />
+          </div>
         );
       
       case 'company-profile':
@@ -107,26 +120,79 @@ const OnboardingFlow: React.FC = () => {
       
       case 'first-survey':
         return (
-          <OnboardingState 
-            stateType="emptyDashboard" 
-            onButtonClick={handleGetStarted} 
-          />
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="p-4 bg-white rounded-lg border border-gray-200 flex flex-col items-center text-center">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mb-2">
+                  <Check className="h-5 w-5 text-green-600" />
+                </div>
+                <h3 className="font-medium mb-1">Step 1</h3>
+                <p className="text-sm text-gray-500">Company Profile Completed</p>
+              </div>
+              
+              <div className="p-4 bg-pulse-50 rounded-lg border border-pulse-200 flex flex-col items-center text-center">
+                <div className="w-10 h-10 rounded-full bg-pulse-100 flex items-center justify-center mb-2">
+                  <span className="font-medium text-pulse-700">2</span>
+                </div>
+                <h3 className="font-medium mb-1">Step 2</h3>
+                <p className="text-sm text-gray-500">Create Your Survey</p>
+              </div>
+              
+              <div className="p-4 bg-white rounded-lg border border-gray-200 flex flex-col items-center text-center opacity-60">
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+                  <span className="font-medium text-gray-400">3</span>
+                </div>
+                <h3 className="font-medium mb-1">Step 3</h3>
+                <p className="text-sm text-gray-500">Get Certified</p>
+              </div>
+            </div>
+            
+            <OnboardingState 
+              stateType="emptyDashboard" 
+              onButtonClick={handleGetStarted} 
+            />
+          </div>
         );
       
       case 'results-calculation':
         return (
-          <OnboardingState 
-            stateType="surveyThanks" 
-            onButtonClick={goToNextStep} 
-          />
+          <div>
+            <div className="flex justify-center mb-6">
+              <div className="animate-pulse flex items-center gap-3 bg-blue-50 text-blue-700 py-3 px-6 rounded-full">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Processing your survey data...</span>
+              </div>
+            </div>
+            <OnboardingState 
+              stateType="surveyThanks" 
+              onButtonClick={goToNextStep} 
+            />
+            <div className="mt-6 text-center">
+              <Button 
+                variant="link" 
+                className="text-gray-500"
+                onClick={() => navigate('/dashboard/certification-engine')}
+              >
+                View processing details
+              </Button>
+            </div>
+          </div>
         );
       
       case 'certification':
         return (
-          <OnboardingState 
-            stateType="scoreLive" 
-            onButtonClick={handleViewCertification} 
-          />
+          <div>
+            <div className="flex justify-center mb-6">
+              <div className="flex items-center gap-3 bg-green-50 text-green-700 py-3 px-6 rounded-full">
+                <Check className="h-5 w-5" />
+                <span>Your certification is ready!</span>
+              </div>
+            </div>
+            <OnboardingState 
+              stateType="scoreLive" 
+              onButtonClick={handleViewCertification} 
+            />
+          </div>
         );
       
       default:
@@ -153,7 +219,17 @@ const OnboardingFlow: React.FC = () => {
               size="sm" 
               onClick={() => setShowHelp(!showHelp)}
             >
-              {showHelp ? "Hide Help" : "Need Help?"}
+              {showHelp ? (
+                <>
+                  <X className="h-4 w-4 mr-2" />
+                  Hide Help
+                </>
+              ) : (
+                <>
+                  <HelpCircle className="h-4 w-4 mr-2" />
+                  Need Help?
+                </>
+              )}
             </Button>
           </div>
         </CardHeader>

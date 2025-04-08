@@ -43,6 +43,11 @@ const Navbar = () => {
     scrolled ? 'bg-white/90 backdrop-blur-sm shadow-sm' : 'bg-transparent'
   }`;
 
+  // Helper function to check if a path is active
+  const isActive = (path: string) => {
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
+  };
+
   // Group nav items for easier management as app grows
   const navItems = [
     { type: 'hash-link', label: 'Features', path: '/#features' },
@@ -72,7 +77,11 @@ const Navbar = () => {
                 key={index}
                 to={item.path} 
                 scroll={scrollWithOffset}
-                className="text-gray-700 hover:text-pulse-600 transition-colors"
+                className={`transition-colors ${
+                  location.pathname === '/' && item.path.startsWith('/#') 
+                    ? 'text-pulse-600 hover:text-pulse-700' 
+                    : 'text-gray-700 hover:text-pulse-600'
+                }`}
               >
                 {item.label}
               </HashLink>
@@ -80,7 +89,11 @@ const Navbar = () => {
               <Link 
                 key={index}
                 to={item.path}
-                className="text-gray-700 hover:text-pulse-600 transition-colors"
+                className={`transition-colors ${
+                  isActive(item.path) 
+                    ? 'text-pulse-600 hover:text-pulse-700' 
+                    : 'text-gray-700 hover:text-pulse-600'
+                }`}
               >
                 {item.label}
               </Link>
@@ -121,7 +134,11 @@ const Navbar = () => {
                     key={index}
                     to={item.path} 
                     scroll={scrollWithOffset}
-                    className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+                    className={`transition-colors py-2 ${
+                      location.pathname === '/' && item.path.startsWith('/#') 
+                        ? 'text-pulse-600 hover:text-pulse-700' 
+                        : 'text-gray-700 hover:text-pulse-600'
+                    }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.label}
@@ -130,7 +147,11 @@ const Navbar = () => {
                   <Link 
                     key={index}
                     to={item.path}
-                    className="text-gray-700 hover:text-pulse-600 transition-colors py-2"
+                    className={`transition-colors py-2 ${
+                      isActive(item.path) 
+                        ? 'text-pulse-600 hover:text-pulse-700' 
+                        : 'text-gray-700 hover:text-pulse-600'
+                    }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.label}

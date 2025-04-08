@@ -26,6 +26,8 @@ import FeedbackButton from './components/FeedbackButton';
 import { TaskProvider } from './contexts/TaskContext';
 import MetaTags from './components/MetaTags';
 import Home from './pages/Home';
+import DashboardPreview from './pages/DashboardPreview';
+import ROICalculator from './pages/ROICalculator';
 
 function App() {
   const queryClient = new QueryClient();
@@ -53,6 +55,8 @@ function App() {
                   <Route path="/certification" element={<Certification />} />
                   <Route path="/showcase" element={<CertificationShowcase />} />
                   <Route path="/certified" element={<Navigate to="/showcase" replace />} />
+                  <Route path="/dashboard-preview" element={<DashboardPreview />} />
+                  <Route path="/roi-calculator" element={<ROICalculator />} />
                   
                   {/* Dashboard Routes */}
                   <Route path="/dashboard" element={<DashboardLayout />}>

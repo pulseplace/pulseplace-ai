@@ -2,8 +2,16 @@
 import React from 'react';
 import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 
 const Footer = () => {
+  // Helper function for smooth scrolling with hash links
+  const scrollWithOffset = (el: HTMLElement) => {
+    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+    const yOffset = -80;
+    window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
+  };
+
   return (
     <footer className="bg-gray-900 text-gray-300 py-12 px-4">
       <div className="container mx-auto">
@@ -32,10 +40,12 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Product</h3>
             <ul className="space-y-2">
-              <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-              <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
+              <li><HashLink to="/#features" scroll={scrollWithOffset} className="hover:text-white transition-colors">Features</HashLink></li>
+              <li><HashLink to="/#how-it-works" scroll={scrollWithOffset} className="hover:text-white transition-colors">How It Works</HashLink></li>
               <li><Link to="/methodology" className="hover:text-white transition-colors">Methodology</Link></li>
               <li><Link to="/certification" className="hover:text-white transition-colors">Certification</Link></li>
+              <li><Link to="/dashboard-preview" className="hover:text-white transition-colors">Dashboard Preview</Link></li>
+              <li><Link to="/roi-calculator" className="hover:text-white transition-colors">ROI Calculator</Link></li>
             </ul>
           </div>
           
@@ -45,6 +55,7 @@ const Footer = () => {
               <li><Link to="/about-us" className="hover:text-white transition-colors">About Us</Link></li>
               <li><Link to="/ai-engine" className="hover:text-white transition-colors">Our AI Engine</Link></li>
               <li><Link to="/join-beta" className="hover:text-white transition-colors">Join Beta</Link></li>
+              <li><Link to="/showcase" className="hover:text-white transition-colors">Showcase</Link></li>
               <li><a href="mailto:hello@pulseplace.ai" className="hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>

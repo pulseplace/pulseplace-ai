@@ -26,6 +26,12 @@ export interface FeedbackData {
   feedbackType: 'up' | 'down';
 }
 
+export interface SearchState {
+  query: string;
+  isSearching: boolean;
+  results: Message[];
+}
+
 export interface AnalyticsFilters {
   dateFrom?: Date;
   dateTo?: Date;

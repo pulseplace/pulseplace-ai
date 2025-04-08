@@ -15,8 +15,8 @@ import { DateRange } from "react-day-picker";
 
 // Update the interface to make properties optional
 export interface DateRangeFilter {
-  from: Date | undefined;
-  to: Date | undefined;
+  from?: Date | undefined;
+  to?: Date | undefined;
 }
 
 export function DatePickerWithRange({

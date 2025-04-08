@@ -13,6 +13,7 @@ import TeamTabContent from './admin/TeamTabContent';
 import InsightsTabContent from './admin/InsightsTabContent';
 import CertificationTabContent from './admin/CertificationTabContent';
 import { DateRangeFilter } from '@/components/ui/date-range-picker';
+import { supabase } from '@/integrations/supabase/client';
 
 const DEMO_DEPARTMENTS = [
   "All Departments", "Engineering", "Marketing", "Sales", "Customer Support", "Human Resources"
@@ -188,11 +189,58 @@ const TeamAdminDashboard: React.FC = () => {
   };
   
   const handleSendReminders = async () => {
-    // ... keep existing code (for the reminder functionality)
+    const pendingMembers = teamMembers.filter(member => member.surveyStatus === 'pending');
+    
+    if (pendingMembers.length === 0) {
+      toast({
+        title: "No Reminders Sent",
+        description: "All team members have already completed the survey.",
+      });
+      return;
+    }
+    
+    setIsRefreshing(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      pendingMembers.forEach(async (member) => {
+        await emailService.sendEmail({
+          to: member.email,
+          subject: "Reminder: Complete Your Pulse Survey",
+          html: `<p>Dear ${member.name},</p><p>This is a friendly reminder to complete the pulse survey. Your feedback is valuable!</p>`,
+          fromName: "PulsePlace.ai",
+          fromEmail: "noreply@pulseplace.ai"
+        });
+      });
+      
+      toast({
+        title: "Reminders Sent",
+        description: `Sent survey reminders to ${pendingMembers.length} team members.`,
+      });
+    } catch (error) {
+      console.error('Error sending reminders:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send survey reminders. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
   
   const handleBulkInvite = () => {
-    // ... keep existing code (for bulk invite functionality)
+    toast({
+      title: "Bulk Invite Initiated",
+      description: "Invitations are being sent to all team members without a survey status.",
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "Invitations Sent",
+        description: "Invitations have been sent to all team members without a survey status.",
+      });
+    }, 1500);
   };
   
   const handleSendCertificate = async () => {

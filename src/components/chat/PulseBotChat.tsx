@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Sparkles, X } from 'lucide-react';
+import { Sparkles, X, Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChatBubble } from './ChatBubble';
@@ -9,6 +9,7 @@ import { ChatHeader } from './ChatHeader';
 import { SearchBar } from './SearchBar';
 import { Confetti } from './Confetti';
 import { usePulseBot } from './usePulseBot';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function PulseBotChat() {
   const {
@@ -110,21 +111,64 @@ export default function PulseBotChat() {
             />
           ))}
           
+          {/* Typing indicator animation */}
           {loading && (
-            <div className="bg-gray-100 text-gray-800 p-3 rounded-lg max-w-[90%] mr-auto">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 rounded-full bg-pulse-600 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 rounded-full bg-pulse-600 animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 rounded-full bg-pulse-600 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            <div className="flex items-start space-x-2">
+              <div className="w-8 h-8 rounded-full bg-pulse-600 flex items-center justify-center text-white">
+                <Loader className="h-4 w-4 animate-spin" />
+              </div>
+              <div className="bg-gray-100 text-gray-800 p-3 rounded-lg max-w-[80%]">
+                <div className="flex space-x-2">
+                  <div className="typing-indicator">
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
+          
           <div ref={messagesEndRef} />
         </div>
 
         {/* Input */}
         <ChatInputBox loading={loading} onSendMessage={sendMessage} />
       </div>
+
+      {/* Typing indicator styles */}
+      <style jsx>{`
+        .typing-indicator {
+          display: flex;
+          align-items: center;
+        }
+        .dot {
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: #6366f1;
+          margin-right: 4px;
+          animation: bounce 1.4s infinite ease-in-out;
+        }
+        .dot:nth-child(1) {
+          animation-delay: 0ms;
+        }
+        .dot:nth-child(2) {
+          animation-delay: 150ms;
+        }
+        .dot:nth-child(3) {
+          animation-delay: 300ms;
+        }
+        @keyframes bounce {
+          0%, 80%, 100% { 
+            transform: translateY(0);
+          }
+          40% { 
+            transform: translateY(-5px);
+          }
+        }
+      `}</style>
     </>
   );
 }

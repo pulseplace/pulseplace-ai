@@ -7,18 +7,22 @@ interface MetaTagsProps {
   description?: string;
   imageUrl?: string;
   url?: string;
+  keywords?: string;
 }
 
 const MetaTags: React.FC<MetaTagsProps> = ({
   title = "PulsePlace.ai - Make Workplaces Worth Working In",
   description = "PulsePlace.ai is an AI-powered certification engine for workplace culture and people-first organizations.",
   imageUrl = "/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png",
-  url = "https://pulseplace.ai"
+  url = "https://pulseplace.ai",
+  keywords
 }) => {
   return (
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
+      
+      {keywords && <meta name="keywords" content={keywords} />}
       
       {/* Open Graph / Facebook */}
       <meta property="og:type" content="website" />

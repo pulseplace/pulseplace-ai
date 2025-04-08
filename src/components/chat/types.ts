@@ -1,49 +1,38 @@
-
-// This file contains the shared types for the chat components
-
-export type BotAvatarState = 'idle' | 'typing' | 'thinking' | 'happy';
+export type Role = 'user' | 'bot';
 
 export interface Message {
   id: string;
-  role: 'bot' | 'user';
+  role: Role;
   content: string;
   liked?: boolean;
   disliked?: boolean;
 }
+
+export type BotAvatarState = 'idle' | 'thinking' | 'happy';
 
 export interface SessionInfo {
   id: string;
   createdAt: Date;
 }
 
-export interface SearchState {
-  query: string;
-  isSearching: boolean;
-  results: Message[];
-}
-
 export interface ConfettiState {
-  isActive: boolean;
-  config: {
-    particleCount: number;
-    spread: number;
-    startVelocity: number;
-    decay: number;
-    gravity: number;
-    drift: number;
-    scalar: number;
-    ticks: number;
-  };
+  run: boolean;
+  config: object;
 }
 
-// Types for feedback
 export interface FeedbackData {
-  message: string;
-  feedback_type: 'up' | 'down';
-  user_identifier?: string;
+  messageId: string;
+  content: string;
+  feedbackType: 'up' | 'down';
 }
 
-// Types for analytics
+export interface AnalyticsFilters {
+  dateFrom?: Date;
+  dateTo?: Date;
+  language?: string;
+  feedbackType?: string;
+}
+
 export interface PulseBotLog {
   id: string;
   session_id: string;
@@ -80,13 +69,4 @@ export interface PulseBotAnalytics {
     response: string;
     downvotes: number;
   }[];
-}
-
-export interface AnalyticsFilters {
-  dateRange: {
-    from: Date;
-    to: Date;
-  };
-  language: string;
-  feedbackType: string;
 }

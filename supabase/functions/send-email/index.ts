@@ -45,6 +45,10 @@ serve(async (req) => {
       );
     }
 
+    // Log information about the email being sent (for debugging)
+    console.log(`Email request received: TO: ${Array.isArray(to) ? to.join(', ') : to}, SUBJECT: ${subject}`);
+    console.log(`Using API key: ${MAILERSEND_API_KEY ? "Configured (starts with " + MAILERSEND_API_KEY.substring(0, 3) + "...)" : "NOT CONFIGURED"}`);
+
     // Prepare recipients
     const recipients = Array.isArray(to) 
       ? to.map(email => ({ email })) 
@@ -106,6 +110,7 @@ serve(async (req) => {
       throw new Error(`MailerSend API error: ${JSON.stringify(responseData)}`);
     }
 
+    console.log("Email sent successfully to:", Array.isArray(to) ? to.join(', ') : to);
     return new Response(
       JSON.stringify({ success: true, data: responseData }),
       { headers: { "Content-Type": "application/json", ...corsHeaders } }

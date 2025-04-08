@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Mail } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOnboarding } from '@/hooks/useOnboarding';
@@ -21,15 +21,26 @@ const StickyCta = () => {
     if (location.pathname === '/') {
       return {
         text: "Get Pulse Certified",
-        link: "/certification"
+        link: "/certification",
+        icon: <ChevronRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1" />
       };
     }
     
-    // If not logged in, point to beta signup
+    // If on certification page, point to beta signup
+    if (location.pathname === '/certification') {
+      return {
+        text: "Join the Private Beta",
+        link: "/join-beta",
+        icon: <ChevronRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1" />
+      };
+    }
+
+    // For most pages, if not logged in, point to beta signup
     if (!user) {
       return {
         text: "Join the Private Beta",
-        link: "/join-beta"
+        link: "/join-beta",
+        icon: <ChevronRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1" />
       };
     }
     
@@ -37,7 +48,8 @@ const StickyCta = () => {
     if (!isStepCompleted('first-survey')) {
       return {
         text: "Continue Certification",
-        link: "/dashboard"
+        link: "/dashboard",
+        icon: <ChevronRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1" />
       };
     }
     
@@ -45,14 +57,16 @@ const StickyCta = () => {
     if (!isStepCompleted('certification')) {
       return {
         text: "Complete Certification",
-        link: "/dashboard/certification-engine"
+        link: "/dashboard/certification-engine",
+        icon: <ChevronRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1" />
       };
     }
     
     // If certified
     return {
       text: "View Your Certification",
-      link: "/dashboard/share-certification"
+      link: "/dashboard/share-certification",
+      icon: <ChevronRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1" />
     };
   };
   
@@ -66,7 +80,7 @@ const StickyCta = () => {
           size="lg"
         >
           {ctaConfig.text}
-          <ChevronRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1" />
+          {ctaConfig.icon}
         </Button>
       </Link>
     </div>

@@ -1,36 +1,116 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ArrowRight, Users } from 'lucide-react';
+import { MessageCircle, ArrowRight, Users, Mail } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Link } from 'react-router-dom';
+import { emailService } from '@/services/emailService';
 
 const CallToAction = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
-  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  const handleSubmitRequest = (e: React.FormEvent) => {
+  const handleSubmitRequest = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would send data to your backend
-    console.log('Contact request submitted:', { name, email, company, message });
     
-    toast({
-      title: "Message sent",
-      description: "Thank you for reaching out! We'll get back to you shortly.",
-    });
+    if (!name || !email || !company || !message) {
+      toast.error("Please fill in all fields");
+      return;
+    }
     
-    // Reset form
-    setName('');
-    setEmail('');
-    setCompany('');
-    setMessage('');
+    setIsSubmitting(true);
+    
+    try {
+      // Prepare email HTML
+      const contactHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #4338ca; text-align: center;">PulsePlace.ai Contact Request</h1>
+          
+          <div style="background-color: #f0f7ff; border-radius: 10px; padding: 15px; margin: 20px 0;">
+            <h3>Contact Details:</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Company:</strong> ${company}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <h3>Message:</h3>
+            <p style="white-space: pre-line;">${message}</p>
+          </div>
+          
+          <p style="color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            Submitted on ${new Date().toLocaleString()}
+          </p>
+        </div>
+      `;
+
+      // Send contact request via email
+      const emailResult = await emailService.sendEmail({
+        to: "contact@pulseplace.ai", // Change to your contact email
+        subject: `Contact Request from ${name} at ${company}`,
+        html: contactHtml,
+        fromName: "PulsePlace Contact Form",
+        fromEmail: "noreply@pulseplace.ai",
+        replyTo: email
+      });
+
+      if (emailResult.success) {
+        // Also send confirmation to the user
+        const confirmationHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #4338ca; text-align: center;">PulsePlace.ai</h1>
+            
+            <p style="font-size: 18px;">Hello ${name},</p>
+            
+            <p>Thank you for reaching out to PulsePlace.ai!</p>
+            
+            <p>We've received your message and our team will get back to you as soon as possible.</p>
+            
+            <div style="background-color: #f0f7ff; border-radius: 10px; padding: 15px; margin: 20px 0;">
+              <h3>Your message:</h3>
+              <p style="white-space: pre-line;">${message}</p>
+            </div>
+            
+            <p>Best regards,<br>The PulsePlace Team</p>
+            
+            <div style="text-align: center; color: #64748b; margin-top: 30px; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+              <p>PulsePlace.ai — Redefining workplace trust through data & AI</p>
+              <p>© 2025 PulsePlace, Inc. All rights reserved.</p>
+            </div>
+          </div>
+        `;
+        
+        await emailService.sendEmail({
+          to: email,
+          subject: "We've received your message - PulsePlace.ai",
+          html: confirmationHtml,
+          fromName: "PulsePlace Support",
+          fromEmail: "contact@pulseplace.ai"
+        });
+        
+        toast.success("Thank you for reaching out! We'll get back to you shortly.");
+        
+        // Reset form
+        setName('');
+        setEmail('');
+        setCompany('');
+        setMessage('');
+        setOpen(false);
+      } else {
+        console.error('Contact form error:', emailResult.error);
+        toast.error("There was an issue sending your message. Please try emailing us directly at contact@pulseplace.ai");
+      }
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      toast.error("Something went wrong. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -57,13 +137,13 @@ const CallToAction = () => {
               </Button>
             </Link>
             
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button 
                   variant="outline" 
                   className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base w-full sm:w-auto"
                 >
-                  Talk to Us <MessageCircle className="ml-2 h-4 w-4" />
+                  Contact Us <Mail className="ml-2 h-4 w-4" />
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[500px]">
@@ -127,8 +207,12 @@ const CallToAction = () => {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button type="submit" className="bg-pulse-gradient hover:opacity-90">
-                      Send Message
+                    <Button 
+                      type="submit" 
+                      className="bg-pulse-gradient hover:opacity-90"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Sending...' : 'Send Message'}
                     </Button>
                   </DialogFooter>
                 </form>

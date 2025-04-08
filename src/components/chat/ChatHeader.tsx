@@ -1,69 +1,80 @@
 
 import React from 'react';
-import { Globe, X, Sparkles } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-
-interface Language {
-  code: string;
-  name: string;
-}
+import { BotAvatarState } from './types';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface ChatHeaderProps {
-  botAvatarState: 'idle' | 'typing' | 'happy' | 'thinking';
+  botAvatarState: BotAvatarState;
   language: string;
-  languages: Language[];
+  languages: { code: string; name: string }[];
   onLanguageChange: (lang: string) => void;
   onClose: () => void;
+  onClearHistory: () => void;
 }
 
-export const ChatHeader: React.FC<ChatHeaderProps> = ({ 
+export const ChatHeader: React.FC<ChatHeaderProps> = ({
   botAvatarState,
   language,
   languages,
   onLanguageChange,
-  onClose
+  onClose,
+  onClearHistory,
 }) => {
+  // Helper function to get avatar classes based on bot state
+  const getAvatarClasses = () => {
+    switch (botAvatarState) {
+      case 'typing':
+        return 'animate-pulse bg-yellow-500';
+      case 'happy':
+        return 'bg-green-500';
+      case 'thinking':
+        return 'animate-pulse bg-blue-500';
+      default:
+        return 'bg-pulse-600';
+    }
+  };
+
   return (
-    <div className="bg-pulse-gradient text-white p-3 rounded-t-lg flex justify-between items-center">
-      <div className="flex items-center space-x-2">
-        <Avatar className={cn(
-          "h-8 w-8 bg-white/20",
-          botAvatarState === 'typing' && "animate-pulse",
-          botAvatarState === 'happy' && "animate-bounce"
-        )}>
-          <AvatarImage src="" alt="PulseBot" />
-          <AvatarFallback className="text-white">
-            {botAvatarState === 'idle' && <Sparkles className="h-4 w-4" />}
-            {botAvatarState === 'typing' && <span className="text-xs">🤔</span>}
-            {botAvatarState === 'happy' && <span className="text-xs">😊</span>}
-            {botAvatarState === 'thinking' && <span className="text-xs">💭</span>}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <span className="font-medium">PulseBot</span>
-          <p className="text-xs text-white/80">Your workplace guide</p>
+    <div className="flex items-center justify-between p-3 border-b bg-gradient-to-r from-pulse-600 to-pulse-700 text-white rounded-t-lg">
+      <div className="flex items-center gap-2">
+        <div
+          className={cn(
+            'w-8 h-8 rounded-full flex items-center justify-center transition-colors',
+            getAvatarClasses()
+          )}
+        >
+          <span className="text-white font-bold text-sm">P</span>
         </div>
+        <h3 className="font-semibold">PulseBot</h3>
       </div>
-      <div className="flex items-center">
+
+      <div className="flex items-center gap-2">
+        {/* Language Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button 
-              className="text-white hover:bg-white/20 rounded-full p-1 mr-1"
-              aria-label="Change language"
-            >
-              <Globe className="h-4 w-4" />
-            </button>
+          <DropdownMenuTrigger className="text-xs bg-white/20 px-2 py-1 rounded hover:bg-white/30 transition-colors">
+            {language.toUpperCase()}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {languages.map((lang) => (
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 key={lang.code}
                 onClick={() => onLanguageChange(lang.code)}
                 className={cn(
-                  "cursor-pointer",
-                  language === lang.code && "font-bold bg-gray-100"
+                  'text-sm',
+                  language === lang.code && 'font-bold bg-accent'
                 )}
               >
                 {lang.name}
@@ -71,11 +82,32 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <button 
+
+        {/* Clear History Button */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onClearHistory}
+                className="text-white/80 hover:text-white transition-colors"
+                aria-label="Clear chat history"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>Clear chat history</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        {/* Close Button */}
+        <button
           onClick={onClose}
-          className="text-white hover:bg-white/20 rounded-full p-1"
+          className="text-white/80 hover:text-white transition-colors"
+          aria-label="Close chat"
         >
-          <X className="h-4 w-4" />
+          <X className="h-5 w-5" />
         </button>
       </div>
     </div>

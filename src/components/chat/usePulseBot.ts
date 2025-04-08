@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -232,6 +231,28 @@ export const usePulseBot = () => {
 
   const toggleChat = () => setOpen(!open);
 
+  // Clear chat history functionality
+  const clearHistory = () => {
+    // Keep the welcome message but clear everything else
+    const welcomeMessage = {
+      id: `welcome_${Date.now()}`,
+      role: 'bot' as const,
+      content: "Hi, I'm PulseBot — your workplace guide! Ask me anything about surveys, PulseScore, or certification."
+    };
+    
+    setMessages([welcomeMessage]);
+    
+    // Also clear search if active
+    if (search.isSearching) {
+      clearSearch();
+    }
+    
+    toast({
+      description: "Chat history has been cleared",
+      duration: 3000,
+    });
+  };
+
   return {
     open,
     loading,
@@ -246,6 +267,7 @@ export const usePulseBot = () => {
     toggleChat,
     search,
     handleSearch,
-    clearSearch
+    clearSearch,
+    clearHistory
   };
 };

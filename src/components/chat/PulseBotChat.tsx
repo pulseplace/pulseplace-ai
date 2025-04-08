@@ -24,7 +24,8 @@ export default function PulseBotChat() {
     toggleChat,
     search,
     handleSearch,
-    clearSearch
+    clearSearch,
+    clearHistory
   } = usePulseBot();
 
   // Determine which messages to display: search results or all messages
@@ -75,6 +76,7 @@ export default function PulseBotChat() {
           languages={languages}
           onLanguageChange={handleLanguageChange}
           onClose={toggleChat}
+          onClearHistory={clearHistory}
         />
 
         {/* Search bar */}

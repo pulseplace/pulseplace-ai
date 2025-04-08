@@ -46,7 +46,7 @@ serve(async (req) => {
     }
 
     // Ensure we don't exceed reasonable token limits
-    const safeMaxTokens = Math.min(maxTokens, 1000);
+    const safeMaxTokens = Math.min(maxTokens, 1500); // Increase max token limit for analytics
     
     // Use provided system prompt or fall back to default
     const finalSystemPrompt = systemPrompt || DEFAULT_SYSTEM_PROMPT;
@@ -62,6 +62,7 @@ serve(async (req) => {
 
     // Log request for debugging
     console.log(`Processing chat request with ${requestMessages.length} messages`);
+    console.log(`System prompt: ${finalSystemPrompt.substring(0, 100)}...`);
     
     // Check if OpenAI API key is configured
     if (!OPENAI_API_KEY || OPENAI_API_KEY === "OPENAI_API_KEY") {
@@ -79,6 +80,9 @@ serve(async (req) => {
     }
 
     try {
+      // Determine if this is an analytics request
+      const isAnalyticsRequest = finalSystemPrompt.includes('analytics assistant');
+      
       // Call OpenAI API
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -87,10 +91,10 @@ serve(async (req) => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini",
+          model: isAnalyticsRequest ? "gpt-4o-mini" : "gpt-4o-mini", // Use more capable model for analytics
           messages: requestMessages,
           max_tokens: safeMaxTokens,
-          temperature: 0.7
+          temperature: isAnalyticsRequest ? 0.3 : 0.7, // Lower temperature for analytics for more consistent results
         }),
       });
 
@@ -104,6 +108,13 @@ serve(async (req) => {
       // Parse and return the response
       const data = await response.json();
       const assistantMessage = data.choices[0].message;
+      
+      // Log the type of request completed
+      if (isAnalyticsRequest) {
+        console.log("Analytics summary generated successfully");
+      } else {
+        console.log("Chat response generated successfully");
+      }
       
       return new Response(
         JSON.stringify({ message: assistantMessage }),

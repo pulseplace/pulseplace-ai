@@ -3,10 +3,11 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PulseBotAnalytics } from '@/components/chat/types';
 import FeedbackDistributionChart from './FeedbackDistributionChart';
-import AvatarStateChart from './AvatarStateChart';
 import LanguageDistributionChart from './LanguageDistributionChart';
-import DownvotedResponsesTable from './DownvotedResponsesTable';
+import AvatarStateChart from './AvatarStateChart';
 import QueriesTable from './QueriesTable';
+import DownvotedResponsesTable from './DownvotedResponsesTable';
+import BotAnalyticsSummary from './BotAnalyticsSummary';
 
 interface PulseBotTabsProps {
   analytics: PulseBotAnalytics;
@@ -15,52 +16,77 @@ interface PulseBotTabsProps {
 
 const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => {
   return (
-    <Tabs defaultValue="overview" className="w-full">
+    <Tabs defaultValue="overview">
       <TabsList className="mb-4">
         <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="language">Language Usage</TabsTrigger>
-        <TabsTrigger value="feedback">Feedback Analysis</TabsTrigger>
-        <TabsTrigger value="queries">User Queries</TabsTrigger>
+        <TabsTrigger value="feedback">Feedback</TabsTrigger>
+        <TabsTrigger value="languages">Languages</TabsTrigger>
+        <TabsTrigger value="avatars">Avatar States</TabsTrigger>
+        <TabsTrigger value="queries">Top Queries</TabsTrigger>
+        <TabsTrigger value="insights">AI Insights</TabsTrigger>
       </TabsList>
       
       {/* Overview Tab */}
-      <TabsContent value="overview">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <TabsContent value="overview" className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FeedbackDistributionChart 
-            positive={analytics.feedbackRatio.positive}
-            negative={analytics.feedbackRatio.negative}
-            isLoading={isLoading}
+            data={analytics.feedbackRatio} 
+            isLoading={isLoading} 
           />
-          
-          <AvatarStateChart 
-            avatarStateUsage={analytics.avatarStateUsage}
-            isLoading={isLoading}
+          <LanguageDistributionChart 
+            data={analytics.languageBreakdown} 
+            isLoading={isLoading} 
+          />
+        </div>
+        <QueriesTable 
+          data={analytics.topQueries.slice(0, 5)} 
+          isLoading={isLoading} 
+        />
+      </TabsContent>
+      
+      {/* Feedback Tab */}
+      <TabsContent value="feedback">
+        <div className="space-y-6">
+          <FeedbackDistributionChart 
+            data={analytics.feedbackRatio} 
+            isLoading={isLoading} 
+            fullSize={true}
+          />
+          <DownvotedResponsesTable 
+            data={analytics.topDownvotedResponses} 
+            isLoading={isLoading} 
           />
         </div>
       </TabsContent>
       
-      {/* Language Usage Tab */}
-      <TabsContent value="language">
+      {/* Languages Tab */}
+      <TabsContent value="languages">
         <LanguageDistributionChart 
-          languageBreakdown={analytics.languageBreakdown}
-          isLoading={isLoading}
+          data={analytics.languageBreakdown} 
+          isLoading={isLoading} 
+          fullSize={true}
         />
       </TabsContent>
       
-      {/* Feedback Analysis Tab */}
-      <TabsContent value="feedback">
-        <DownvotedResponsesTable 
-          responses={analytics.topDownvotedResponses}
-          isLoading={isLoading}
+      {/* Avatar States Tab */}
+      <TabsContent value="avatars">
+        <AvatarStateChart 
+          data={analytics.avatarStateUsage} 
+          isLoading={isLoading} 
         />
       </TabsContent>
       
-      {/* User Queries Tab */}
+      {/* Top Queries Tab */}
       <TabsContent value="queries">
         <QueriesTable 
-          queries={analytics.topQueries}
-          isLoading={isLoading}
+          data={analytics.topQueries} 
+          isLoading={isLoading} 
         />
+      </TabsContent>
+      
+      {/* AI Insights Tab */}
+      <TabsContent value="insights">
+        <BotAnalyticsSummary />
       </TabsContent>
     </Tabs>
   );

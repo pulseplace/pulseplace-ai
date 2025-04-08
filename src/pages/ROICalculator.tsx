@@ -1,397 +1,245 @@
 
-import React, { useState, useEffect } from 'react';
-import { Calculator, DollarSign, Users, TrendingUp, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Link } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { TrendingUp, DollarSign, Users, Clock } from 'lucide-react';
+import MetaTags from '@/components/MetaTags';
 
 const ROICalculator = () => {
-  const { toast } = useToast();
-  const [employees, setEmployees] = useState<number>(100);
-  const [avgSalary, setAvgSalary] = useState<number>(75000);
-  const [turnoverRate, setTurnoverRate] = useState<number>(20);
-  const [improvementRate, setImprovementRate] = useState<number>(30);
-  const [calculatedROI, setCalculatedROI] = useState<number | null>(null);
-  const [annualSavings, setAnnualSavings] = useState<number | null>(null);
-  const [costOfTurnover, setCostOfTurnover] = useState<number | null>(null);
-  const [subscriptionCost, setSubscriptionCost] = useState<number>(999);
-  const [paybackMonths, setPaybackMonths] = useState<number | null>(null);
-
-  // Calculate ROI
-  useEffect(() => {
-    // Cost of turnover is typically 1.5-2x annual salary
-    const turnoverCostMultiplier = 1.75;
-    const employeesLostPerYear = employees * (turnoverRate / 100);
-    const totalTurnoverCost = employeesLostPerYear * avgSalary * turnoverCostMultiplier;
+  const [employees, setEmployees] = useState(100);
+  const [avgSalary, setAvgSalary] = useState(75000);
+  const [turnoverRate, setTurnoverRate] = useState(15);
+  const [engagementImprovement, setEngagementImprovement] = useState(20);
+  
+  // Calculated ROI metrics
+  const calculateROI = () => {
+    // Cost of turnover per employee (industry standard is approximately 1.5x salary)
+    const costPerTurnover = avgSalary * 1.5;
     
-    // Projected savings from improvement
-    const projectedImprovement = employeesLostPerYear * (improvementRate / 100);
-    const yearlySavings = projectedImprovement * avgSalary * turnoverCostMultiplier;
+    // Current annual turnover cost
+    const currentAnnualTurnover = employees * (turnoverRate / 100);
+    const currentTurnoverCost = currentAnnualTurnover * costPerTurnover;
     
-    // Annual subscription cost
-    const annualCost = subscriptionCost * 12;
+    // Improved turnover rate after using PulsePlace (conservative estimate of 30% reduction)
+    const improvedTurnoverRate = turnoverRate * (1 - (engagementImprovement / 100));
+    const improvedAnnualTurnover = employees * (improvedTurnoverRate / 100);
+    const improvedTurnoverCost = improvedAnnualTurnover * costPerTurnover;
     
-    // ROI calculation: (Gain from investment - Cost of investment) / Cost of investment
-    const roi = (yearlySavings - annualCost) / annualCost * 100;
+    // Annual savings
+    const annualSavings = currentTurnoverCost - improvedTurnoverCost;
     
-    // Payback period in months
-    const monthlyPayback = annualCost / yearlySavings * 12;
+    // Productivity improvement value (conservative 5% of total salary costs)
+    const productivityImprovement = (employees * avgSalary) * 0.05 * (engagementImprovement / 100);
     
-    setCostOfTurnover(totalTurnoverCost);
-    setAnnualSavings(yearlySavings);
-    setCalculatedROI(roi);
-    setPaybackMonths(monthlyPayback);
-  }, [employees, avgSalary, turnoverRate, improvementRate, subscriptionCost]);
-
-  const resetCalculator = () => {
-    setEmployees(100);
-    setAvgSalary(75000);
-    setTurnoverRate(20);
-    setImprovementRate(30);
+    // Total ROI
+    const totalAnnualValue = annualSavings + productivityImprovement;
     
-    toast({
-      title: "Calculator Reset",
-      description: "All values have been reset to default.",
-    });
+    // 3-year ROI
+    const threeYearROI = totalAnnualValue * 3;
+    
+    return {
+      annualSavings: Math.round(annualSavings),
+      productivityImprovement: Math.round(productivityImprovement),
+      totalAnnualValue: Math.round(totalAnnualValue),
+      threeYearROI: Math.round(threeYearROI),
+      roi: Math.round((totalAnnualValue / 25000) * 100) // Assuming $25,000 annual cost
+    };
   };
-
-  const saveResults = () => {
-    toast({
-      title: "Results Saved",
-      description: "Your ROI calculation has been saved. We'll email you a detailed report.",
-    });
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0
-    }).format(value);
-  };
+  
+  const roi = calculateROI();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-pulse-50 to-white">
+      <MetaTags 
+        title="ROI Calculator | PulsePlace.ai"
+        description="Calculate the potential return on investment from implementing PulsePlace.ai in your organization"
+      />
       <Navbar />
       
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-b from-pulse-50 to-white">
-          <div className="container mx-auto px-4 text-center">
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Calculate Your Culture ROI
+              Calculate Your ROI with PulsePlace.ai
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              See how investing in workplace culture impacts your bottom line through reduced turnover and increased productivity.
+              See how much your organization could save and grow by improving workplace culture and employee engagement.
             </p>
           </div>
-        </section>
-        
-        {/* Calculator Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <Tabs defaultValue="calculator" className="w-full">
-                <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-                  <TabsTrigger value="calculator">ROI Calculator</TabsTrigger>
-                  <TabsTrigger value="methodology">Methodology</TabsTrigger>
-                </TabsList>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card className="border border-gray-200">
+              <CardContent className="pt-6">
+                <h2 className="text-2xl font-bold mb-6">Input Your Organization's Details</h2>
                 
-                <TabsContent value="calculator">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Culture ROI Calculator</CardTitle>
-                      <CardDescription>Estimate your return on investment from improving workplace culture</CardDescription>
-                    </CardHeader>
-                    
-                    <CardContent>
-                      <div className="grid md:grid-cols-2 gap-8">
-                        {/* Input Section */}
-                        <div>
-                          <h3 className="text-lg font-semibold mb-4">Your Organization</h3>
-                          
-                          <div className="space-y-6">
-                            {/* Number of Employees */}
-                            <div className="space-y-2">
-                              <div className="flex justify-between">
-                                <Label htmlFor="employees">Number of Employees</Label>
-                                <span className="text-sm text-gray-500">{employees}</span>
-                              </div>
-                              <Slider
-                                id="employees"
-                                min={10}
-                                max={1000}
-                                step={10}
-                                value={[employees]}
-                                onValueChange={(value) => setEmployees(value[0])}
-                              />
-                              <div className="flex justify-between text-xs text-gray-500">
-                                <span>10</span>
-                                <span>1000</span>
-                              </div>
-                            </div>
-                            
-                            {/* Average Salary */}
-                            <div className="space-y-2">
-                              <div className="flex justify-between">
-                                <Label htmlFor="salary">Average Annual Salary</Label>
-                                <span className="text-sm text-gray-500">{formatCurrency(avgSalary)}</span>
-                              </div>
-                              <Slider
-                                id="salary"
-                                min={30000}
-                                max={200000}
-                                step={5000}
-                                value={[avgSalary]}
-                                onValueChange={(value) => setAvgSalary(value[0])}
-                              />
-                              <div className="flex justify-between text-xs text-gray-500">
-                                <span>$30k</span>
-                                <span>$200k</span>
-                              </div>
-                            </div>
-                            
-                            {/* Current Turnover Rate */}
-                            <div className="space-y-2">
-                              <div className="flex justify-between">
-                                <Label htmlFor="turnover">Current Annual Turnover Rate</Label>
-                                <span className="text-sm text-gray-500">{turnoverRate}%</span>
-                              </div>
-                              <Slider
-                                id="turnover"
-                                min={5}
-                                max={50}
-                                step={1}
-                                value={[turnoverRate]}
-                                onValueChange={(value) => setTurnoverRate(value[0])}
-                              />
-                              <div className="flex justify-between text-xs text-gray-500">
-                                <span>5%</span>
-                                <span>50%</span>
-                              </div>
-                            </div>
-                            
-                            {/* Expected Improvement */}
-                            <div className="space-y-2">
-                              <div className="flex justify-between">
-                                <Label htmlFor="improvement">Expected Turnover Improvement</Label>
-                                <span className="text-sm text-gray-500">{improvementRate}%</span>
-                              </div>
-                              <Slider
-                                id="improvement"
-                                min={10}
-                                max={60}
-                                step={5}
-                                value={[improvementRate]}
-                                onValueChange={(value) => setImprovementRate(value[0])}
-                              />
-                              <div className="flex justify-between text-xs text-gray-500">
-                                <span>10%</span>
-                                <span>60%</span>
-                              </div>
-                            </div>
-                            
-                            <div className="flex justify-end space-x-2 pt-4">
-                              <Button variant="outline" onClick={resetCalculator}>
-                                <RefreshCw className="h-4 w-4 mr-2" />
-                                Reset
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Results Section */}
-                        <div className="bg-pulse-50 p-6 rounded-lg">
-                          <h3 className="text-lg font-semibold mb-6">Your ROI Results</h3>
-                          
-                          {calculatedROI !== null && (
-                            <div className="space-y-8">
-                              {/* ROI Percentage */}
-                              <div>
-                                <div className="flex justify-between mb-2">
-                                  <span className="text-gray-600">First Year ROI</span>
-                                  <span className="text-2xl font-bold text-pulse-700">
-                                    {calculatedROI.toFixed(0)}%
-                                  </span>
-                                </div>
-                                <Progress value={Math.min(calculatedROI, 500) / 5} className="h-2 bg-pulse-200" />
-                              </div>
-                              
-                              {/* Annual Savings */}
-                              <div className="p-4 bg-white rounded-lg shadow-sm">
-                                <div className="flex items-start">
-                                  <div className="bg-pulse-100 p-2 rounded-full mr-3">
-                                    <DollarSign className="h-5 w-5 text-pulse-600" />
-                                  </div>
-                                  <div>
-                                    <h4 className="font-medium text-gray-700">Annual Savings</h4>
-                                    <p className="text-2xl font-bold text-pulse-600">
-                                      {annualSavings ? formatCurrency(annualSavings) : '$0'}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                      Based on reduced turnover costs
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Current Turnover Cost */}
-                              <div className="p-4 bg-white rounded-lg shadow-sm">
-                                <div className="flex items-start">
-                                  <div className="bg-red-100 p-2 rounded-full mr-3">
-                                    <Users className="h-5 w-5 text-red-600" />
-                                  </div>
-                                  <div>
-                                    <h4 className="font-medium text-gray-700">Current Turnover Cost</h4>
-                                    <p className="text-2xl font-bold text-red-600">
-                                      {costOfTurnover ? formatCurrency(costOfTurnover) : '$0'}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                      Annual cost of employee turnover
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Payback Period */}
-                              <div className="p-4 bg-white rounded-lg shadow-sm">
-                                <div className="flex items-start">
-                                  <div className="bg-green-100 p-2 rounded-full mr-3">
-                                    <TrendingUp className="h-5 w-5 text-green-600" />
-                                  </div>
-                                  <div>
-                                    <h4 className="font-medium text-gray-700">Payback Period</h4>
-                                    <p className="text-2xl font-bold text-green-600">
-                                      {paybackMonths ? `${paybackMonths.toFixed(1)} months` : '0 months'}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                      Time to recover your investment
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <div className="flex flex-col space-y-3 pt-4">
-                                <Button onClick={saveResults} className="bg-pulse-gradient">
-                                  Email Me These Results
-                                </Button>
-                                <Link to="/pricing" className="w-full">
-                                  <Button variant="outline" className="w-full">
-                                    View Pricing Plans
-                                  </Button>
-                                </Link>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label htmlFor="employees">Number of Employees</Label>
+                      <span className="text-sm font-medium">{employees}</span>
+                    </div>
+                    <Slider 
+                      id="employees"
+                      min={10} 
+                      max={5000} 
+                      step={10} 
+                      value={[employees]} 
+                      onValueChange={(value) => setEmployees(value[0])}
+                      className="mb-2"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>10</span>
+                      <span>2,500</span>
+                      <span>5,000</span>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="avgSalary" className="mb-2 block">Average Annual Salary ($)</Label>
+                    <div className="relative">
+                      <div className="absolute left-3 top-3 text-gray-500">
+                        <DollarSign className="h-4 w-4" />
                       </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+                      <Input
+                        id="avgSalary"
+                        type="number"
+                        value={avgSalary}
+                        onChange={(e) => setAvgSalary(Number(e.target.value))}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label htmlFor="turnoverRate">Current Annual Turnover Rate (%)</Label>
+                      <span className="text-sm font-medium">{turnoverRate}%</span>
+                    </div>
+                    <Slider 
+                      id="turnoverRate"
+                      min={1} 
+                      max={50} 
+                      step={1} 
+                      value={[turnoverRate]} 
+                      onValueChange={(value) => setTurnoverRate(value[0])}
+                      className="mb-2"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>1%</span>
+                      <span>25%</span>
+                      <span>50%</span>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label htmlFor="engagementImprovement">Expected Engagement Improvement (%)</Label>
+                      <span className="text-sm font-medium">{engagementImprovement}%</span>
+                    </div>
+                    <Slider 
+                      id="engagementImprovement"
+                      min={5} 
+                      max={40} 
+                      step={1} 
+                      value={[engagementImprovement]} 
+                      onValueChange={(value) => setEngagementImprovement(value[0])}
+                      className="mb-2"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>5%</span>
+                      <span>20%</span>
+                      <span>40%</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border border-gray-200 bg-white">
+              <CardContent className="pt-6">
+                <h2 className="text-2xl font-bold mb-6">Your Estimated ROI</h2>
                 
-                <TabsContent value="methodology">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>ROI Calculation Methodology</CardTitle>
-                      <CardDescription>How we calculate your potential return on investment</CardDescription>
-                    </CardHeader>
+                <div className="space-y-6">
+                  <div className="bg-gradient-to-r from-pulse-50 to-white p-4 rounded-lg border border-pulse-100">
+                    <div className="flex items-center mb-2">
+                      <TrendingUp className="h-5 w-5 text-pulse-600 mr-2" />
+                      <h3 className="font-medium">3-Year Return on Investment</h3>
+                    </div>
+                    <p className="text-3xl font-bold text-pulse-600">
+                      ${roi.threeYearROI.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Estimated ROI: {roi.roi}%
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="text-sm font-medium text-gray-700 mb-1">Annual Turnover Savings</h4>
+                      <p className="text-xl font-bold">${roi.annualSavings.toLocaleString()}</p>
+                    </div>
                     
-                    <CardContent className="space-y-6">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="text-sm font-medium text-gray-700 mb-1">Productivity Gains</h4>
+                      <p className="text-xl font-bold">${roi.productivityImprovement.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-pulse-50 p-4 rounded-lg border border-pulse-100">
+                    <h4 className="text-sm font-medium text-gray-700 mb-1">Total Annual Value</h4>
+                    <p className="text-2xl font-bold text-pulse-700">${roi.totalAnnualValue.toLocaleString()}</p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-start">
+                      <Users className="h-5 w-5 text-pulse-600 mt-1 mr-2" />
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">Turnover Cost Calculation</h3>
-                        <p className="text-gray-600">
-                          We use industry-standard research showing that the cost of replacing an employee ranges from 1.5 to 2 times their annual salary. This includes:
-                        </p>
-                        <ul className="list-disc pl-6 mt-2 space-y-1 text-gray-600">
-                          <li>Recruiting and hiring costs</li>
-                          <li>Onboarding and training expenses</li>
-                          <li>Lost productivity during vacancy and ramp-up</li>
-                          <li>Impact on team morale and productivity</li>
-                          <li>Knowledge loss</li>
-                        </ul>
+                        <h4 className="font-medium">Reduced Employee Turnover</h4>
+                        <p className="text-sm text-gray-600">Lower recruitment and training costs</p>
                       </div>
-                      
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <TrendingUp className="h-5 w-5 text-pulse-600 mt-1 mr-2" />
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">Culture Improvement Impact</h3>
-                        <p className="text-gray-600">
-                          PulsePlace's methodology has been shown to reduce employee turnover by 20-40% in the first year through:
-                        </p>
-                        <ul className="list-disc pl-6 mt-2 space-y-1 text-gray-600">
-                          <li>Early identification of engagement issues</li>
-                          <li>AI-powered action recommendations</li>
-                          <li>Increased transparency and communication</li>
-                          <li>Improved manager effectiveness</li>
-                        </ul>
+                        <h4 className="font-medium">Increased Productivity</h4>
+                        <p className="text-sm text-gray-600">More engaged employees perform better</p>
                       </div>
-                      
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <Clock className="h-5 w-5 text-pulse-600 mt-1 mr-2" />
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">ROI Formula</h3>
-                        <p className="text-gray-600 mb-2">
-                          The ROI calculation uses the following formula:
-                        </p>
-                        <div className="bg-gray-100 p-4 rounded-md font-mono text-sm">
-                          ROI = (Annual Savings - Annual Cost) / Annual Cost × 100%
-                        </div>
-                        <p className="text-gray-600 mt-4">
-                          Where:
-                        </p>
-                        <ul className="list-disc pl-6 mt-2 space-y-1 text-gray-600">
-                          <li>Annual Savings = Number of retained employees × Average salary × Turnover cost multiplier</li>
-                          <li>Number of retained employees = Total employees × Current turnover rate × Expected improvement</li>
-                          <li>Annual Cost = Monthly subscription × 12</li>
-                        </ul>
+                        <h4 className="font-medium">Faster Culture Improvement</h4>
+                        <p className="text-sm text-gray-600">AI-powered insights lead to quicker changes</p>
                       </div>
-                      
-                      <div className="bg-yellow-50 p-4 rounded-md border border-yellow-200">
-                        <h3 className="text-lg font-semibold mb-2 flex items-center">
-                          <Calculator className="h-5 w-5 mr-2 text-yellow-600" />
-                          Important Notes
-                        </h3>
-                        <ul className="list-disc pl-6 space-y-1 text-gray-600">
-                          <li>This calculator provides estimates based on industry averages and research</li>
-                          <li>Actual results will vary based on your specific organization</li>
-                          <li>The calculator does not include additional benefits such as increased productivity, better hiring success, and improved company reputation</li>
-                          <li>For a customized ROI analysis, please contact our team</li>
-                        </ul>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
-            </div>
+                    </div>
+                  </div>
+                  
+                  <Button className="w-full bg-pulse-gradient">
+                    Get Started with PulsePlace.ai
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </section>
-        
-        {/* CTA Section */}
-        <section className="py-16 bg-pulse-50">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl md:text-3xl font-semibold mb-6">Ready to Transform Your Workplace Culture?</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-              Join forward-thinking organizations that are using data-driven insights to build better workplaces.
+          
+          <div className="mt-12 text-center">
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              This calculator provides an estimate based on industry averages and conservative projections. 
+              Your actual results may vary based on your specific organization and implementation.
             </p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Link to="/pricing">
-                <Button size="lg" className="bg-pulse-gradient hover:opacity-90">
-                  See Pricing Options
-                </Button>
-              </Link>
-              <Link to="/join-beta">
-                <Button size="lg" variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50">
-                  Join Beta Program
-                </Button>
-              </Link>
-            </div>
+            <Button variant="outline" className="border-pulse-300 text-pulse-700">
+              Schedule a Consultation for Detailed Analysis
+            </Button>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
       
       <Footer />
     </div>

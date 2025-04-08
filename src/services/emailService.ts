@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -32,7 +31,7 @@ export const emailService = {
       console.log(`Sending email to ${Array.isArray(params.to) ? params.to.join(', ') : params.to}`);
       
       // Call the Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('send-email', {
+      const { data, error } = await supabase.functions.invoke('resend-email', {
         body: params
       });
       

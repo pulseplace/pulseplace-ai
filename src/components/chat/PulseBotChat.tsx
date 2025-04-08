@@ -46,7 +46,11 @@ export default function PulseBotChat() {
       <Confetti isActive={confetti.isActive} config={confetti.config} />
       
       {/* Floating chat button with tooltip */}
-      <FloatingChatButton open={open} toggleChat={toggleChat} />
+      <FloatingChatButton 
+        open={open} 
+        toggleChat={toggleChat} 
+        botState={botAvatarState}
+      />
 
       {/* Chat dialog */}
       <ChatContainer

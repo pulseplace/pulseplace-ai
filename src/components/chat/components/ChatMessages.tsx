@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Loader } from 'lucide-react';
 import { ChatBubble } from '../ChatBubble';
 import { Message, BotAvatarState } from '../types';
+import { BotEmoji } from '../BotEmoji';
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -37,19 +37,17 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
         />
       ))}
       
-      {/* Typing indicator animation */}
+      {/* Improved typing indicator animation */}
       {loading && (
         <div className="flex items-start space-x-2">
-          <div className="w-8 h-8 rounded-full bg-pulse-600 flex items-center justify-center text-white">
-            <Loader className="h-4 w-4 animate-spin" />
+          <div className="w-8 h-8 rounded-full bg-pulse-600 flex items-center justify-center">
+            <BotEmoji state={botAvatarState} size="sm" />
           </div>
-          <div className="bg-gray-100 text-gray-800 p-3 rounded-lg max-w-[80%]">
-            <div className="flex space-x-2">
-              <div className="typing-indicator">
-                <span className="dot"></span>
-                <span className="dot"></span>
-                <span className="dot"></span>
-              </div>
+          <div className="bg-gray-100 text-gray-800 p-3 rounded-2xl max-w-[80%]">
+            <div className="typing-indicator">
+              <span className="dot"></span>
+              <span className="dot"></span>
+              <span className="dot"></span>
             </div>
           </div>
         </div>

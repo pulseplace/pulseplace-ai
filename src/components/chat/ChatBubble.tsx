@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { ThumbsUp, ThumbsDown, Bot, User } from 'lucide-react';
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Message } from './types';
+import { BotEmoji } from './BotEmoji';
 
 interface ChatBubbleProps {
   message: Message;
@@ -21,8 +22,8 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onFeedback }) =
     >
       {isBot && (
         <div className="flex-shrink-0 mr-2">
-          <div className="w-8 h-8 rounded-full bg-pulse-600 flex items-center justify-center text-white">
-            <Bot className="h-4 w-4" />
+          <div className="w-8 h-8 rounded-full bg-pulse-600 flex items-center justify-center">
+            <BotEmoji state="idle" size="sm" />
           </div>
         </div>
       )}
@@ -30,7 +31,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onFeedback }) =
       <div className="flex flex-col max-w-[80%]">
         <div
           className={cn(
-            'rounded-lg px-4 py-2',
+            'rounded-2xl px-4 py-2 shadow-sm',
             isBot ? 'bg-gray-100 text-gray-800' : 'bg-pulse-600 text-white'
           )}
         >
@@ -67,7 +68,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onFeedback }) =
       {!isBot && (
         <div className="flex-shrink-0 ml-2">
           <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-            <User className="h-4 w-4" />
+            <span>👤</span>
           </div>
         </div>
       )}

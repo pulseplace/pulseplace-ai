@@ -28,9 +28,17 @@ export const useMessageSender = (
       // Start loading and scroll to bottom
       setLoading(true);
       scrollToBottom();
+      
+      // Set bot to thinking state
       setBotAvatarState('thinking');
-
+      
+      // Add a short delay to show the thinking state
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
       try {
+        // Set to typing state before API call
+        setBotAvatarState('typing');
+        
         // Call the API
         const botReply = await callPulseBotAPI([...messages, newMessage], language, sessionInfo);
         
@@ -57,13 +65,18 @@ export const useMessageSender = (
             'happy' // Set to 'happy' after successful response
           );
           
-          // Trigger confetti effect (50% chance)
-          if (Math.random() > 0.5) {
+          // Trigger confetti effect (25% chance)
+          if (Math.random() > 0.75) {
             triggerConfetti();
           }
           
           // Set bot avatar to happy
           setBotAvatarState('happy');
+          
+          // Reset to idle state after 3 seconds
+          setTimeout(() => {
+            setBotAvatarState('idle');
+          }, 3000);
         } else {
           // Handle error
           toast({

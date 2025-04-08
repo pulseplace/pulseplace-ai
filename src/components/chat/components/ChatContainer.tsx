@@ -10,6 +10,7 @@ import { ChatMessages } from './ChatMessages';
 import { ChatInputBox } from '../ChatInputBox';
 import { SearchBar } from '../SearchBar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { BotEmoji } from '../BotEmoji';
 
 interface ChatContainerProps {
   open: boolean;
@@ -54,7 +55,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
         'fixed z-50 flex flex-col bg-white rounded-lg shadow-xl border border-gray-200 transition-all duration-300 ease-in-out',
         isMobile 
           ? 'bottom-24 right-2 left-2 max-h-[calc(100vh-150px)]' 
-          : 'bottom-24 right-6 w-80 sm:w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)]',
+          : 'bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)]',
         open
           ? 'opacity-100 translate-y-0'
           : 'opacity-0 translate-y-4 pointer-events-none'
@@ -63,8 +64,11 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-pulse-gradient text-white rounded-t-lg">
         <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+            <BotEmoji state={botAvatarState} size="sm" />
+          </div>
           <div className="flex flex-col">
-            <h3 className="font-semibold">PulsePlace Assistant</h3>
+            <h3 className="font-semibold">PulseBot AI Assistant</h3>
             <p className="text-xs text-white/80">How can I help you today?</p>
           </div>
         </div>

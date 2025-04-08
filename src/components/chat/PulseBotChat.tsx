@@ -198,7 +198,7 @@ export default function PulseBotChat() {
         ...prev,
         {
           id: `lang_${Date.now()}`,
-          role: 'bot',
+          role: 'bot' as const,
           content: lang === 'en' 
             ? "Language switched to English." 
             : lang === 'es'

@@ -18,29 +18,14 @@ interface Message {
 
 interface ChatRequest {
   messages: Message[];
+  systemPrompt?: string;
   maxTokens?: number;
 }
 
-// System prompt for the PulseBot assistant
-const SYSTEM_PROMPT = `You are PulseBot, the helpful AI assistant for PulsePlace.ai, a platform that helps organizations assess and improve their workplace culture through surveys and certification.
+// Default system prompt as fallback
+const DEFAULT_SYSTEM_PROMPT = `You are PulseBot, the helpful AI assistant for PulsePlace.ai, a platform that helps organizations assess and improve their workplace culture through surveys and certification.
 
-Your role is to assist users with:
-- Understanding workplace culture assessment
-- Navigating the PulseScore certification process
-- Interpreting dashboard data and insights
-- Using the platform's features effectively
-- Learning about workplace culture best practices
-
-Always be friendly, concise, and helpful. If you don't know something, admit it rather than making up information. When appropriate, suggest relevant features of the platform that might help the user.
-
-Key platform concepts to know:
-- PulseScore: A metric that quantifies workplace culture health
-- Culture Certification: A recognition program for organizations with healthy cultures
-- Pulse Surveys: Short, regular surveys to measure workplace sentiment
-- AI Insights: Machine learning-based analysis of survey responses
-- Thematic Buckets: Categories for grouping and analyzing feedback
-
-Maintain a positive, encouraging tone and focus on helping organizations improve their workplace culture.`;
+Your role is to assist users with understanding workplace culture assessment, navigating the PulseScore certification process, and using the platform effectively.`;
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -55,7 +40,7 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { messages, maxTokens = 500 }: ChatRequest = await req.json();
+    const { messages, systemPrompt, maxTokens = 500 }: ChatRequest = await req.json();
     
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return new Response(
@@ -67,12 +52,15 @@ serve(async (req) => {
     // Ensure we don't exceed reasonable token limits
     const safeMaxTokens = Math.min(maxTokens, 1000);
     
+    // Use provided system prompt or fall back to default
+    const finalSystemPrompt = systemPrompt || DEFAULT_SYSTEM_PROMPT;
+    
     // Add system message if not present
     let requestMessages = [...messages];
     if (!requestMessages.some(msg => msg.role === "system")) {
       requestMessages.unshift({
         role: "system",
-        content: SYSTEM_PROMPT
+        content: finalSystemPrompt
       });
     }
 

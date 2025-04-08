@@ -1,20 +1,25 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, X, Send } from 'lucide-react';
+import { Sparkles, X, Send, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { pulseAssistantConfig } from '@/config/chatbot-config';
 
 interface Message {
   role: 'bot' | 'user';
   content: string;
+  liked?: boolean;
+  disliked?: boolean;
 }
 
 export default function PulseBotChat() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'bot', content: "Hi! I'm your PulsePlace Assistant. Ask me anything about surveys, PulseScore, or certification." }
+    { role: 'bot', content: "Hi, I'm PulseBot — your workplace guide! Ask me anything about surveys, PulseScore, or certification." }
   ]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -38,10 +43,14 @@ export default function PulseBotChat() {
     try {
       // Call the Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('ask-pulsebot', {
-        body: { messages: messages.map(m => ({ 
-          role: m.role === 'bot' ? 'assistant' : 'user', 
-          content: m.content 
-        })), maxTokens: 500 },
+        body: { 
+          messages: messages.map(m => ({ 
+            role: m.role === 'bot' ? 'assistant' : 'user', 
+            content: m.content 
+          })), 
+          systemPrompt: pulseAssistantConfig.systemPrompt,
+          maxTokens: 500 
+        },
       });
 
       if (error) throw new Error(error.message || 'Failed to get a response');
@@ -74,6 +83,27 @@ export default function PulseBotChat() {
     }
   };
 
+  const handleFeedback = (index: number, isLike: boolean) => {
+    setMessages(prev => 
+      prev.map((msg, i) => {
+        if (i === index) {
+          return {
+            ...msg,
+            liked: isLike ? !msg.liked : msg.liked,
+            disliked: !isLike ? !msg.disliked : msg.disliked
+          };
+        }
+        return msg;
+      })
+    );
+    
+    // Here you could also send this feedback to your backend
+    toast({
+      description: `Thank you for your feedback!`,
+      duration: 2000,
+    });
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -83,27 +113,31 @@ export default function PulseBotChat() {
 
   return (
     <>
-      {/* Floating chat button */}
+      {/* Floating chat button with tooltip */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-2">
-        {!open && (
-          <div className="bg-white rounded-full px-3 py-1 shadow-md mb-1">
-            <span className="text-sm font-medium text-gray-700">Need Help?</span>
-          </div>
-        )}
-        <button
-          onClick={() => setOpen(!open)}
-          className={cn(
-            'h-14 w-14 rounded-full shadow-lg transition-all duration-300',
-            open ? 'bg-gray-600 hover:bg-gray-700' : 'bg-pulse-gradient animate-pulse hover:bg-pulse-700'
-          )}
-          aria-label={open ? "Close chat" : "Open chat"}
-        >
-          {open ? (
-            <X className="h-6 w-6 text-white mx-auto" />
-          ) : (
-            <Bot className="h-6 w-6 text-white mx-auto" />
-          )}
-        </button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setOpen(!open)}
+                className={cn(
+                  'h-14 w-14 rounded-full shadow-lg transition-all duration-300',
+                  open ? 'bg-gray-600 hover:bg-gray-700' : 'bg-pulse-gradient animate-pulse hover:bg-pulse-700'
+                )}
+                aria-label={open ? "Close chat" : "Talk to PulseBot"}
+              >
+                {open ? (
+                  <X className="h-6 w-6 text-white mx-auto" />
+                ) : (
+                  <Sparkles className="h-6 w-6 text-white mx-auto" />
+                )}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="left">
+              <p>Talk to PulseBot</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {/* Chat dialog */}
@@ -117,9 +151,16 @@ export default function PulseBotChat() {
       >
         {/* Header */}
         <div className="bg-pulse-gradient text-white p-3 rounded-t-lg flex justify-between items-center">
-          <div className="flex items-center">
-            <Bot className="h-5 w-5 mr-2" />
-            <strong>PulseBot Assistant</strong>
+          <div className="flex items-center space-x-2">
+            <Avatar className="h-8 w-8 bg-white/20">
+              <AvatarImage src="" alt="PulseBot" />
+              <AvatarFallback className="text-white">
+                <Sparkles className="h-4 w-4" />
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <strong>Hi, I'm PulseBot — your workplace guide!</strong>
+            </div>
           </div>
           <button 
             onClick={() => setOpen(false)}
@@ -130,20 +171,48 @@ export default function PulseBotChat() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 p-3 overflow-y-auto space-y-2 max-h-[350px]">
+        <div className="flex-1 p-3 overflow-y-auto space-y-3 max-h-[350px]">
           {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={cn(
-                'p-3 rounded-lg max-w-[90%]',
-                msg.role === 'bot' 
-                  ? 'bg-gray-100 text-gray-800 mr-auto' 
-                  : 'bg-pulse-600 text-white ml-auto'
+            <div key={i} className="flex flex-col">
+              <div
+                className={cn(
+                  'p-3 rounded-lg max-w-[90%]',
+                  msg.role === 'bot' 
+                    ? 'bg-gray-100 text-gray-800 mr-auto' 
+                    : 'bg-pulse-600 text-white ml-auto'
+                )}
+              >
+                {msg.content}
+              </div>
+              
+              {/* Feedback buttons (thumbs up/down) for bot messages only */}
+              {msg.role === 'bot' && i > 0 && (
+                <div className="flex mt-1 space-x-2">
+                  <button 
+                    onClick={() => handleFeedback(i, true)}
+                    className={cn(
+                      "p-1 rounded-full hover:bg-gray-200 transition-colors", 
+                      msg.liked && "text-pulse-600"
+                    )}
+                    aria-label="Helpful"
+                  >
+                    <ThumbsUp className="h-3.5 w-3.5" />
+                  </button>
+                  <button 
+                    onClick={() => handleFeedback(i, false)}
+                    className={cn(
+                      "p-1 rounded-full hover:bg-gray-200 transition-colors", 
+                      msg.disliked && "text-gray-500"
+                    )}
+                    aria-label="Not helpful"
+                  >
+                    <ThumbsDown className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               )}
-            >
-              {msg.content}
             </div>
           ))}
+          
           {loading && (
             <div className="bg-gray-100 text-gray-800 p-3 rounded-lg max-w-[90%] mr-auto">
               <div className="flex space-x-1">
@@ -160,8 +229,8 @@ export default function PulseBotChat() {
         <div className="p-2 border-t flex">
           <input
             type="text"
-            placeholder="Ask something..."
-            className="flex-1 border rounded-l px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pulse-600 focus:border-transparent"
+            placeholder="Ask me anything..."
+            className="flex-1 border rounded-l-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pulse-600 focus:border-transparent"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -171,7 +240,7 @@ export default function PulseBotChat() {
             onClick={sendMessage}
             disabled={!input.trim() || loading}
             className={cn(
-              "bg-pulse-gradient text-white px-4 py-2 rounded-r text-sm",
+              "bg-pulse-gradient text-white px-4 py-2 rounded-r-full text-sm flex items-center justify-center",
               (!input.trim() || loading) && "opacity-50 cursor-not-allowed"
             )}
           >

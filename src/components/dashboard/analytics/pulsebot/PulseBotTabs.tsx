@@ -30,16 +30,17 @@ const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => 
       <TabsContent value="overview" className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FeedbackDistributionChart 
-            data={analytics.feedbackRatio} 
+            positive={analytics.feedbackRatio.positive} 
+            negative={analytics.feedbackRatio.negative} 
             isLoading={isLoading} 
           />
           <LanguageDistributionChart 
-            data={analytics.languageBreakdown} 
+            languageBreakdown={analytics.languageBreakdown} 
             isLoading={isLoading} 
           />
         </div>
         <QueriesTable 
-          data={analytics.topQueries.slice(0, 5)} 
+          queries={analytics.topQueries.slice(0, 5)} 
           isLoading={isLoading} 
         />
       </TabsContent>
@@ -48,12 +49,13 @@ const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => 
       <TabsContent value="feedback">
         <div className="space-y-6">
           <FeedbackDistributionChart 
-            data={analytics.feedbackRatio} 
+            positive={analytics.feedbackRatio.positive} 
+            negative={analytics.feedbackRatio.negative} 
             isLoading={isLoading} 
             fullSize={true}
           />
           <DownvotedResponsesTable 
-            data={analytics.topDownvotedResponses} 
+            responses={analytics.topDownvotedResponses} 
             isLoading={isLoading} 
           />
         </div>
@@ -62,7 +64,7 @@ const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => 
       {/* Languages Tab */}
       <TabsContent value="languages">
         <LanguageDistributionChart 
-          data={analytics.languageBreakdown} 
+          languageBreakdown={analytics.languageBreakdown} 
           isLoading={isLoading} 
           fullSize={true}
         />
@@ -71,7 +73,7 @@ const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => 
       {/* Avatar States Tab */}
       <TabsContent value="avatars">
         <AvatarStateChart 
-          data={analytics.avatarStateUsage} 
+          avatarStateUsage={analytics.avatarStateUsage} 
           isLoading={isLoading} 
         />
       </TabsContent>
@@ -79,7 +81,7 @@ const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => 
       {/* Top Queries Tab */}
       <TabsContent value="queries">
         <QueriesTable 
-          data={analytics.topQueries} 
+          queries={analytics.topQueries} 
           isLoading={isLoading} 
         />
       </TabsContent>

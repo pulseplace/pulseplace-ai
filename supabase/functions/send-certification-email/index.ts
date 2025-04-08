@@ -33,16 +33,25 @@ serve(async (req) => {
   }
   
   try {
+    console.log("Certification email function triggered");
+    
     const MAILERSEND_API_KEY = Deno.env.get("MAILERSEND_API_KEY");
     
     if (!MAILERSEND_API_KEY) {
+      console.error("MailerSend API key not configured in Supabase secrets");
       throw new Error("MailerSend API key is not configured");
     }
 
     const payload: CertificationEmailRequest = await req.json();
+    console.log(`Processing certification email request for ${payload.departmentName || payload.companyName}`);
     
     // Validate required fields
     if (!payload.recipientEmail || !payload.companyName || !payload.pulseScore) {
+      console.error("Missing required fields in certification email request", {
+        hasEmail: !!payload.recipientEmail, 
+        hasCompany: !!payload.companyName, 
+        hasScore: !!payload.pulseScore
+      });
       throw new Error("Missing required fields in request");
     }
     
@@ -50,11 +59,13 @@ serve(async (req) => {
     
     // Generate certification level based on score
     const certificationLevel = getCertificationLevel(payload.pulseScore);
+    console.log(`Certification level determined: ${certificationLevel}`);
     
     // Generate HTML for the email
     const htmlContent = generateCertificationEmail(payload, certificationLevel);
     
     // Send email using MailerSend API
+    console.log("Sending email via MailerSend API");
     const mailersendResponse = await fetch("https://api.mailersend.com/v1/email", {
       method: "POST",
       headers: {
@@ -80,6 +91,7 @@ serve(async (req) => {
     }
     
     const responseData = await mailersendResponse.json();
+    console.log("Email sent successfully:", responseData);
     
     return new Response(
       JSON.stringify({

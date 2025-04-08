@@ -204,6 +204,8 @@ export const teamAdminService = {
   
   async uploadTeamMembers(teamMembers: Omit<TeamMember, 'id' | 'lastActive'>[]): Promise<{success: boolean, count: number, error?: string}> {
     try {
+      console.log(`Uploading ${teamMembers.length} team members to database`);
+      
       // Format for database insertion
       const membersToInsert = teamMembers.map(member => ({
         name: member.name,
@@ -221,6 +223,7 @@ export const teamAdminService = {
       
       if (error) throw error;
       
+      console.log(`Successfully uploaded ${membersToInsert.length} team members`);
       return {
         success: true,
         count: membersToInsert.length
@@ -272,6 +275,8 @@ export const teamAdminService = {
   
   async exportTeamDataCSV(departmentFilter?: string): Promise<{success: boolean, data?: string, error?: string}> {
     try {
+      console.log(`Exporting team data to CSV. Department filter: ${departmentFilter || 'All Departments'}`);
+      
       let query = supabase
         .from('team_members')
         .select('*');
@@ -285,11 +290,14 @@ export const teamAdminService = {
       if (error) throw error;
       
       if (!data || data.length === 0) {
+        console.warn('No data found to export');
         return { 
           success: false, 
           error: 'No data to export' 
         };
       }
+      
+      console.log(`Found ${data.length} team members to export`);
       
       // Convert to CSV
       const headers = ['Name', 'Email', 'Department', 'Survey Status', 'Last Active'];
@@ -307,6 +315,8 @@ export const teamAdminService = {
       });
       
       const csvString = csvRows.join('\n');
+      console.log(`CSV export completed with ${csvRows.length - 1} data rows`);
+      
       return {
         success: true,
         data: csvString
@@ -322,10 +332,15 @@ export const teamAdminService = {
   
   async generateCertification(departmentName: string): Promise<{success: boolean, certificateId?: string, error?: string}> {
     try {
+      console.log(`Checking certification eligibility for department: ${departmentName}`);
+      
       // Get the average score for the department
       const { participationRate, averageScore, themeScores } = await this.getSummaryStats(departmentName);
       
+      console.log(`Department stats: Score ${averageScore}/100, Participation ${participationRate}%`);
+      
       if (participationRate < 50) {
+        console.warn(`Department does not meet minimum participation criteria: ${participationRate}% vs 50% required`);
         return {
           success: false,
           error: `Department does not meet minimum participation criteria (${participationRate}% vs 50% required)`
@@ -333,11 +348,14 @@ export const teamAdminService = {
       }
       
       if (averageScore < 80) {
+        console.warn(`Department does not meet certification criteria: ${averageScore}/100 vs 80/100 minimum`);
         return {
           success: false,
           error: `Department does not meet certification criteria. Current score: ${averageScore}/100 (minimum 80 required)`
         };
       }
+      
+      console.log(`Department ${departmentName} qualifies for certification!`);
       
       // Calculate expiry date (1 year from now)
       const now = new Date();
@@ -359,12 +377,16 @@ export const teamAdminService = {
       
       if (error) throw error;
       
+      console.log(`Certification record created with ID: ${data.id}`);
+      
       // Fetch department admin's email (HR contact)
       // For now, we'll use a placeholder email, but this should be fetched from a department_admins table
       const departmentEmail = "hr@tayanasolutions.com";
       
       // Generate insights for the certification email
       const insights = await this.generateDepartmentInsights(departmentName, averageScore, themeScores);
+      
+      console.log(`Sending certification email to ${departmentEmail}`);
       
       // Send certification email
       await this.sendCertificationEmail({
@@ -377,6 +399,8 @@ export const teamAdminService = {
         insights: insights,
         expiryDate: expiryDate.toISOString()
       });
+      
+      console.log(`Certification process completed successfully for ${departmentName}`);
       
       return {
         success: true,
@@ -402,11 +426,15 @@ export const teamAdminService = {
     expiryDate?: string;
   }): Promise<{success: boolean, error?: string}> {
     try {
+      console.log(`Calling send-certification-email edge function for ${params.departmentName}`);
+      
       const { data, error } = await supabase.functions.invoke('send-certification-email', {
         body: params
       });
       
       if (error) throw error;
+      
+      console.log(`Certification email sent successfully to ${params.recipientEmail}`);
       
       return {
         success: true
@@ -449,19 +477,35 @@ export const teamAdminService = {
   
   async exportToPDF(departmentFilter?: string): Promise<{success: boolean, pdfUrl?: string, error?: string}> {
     try {
-      // In a real implementation, this would use a PDF generation library or service
-      // For now, we'll return a mock success
+      console.log(`Generating PDF report for department: ${departmentFilter || 'All Departments'}`);
       
       // Get the data we need for the PDF
       const teamMembers = await this.getTeamMembers(departmentFilter);
       const stats = await this.getSummaryStats(departmentFilter);
       
-      // Mock PDF generation - in a real implementation, this would use a library like pdfmake
-      // or call an edge function that uses a PDF generation service
+      console.log(`Preparing PDF with ${teamMembers.length} team members and overall score ${stats.averageScore}`);
+      
+      // Call the edge function to generate the PDF
+      const { data, error } = await supabase.functions.invoke('generate-pdf-report', {
+        body: {
+          departmentFilter,
+          companyName: "Tayana Solutions",
+          teamMembers,
+          summaryStats: stats
+        }
+      });
+      
+      if (error) throw error;
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to generate PDF');
+      }
+      
+      console.log(`PDF report generated successfully: ${data.url}`);
       
       return {
         success: true,
-        pdfUrl: `https://hamqupvdhlfznwnuohsh.supabase.co/storage/v1/object/public/reports/tayana-team-pulse-${new Date().toISOString().split('T')[0]}.pdf`
+        pdfUrl: data.url
       };
     } catch (error: any) {
       console.error('Error exporting to PDF:', error);
@@ -474,6 +518,8 @@ export const teamAdminService = {
   
   async processSurveyResponse(surveyId: string, userId: string, responses: any): Promise<ProcessedSurveyResponse> {
     try {
+      console.log(`Processing survey response for user ${userId} and survey ${surveyId}`);
+      
       // Group responses by theme
       const themeResponses: Record<string, number[]> = {
         "Trust & Safety": [],
@@ -526,6 +572,8 @@ export const teamAdminService = {
       // Just a placeholder for now
       const sentimentScore = Math.min(100, Math.max(0, overallScore + Math.floor(Math.random() * 20) - 10));
       
+      console.log(`Survey response processed. Overall score: ${overallScore}, Sentiment: ${sentimentScore}`);
+      
       // Generate a processed response
       const processed: ProcessedSurveyResponse = {
         overallScore,
@@ -545,6 +593,8 @@ export const teamAdminService = {
         });
       
       if (error) throw error;
+      
+      console.log(`Survey response saved to database successfully`);
       
       return processed;
     } catch (error) {

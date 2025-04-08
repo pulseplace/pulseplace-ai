@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { teamAdminService, ProcessedSurveyResponse } from './teamAdminService';
 
@@ -122,17 +123,54 @@ export const surveyService = {
     error?: string;
   }> {
     try {
+      console.log(`Processing survey response for user ${response.userId} and survey ${response.surveyId}`);
+      
       if (!response.userId || !response.surveyId) {
         throw new Error('User ID and Survey ID are required');
       }
       
+      // Process the survey response to calculate pulse scores and sentiment
       const processedResponse = await teamAdminService.processSurveyResponse(
         response.surveyId,
         response.userId,
         response.responses
       );
       
+      console.log(`Survey processed successfully. Overall score: ${processedResponse.overallScore}`);
+      
+      // Update the user's survey status to 'completed'
       await this.updateTeamMemberSurveyStatus(response.userId, 'completed');
+      
+      // Check if the department qualifies for certification based on this new response
+      try {
+        // Get the department for this user
+        const { data: userData, error: userError } = await supabase
+          .from('team_members')
+          .select('department')
+          .eq('user_id', response.userId)
+          .single();
+        
+        if (!userError && userData && userData.department) {
+          console.log(`Checking certification eligibility for department: ${userData.department}`);
+          
+          // Check if department qualifies for certification
+          const departmentStats = await teamAdminService.getSummaryStats(userData.department);
+          
+          // If average score is high enough and participation rate is adequate, generate certification
+          if (departmentStats.averageScore >= 80 && departmentStats.participationRate >= 50) {
+            console.log(`Department ${userData.department} qualifies for certification with score ${departmentStats.averageScore}`);
+            
+            // Generate certification (this will also send the email)
+            const certResult = await teamAdminService.generateCertification(userData.department);
+            console.log(`Certification result:`, certResult);
+          } else {
+            console.log(`Department ${userData.department} does not yet qualify for certification. Score: ${departmentStats.averageScore}, Participation: ${departmentStats.participationRate}%`);
+          }
+        }
+      } catch (certError) {
+        console.error('Error checking certification eligibility:', certError);
+        // Don't fail the submission if certification check fails
+      }
       
       return {
         success: true,
@@ -149,6 +187,7 @@ export const surveyService = {
   
   async updateTeamMemberSurveyStatus(userId: string, status: 'completed' | 'pending' | 'not_sent'): Promise<boolean> {
     try {
+      // Get the team member ID from the user ID
       const { data: teamMember, error: teamMemberError } = await supabase
         .from('team_members')
         .select('id')
@@ -156,10 +195,12 @@ export const surveyService = {
         .single();
       
       if (teamMemberError) {
+        // Team member might not be found if the user is not in the team_members table
         console.warn('Team member not found for user:', userId);
         return false;
       }
       
+      // Update the team member's survey status
       const { error: updateError } = await supabase
         .from('team_members')
         .update({ 

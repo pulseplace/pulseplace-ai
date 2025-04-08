@@ -12,7 +12,11 @@ import {
 } from "@/components/ui/popover";
 import { addDays, subDays, subMonths } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { DateRangeFilter } from "@/types/scoring.types";
+
+export interface DateRangeFilter {
+  from: Date | undefined;
+  to: Date | undefined;
+}
 
 export function DatePickerWithRange({
   date,

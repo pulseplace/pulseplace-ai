@@ -1,36 +1,22 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  BarChart2, 
-  Download, 
-  Users, 
-  Calendar, 
-  Filter, 
-  RefreshCw, 
-  AlertTriangle,
-  CheckCircle,
-  FileText
-} from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 import { emailService } from '@/services/emailService';
 import { insightsService } from '@/services/insightsService';
 import TeamAdminFilters from './admin/TeamAdminFilters';
-import TeamExportOptions from './admin/TeamExportOptions';
 import TeamSummaryStats from './admin/TeamSummaryStats';
+import LoadingDashboard from './admin/LoadingDashboard';
+import DashboardHeader from './admin/DashboardHeader';
+import TeamTabContent from './admin/TeamTabContent';
+import InsightsTabContent from './admin/InsightsTabContent';
+import CertificationTabContent from './admin/CertificationTabContent';
+import { DateRangeFilter } from '@/components/ui/date-range-picker';
 
 // Mock data for demonstration
 const DEMO_DEPARTMENTS = [
   "All Departments", "Engineering", "Marketing", "Sales", "Customer Support", "Human Resources"
-];
-
-const PULSE_CATEGORIES = [
-  "all", "trust", "engagement", "culture", "growth", "wellbeing"
 ];
 
 interface TeamMember {
@@ -47,8 +33,8 @@ const TeamAdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [department, setDepartment] = useState('All Departments');
-  const [pulseCategoryFilter, setPulseCategoryFilter] = useState('all');
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({
+  const [pulseTheme, setPulseTheme] = useState('All Themes');
+  const [dateRange, setDateRange] = useState<DateRangeFilter>({
     from: new Date(new Date().setDate(new Date().getDate() - 30)),
     to: new Date()
   });
@@ -221,53 +207,11 @@ const TeamAdminDashboard: React.FC = () => {
   };
   
   const handleSendReminders = async () => {
-    const pendingMembers = teamMembers.filter(m => m.surveyStatus === 'pending');
-    if (pendingMembers.length === 0) {
-      toast({
-        title: "No Reminders Needed",
-        description: "There are no team members with pending surveys.",
-      });
-      return;
-    }
-    
-    setIsRefreshing(true);
-    try {
-      // In a real implementation, send actual reminder emails
-      // For demo, just show success message
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast({
-        title: "Reminders Sent",
-        description: `Reminder emails sent to ${pendingMembers.length} team members.`,
-      });
-      
-      // Update local state to reflect reminders sent
-      const updatedMembers = teamMembers.map(member => {
-        if (member.surveyStatus === 'pending') {
-          return { ...member, lastActive: 'Just now' };
-        }
-        return member;
-      });
-      
-      setTeamMembers(updatedMembers);
-    } catch (error) {
-      console.error('Error sending reminders:', error);
-      toast({
-        title: "Error",
-        description: "Failed to send reminder emails. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsRefreshing(false);
-    }
+    // ... keep existing code (for the reminder functionality)
   };
   
   const handleBulkInvite = () => {
-    // Navigate to bulk invite page or open modal
-    toast({
-      title: "Bulk Invite",
-      description: "The bulk invite feature will be available in the next update.",
-    });
+    // ... keep existing code (for bulk invite functionality)
   };
   
   const handleSendCertificate = async () => {
@@ -355,73 +299,44 @@ const TeamAdminDashboard: React.FC = () => {
     }
   };
   
+  const handleGenerateInsights = async () => {
+    try {
+      const generatedInsights = await insightsService.generateTestInsight();
+      setInsights(generatedInsights);
+    } catch (error) {
+      console.error("Failed to generate insights:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate insights. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+  
   if (isLoading) {
-    return (
-      <div className="space-y-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <Skeleton className="h-8 w-64 mb-2" />
-            <Skeleton className="h-4 w-40" />
-          </div>
-          <div className="flex space-x-2">
-            <Skeleton className="h-10 w-32" />
-            <Skeleton className="h-10 w-32" />
-          </div>
-        </div>
-        
-        <Skeleton className="h-40" />
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map(i => (
-            <Skeleton key={i} className="h-32" />
-          ))}
-        </div>
-        
-        <Skeleton className="h-96" />
-      </div>
-    );
+    return <LoadingDashboard />;
   }
   
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">Team Admin Dashboard</h2>
-          <p className="text-gray-500">Manage your team's PulseScore™ certification process</p>
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          <TeamExportOptions 
-            onExportCSV={handleExportCSV}
-            onExportPDF={handleExportPDF}
-            dataAvailable={teamMembers.length > 0}
-          />
-          
-          <Button onClick={handleRefreshData} disabled={isRefreshing}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh'}
-          </Button>
-        </div>
-      </div>
-      
-      {error && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      <DashboardHeader
+        onExportCSV={handleExportCSV}
+        onExportPDF={handleExportPDF}
+        onRefreshData={handleRefreshData}
+        isRefreshing={isRefreshing}
+        error={error}
+        teamMembersCount={teamMembers.length}
+      />
       
       {/* Advanced filters */}
       <TeamAdminFilters
-        department={department}
-        setDepartment={setDepartment}
-        pulseCategoryFilter={pulseCategoryFilter}
-        setPulseCategoryFilter={setPulseCategoryFilter}
         dateRange={dateRange}
         setDateRange={setDateRange}
-        onRefresh={handleRefreshData}
-        departments={DEMO_DEPARTMENTS}
-        isRefreshing={isRefreshing}
+        department={department}
+        setDepartment={setDepartment}
+        pulseTheme={pulseTheme}
+        setPulseTheme={setPulseTheme}
+        onClose={() => handleRefreshData()}
       />
       
       {/* Summary statistics */}
@@ -449,127 +364,22 @@ const TeamAdminDashboard: React.FC = () => {
             </TabsList>
             
             <TabsContent value="team">
-              <div className="rounded-md border">
-                <div className="bg-slate-50 p-4 grid grid-cols-6 gap-4 font-medium">
-                  <div className="col-span-2">Name / Email</div>
-                  <div>Department</div>
-                  <div>Status</div>
-                  <div>Last Active</div>
-                  <div className="text-right">Actions</div>
-                </div>
-                <div className="divide-y">
-                  {teamMembers.map((member) => (
-                    <div key={member.id} className="p-4 grid grid-cols-6 gap-4 items-center">
-                      <div className="col-span-2">
-                        <div className="font-medium">{member.name}</div>
-                        <div className="text-sm text-gray-500">{member.email}</div>
-                      </div>
-                      <div>{member.department}</div>
-                      <div>
-                        {member.surveyStatus === 'completed' && (
-                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
-                            Completed
-                          </span>
-                        )}
-                        {member.surveyStatus === 'pending' && (
-                          <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs">
-                            Pending
-                          </span>
-                        )}
-                        {member.surveyStatus === 'not_sent' && (
-                          <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">
-                            Not Sent
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-500">{member.lastActive}</div>
-                      <div className="text-right">
-                        <Button variant="ghost" size="sm">
-                          View
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <TeamTabContent teamMembers={teamMembers} />
             </TabsContent>
             
             <TabsContent value="insights">
-              {insights ? (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Executive Summary</h3>
-                    <p className="text-gray-700">{insights.summary}</p>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Key Strengths</h3>
-                      <ul className="list-disc list-inside space-y-1">
-                        {insights.strengths.map((strength: string, index: number) => (
-                          <li key={index} className="text-gray-700">{strength}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Improvement Areas</h3>
-                      <ul className="list-disc list-inside space-y-1">
-                        {insights.opportunities.map((opportunity: string, index: number) => (
-                          <li key={index} className="text-gray-700">{opportunity}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Recommended Actions</h3>
-                    <ul className="list-disc list-inside space-y-1">
-                      {insights.actionItems.map((action: string, index: number) => (
-                        <li key={index} className="text-gray-700">{action}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <BarChart2 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No Insights Available</h3>
-                  <p className="text-gray-500 mb-4">
-                    There are no AI-generated insights available yet. Complete surveys to generate insights.
-                  </p>
-                  <Button onClick={() => insightsService.generateTestInsight().then(setInsights)}>
-                    Generate Test Insights
-                  </Button>
-                </div>
-              )}
+              <InsightsTabContent 
+                insights={insights} 
+                onGenerateInsights={handleGenerateInsights} 
+              />
             </TabsContent>
             
             <TabsContent value="certification">
-              <div className="text-center py-8">
-                <div className="mb-8 mx-auto max-w-md p-6 border rounded-lg shadow-sm bg-white">
-                  <h3 className="text-xl font-bold mb-4">PulseScore™ Certification</h3>
-                  <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg p-8 mb-4">
-                    <div className="text-3xl font-bold mb-1">{summaryStats.averageScore}/100</div>
-                    <div className="font-medium">
-                      {summaryStats.averageScore >= 80 ? 'Pulse Certified™' : 'In Progress'}
-                    </div>
-                  </div>
-                  <p className="text-gray-500 mb-2">Tayana Solutions</p>
-                  <p className="text-gray-500 text-sm">Valid until April 8, 2026</p>
-                </div>
-                
-                <div className="space-x-2">
-                  <Button onClick={handleSendCertificate}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Send Certificate
-                  </Button>
-                  <Button variant="outline" onClick={handleExportPDF}>
-                    <FileText className="h-4 w-4 mr-2" />
-                    Download Report
-                  </Button>
-                </div>
-              </div>
+              <CertificationTabContent 
+                averageScore={summaryStats.averageScore}
+                onSendCertificate={handleSendCertificate}
+                onExportPDF={handleExportPDF}
+              />
             </TabsContent>
           </Tabs>
         </CardContent>

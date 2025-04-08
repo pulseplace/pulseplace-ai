@@ -54,4 +54,4 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, index, onFeedba
       )}
     </div>
   );
-};
+}

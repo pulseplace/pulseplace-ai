@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,8 +5,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DateRange } from '@/components/ui/date-range-picker';
-import { PulseBotAnalytics as PulseBotAnalyticsType, PulseBotLog } from '@/components/chat/types';
+import { DatePickerWithRange, DateRangeFilter } from '@/components/ui/date-range-picker';
+import { PulseBotAnalytics as PulseBotAnalyticsType, PulseBotLog, AnalyticsFilters } from '@/components/chat/types';
 import { fetchAnalytics } from '@/components/chat/services/api-service';
 import PulseBotAnalyticsDashboard from '@/components/dashboard/PulseBotAnalyticsDashboard';
 
@@ -17,8 +16,8 @@ const PulseBotAnalytics: React.FC = () => {
   const [analytics, setAnalytics] = useState<PulseBotAnalyticsType | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
   
-  // Filter states
-  const [dateRange, setDateRange] = useState<DateRange>({
+  // Filter states - updated to use DateRangeFilter
+  const [dateRange, setDateRange] = useState<DateRangeFilter>({
     from: new Date(new Date().setDate(new Date().getDate() - 30)),
     to: new Date()
   });
@@ -112,15 +111,10 @@ const PulseBotAnalytics: React.FC = () => {
             </SelectContent>
           </Select>
           
-          <div className="rounded-md border bg-background text-sm shadow-sm w-[220px]">
-            <div className="flex h-10 items-center justify-between px-3">
-              <span className="text-xs">
-                {dateRange.from ? new Date(dateRange.from).toLocaleDateString() : "From"} -{" "}
-                {dateRange.to ? new Date(dateRange.to).toLocaleDateString() : "To"}
-              </span>
-              <Calendar className="h-4 w-4 opacity-50" />
-            </div>
-          </div>
+          <DatePickerWithRange 
+            date={dateRange}
+            setDate={setDateRange}
+          />
           
           <Button 
             className="bg-pulse-gradient" 

@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { BotAvatarState, Message, SessionInfo, ConfettiState } from './types';
@@ -170,9 +171,9 @@ export function usePulseBot() {
     setSearch({ query: '', isSearching: false, results: [] });
   };
 
-  // Handle feedback
+  // Handle feedback - updated to include index parameter to match expected signature
   const handleFeedback = useCallback(
-    async (messageId: string, feedbackType: 'up' | 'down') => {
+    async (index: number, messageId: string, content: string, isLike: boolean) => {
       const message = messages.find((m) => m.id === messageId);
       
       if (!message) return;
@@ -183,16 +184,17 @@ export function usePulseBot() {
           if (m.id === messageId) {
             return {
               ...m,
-              liked: feedbackType === 'up',
-              disliked: feedbackType === 'down',
+              liked: isLike,
+              disliked: !isLike,
             };
           }
           return m;
         })
       );
       
-      // Log the feedback
-      await logFeedback(messageId, message.content, feedbackType, sessionInfo.id);
+      // Log the feedback with the correct feedback type
+      const feedbackType = isLike ? 'up' : 'down';
+      await logFeedback(messageId, content, feedbackType, sessionInfo.id);
     },
     [messages, sessionInfo.id]
   );

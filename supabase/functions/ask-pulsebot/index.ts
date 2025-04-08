@@ -91,7 +91,7 @@ serve(async (req) => {
         messages: requestMessages,
         max_tokens: safeMaxTokens,
         temperature: 0.7
-      })
+      }),
     });
 
     // Check for errors in the OpenAI response

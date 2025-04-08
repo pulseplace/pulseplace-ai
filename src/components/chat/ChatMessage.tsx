@@ -3,7 +3,6 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Message } from '@/contexts/ChatbotContext';
 import { Bot, User } from 'lucide-react';
-import { Separator } from "@/components/ui/separator";
 
 interface ChatMessageProps {
   message: Message;

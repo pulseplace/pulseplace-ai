@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,6 +32,7 @@ import StickyCta from "./components/StickyCta";
 import ScoringLogic from '@/pages/dashboard/ScoringLogic';
 import EmailTemplates from '@/pages/dashboard/EmailTemplates';
 import ShareCertification from '@/pages/dashboard/ShareCertification';
+import ProfileSettings from '@/pages/dashboard/ProfileSettings';
 
 const queryClient = new QueryClient();
 
@@ -77,6 +79,7 @@ const AnimatedRoutes = () => {
             <Route path="email-templates" element={<EmailTemplates />} />
             <Route path="certification-engine" element={<CertificationEngine />} />
             <Route path="share-certification" element={<ShareCertification />} />
+            <Route path="profile" element={<ProfileSettings />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

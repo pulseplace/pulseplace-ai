@@ -2,16 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
-import OnboardingState from '@/components/OnboardingState';
+import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { Tables } from '@/types/database.types';
-import SkillsGapAnalysis from '@/components/dashboard/SkillsGapAnalysis';
-import TeamPulseTrends from '@/components/dashboard/TeamPulseTrends';
-import SentimentAnalysis from '@/components/dashboard/SentimentAnalysis';
-import AdvancedAnalytics from '@/components/dashboard/AdvancedAnalytics';
 import { Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -83,10 +78,6 @@ const DashboardHome = () => {
     fetchDashboardData();
   }, [user]);
 
-  const handleOnboardingClick = () => {
-    // Navigate to survey creation or take first pulse survey
-  };
-
   const handleExportPDF = () => {
     toast({
       title: "Dashboard Report Exported",
@@ -106,10 +97,7 @@ const DashboardHome = () => {
   if (!hasData) {
     return (
       <div className="container mx-auto py-6">
-        <OnboardingState
-          stateType="emptyDashboard"
-          onButtonClick={handleOnboardingClick}
-        />
+        <OnboardingFlow />
       </div>
     );
   }
@@ -134,14 +122,6 @@ const DashboardHome = () => {
       </div>
 
       <DashboardOverview />
-
-      <div className="grid grid-cols-1 lg:grid-cols-8 gap-6 mt-8">
-        <SkillsGapAnalysis />
-        <TeamPulseTrends />
-        <SentimentAnalysis />
-      </div>
-      
-      <AdvancedAnalytics />
     </div>
   );
 };

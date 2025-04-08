@@ -11,6 +11,8 @@ import JoinBeta from '@/components/JoinBeta';
 import MetaTags from '@/components/MetaTags';
 import StickyCta from '@/components/StickyCta';
 import EmailTestButton from '@/components/EmailTestButton';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 const Home = () => {
   return (
@@ -21,6 +23,7 @@ const Home = () => {
         keywords="workplace trust, employee trust, trust metrics, AI for HR, workplace analytics"
       />
       
+      <Navbar />
       <Hero />
       
       <div className="container mx-auto py-4 mt-4">
@@ -37,6 +40,7 @@ const Home = () => {
       <FAQ />
       <JoinBeta />
       <StickyCta />
+      <Footer />
     </div>
   );
 };

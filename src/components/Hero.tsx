@@ -86,7 +86,7 @@ const Hero = () => {
               PulsePlace.ai measures employee sentiment, trust, and culture in real time — and ranks companies who truly walk the talk.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 flex-wrap">
               <HashLink to="/#join-beta" scroll={scrollWithOffset}>
                 <Button className="bg-pulse-gradient hover:opacity-90 transition-all h-12 px-6 text-base w-full sm:w-auto">
                   Join the Beta <ArrowRight className="ml-2 h-4 w-4" />

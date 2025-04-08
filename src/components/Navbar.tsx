@@ -55,8 +55,8 @@ const Navbar = () => {
     { type: 'link', label: 'Methodology', path: '/methodology' },
     { type: 'link', label: 'Our AI Engine', path: '/ai-engine' },
     { type: 'link', label: 'Certification', path: '/certification' },
-    { type: 'link', label: 'Showcase', path: '/showcase' },
-    { type: 'link', label: 'About Us', path: '/about-us' },
+    { type: 'link', label: 'Showcase', path: '/certified-companies' },
+    { type: 'link', label: 'About Us', path: '/about' },
     { type: 'hash-link', label: 'Join Beta', path: '/#join-beta' },
   ];
 

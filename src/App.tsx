@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
@@ -8,6 +9,8 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { DashboardProvider } from '@/contexts/DashboardContext';
 import { TaskProvider } from '@/contexts/TaskContext';
 import LoadingState from '@/components/dashboard/admin/components/LoadingState';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 // Layout
 const DashboardLayout = lazy(() => import('@/layouts/DashboardLayout'));
@@ -57,6 +60,8 @@ function App() {
                   <Route path="/about" element={<AboutUs />} />
                   <Route path="/certification" element={<Certification />} />
                   <Route path="/certified-companies" element={<CertificationShowcase />} />
+                  <Route path="/showcase" element={<CertificationShowcase />} />
+                  <Route path="/about-us" element={<AboutUs />} />
                   <Route path="/join-beta" element={<JoinBeta />} />
                   <Route path="/preview-dashboard" element={<DashboardPreview />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />

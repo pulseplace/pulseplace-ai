@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -13,6 +12,7 @@ import SurveyStats from './survey/SurveyStats';
 import SurveyResponsesTable from './survey/SurveyResponsesTable';
 import { useSurveyData } from './survey/useSurveyData';
 import { Badge } from "@/components/ui/badge";
+import AnonymityBanner from './survey/AnonymityBanner';
 
 interface SurveyDetailProps {
   surveyId: string;
@@ -75,14 +75,7 @@ const SurveyDetail = ({ surveyId }: SurveyDetailProps) => {
 
           <h3 className="text-lg font-semibold mb-4">Survey Responses</h3>
           
-          {survey.is_anonymous && (
-            <div className="mb-4 p-3 bg-gray-50 rounded-md border border-gray-200">
-              <p className="text-sm text-gray-600">
-                <Shield className="h-4 w-4 inline-block mr-1 text-green-600" />
-                This is an anonymous survey. Individual respondent identities are not recorded.
-              </p>
-            </div>
-          )}
+          <AnonymityBanner isAnonymous={survey.is_anonymous} />
           
           <SurveyResponsesTable responses={responses} isAnonymous={survey.is_anonymous} />
         </CardContent>

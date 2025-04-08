@@ -13,6 +13,7 @@ export const useOnboarding = () => {
   const [hasSurveys, setHasSurveys] = useState(false);
   const [hasCertification, setHasCertification] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<OnboardingStep[]>([]);
+  const [lastVisitedStep, setLastVisitedStep] = useState<OnboardingStep | null>(null);
   const { toast } = useToast();
 
   // Check user's progress and set the appropriate step
@@ -25,6 +26,12 @@ export const useOnboarding = () => {
       }
 
       try {
+        // Get last visited step from localStorage if available
+        const savedStep = localStorage.getItem('lastOnboardingStep');
+        if (savedStep) {
+          setLastVisitedStep(savedStep as OnboardingStep);
+        }
+        
         // Check if user has completed any surveys
         const { data: surveyData, error: surveyError } = await supabase
           .from('pulse_surveys')
@@ -59,15 +66,24 @@ export const useOnboarding = () => {
         
         setCompletedSteps(completed);
         
-        // Set current step to the next incomplete step
+        // Set current step to the next incomplete step or the last visited one if it's completed
+        let nextStep: OnboardingStep;
+        
         if (!profile || !profile.company) {
-          setCurrentStep('company-profile');
+          nextStep = 'company-profile';
         } else if (!hasSurveyData) {
-          setCurrentStep('first-survey');
+          nextStep = 'first-survey';
         } else if (!hasCertification) {
-          setCurrentStep('results-calculation');
+          nextStep = 'results-calculation';
         } else {
-          setCurrentStep('certification');
+          nextStep = 'certification';
+        }
+        
+        // If there's a saved step and it's either completed or the next step, use it
+        if (savedStep && (completed.includes(savedStep as OnboardingStep) || savedStep === nextStep)) {
+          setCurrentStep(savedStep as OnboardingStep);
+        } else {
+          setCurrentStep(nextStep);
         }
       } catch (error) {
         console.error('Error checking onboarding progress:', error);
@@ -88,12 +104,15 @@ export const useOnboarding = () => {
     const steps: OnboardingStep[] = ['welcome', 'company-profile', 'first-survey', 'results-calculation', 'certification'];
     const currentIndex = steps.indexOf(currentStep);
     if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
+      const nextStep = steps[currentIndex + 1];
+      setCurrentStep(nextStep);
+      localStorage.setItem('lastOnboardingStep', nextStep);
     }
   };
 
   const goToStep = (step: OnboardingStep) => {
     setCurrentStep(step);
+    localStorage.setItem('lastOnboardingStep', step);
   };
 
   // Calculate overall progress percentage
@@ -108,6 +127,12 @@ export const useOnboarding = () => {
     return completedSteps.includes(step);
   };
 
+  const resetOnboarding = () => {
+    localStorage.removeItem('lastOnboardingStep');
+    setCurrentStep('welcome');
+    // In a real app, you might want to reset the user's progress in the database as well
+  };
+
   return {
     currentStep,
     isLoading,
@@ -117,6 +142,8 @@ export const useOnboarding = () => {
     goToStep,
     completedSteps,
     progressPercentage,
-    isStepCompleted
+    isStepCompleted,
+    resetOnboarding,
+    lastVisitedStep
   };
 };

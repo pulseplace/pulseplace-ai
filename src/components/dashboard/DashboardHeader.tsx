@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { BellRing, PanelLeft, User, ChevronDown, LogOut, Settings } from 'lucide-react';
+import { BellRing, PanelLeft, User, ChevronDown, LogOut, Settings, HelpCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOnboarding } from '@/hooks/useOnboarding';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
@@ -16,6 +17,7 @@ import {
 const DashboardHeader = () => {
   const { toast } = useToast();
   const { user, profile, signOut } = useAuth();
+  const { progressPercentage } = useOnboarding();
   const navigate = useNavigate();
   const [unreadNotifications] = useState(3);
   
@@ -46,6 +48,14 @@ const DashboardHeader = () => {
       });
     }
   };
+
+  const goToOnboarding = () => {
+    navigate('/dashboard');
+    toast({
+      title: "Onboarding",
+      description: "Navigating to onboarding wizard to help you get started",
+    });
+  };
   
   return (
     <header className="bg-white border-b py-4 px-6">
@@ -58,6 +68,18 @@ const DashboardHeader = () => {
         </div>
         
         <div className="flex items-center gap-2 ml-auto">
+          {progressPercentage() < 100 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="mr-2 hidden md:flex items-center gap-2"
+              onClick={goToOnboarding}
+            >
+              <HelpCircle className="h-4 w-4" />
+              Complete Setup ({progressPercentage()}%)
+            </Button>
+          )}
+          
           <Button 
             variant="ghost" 
             size="icon" 
@@ -107,6 +129,11 @@ const DashboardHeader = () => {
                   <span>Settings</span>
                 </DropdownMenuItem>
               </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer" onClick={goToOnboarding}>
+                <HelpCircle className="mr-2 h-4 w-4" />
+                <span>Setup Wizard</span>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>
                 <LogOut className="mr-2 h-4 w-4" />

@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useDashboard } from '@/contexts/DashboardContext';
 import DashboardOverview from '@/components/dashboard/DashboardOverview';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
-import { Download, Loader2 } from 'lucide-react';
+import { AlertTriangle, Download, Loader2, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,7 +16,7 @@ import { ArrowRight } from 'lucide-react';
 const DashboardHome = () => {
   const { user, profile } = useAuth();
   const { hasSurveys, isStepCompleted, progressPercentage, currentStep } = useOnboarding();
-  const { surveys, responses, isLoading, refreshData, stats, error } = useDashboard();
+  const { surveys, responses, isLoading, refreshData, forceRefresh, stats, error } = useDashboard();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const DashboardHome = () => {
     const intervalId = setInterval(() => {
       console.log('Periodic refresh of dashboard data');
       refreshData();
-    }, 30000); // Refresh every 30 seconds
+    }, 60000); // Refresh every 60 seconds
     
     return () => clearInterval(intervalId);
   }, []);
@@ -46,13 +46,17 @@ const DashboardHome = () => {
       <div className="flex flex-col justify-center items-center h-64 space-y-4">
         <Loader2 className="h-8 w-8 animate-spin text-pulse-600" />
         <p className="text-gray-600">Loading your dashboard...</p>
+        <div className="text-sm text-gray-500 mt-2 max-w-md text-center">
+          <p>This may take a moment to load the first time.</p>
+        </div>
         <Button 
           variant="outline" 
           size="sm"
-          onClick={() => refreshData()}
+          onClick={() => forceRefresh()}
           className="mt-4"
         >
-          Retry Loading
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh Data
         </Button>
       </div>
     );
@@ -61,14 +65,21 @@ const DashboardHome = () => {
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center h-64 space-y-4">
-        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-md">
-          <h3 className="font-medium">Error loading dashboard</h3>
+        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-md max-w-md">
+          <div className="flex items-center mb-2">
+            <AlertTriangle className="h-5 w-5 mr-2" />
+            <h3 className="font-medium">Error loading dashboard</h3>
+          </div>
           <p className="text-sm">{error}</p>
+          <p className="text-sm mt-2">
+            Don't worry! We're showing you demo data while we fix this issue.
+          </p>
         </div>
         <Button 
-          onClick={() => refreshData()}
+          onClick={() => forceRefresh()}
           className="mt-4"
         >
+          <RefreshCw className="h-4 w-4 mr-2" />
           Try Again
         </Button>
       </div>

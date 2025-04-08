@@ -16,17 +16,33 @@ interface Message {
   content: string;
 }
 
-interface ChatRequest {
+// Define the request body formats
+interface FullRequestFormat {
   messages: Message[];
   systemPrompt?: string;
   maxTokens?: number;
   userIdentifier?: string;
 }
 
+interface SimpleRequestFormat {
+  message: string;
+  language?: string;
+}
+
+type RequestBody = FullRequestFormat | SimpleRequestFormat;
+
 // Default system prompt as fallback
 const DEFAULT_SYSTEM_PROMPT = `You are PulseBot, the helpful AI assistant for PulsePlace.ai, a platform that helps organizations assess and improve their workplace culture through surveys and certification.
 
 Your role is to assist users with understanding workplace culture assessment, navigating the PulseScore certification process, and using the platform effectively.`;
+
+// Language-specific system prompts
+const LANGUAGE_PROMPTS: Record<string, string> = {
+  en: DEFAULT_SYSTEM_PROMPT,
+  es: `Eres PulseBot, el asistente de IA de PulsePlace.ai, una plataforma que ayuda a las organizaciones a evaluar y mejorar su cultura laboral a través de encuestas y certificación.`,
+  fr: `Vous êtes PulseBot, l'assistant IA de PulsePlace.ai, une plateforme qui aide les organisations à évaluer et à améliorer leur culture de travail par le biais d'enquêtes et de certification.`,
+  de: `Sie sind PulseBot, der KI-Assistent von PulsePlace.ai, einer Plattform, die Organisationen dabei hilft, ihre Arbeitsplatzkultur durch Umfragen und Zertifizierungen zu bewerten und zu verbessern.`
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -36,43 +52,60 @@ serve(async (req) => {
   
   try {
     // Parse request body
-    const { messages, systemPrompt, maxTokens = 500, userIdentifier }: ChatRequest = await req.json();
+    const requestData = await req.json();
     
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Invalid request format. 'messages' array is required." }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // Determine if the request is using the simple format or the full format
+    const isSimpleFormat = "message" in requestData;
+    
+    let messages: Message[] = [];
+    let systemPrompt = DEFAULT_SYSTEM_PROMPT;
+    let maxTokens = 500;
+    let userIdentifier = undefined;
+    
+    if (isSimpleFormat) {
+      // Handle simple format (for testing)
+      const { message, language = "en" } = requestData as SimpleRequestFormat;
+      
+      // Use language-specific system prompt if available
+      systemPrompt = LANGUAGE_PROMPTS[language] || DEFAULT_SYSTEM_PROMPT;
+      
+      // Create a single user message
+      messages = [{ role: "user", content: message }];
+      
+      console.log(`Processing simple request format with message: "${message.substring(0, 50)}..."`);
+    } else {
+      // Handle full format (for production use)
+      const { 
+        messages: requestMessages, 
+        systemPrompt: requestSystemPrompt, 
+        maxTokens: requestMaxTokens,
+        userIdentifier: requestUserIdentifier
+      } = requestData as FullRequestFormat;
+      
+      messages = requestMessages;
+      systemPrompt = requestSystemPrompt || DEFAULT_SYSTEM_PROMPT;
+      maxTokens = requestMaxTokens || 500;
+      userIdentifier = requestUserIdentifier;
+      
+      console.log(`Processing full request format with ${messages.length} messages`);
     }
 
     // Ensure we don't exceed reasonable token limits
-    const safeMaxTokens = Math.min(maxTokens, 1500); // Increase max token limit for analytics
-    
-    // Use provided system prompt or fall back to default
-    const finalSystemPrompt = systemPrompt || DEFAULT_SYSTEM_PROMPT;
+    const safeMaxTokens = Math.min(maxTokens, 1500);
     
     // Add system message if not present
-    let requestMessages = [...messages];
-    if (!requestMessages.some(msg => msg.role === "system")) {
-      requestMessages.unshift({
-        role: "system",
-        content: finalSystemPrompt
-      });
+    if (!messages.some(msg => msg.role === "system")) {
+      messages = [{ role: "system", content: systemPrompt }, ...messages];
     }
 
-    // Log request for debugging
-    console.log(`Processing chat request with ${requestMessages.length} messages`);
-    console.log(`System prompt: ${finalSystemPrompt.substring(0, 100)}...`);
-    
     // Check if OpenAI API key is configured
     if (!OPENAI_API_KEY || OPENAI_API_KEY === "OPENAI_API_KEY") {
       console.log("OpenAI API key is missing or not properly configured");
-      // Provide fallback response instead of throwing an error
       return new Response(
         JSON.stringify({
           message: {
             role: "assistant",
-            content: "I'm currently experiencing technical difficulties connecting to my knowledge base. Please try again later or contact support if this persists. In the meantime, you can explore our documentation at https://pulseplace.ai/help for information about workplace culture assessment and PulseScore certification."
+            content: "I'm currently experiencing technical difficulties connecting to my knowledge base. Please try again later or contact support if this persists."
           }
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -81,7 +114,7 @@ serve(async (req) => {
 
     try {
       // Determine if this is an analytics request
-      const isAnalyticsRequest = finalSystemPrompt.includes('analytics assistant');
+      const isAnalyticsRequest = systemPrompt.includes('analytics assistant');
       
       // Call OpenAI API
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -91,10 +124,10 @@ serve(async (req) => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: isAnalyticsRequest ? "gpt-4o-mini" : "gpt-4o-mini", // Use more capable model for analytics
-          messages: requestMessages,
+          model: isAnalyticsRequest ? "gpt-4o-mini" : "gpt-4o-mini",
+          messages,
           max_tokens: safeMaxTokens,
-          temperature: isAnalyticsRequest ? 0.3 : 0.7, // Lower temperature for analytics for more consistent results
+          temperature: isAnalyticsRequest ? 0.3 : 0.7,
         }),
       });
 
@@ -109,11 +142,11 @@ serve(async (req) => {
       const data = await response.json();
       const assistantMessage = data.choices[0].message;
       
-      // Log the type of request completed
-      if (isAnalyticsRequest) {
-        console.log("Analytics summary generated successfully");
+      // Log request completion
+      if (isSimpleFormat) {
+        console.log(`Simple request processed successfully. Response: "${assistantMessage.content.substring(0, 50)}..."`);
       } else {
-        console.log("Chat response generated successfully");
+        console.log(`Full request processed successfully. User ID: ${userIdentifier || 'anonymous'}`);
       }
       
       return new Response(
@@ -128,7 +161,7 @@ serve(async (req) => {
         JSON.stringify({
           message: {
             role: "assistant",
-            content: "I apologize, but I'm having trouble processing your request right now. Our services might be experiencing high demand or temporary issues. Please try again in a moment."
+            content: "I apologize, but I'm having trouble processing your request right now. Please try again in a moment."
           }
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }

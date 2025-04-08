@@ -1,83 +1,104 @@
 
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from './contexts/AuthContext';
-import { DashboardProvider } from './contexts/DashboardContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { Helmet } from 'react-helmet';
-import DashboardLayout from './layouts/DashboardLayout';
-import DashboardHome from './pages/dashboard/Home';
-import DashboardSurveys from './pages/dashboard/Surveys';
-import ShareCertification from './pages/dashboard/ShareCertification';
-import EmailTemplates from './pages/dashboard/EmailTemplates';
-import CertificationEngine from './pages/dashboard/CertificationEngine';
-import JoinBeta from './pages/JoinBeta';
-import Methodology from './pages/Methodology';
-import Pricing from './pages/Pricing';
-import AIEngine from './pages/AIEngine';
-import AboutUs from './pages/AboutUs';
-import Certification from './pages/Certification';
-import CertificationShowcase from './pages/CertificationShowcase';
-import AIWorkflow from './pages/AIWorkflow';
-import NotFound from './pages/NotFound';
-import StickyCta from './components/StickyCta';
-import FeedbackButton from './components/FeedbackButton';
-import { TaskProvider } from './contexts/TaskContext';
-import MetaTags from './components/MetaTags';
-import Home from './pages/Home';
-import DashboardPreview from './pages/DashboardPreview';
-import ROICalculator from './pages/ROICalculator';
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import './App.css';
+import { Toaster } from "@/components/ui/sonner";
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { DashboardProvider } from '@/contexts/DashboardContext';
+import { TaskProvider } from '@/contexts/TaskContext';
+import LoadingState from '@/components/dashboard/admin/components/LoadingState';
+
+// Layout
+const DashboardLayout = lazy(() => import('@/layouts/DashboardLayout'));
+
+// Public Pages
+const Home = lazy(() => import('@/pages/Home'));
+const Pricing = lazy(() => import('@/pages/Pricing'));
+const Demo = lazy(() => import('@/pages/Demo'));
+const AboutUs = lazy(() => import('@/pages/AboutUs'));
+const Certification = lazy(() => import('@/pages/Certification'));
+const CertificationShowcase = lazy(() => import('@/pages/CertificationShowcase'));
+const JoinBeta = lazy(() => import('@/pages/JoinBeta'));
+const DashboardPreview = lazy(() => import('@/pages/DashboardPreview'));
+const PrivacyPolicy = lazy(() => import('@/pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('@/pages/TermsOfService'));
+const Auth = lazy(() => import('@/pages/Auth'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
+const Methodology = lazy(() => import('@/pages/Methodology'));
+const ROICalculator = lazy(() => import('@/pages/ROICalculator'));
+const AIWorkflow = lazy(() => import('@/pages/AIWorkflow'));
+const AIEngine = lazy(() => import('@/pages/AIEngine'));
+
+// Dashboard Pages
+const DashboardHome = lazy(() => import('@/pages/dashboard/Home'));
+const Surveys = lazy(() => import('@/pages/dashboard/Surveys'));
+const ShareCertification = lazy(() => import('@/pages/dashboard/ShareCertification'));
+const ScoringLogic = lazy(() => import('@/pages/dashboard/ScoringLogic'));
+const ProfileSettings = lazy(() => import('@/pages/dashboard/ProfileSettings'));
+const CertificationEngine = lazy(() => import('@/pages/dashboard/CertificationEngine'));
+const EmailTemplates = lazy(() => import('@/pages/dashboard/EmailTemplates'));
+const TeamAdmin = lazy(() => import('@/pages/dashboard/TeamAdmin'));
+const BulkTeamUpload = lazy(() => import('@/pages/dashboard/BulkTeamUpload'));
+const LLMInsights = lazy(() => import('@/pages/dashboard/LLMInsights'));
 
 function App() {
-  const queryClient = new QueryClient();
-
   return (
-    <BrowserRouter>
+    <ThemeProvider>
       <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <DashboardProvider>
-            <ThemeProvider>
-              <TaskProvider>
-                <MetaTags />
-                <Helmet>
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                </Helmet>
+        <DashboardProvider>
+          <TaskProvider>
+            <BrowserRouter>
+              <Suspense fallback={<LoadingState />}>
                 <Routes>
-                  {/* Public Routes */}
                   <Route path="/" element={<Home />} />
-                  <Route path="/join-beta" element={<JoinBeta />} />
-                  <Route path="/methodology" element={<Methodology />} />
                   <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/ai-engine" element={<AIEngine />} />
-                  <Route path="/how-ai-works" element={<AIWorkflow />} />
-                  <Route path="/about-us" element={<AboutUs />} />
+                  <Route path="/demo" element={<Demo />} />
+                  <Route path="/about" element={<AboutUs />} />
                   <Route path="/certification" element={<Certification />} />
-                  <Route path="/showcase" element={<CertificationShowcase />} />
-                  <Route path="/certified" element={<Navigate to="/showcase" replace />} />
-                  <Route path="/dashboard-preview" element={<DashboardPreview />} />
+                  <Route path="/certified-companies" element={<CertificationShowcase />} />
+                  <Route path="/join-beta" element={<JoinBeta />} />
+                  <Route path="/preview-dashboard" element={<DashboardPreview />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms-of-service" element={<TermsOfService />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/methodology" element={<Methodology />} />
                   <Route path="/roi-calculator" element={<ROICalculator />} />
+                  <Route path="/ai-workflow" element={<AIWorkflow />} />
+                  <Route path="/ai-engine" element={<AIEngine />} />
                   
                   {/* Dashboard Routes */}
-                  <Route path="/dashboard" element={<DashboardLayout />}>
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <DashboardLayout />
+                      </ProtectedRoute>
+                    }
+                  >
                     <Route index element={<DashboardHome />} />
-                    <Route path="surveys" element={<DashboardSurveys />} />
-                    <Route path="share-certification" element={<ShareCertification />} />
-                    <Route path="email-templates" element={<EmailTemplates />} />
+                    <Route path="surveys" element={<Surveys />} />
+                    <Route path="share" element={<ShareCertification />} />
+                    <Route path="scoring" element={<ScoringLogic />} />
                     <Route path="certification-engine" element={<CertificationEngine />} />
+                    <Route path="profile" element={<ProfileSettings />} />
+                    <Route path="email-templates" element={<EmailTemplates />} />
+                    <Route path="team-admin" element={<TeamAdmin />} />
+                    <Route path="bulk-upload" element={<BulkTeamUpload />} />
+                    <Route path="llm-insights" element={<LLMInsights />} />
                   </Route>
                   
-                  {/* Not Found Route */}
+                  {/* 404 - Not Found */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-                <StickyCta />
-                <FeedbackButton />
-              </TaskProvider>
-            </ThemeProvider>
-          </DashboardProvider>
-        </QueryClientProvider>
+              </Suspense>
+            </BrowserRouter>
+            <Toaster position="top-right" />
+          </TaskProvider>
+        </DashboardProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

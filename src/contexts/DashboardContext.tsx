@@ -45,14 +45,44 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
     employeesEngaged: 0,
     insightsGenerated: 0
   });
+  
+  // Add a timeout to prevent infinite loading state
+  useEffect(() => {
+    // If loading continues for more than 10 seconds, force it to stop loading
+    const timeoutId = setTimeout(() => {
+      if (isLoading) {
+        console.log('Force ending loading state after timeout');
+        setIsLoading(false);
+        
+        // Set some default data if needed
+        if (surveys.length === 0) {
+          setSurveys([]);
+          setResponses([]);
+          setStats({
+            pulseScore: 0,
+            responseRate: 0,
+            employeesEngaged: 0,
+            insightsGenerated: 0
+          });
+        }
+      }
+    }, 10000); // 10 second timeout
+    
+    return () => clearTimeout(timeoutId);
+  }, [isLoading, surveys.length]);
 
   const fetchDashboardData = async () => {
-    if (!user) return;
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
 
     try {
+      console.log('Fetching dashboard data...');
+      
       // Fetch surveys
       const { data: surveysData, error: surveysError } = await supabase
         .from('pulse_surveys')
@@ -60,6 +90,7 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
         .order('created_at', { ascending: false });
 
       if (surveysError) throw surveysError;
+      console.log('Surveys data fetched:', surveysData?.length || 0, 'surveys');
       setSurveys(surveysData || []);
 
       // Fetch responses
@@ -80,6 +111,7 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
         .order('created_at', { ascending: false });
 
       if (responsesError) throw responsesError;
+      console.log('Responses data fetched:', responsesData?.length || 0, 'responses');
       setResponses(responsesData || []);
 
       // Calculate stats
@@ -93,17 +125,22 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
         }
       });
 
-      setStats({
+      // Calculate and set stats
+      const calculatedStats = {
         pulseScore: scoreCount > 0 ? Math.round(totalPulseScore / scoreCount) : 0,
         responseRate: calculateResponseRate(surveysData, responsesData),
         employeesEngaged: new Set(responsesData?.map(r => r.user_id) || []).size,
         insightsGenerated: Math.min(responsesData?.length * 2 || 0, 30) // Mock value for insights
-      });
+      };
+      
+      console.log('Stats calculated:', calculatedStats);
+      setStats(calculatedStats);
     } catch (err: any) {
       console.error('Error fetching dashboard data:', err);
       setError(err.message || 'Failed to load dashboard data');
       toast.error('Failed to load dashboard data');
     } finally {
+      console.log('Finished fetching dashboard data, setting isLoading to false');
       setIsLoading(false);
     }
   };
@@ -119,8 +156,15 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
     return Math.min(Math.round((actualResponses / Math.max(estimatedInvitations, 1)) * 100), 100);
   };
 
+  // Initialize data when user changes
   useEffect(() => {
-    fetchDashboardData();
+    console.log('User changed, fetching dashboard data...');
+    if (user) {
+      fetchDashboardData();
+    } else {
+      // If no user, don't try to fetch data but make sure we're not in loading state
+      setIsLoading(false);
+    }
   }, [user]);
 
   const value = {

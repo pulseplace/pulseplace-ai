@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -5,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 import { emailService } from '@/services/emailService';
 import { insightsService } from '@/services/insightsService';
+import { teamAdminService, TeamMember } from '@/services/teamAdminService';
 import TeamAdminFilters from './admin/TeamAdminFilters';
 import TeamSummaryStats from './admin/TeamSummaryStats';
 import LoadingDashboard from './admin/LoadingDashboard';
@@ -18,15 +20,6 @@ import { supabase } from '@/integrations/supabase/client';
 const DEMO_DEPARTMENTS = [
   "All Departments", "Engineering", "Marketing", "Sales", "Customer Support", "Human Resources"
 ];
-
-interface TeamMember {
-  id: string;
-  name: string;
-  email: string;
-  department: string;
-  surveyStatus: 'completed' | 'pending' | 'not_sent';
-  lastActive: string;
-}
 
 const TeamAdminDashboard: React.FC = () => {
   const { toast } = useToast();
@@ -66,53 +59,13 @@ const TeamAdminDashboard: React.FC = () => {
     setError(null);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Fetch team members from Supabase
+      const members = await teamAdminService.getTeamMembers(department);
+      setTeamMembers(members);
       
-      const mockTeamMembers: TeamMember[] = [];
-      const departments = department === 'All Departments' 
-        ? DEMO_DEPARTMENTS.filter(d => d !== 'All Departments') 
-        : [department];
-      
-      departments.forEach(dept => {
-        const memberCount = Math.floor(Math.random() * 10) + 5;
-        for (let i = 0; i < memberCount; i++) {
-          mockTeamMembers.push({
-            id: `user-${dept}-${i}`,
-            name: `Team Member ${i+1}`,
-            email: `employee${i+1}@tayanasolutions.com`,
-            department: dept,
-            surveyStatus: ['completed', 'pending', 'not_sent'][Math.floor(Math.random() * 3)] as any,
-            lastActive: `${Math.floor(Math.random() * 24)} hours ago`
-          });
-        }
-      });
-      
-      setTeamMembers(mockTeamMembers);
-      
-      const completed = mockTeamMembers.filter(m => m.surveyStatus === 'completed').length;
-      const pending = mockTeamMembers.filter(m => m.surveyStatus === 'pending').length;
-      const participationRate = Math.round((completed / mockTeamMembers.length) * 100);
-      
-      const baseScore = 65 + Math.floor(Math.random() * 20);
-      const themeScores = [
-        { theme: "Trust & Safety", score: baseScore + Math.floor(Math.random() * 15) },
-        { theme: "Engagement", score: baseScore - 5 + Math.floor(Math.random() * 15) },
-        { theme: "Culture", score: baseScore + 2 + Math.floor(Math.random() * 15) },
-        { theme: "Growth & Development", score: baseScore - 8 + Math.floor(Math.random() * 15) },
-        { theme: "Wellbeing", score: baseScore + 5 + Math.floor(Math.random() * 15) },
-      ];
-      
-      const averageScore = Math.round(
-        themeScores.reduce((sum, theme) => sum + theme.score, 0) / themeScores.length
-      );
-      
-      setSummaryStats({
-        participationRate,
-        averageScore,
-        completedSurveys: completed,
-        pendingSurveys: pending,
-        themeScores
-      });
+      // Fetch summary stats
+      const stats = await teamAdminService.getSummaryStats(department, pulseTheme, dateRange);
+      setSummaryStats(stats);
       
       try {
         if (!insights) {
@@ -149,20 +102,17 @@ const TeamAdminDashboard: React.FC = () => {
     }
   };
   
-  const handleExportCSV = () => {
-    toast({
-      title: "Export Started",
-      description: "Your CSV export is being prepared and will download shortly.",
-    });
-    
-    setTimeout(() => {
-      const csvHeader = "Name,Email,Department,Status,Last Active\n";
-      const csvRows = teamMembers.map(member => 
-        `"${member.name}","${member.email}","${member.department}","${member.surveyStatus}","${member.lastActive}"`
-      ).join("\n");
-      const csvContent = csvHeader + csvRows;
+  const handleExportCSV = async () => {
+    setIsRefreshing(true);
+    try {
+      const result = await teamAdminService.exportTeamDataCSV(department);
       
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      if (!result.success || !result.data) {
+        throw new Error(result.error || 'Failed to export CSV');
+      }
+      
+      // Create and download the CSV file
+      const blob = new Blob([result.data], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
@@ -171,7 +121,21 @@ const TeamAdminDashboard: React.FC = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    }, 1000);
+      
+      toast({
+        title: "Export Completed",
+        description: "Your CSV export has been downloaded.",
+      });
+    } catch (error: any) {
+      console.error('Error exporting CSV:', error);
+      toast({
+        title: "Export Failed",
+        description: error.message || "Failed to export data to CSV",
+        variant: "destructive"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
   };
   
   const handleExportPDF = () => {
@@ -201,27 +165,25 @@ const TeamAdminDashboard: React.FC = () => {
     
     setIsRefreshing(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const pendingMemberIds = pendingMembers.map(m => m.id);
+      const result = await teamAdminService.sendReminders(pendingMemberIds);
       
-      pendingMembers.forEach(async (member) => {
-        await emailService.sendEmail({
-          to: member.email,
-          subject: "Reminder: Complete Your Pulse Survey",
-          html: `<p>Dear ${member.name},</p><p>This is a friendly reminder to complete the pulse survey. Your feedback is valuable!</p>`,
-          fromName: "PulsePlace.ai",
-          fromEmail: "noreply@pulseplace.ai"
-        });
-      });
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to send reminders');
+      }
       
       toast({
         title: "Reminders Sent",
-        description: `Sent survey reminders to ${pendingMembers.length} team members.`,
+        description: `Sent survey reminders to ${result.count} team members.`,
       });
-    } catch (error) {
+      
+      // Refresh data to show updated status
+      await loadDashboardData();
+    } catch (error: any) {
       console.error('Error sending reminders:', error);
       toast({
         title: "Error",
-        description: "Failed to send survey reminders. Please try again.",
+        description: error.message || "Failed to send survey reminders. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -255,7 +217,14 @@ const TeamAdminDashboard: React.FC = () => {
     
     setIsRefreshing(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Generate certification in database
+      const certResult = await teamAdminService.generateCertification(
+        department === 'All Departments' ? 'Tayana Solutions' : department
+      );
+      
+      if (!certResult.success) {
+        throw new Error(certResult.error || 'Failed to generate certification');
+      }
       
       const certificateHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -312,11 +281,11 @@ const TeamAdminDashboard: React.FC = () => {
         title: "Certificate Sent",
         description: "The certification email has been sent successfully.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending certificate:', error);
       toast({
         title: "Error",
-        description: "Failed to send certification email. Please try again.",
+        description: error.message || "Failed to send certification email. Please try again.",
         variant: "destructive"
       });
     } finally {

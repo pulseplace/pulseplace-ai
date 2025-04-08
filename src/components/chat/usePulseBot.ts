@@ -1,7 +1,8 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Message, SessionInfo, BotAvatarState } from './types';
+import { Message, SessionInfo, BotAvatarState, SearchState } from './types';
 import { pulseAssistantConfig } from '@/config/chatbot-config';
 
 export const usePulseBot = () => {
@@ -21,6 +22,13 @@ export const usePulseBot = () => {
   ]);
   const [botAvatarState, setBotAvatarState] = useState<BotAvatarState>('idle');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Search state
+  const [search, setSearch] = useState<SearchState>({
+    query: '',
+    isSearching: false,
+    results: []
+  });
   
   // Available languages
   const languages = [
@@ -57,6 +65,15 @@ export const usePulseBot = () => {
 
   const sendMessage = async (input: string) => {
     if (!input.trim() || loading) return;
+    
+    // Clear search if active
+    if (search.isSearching) {
+      setSearch({
+        query: '',
+        isSearching: false,
+        results: []
+      });
+    }
     
     // Add user message
     const userMessageId = `user_${Date.now()}`;
@@ -182,6 +199,37 @@ export const usePulseBot = () => {
     }
   };
 
+  // Search functionality
+  const handleSearch = (query: string) => {
+    setSearch(prev => ({
+      ...prev,
+      query,
+      isSearching: query.trim().length > 0
+    }));
+    
+    if (query.trim()) {
+      const searchTerms = query.trim().toLowerCase();
+      const results = messages.filter(message => 
+        message.content.toLowerCase().includes(searchTerms)
+      );
+      
+      setSearch(prev => ({
+        ...prev,
+        results
+      }));
+    } else {
+      clearSearch();
+    }
+  };
+  
+  const clearSearch = () => {
+    setSearch({
+      query: '',
+      isSearching: false,
+      results: []
+    });
+  };
+
   const toggleChat = () => setOpen(!open);
 
   return {
@@ -195,6 +243,9 @@ export const usePulseBot = () => {
     sendMessage,
     handleFeedback,
     handleLanguageChange,
-    toggleChat
+    toggleChat,
+    search,
+    handleSearch,
+    clearSearch
   };
 };

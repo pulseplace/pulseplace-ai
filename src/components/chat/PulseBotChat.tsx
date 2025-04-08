@@ -6,6 +6,7 @@ import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/comp
 import { ChatBubble } from './ChatBubble';
 import { ChatInputBox } from './ChatInputBox';
 import { ChatHeader } from './ChatHeader';
+import { SearchBar } from './SearchBar';
 import { usePulseBot } from './usePulseBot';
 
 export default function PulseBotChat() {
@@ -20,8 +21,14 @@ export default function PulseBotChat() {
     sendMessage,
     handleFeedback,
     handleLanguageChange,
-    toggleChat
+    toggleChat,
+    search,
+    handleSearch,
+    clearSearch
   } = usePulseBot();
+
+  // Determine which messages to display: search results or all messages
+  const displayMessages = search.isSearching ? search.results : messages;
 
   return (
     <>
@@ -70,9 +77,24 @@ export default function PulseBotChat() {
           onClose={toggleChat}
         />
 
+        {/* Search bar */}
+        <SearchBar 
+          query={search.query} 
+          isSearching={search.isSearching}
+          resultCount={search.results.length}
+          onSearch={handleSearch}
+          onClearSearch={clearSearch}
+        />
+
         {/* Messages */}
-        <div className="flex-1 p-3 overflow-y-auto space-y-3 max-h-[350px]">
-          {messages.map((msg, i) => (
+        <div className="flex-1 p-3 overflow-y-auto space-y-3 max-h-[300px]">
+          {search.isSearching && search.results.length === 0 && search.query && (
+            <div className="text-center py-4 text-gray-500">
+              No messages found matching "{search.query}"
+            </div>
+          )}
+          
+          {displayMessages.map((msg, i) => (
             <ChatBubble 
               key={msg.id} 
               message={msg} 

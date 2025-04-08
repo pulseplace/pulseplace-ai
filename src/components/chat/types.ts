@@ -13,3 +13,9 @@ export interface SessionInfo {
 }
 
 export type BotAvatarState = 'idle' | 'typing' | 'happy' | 'thinking';
+
+export interface SearchState {
+  query: string;
+  isSearching: boolean;
+  results: Message[];
+}

@@ -22,19 +22,19 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
     // Parse request body
-    const { message, feedbackType, userIdentifier } = await req.json();
+    const { message, feedback_type, user_identifier } = await req.json();
     
-    if (!message || !feedbackType) {
+    if (!message || !feedback_type) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields: message and feedbackType" }),
+        JSON.stringify({ error: "Missing required fields: message and feedback_type" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
     
     // Validate feedback type
-    if (feedbackType !== 'up' && feedbackType !== 'down') {
+    if (feedback_type !== 'up' && feedback_type !== 'down') {
       return new Response(
-        JSON.stringify({ error: "feedbackType must be 'up' or 'down'" }),
+        JSON.stringify({ error: "feedback_type must be 'up' or 'down'" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -44,13 +44,13 @@ serve(async (req) => {
       .from('pulsebot_feedback')
       .insert({
         message,
-        feedback_type: feedbackType,
-        user_identifier: userIdentifier || null
+        feedback_type,
+        user_identifier: user_identifier || null
       });
     
     if (error) throw error;
     
-    console.log('Feedback logged successfully:', { message, feedbackType, userIdentifier });
+    console.log('Feedback logged successfully:', { message, feedback_type, user_identifier });
     
     return new Response(
       JSON.stringify({ success: true, message: "Feedback logged successfully" }),

@@ -10,9 +10,16 @@ import { useForm } from "react-hook-form";
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { createSurvey } from '@/services/surveyService';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, HelpCircle } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import FormFieldWithValidation from "@/components/ui/form-field-with-validation";
+import { Switch } from "@/components/ui/switch";
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Enhanced validation schema with detailed error messages
 const surveySchema = z.object({
@@ -25,6 +32,7 @@ const surveySchema = z.object({
   department: z.string()
     .max(100, { message: "Department must be less than 100 characters" })
     .optional(),
+  is_anonymous: z.boolean().default(true)
 });
 
 const SurveyForm = () => {
@@ -40,6 +48,7 @@ const SurveyForm = () => {
       title: "",
       description: "",
       department: profile?.department || "",
+      is_anonymous: true
     },
   });
 
@@ -64,6 +73,7 @@ const SurveyForm = () => {
         title: values.title,
         description: values.description,
         department: values.department,
+        is_anonymous: values.is_anonymous
       });
 
       toast.success('Survey created successfully!');
@@ -119,6 +129,48 @@ const SurveyForm = () => {
               description="Leave blank for company-wide surveys"
               placeholder="Engineering"
             />
+            
+            <div className="flex items-center justify-between space-x-2 py-4">
+              <div className="flex items-center space-x-2">
+                <FormField
+                  control={form.control}
+                  name="is_anonymous"
+                  render={({ field }) => (
+                    <div className="flex flex-col space-y-1">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="anonymous-mode"
+                        />
+                        <label 
+                          htmlFor="anonymous-mode" 
+                          className="text-sm font-medium leading-none cursor-pointer"
+                        >
+                          Enable Anonymous Feedback?
+                        </label>
+                        
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-4 w-4 text-gray-400" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p>When enabled, employee responses will not be linked to their identity. This promotes open and honest feedback.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {field.value 
+                          ? "Responses will be anonymous. No identifying information will be stored." 
+                          : "Responses will be linked to employee identities."}
+                      </p>
+                    </div>
+                  )}
+                />
+              </div>
+            </div>
             
             <div className="flex justify-end space-x-2 pt-4">
               <Button 

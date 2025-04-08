@@ -7,6 +7,7 @@ export interface Survey {
   title: string;
   description: string;
   is_active: boolean;
+  is_anonymous: boolean;
   created_at: string;
   updated_at: string;
   questions: any[];
@@ -15,7 +16,7 @@ export interface Survey {
 export interface SurveyResponse {
   id?: string;
   surveyId: string;
-  userId: string;
+  userId?: string | null;
   responses: Record<string, any>;
   createdAt?: string;
 }
@@ -24,6 +25,7 @@ export interface CreateSurveyParams {
   title: string;
   description?: string;
   department?: string;
+  is_anonymous?: boolean;
 }
 
 export const surveyService = {
@@ -62,7 +64,7 @@ export const surveyService = {
   
   async createSurvey(params: CreateSurveyParams): Promise<{ success: boolean; id?: string; error?: string }> {
     try {
-      const { title, description = '', department = null } = params;
+      const { title, description = '', department = null, is_anonymous = true } = params;
       
       const defaultQuestions = [
         {
@@ -95,6 +97,7 @@ export const surveyService = {
           description,
           department,
           is_active: true,
+          is_anonymous,
           questions: defaultQuestions,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -123,53 +126,65 @@ export const surveyService = {
     error?: string;
   }> {
     try {
-      console.log(`Processing survey response for user ${response.userId} and survey ${response.surveyId}`);
+      const { surveyId, userId, responses } = response;
       
-      if (!response.userId || !response.surveyId) {
-        throw new Error('User ID and Survey ID are required');
-      }
+      console.log(`Processing survey response for survey ${surveyId}`);
+      
+      // First, get the survey to check if it's anonymous
+      const { data: surveyData, error: surveyError } = await supabase
+        .from('pulse_surveys')
+        .select('is_anonymous')
+        .eq('id', surveyId)
+        .single();
+      
+      if (surveyError) throw surveyError;
+      
+      // For anonymous surveys, don't store the user ID
+      const userIdToStore = surveyData.is_anonymous ? null : userId;
       
       // Process the survey response to calculate pulse scores and sentiment
       const processedResponse = await teamAdminService.processSurveyResponse(
-        response.surveyId,
-        response.userId,
-        response.responses
+        surveyId,
+        userIdToStore,
+        responses
       );
       
       console.log(`Survey processed successfully. Overall score: ${processedResponse.overallScore}`);
       
-      // Update the user's survey status to 'completed'
-      await this.updateTeamMemberSurveyStatus(response.userId, 'completed');
-      
-      // Check if the department qualifies for certification based on this new response
-      try {
-        // Get the department for this user
-        const { data: userData, error: userError } = await supabase
-          .from('team_members')
-          .select('department')
-          .eq('user_id', response.userId)
-          .single();
+      // If not anonymous and we have a user ID, update their survey status
+      if (!surveyData.is_anonymous && userId) {
+        await this.updateTeamMemberSurveyStatus(userId, 'completed');
         
-        if (!userError && userData && userData.department) {
-          console.log(`Checking certification eligibility for department: ${userData.department}`);
+        // Check if the department qualifies for certification based on this new response
+        try {
+          // Get the department for this user
+          const { data: userData, error: userError } = await supabase
+            .from('team_members')
+            .select('department')
+            .eq('user_id', userId)
+            .single();
           
-          // Check if department qualifies for certification
-          const departmentStats = await teamAdminService.getSummaryStats(userData.department);
-          
-          // If average score is high enough and participation rate is adequate, generate certification
-          if (departmentStats.averageScore >= 80 && departmentStats.participationRate >= 50) {
-            console.log(`Department ${userData.department} qualifies for certification with score ${departmentStats.averageScore}`);
+          if (!userError && userData && userData.department) {
+            console.log(`Checking certification eligibility for department: ${userData.department}`);
             
-            // Generate certification (this will also send the email)
-            const certResult = await teamAdminService.generateCertification(userData.department);
-            console.log(`Certification result:`, certResult);
-          } else {
-            console.log(`Department ${userData.department} does not yet qualify for certification. Score: ${departmentStats.averageScore}, Participation: ${departmentStats.participationRate}%`);
+            // Check if department qualifies for certification
+            const departmentStats = await teamAdminService.getSummaryStats(userData.department);
+            
+            // If average score is high enough and participation rate is adequate, generate certification
+            if (departmentStats.averageScore >= 80 && departmentStats.participationRate >= 50) {
+              console.log(`Department ${userData.department} qualifies for certification with score ${departmentStats.averageScore}`);
+              
+              // Generate certification (this will also send the email)
+              const certResult = await teamAdminService.generateCertification(userData.department);
+              console.log(`Certification result:`, certResult);
+            } else {
+              console.log(`Department ${userData.department} does not yet qualify for certification. Score: ${departmentStats.averageScore}, Participation: ${departmentStats.participationRate}%`);
+            }
           }
+        } catch (certError) {
+          console.error('Error checking certification eligibility:', certError);
+          // Don't fail the submission if certification check fails
         }
-      } catch (certError) {
-        console.error('Error checking certification eligibility:', certError);
-        // Don't fail the submission if certification check fails
       }
       
       return {

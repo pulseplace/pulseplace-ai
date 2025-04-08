@@ -22,6 +22,7 @@ import CertificationShowcase from './pages/CertificationShowcase';
 import AIWorkflow from './pages/AIWorkflow';
 import NotFound from './pages/NotFound';
 import StickyCta from './components/StickyCta';
+import FeedbackButton from './components/FeedbackButton';
 import { TaskProvider } from './contexts/TaskContext';
 import MetaTags from './components/MetaTags';
 import Home from './pages/Home';
@@ -66,6 +67,7 @@ function App() {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <StickyCta />
+                <FeedbackButton />
               </TaskProvider>
             </ThemeProvider>
           </DashboardProvider>

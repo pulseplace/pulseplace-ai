@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import FeatureSection from '@/components/FeatureSection';
+import HowItWorks from '@/components/HowItWorks';
 import { Button } from "@/components/ui/button";
 import { BrandMessage } from '@/components/BrandMessage';
 import MetaTags from '@/components/MetaTags';
@@ -107,70 +108,7 @@ const Home = () => {
       <FeatureSection />
 
       {/* How It Works Section */}
-      <section className="py-16 bg-gray-50 px-4" id="how-it-works">
-        <div className="container mx-auto max-w-5xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              From Pulse to Certification
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              The Journey to Greatness, Quantified.
-            </p>
-          </div>
-          
-          <div className="space-y-8 max-w-3xl mx-auto">
-            <div className="flex items-start gap-4 bg-white p-6 rounded-lg shadow-sm">
-              <div className="bg-pulse-gradient rounded-full p-2 flex-shrink-0">
-                <PlayCircle className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-lg">Employees respond to an anonymous pulse survey</h3>
-                <p className="text-gray-600">Quick, thoughtful questions that respect people's time while capturing real sentiment</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-4 bg-white p-6 rounded-lg shadow-sm">
-              <div className="bg-pulse-gradient rounded-full p-2 flex-shrink-0">
-                <MessageSquare className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-lg">Our AI analyzes sentiment, emotion, and themes</h3>
-                <p className="text-gray-600">Advanced machine learning uncovers patterns humans might miss</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-4 bg-white p-6 rounded-lg shadow-sm">
-              <div className="bg-pulse-gradient rounded-full p-2 flex-shrink-0">
-                <BarChart2 className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-lg">You receive your PulseScore™</h3>
-                <p className="text-gray-600">A comprehensive metric showing where your workplace culture stands</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-4 bg-white p-6 rounded-lg shadow-sm">
-              <div className="bg-pulse-gradient rounded-full p-2 flex-shrink-0">
-                <CheckCircle2 className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-lg">If you meet the standard, you get Certified by PulsePlace™</h3>
-                <p className="text-gray-600">Showcase your achievement with our recognized certification badge</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-4 bg-white p-6 rounded-lg shadow-sm">
-              <div className="bg-pulse-gradient rounded-full p-2 flex-shrink-0">
-                <TrendingUp className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-lg">Insights + benchmarks help you grow stronger over time</h3>
-                <p className="text-gray-600">Continuous improvement with actionable recommendations</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
 
       {/* CTA Section */}
       <section className="py-20 px-4" id="join-beta">
@@ -191,7 +129,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Optional Founder's Note Section */}
+      {/* Founder's Note Section */}
       <section className="py-16 bg-gray-50 px-4">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-8">

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import DashboardSidebar from './DashboardSidebar';
+import { DashboardSidebar } from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
 import DashboardOverview from './DashboardOverview';
 import TeamPulseTrends from './TeamPulseTrends';

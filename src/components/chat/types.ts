@@ -1,3 +1,4 @@
+
 export type Role = 'user' | 'bot';
 
 export interface Message {
@@ -8,7 +9,7 @@ export interface Message {
   disliked?: boolean;
 }
 
-export type BotAvatarState = 'idle' | 'thinking' | 'happy';
+export type BotAvatarState = 'idle' | 'thinking' | 'typing' | 'happy';
 
 export interface SessionInfo {
   id: string;

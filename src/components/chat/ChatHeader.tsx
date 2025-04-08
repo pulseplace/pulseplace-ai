@@ -29,7 +29,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           className={cn(
             "w-8 h-8 rounded-full flex items-center justify-center",
             botAvatarState === 'idle' ? "bg-gray-600" : 
-            botAvatarState === 'thinking' ? "bg-yellow-500" : 
+            botAvatarState === 'thinking' || botAvatarState === 'typing' ? "bg-yellow-500" : 
             "bg-green-500"
           )}
         >

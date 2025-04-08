@@ -1,56 +1,38 @@
 
 import { useState } from 'react';
-import { toast } from '@/hooks/use-toast';
-import { Message, BotAvatarState } from '../types';
+import { useToast } from '@/hooks/use-toast';
+import { Message } from '../types';
 import { logFeedback } from '../services';
 
-export const useFeedback = (
-  messages: Message[], 
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
-  sessionId: string
-) => {
-  const [botAvatarState, setBotAvatarState] = useState<BotAvatarState>('idle');
-
-  const handleFeedback = (index: number, messageId: string, content: string, isLike: boolean) => {
-    // Update UI state
-    setMessages(prev => 
-      prev.map((msg, i) => {
-        if (i === index) {
-          // If already liked/disliked, toggle off
-          if (isLike && msg.liked) {
-            return { ...msg, liked: false, disliked: false };
-          }
-          if (!isLike && msg.disliked) {
-            return { ...msg, liked: false, disliked: false };
-          }
-          // Otherwise set new state
-          return {
-            ...msg,
-            liked: isLike,
-            disliked: !isLike
-          };
-        }
-        return msg;
-      })
-    );
+export const useFeedback = (sessionId: string) => {
+  const { toast } = useToast();
+  const [voteStatus, setVoteStatus] = useState<Record<string, 'up' | 'down' | null>>({});
+  
+  const handleFeedback = async (messageId: string, message: Message, feedback: 'up' | 'down') => {
+    // Record the vote locally
+    setVoteStatus(prev => ({
+      ...prev,
+      [messageId]: feedback
+    }));
     
-    // Log feedback to Supabase
-    const feedbackType = isLike ? 'up' : 'down';
-    logFeedback(messageId, content, feedbackType, sessionId);
+    // Show toast based on feedback
+    if (feedback === 'up') {
+      toast({
+        description: "Thanks for your positive feedback!",
+      });
+    } else {
+      toast({
+        description: "We'll work to improve our responses. Thanks for the feedback.",
+      });
+    }
     
-    // Show thank you state briefly
-    setBotAvatarState('happy');
-    setTimeout(() => setBotAvatarState('idle'), 2000);
-    
-    toast({
-      description: `Thank you for your feedback!`,
-      duration: 2000,
-    });
+    try {
+      // Log the feedback to the server
+      await logFeedback(sessionId, messageId, feedback, message.content);
+    } catch (error) {
+      console.error('Error logging feedback:', error);
+    }
   };
-
-  return {
-    botAvatarState,
-    setBotAvatarState,
-    handleFeedback
-  };
+  
+  return { voteStatus, handleFeedback };
 };

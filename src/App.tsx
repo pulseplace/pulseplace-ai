@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
@@ -66,6 +65,7 @@ function App() {
                     <Route path="/about-us" element={<Navigate to="/about" replace />} />
                     <Route path="/join-beta" element={<JoinBeta />} />
                     <Route path="/preview-dashboard" element={<DashboardPreview />} />
+                    <Route path="/dashboard-preview" element={<Navigate to="/preview-dashboard" replace />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-of-service" element={<TermsOfService />} />
                     <Route path="/auth" element={<Auth />} />

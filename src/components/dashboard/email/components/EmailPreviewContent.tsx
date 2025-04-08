@@ -75,11 +75,8 @@ const EmailPreviewContent: React.FC<EmailPreviewContentProps> = ({
         </div>
         
         <div className="text-center">
-          <span className="inline-block px-3 py-1 rounded-full text-sm font-medium" 
-            style={{
-              backgroundColor: tierInfo.bgColor,
-              color: tierInfo.textColor
-            }}>
+          <span 
+            className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${tierInfo.color}`}>
             {certificationLevel}
           </span>
         </div>

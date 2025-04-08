@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DashboardSidebar } from './DashboardSidebar';
@@ -15,6 +14,7 @@ import { Link } from "react-router-dom";
 
 const DashboardUI = () => {
   const { toast } = useToast();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   const handleDownloadBadge = () => {
     toast({
@@ -33,7 +33,7 @@ const DashboardUI = () => {
   return (
     <Card className="overflow-hidden border-2 border-gray-200 shadow-xl">
       <div className="flex flex-col md:flex-row">
-        <DashboardSidebar />
+        <DashboardSidebar isCollapsed={sidebarCollapsed} />
         <div className="flex flex-col flex-grow overflow-y-auto">
           <DashboardHeader />
           <div className="p-6">

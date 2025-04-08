@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
@@ -11,6 +11,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Check for certification-related paths to provide contextual help
   React.useEffect(() => {
@@ -31,9 +32,13 @@ const DashboardLayout = () => {
     }
   }, [location.pathname, toast]);
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
-      <DashboardSidebar />
+      <DashboardSidebar isCollapsed={sidebarCollapsed} />
       <div className="flex flex-col flex-1 overflow-hidden">
         <DashboardHeader />
         <main className="flex-1 overflow-y-auto p-6">

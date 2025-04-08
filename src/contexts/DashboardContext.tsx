@@ -63,6 +63,7 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
         
         // Set some mock data for demo purposes
         if (surveys.length === 0) {
+          // Create a survey object that matches the Tables<'pulse_surveys'> type
           setSurveys([
             {
               id: '1',
@@ -70,9 +71,10 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
               description: 'This is a demo survey loaded after timeout',
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
-              user_id: user?.id || 'demo-user',
-              status: 'active',
-              settings: { anonymous: true }
+              created_by: user?.id || 'demo-user',
+              company: 'Demo Company',
+              department: 'All Departments',
+              is_active: true
             }
           ]);
           setResponses([]);
@@ -88,6 +90,28 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
     
     return () => clearTimeout(timeoutId);
   }, [isLoading, surveys.length, user?.id]);
+
+  // Calculate response rate (mock calculation for demo)
+  const calculateResponseRate = (surveys: any[], responses: any[]) => {
+    if (!surveys || surveys.length === 0) return 0;
+    
+    // In a real app, you would count actual invitations sent
+    const estimatedInvitations = surveys.length * 10; // Assume 10 invitations per survey
+    const actualResponses = responses?.length || 0;
+    
+    return Math.min(Math.round((actualResponses / Math.max(estimatedInvitations, 1)) * 100), 100);
+  };
+
+  // Initialize data when user changes or refresh counter changes
+  useEffect(() => {
+    console.log('User or refresh counter changed, fetching dashboard data...');
+    if (user) {
+      fetchDashboardData();
+    } else {
+      // If no user, don't try to fetch data but make sure we're not in loading state
+      setIsLoading(false);
+    }
+  }, [user, refreshCounter]);
 
   const fetchDashboardData = async () => {
     if (!user) {
@@ -166,9 +190,10 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
           description: 'This is a sample survey (demo data)',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          user_id: user?.id || 'demo-user',
-          status: 'active',
-          settings: { anonymous: true }
+          created_by: user?.id || 'demo-user',
+          company: 'Demo Company',
+          department: 'All Departments',
+          is_active: true
         }
       ]);
       
@@ -185,28 +210,6 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
       setIsLoading(false);
     }
   };
-
-  // Calculate response rate (mock calculation for demo)
-  const calculateResponseRate = (surveys: any[], responses: any[]) => {
-    if (!surveys || surveys.length === 0) return 0;
-    
-    // In a real app, you would count actual invitations sent
-    const estimatedInvitations = surveys.length * 10; // Assume 10 invitations per survey
-    const actualResponses = responses?.length || 0;
-    
-    return Math.min(Math.round((actualResponses / Math.max(estimatedInvitations, 1)) * 100), 100);
-  };
-
-  // Initialize data when user changes or refresh counter changes
-  useEffect(() => {
-    console.log('User or refresh counter changed, fetching dashboard data...');
-    if (user) {
-      fetchDashboardData();
-    } else {
-      // If no user, don't try to fetch data but make sure we're not in loading state
-      setIsLoading(false);
-    }
-  }, [user, refreshCounter]);
 
   const value = {
     surveys,

@@ -15,6 +15,11 @@ import CertificationEngine from './pages/dashboard/CertificationEngine';
 import JoinBeta from './pages/JoinBeta';
 import Methodology from './pages/Methodology';
 import Pricing from './pages/Pricing';
+import AIEngine from './pages/AIEngine';
+import AboutUs from './pages/AboutUs';
+import Certification from './pages/Certification';
+import CertificationShowcase from './pages/CertificationShowcase';
+import AIWorkflow from './pages/AIWorkflow';
 import NotFound from './pages/NotFound';
 import StickyCta from './components/StickyCta';
 import { TaskProvider } from './contexts/TaskContext';
@@ -38,6 +43,11 @@ function App() {
                   <Route path="/join-beta" element={<JoinBeta />} />
                   <Route path="/methodology" element={<Methodology />} />
                   <Route path="/pricing" element={<Pricing />} />
+                  <Route path="/ai-engine" element={<AIEngine />} />
+                  <Route path="/how-ai-works" element={<AIWorkflow />} />
+                  <Route path="/about-us" element={<AboutUs />} />
+                  <Route path="/certification" element={<Certification />} />
+                  <Route path="/showcase" element={<CertificationShowcase />} />
                   
                   {/* Dashboard Routes */}
                   <Route path="/dashboard" element={<DashboardLayout />}>
@@ -48,7 +58,7 @@ function App() {
                     <Route path="certification-engine" element={<CertificationEngine />} />
                   </Route>
                   
-                  {/* Redirect root to join-beta for now */}
+                  {/* Home page route - redirect to join-beta for now */}
                   <Route path="/" element={<Navigate to="/join-beta" replace />} />
                   
                   {/* Not Found Route */}

@@ -11,16 +11,21 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
+  // Fix the useState hook usage
+  const [theme, setTheme] = useState<Theme>('light');
+  
+  // Initialize theme from local storage and system preference on component mount
+  useEffect(() => {
     // Check local storage for saved theme preference
     const savedTheme = localStorage.getItem('pulseplace-theme');
     // Check for OS preference if no saved theme
     if (!savedTheme) {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      return prefersDark ? 'dark' : 'light';
+      setTheme(prefersDark ? 'dark' : 'light');
+    } else {
+      setTheme((savedTheme as Theme) || 'light');
     }
-    return (savedTheme as Theme) || 'light';
-  });
+  }, []);
 
   useEffect(() => {
     // Update data attribute on document for CSS theme switching

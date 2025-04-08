@@ -4,10 +4,15 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import JoinBetaForm from '@/components/JoinBetaForm';
 import { BrandMessage } from '@/components/BrandMessage';
+import MetaTags from '@/components/MetaTags';
 
 const JoinBetaPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-pulse-50">
+      <MetaTags 
+        title="Join the PulsePlace.ai Beta | AI-powered workplace culture certification"
+        description="Be among the first to transform your workplace with AI-powered culture insights. Join our private beta and get early access to PulseScore certification."
+      />
       <Navbar />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto text-center mb-12">

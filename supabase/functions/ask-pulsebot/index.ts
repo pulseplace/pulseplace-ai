@@ -20,6 +20,7 @@ interface ChatRequest {
   messages: Message[];
   systemPrompt?: string;
   maxTokens?: number;
+  userIdentifier?: string;
 }
 
 // Default system prompt as fallback
@@ -34,13 +35,8 @@ serve(async (req) => {
   }
   
   try {
-    // Check if OpenAI API key is configured
-    if (!OPENAI_API_KEY) {
-      throw new Error("OpenAI API key is not configured in environment variables");
-    }
-
     // Parse request body
-    const { messages, systemPrompt, maxTokens = 500 }: ChatRequest = await req.json();
+    const { messages, systemPrompt, maxTokens = 500, userIdentifier }: ChatRequest = await req.json();
     
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return new Response(
@@ -67,46 +63,78 @@ serve(async (req) => {
     // Log request for debugging
     console.log(`Processing chat request with ${requestMessages.length} messages`);
     
-    // Call OpenAI API
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: requestMessages,
-        max_tokens: safeMaxTokens,
-        temperature: 0.7
-      }),
-    });
-
-    // Check for errors in the OpenAI response
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("OpenAI API error:", errorData);
-      throw new Error(`OpenAI API error: ${response.status} ${JSON.stringify(errorData)}`);
+    // Check if OpenAI API key is configured
+    if (!OPENAI_API_KEY || OPENAI_API_KEY === "OPENAI_API_KEY") {
+      console.log("OpenAI API key is missing or not properly configured");
+      // Provide fallback response instead of throwing an error
+      return new Response(
+        JSON.stringify({
+          message: {
+            role: "assistant",
+            content: "I'm currently experiencing technical difficulties connecting to my knowledge base. Please try again later or contact support if this persists. In the meantime, you can explore our documentation at https://pulseplace.ai/help for information about workplace culture assessment and PulseScore certification."
+          }
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Parse and return the response
-    const data = await response.json();
-    const assistantMessage = data.choices[0].message;
-    
-    return new Response(
-      JSON.stringify({ message: assistantMessage }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    try {
+      // Call OpenAI API
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: requestMessages,
+          max_tokens: safeMaxTokens,
+          temperature: 0.7
+        }),
+      });
+
+      // Check for errors in the OpenAI response
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("OpenAI API error:", errorData);
+        throw new Error(`OpenAI API error: ${response.status} ${JSON.stringify(errorData)}`);
+      }
+
+      // Parse and return the response
+      const data = await response.json();
+      const assistantMessage = data.choices[0].message;
+      
+      return new Response(
+        JSON.stringify({ message: assistantMessage }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    } catch (error) {
+      console.error("Error calling OpenAI API:", error);
+      
+      // Provide fallback response
+      return new Response(
+        JSON.stringify({
+          message: {
+            role: "assistant",
+            content: "I apologize, but I'm having trouble processing your request right now. Our services might be experiencing high demand or temporary issues. Please try again in a moment."
+          }
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
   } catch (error) {
     console.error("Error in ask-pulsebot function:", error);
     
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        details: error.stack
+        message: {
+          role: "assistant",
+          content: "I'm sorry, I encountered an unexpected error. Please try again with a different question or contact support if the issue persists."
+        }
       }),
       { 
-        status: 500, 
+        status: 200, // Return 200 to prevent UI from breaking
         headers: { ...corsHeaders, "Content-Type": "application/json" } 
       }
     );

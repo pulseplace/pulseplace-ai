@@ -18,11 +18,22 @@ export const callPulseBotAPI = async (
       .map(m => ({ 
         role: m.role === 'bot' ? 'assistant' : 'user', 
         content: m.content 
-      }))
-      .concat({ 
-        role: 'user', 
-        content: messages[messages.length - 1].content 
-      });
+      }));
+    
+    // Add the last message if not already included
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && lastMessage.role === 'user') {
+      const alreadyIncluded = apiMessages.some(m => 
+        m.role === 'user' && m.content === lastMessage.content
+      );
+      
+      if (!alreadyIncluded) {
+        apiMessages.push({ 
+          role: 'user', 
+          content: lastMessage.content 
+        });
+      }
+    }
 
     // Get system prompt based on selected language
     const systemPrompt = pulseAssistantConfig.systemPrompt[language] || pulseAssistantConfig.systemPrompt.en;
@@ -37,16 +48,19 @@ export const callPulseBotAPI = async (
       },
     });
 
-    if (error) throw new Error(error.message || 'Failed to get a response');
-
+    if (error) {
+      console.error('Error from Supabase edge function:', error);
+      return "I'm having trouble connecting to my knowledge base right now. Please try again in a moment.";
+    }
+    
     // Return the message content
     if (data && data.message) {
       return data.message.content;
     }
     
-    return null;
+    return "I wasn't able to generate a response. Please try a different question.";
   } catch (error) {
     console.error('Error calling PulseBot API:', error);
-    throw error;
+    return "An unexpected error occurred. Please try again later.";
   }
 };

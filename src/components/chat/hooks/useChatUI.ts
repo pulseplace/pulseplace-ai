@@ -1,33 +1,50 @@
 
-import { useState } from 'react';
-import { SearchState } from '../types';
+import { useState, useCallback } from 'react';
+import { Message } from '../types';
 
 export const useChatUI = () => {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState<SearchState>({
+  const [search, setSearch] = useState({
     query: '',
     isSearching: false,
-    results: []
+    results: [] as Message[]
   });
 
-  // Toggle chat handler
   const toggleChat = () => {
-    setOpen((prev) => !prev);
+    setOpen(prev => !prev);
   };
 
-  // Handle search
-  const handleSearch = (query: string, messagesToSearch: any[]) => {
-    setSearch(prev => ({ ...prev, query, isSearching: true }));
-    const results = messagesToSearch.filter(msg =>
-      msg.content.toLowerCase().includes(query.toLowerCase())
+  const handleSearch = useCallback((query: string, messages: Message[]) => {
+    if (!query.trim()) {
+      setSearch({
+        query: '',
+        isSearching: false,
+        results: []
+      });
+      return;
+    }
+
+    const searchTerm = query.toLowerCase();
+    
+    // Filter messages that contain the search term
+    const filteredMessages = messages.filter(
+      msg => msg.content.toLowerCase().includes(searchTerm)
     );
-    setSearch(prev => ({ ...prev, results }));
-  };
 
-  // Clear search
-  const clearSearch = () => {
-    setSearch({ query: '', isSearching: false, results: [] });
-  };
+    setSearch({
+      query,
+      isSearching: true,
+      results: filteredMessages
+    });
+  }, []);
+
+  const clearSearch = useCallback(() => {
+    setSearch({
+      query: '',
+      isSearching: false,
+      results: []
+    });
+  }, []);
 
   return {
     open,

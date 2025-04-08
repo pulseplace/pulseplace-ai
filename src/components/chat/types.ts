@@ -21,6 +21,7 @@ export interface SessionInfo {
 export interface ConfettiState {
   run: boolean;
   config: object;
+  isActive?: boolean;
 }
 
 export interface FeedbackData {

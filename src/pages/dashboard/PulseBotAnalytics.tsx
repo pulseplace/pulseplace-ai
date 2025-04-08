@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,7 +8,7 @@ import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DatePickerWithRange, DateRangeFilter } from '@/components/ui/date-range-picker';
 import { PulseBotAnalytics as PulseBotAnalyticsType, PulseBotLog, AnalyticsFilters } from '@/components/chat/types';
-import { fetchAnalytics } from '@/components/chat/services/api-service';
+import { fetchAnalytics } from '@/components/chat/services';
 import PulseBotAnalyticsDashboard from '@/components/dashboard/PulseBotAnalyticsDashboard';
 
 const PulseBotAnalytics: React.FC = () => {

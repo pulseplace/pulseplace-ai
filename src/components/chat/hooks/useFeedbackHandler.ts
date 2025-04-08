@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 import { Message } from '../types';
-import { logFeedback } from '../services/api-service';
+import { logFeedback } from '../services';
 
 export const useFeedbackHandler = (messages: Message[], setMessages: (messages: Message[]) => void, sessionId: string) => {
   // Handle feedback

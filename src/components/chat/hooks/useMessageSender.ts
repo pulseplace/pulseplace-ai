@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Message, BotAvatarState, SessionInfo } from '../types';
-import { callPulseBotAPI, logInteraction } from '../services/api-service';
+import { callPulseBotAPI, logInteraction } from '../services';
 
 export const useMessageSender = (
   messages: Message[],

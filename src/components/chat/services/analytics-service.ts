@@ -1,110 +1,16 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
-import { Message, SessionInfo, FeedbackData, BotAvatarState } from '../types';
-import { pulseAssistantConfig } from '@/config/chatbot-config';
+import { BotAvatarState, AnalyticsFilters, PulseBotAnalytics } from '../types';
 
-export const callPulseBotAPI = async (
-  messages: Message[],
-  language: string,
-  sessionInfo: SessionInfo
-): Promise<string | null> => {
-  try {
-    // Format messages for the API
-    const apiMessages = messages
-      .filter(m => m.role === 'bot' ? m.id !== 'welcome_msg' : true) // Filter out welcome message
-      .map(m => ({ 
-        role: m.role === 'bot' ? 'assistant' : 'user', 
-        content: m.content 
-      }))
-      .concat({ 
-        role: 'user', 
-        content: messages[messages.length - 1].content 
-      });
-
-    // Get system prompt based on selected language
-    const systemPrompt = pulseAssistantConfig.systemPrompt[language] || pulseAssistantConfig.systemPrompt.en;
-
-    // Call the Supabase Edge Function
-    const { data, error } = await supabase.functions.invoke('ask-pulsebot', {
-      body: { 
-        messages: apiMessages,
-        systemPrompt,
-        maxTokens: 500,
-        userIdentifier: sessionInfo.id
-      },
-    });
-
-    if (error) throw new Error(error.message || 'Failed to get a response');
-
-    // Return the message content
-    if (data && data.message) {
-      return data.message.content;
-    }
-    
-    return null;
-  } catch (error) {
-    console.error('Error calling PulseBot API:', error);
-    throw error;
-  }
-};
-
-export const logFeedback = async (messageId: string, content: string, feedback_type: 'up' | 'down', sessionId: string) => {
-  try {
-    // Insert feedback directly into the pulsebot_feedback table
-    const { data, error } = await supabase
-      .from('pulsebot_feedback')
-      .insert({
-        message: content,
-        feedback_type,
-        user_identifier: sessionId
-      });
-    
-    if (error) throw new Error(error.message || 'Failed to log feedback');
-    console.log('Feedback logged successfully');
-    return true;
-  } catch (err) {
-    console.error('Error logging feedback:', err);
-    // Silent fail - we don't want to bother the user if feedback logging fails
-    return false;
-  }
-};
-
-export const logInteraction = async (
-  sessionId: string,
-  userMessage: string, 
-  botReply: string, 
-  language: string, 
-  avatarState: BotAvatarState
-) => {
-  try {
-    const { data, error } = await supabase
-      .from('pulsebot_logs')
-      .insert({
-        session_id: sessionId,
-        user_message: userMessage,
-        bot_reply: botReply,
-        language,
-        avatar_state: avatarState,
-        created_at: new Date().toISOString()
-      });
-    
-    if (error) throw new Error(error.message || 'Failed to log interaction');
-    console.log('Interaction logged successfully');
-    return true;
-  } catch (err) {
-    console.error('Error logging interaction:', err);
-    // Silent fail - we don't want to bother the user if interaction logging fails
-    return false;
-  }
-};
-
+/**
+ * Fetches analytics data for PulseBot
+ */
 export const fetchAnalytics = async (filters?: {
   dateFrom?: Date;
   dateTo?: Date;
   language?: string;
   feedbackType?: string;
-}) => {
+}): Promise<PulseBotAnalytics> => {
   try {
     // Query for total interactions
     let logsQuery = supabase
@@ -162,8 +68,10 @@ export const fetchAnalytics = async (filters?: {
   }
 };
 
-// Helper function to process analytics data
-function processAnalyticsData(logs: any[], feedback: any[]) {
+/**
+ * Helper function to process analytics data
+ */
+function processAnalyticsData(logs: any[], feedback: any[]): PulseBotAnalytics {
   // Calculate unique users
   const uniqueUsers = new Set(logs.map(log => log.session_id)).size;
   

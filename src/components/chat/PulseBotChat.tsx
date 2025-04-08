@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Sparkles, X, Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -10,7 +9,7 @@ import { SearchBar } from './SearchBar';
 import { Confetti } from './Confetti';
 import { usePulseBot } from './usePulseBot';
 import { Skeleton } from '@/components/ui/skeleton';
-import { logInteraction } from './services/api-service';
+import { logInteraction } from './services';
 
 export default function PulseBotChat() {
   const {

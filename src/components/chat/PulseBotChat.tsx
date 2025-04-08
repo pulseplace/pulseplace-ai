@@ -10,6 +10,7 @@ import { SearchBar } from './SearchBar';
 import { Confetti } from './Confetti';
 import { usePulseBot } from './usePulseBot';
 import { Skeleton } from '@/components/ui/skeleton';
+import { logInteraction } from './services/api-service';
 
 export default function PulseBotChat() {
   const {
@@ -28,7 +29,8 @@ export default function PulseBotChat() {
     handleSearch,
     clearSearch,
     clearHistory,
-    confetti
+    confetti,
+    sessionInfo
   } = usePulseBot();
 
   // Determine which messages to display: search results or all messages

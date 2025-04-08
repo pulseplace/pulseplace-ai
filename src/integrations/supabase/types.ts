@@ -33,6 +33,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pulsebot_logs: {
+        Row: {
+          avatar_state: string | null
+          bot_reply: string | null
+          created_at: string | null
+          id: string
+          language: string | null
+          session_id: string | null
+          user_message: string | null
+        }
+        Insert: {
+          avatar_state?: string | null
+          bot_reply?: string | null
+          created_at?: string | null
+          id?: string
+          language?: string | null
+          session_id?: string | null
+          user_message?: string | null
+        }
+        Update: {
+          avatar_state?: string | null
+          bot_reply?: string | null
+          created_at?: string | null
+          id?: string
+          language?: string | null
+          session_id?: string | null
+          user_message?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

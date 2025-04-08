@@ -39,6 +39,54 @@ export interface ConfettiState {
 // Types for feedback
 export interface FeedbackData {
   message: string;
-  feedbackType: 'up' | 'down';
-  userIdentifier?: string;
+  feedback_type: 'up' | 'down';
+  user_identifier?: string;
+}
+
+// Types for analytics
+export interface PulseBotLog {
+  id: string;
+  session_id: string;
+  user_message: string;
+  bot_reply: string;
+  language: string;
+  avatar_state: BotAvatarState;
+  created_at: string;
+}
+
+export interface PulseBotAnalytics {
+  totalInteractions: number;
+  uniqueUsers: number;
+  languageBreakdown: {
+    language: string;
+    count: number;
+    percentage: number;
+  }[];
+  feedbackRatio: {
+    positive: number;
+    negative: number;
+    ratio: number;
+  };
+  avatarStateUsage: {
+    state: BotAvatarState;
+    count: number;
+    percentage: number;
+  }[];
+  topQueries: {
+    query: string;
+    count: number;
+  }[];
+  topDownvotedResponses: {
+    response: string;
+    downvotes: number;
+  }[];
+}
+
+export interface AnalyticsFilters {
+  dateRange: {
+    from: Date;
+    to: Date;
+  };
+  language: string;
+  feedbackType: string;
 }

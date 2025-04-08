@@ -1,97 +1,201 @@
-
-import { useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { toast } from '@/hooks/use-toast';
-import { useChatState } from './hooks/useChatState';
-import { useSearch } from './hooks/useSearch';
-import { useFeedback } from './hooks/useFeedback';
-import { useLanguage } from './hooks/useLanguage';
+import { BotAvatarState, Message, SessionInfo, ConfettiState } from './types';
+import { v4 as uuidv4 } from 'uuid';
 import { useConfetti } from './hooks/useConfetti';
-import { callPulseBotAPI } from './services/api-service';
+import { useSearchParams } from 'react-router-dom';
+import { callPulseBotAPI, logFeedback, logInteraction } from './services/api-service';
 
-export const usePulseBot = () => {
-  const { 
-    open, 
-    loading, 
-    setLoading,
-    sessionInfo,
-    messages,
-    setMessages,
-    toggleChat,
-    clearHistory
-  } = useChatState();
+// Define the available languages
+const languages = [
+  { code: 'en', name: 'English' },
+  { code: 'es', name: 'Spanish' },
+  { code: 'fr', name: 'French' },
+];
 
-  const { search, handleSearch, clearSearch } = useSearch(messages);
-  
-  const { 
-    botAvatarState, 
-    setBotAvatarState, 
-    handleFeedback 
-  } = useFeedback(messages, setMessages, sessionInfo.id);
-  
-  const { language, languages, handleLanguageChange } = useLanguage(setMessages);
-  
-  const { confetti } = useConfetti();
-  
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  const sendMessage = async (input: string) => {
-    if (!input.trim() || loading) return;
-    
-    // Clear search if active
-    if (search.isSearching) {
-      clearSearch();
-    }
-    
-    // Add user message
-    const userMessageId = `user_${Date.now()}`;
-    const userMessage = { 
-      id: userMessageId,
-      role: 'user' as const, 
-      content: input.trim() 
+// Session info from local storage
+const getSessionInfo = (): SessionInfo => {
+  const storedSession = localStorage.getItem('pulsebot_session');
+  if (storedSession) {
+    return JSON.parse(storedSession);
+  } else {
+    const newSession: SessionInfo = {
+      id: uuidv4(),
+      createdAt: new Date(),
     };
-    
-    setMessages(prev => [...prev, userMessage]);
-    setLoading(true);
-    setBotAvatarState('typing');
+    localStorage.setItem('pulsebot_session', JSON.stringify(newSession));
+    return newSession;
+  }
+};
 
-    try {
-      const botResponse = await callPulseBotAPI(
-        [...messages, userMessage], 
-        language, 
-        sessionInfo
-      );
+export function usePulseBot() {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [botAvatarState, setBotAvatarState] = useState<BotAvatarState>('idle');
+  const [language, setLanguage] = useState(languages[0].code);
+  const [searchParams] = useSearchParams();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [search, setSearch] = useState({
+    query: '',
+    isSearching: false,
+    results: [] as Message[]
+  });
+  const [sessionInfo, setSessionInfo] = useState<SessionInfo>(getSessionInfo());
+  const { confetti, triggerConfetti } = useConfetti();
 
-      // Add bot's response
-      if (botResponse) {
-        const botMessageId = `bot_${Date.now()}`;
-        setMessages(prev => [...prev, { 
-          id: botMessageId,
-          role: 'bot', 
-          content: botResponse
-        }]);
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast({
-        title: "Communication Error",
-        description: "Unable to reach PulseBot. Please try again later.",
-        variant: "destructive",
-      });
+  // Function to scroll to the bottom of the messages
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  // Load initial welcome message and scroll to bottom
+  useEffect(() => {
+    const welcomeMessage: Message = {
+      id: 'welcome_msg',
+      role: 'bot',
+      content: "Hi! I'm your PulsePlace Assistant. Ask me anything about culture surveys, PulseScore, or certification.",
+    };
+    setMessages([welcomeMessage]);
+    scrollToBottom();
+  }, [scrollToBottom]);
+
+  // Send message handler
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (loading || !content.trim()) return;
+
+      const id = `msg_${Date.now()}`;
+      const newMessage = { id, role: 'user' as const, content };
       
-      // Add error message
-      setMessages(prev => [
-        ...prev,
-        {
-          id: `error_${Date.now()}`,
-          role: 'bot',
-          content: "I'm having trouble connecting right now. Please try again in a moment.",
-        },
-      ]);
-    } finally {
-      setLoading(false);
-      setBotAvatarState('idle');
-    }
+      // Add user message to the list
+      setMessages((prev) => [...prev, newMessage]);
+      
+      // Start loading and scroll to bottom
+      setLoading(true);
+      scrollToBottom();
+      setBotAvatarState('thinking');
+
+      try {
+        // Call the API
+        const botReply = await callPulseBotAPI([...messages, newMessage], language, sessionInfo);
+        
+        if (botReply) {
+          // Generate a unique ID for the bot message
+          const botMessageId = `bot_${Date.now()}`;
+          
+          // Create the new bot message
+          const newBotMessage = {
+            id: botMessageId,
+            role: 'bot' as const,
+            content: botReply,
+          };
+          
+          // Add the bot message to the list
+          setMessages((prev) => [...prev, newBotMessage]);
+          
+          // Log the interaction
+          logInteraction(
+            sessionInfo.id,
+            content,
+            botReply,
+            language,
+            'happy' // Set to 'happy' after successful response
+          );
+          
+          // Trigger confetti effect (50% chance)
+          if (Math.random() > 0.5) {
+            triggerConfetti();
+          }
+          
+          // Set bot avatar to happy
+          setBotAvatarState('happy');
+        } else {
+          // Handle error
+          toast({
+            title: "Error",
+            description: "Failed to get a response from the bot",
+            variant: "destructive",
+          });
+          setBotAvatarState('idle');
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+        toast({
+          title: "Error",
+          description: "Failed to send message. Please try again.",
+          variant: "destructive",
+        });
+        setBotAvatarState('idle');
+      } finally {
+        setLoading(false);
+        scrollToBottom();
+      }
+    },
+    [loading, messages, language, sessionInfo, scrollToBottom, triggerConfetti]
+  );
+
+  // Handle language change
+  const handleLanguageChange = (code: string) => {
+    setLanguage(code);
   };
+
+  // Toggle chat handler
+  const toggleChat = () => {
+    setOpen((prev) => !prev);
+  };
+
+  // Clear history handler
+  const clearHistory = () => {
+    setMessages([]);
+    const welcomeMessage: Message = {
+      id: 'welcome_msg',
+      role: 'bot',
+      content: "Hi! I'm your PulsePlace Assistant. Ask me anything about culture surveys, PulseScore, or certification.",
+    };
+    setMessages([welcomeMessage]);
+  };
+
+  // Handle search
+  const handleSearch = (query: string) => {
+    setSearch(prev => ({ ...prev, query, isSearching: true }));
+    const results = messages.filter(msg =>
+      msg.content.toLowerCase().includes(query.toLowerCase())
+    );
+    setSearch(prev => ({ ...prev, results }));
+  };
+
+  // Clear search
+  const clearSearch = () => {
+    setSearch({ query: '', isSearching: false, results: [] });
+  };
+
+  // Handle feedback
+  const handleFeedback = useCallback(
+    async (messageId: string, feedbackType: 'up' | 'down') => {
+      const message = messages.find((m) => m.id === messageId);
+      
+      if (!message) return;
+      
+      // Optimistically update the UI
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id === messageId) {
+            return {
+              ...m,
+              liked: feedbackType === 'up',
+              disliked: feedbackType === 'down',
+            };
+          }
+          return m;
+        })
+      );
+      
+      // Log the feedback
+      await logFeedback(messageId, message.content, feedbackType, sessionInfo.id);
+    },
+    [messages, sessionInfo.id]
+  );
 
   return {
     open,
@@ -105,10 +209,11 @@ export const usePulseBot = () => {
     handleFeedback,
     handleLanguageChange,
     toggleChat,
+    clearHistory,
     search,
     handleSearch,
     clearSearch,
-    clearHistory,
-    confetti
+    confetti,
+    sessionInfo
   };
-};
+}

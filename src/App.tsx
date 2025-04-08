@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
@@ -42,6 +43,7 @@ const EmailTemplates = lazy(() => import('@/pages/dashboard/EmailTemplates'));
 const TeamAdmin = lazy(() => import('@/pages/dashboard/TeamAdmin'));
 const BulkTeamUpload = lazy(() => import('@/pages/dashboard/BulkTeamUpload'));
 const LLMInsights = lazy(() => import('@/pages/dashboard/LLMInsights'));
+const PulseBotAnalytics = lazy(() => import('@/pages/dashboard/PulseBotAnalytics'));
 
 function App() {
   return (
@@ -93,6 +95,7 @@ function App() {
                       <Route path="team-admin" element={<TeamAdmin />} />
                       <Route path="bulk-upload" element={<BulkTeamUpload />} />
                       <Route path="llm-insights" element={<LLMInsights />} />
+                      <Route path="pulsebot-analytics" element={<PulseBotAnalytics />} />
                       
                       {/* Add fallback route for dashboard to prevent 404s within dashboard */}
                       <Route path="*" element={<Navigate to="/dashboard" replace />} />

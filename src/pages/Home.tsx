@@ -1,155 +1,42 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import Hero from '@/components/Hero';
 import FeatureSection from '@/components/FeatureSection';
 import HowItWorks from '@/components/HowItWorks';
-import { Button } from "@/components/ui/button";
-import { BrandMessage } from '@/components/BrandMessage';
+import WhyPulsePlace from '@/components/WhyPulsePlace';
+import Testimonials from '@/components/Testimonials';
+import CallToAction from '@/components/CallToAction';
+import FAQ from '@/components/FAQ';
+import JoinBeta from '@/components/JoinBeta';
 import MetaTags from '@/components/MetaTags';
-import { ArrowRight, PlayCircle, MessageSquare, CheckCircle2, BarChart2, TrendingUp } from 'lucide-react';
+import StickyCta from '@/components/StickyCta';
+import EmailTestButton from '@/components/EmailTestButton';
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-white">
-      <MetaTags 
-        title="PulsePlace.ai | Make Workplaces Worth Working In"
-        description="AI-powered certification for workplace culture that puts people first. Get your PulseScore™ and become PulsePlace Certified."
+    <div className="min-h-screen">
+      <MetaTags
+        title="PulsePlace.ai | Measuring Trust Through Data"
+        description="Quantify, track, and improve workplace trust with AI. Get started with PulsePlace.ai today."
+        keywords="workplace trust, employee trust, trust metrics, AI for HR, workplace analytics"
       />
-      <Navbar />
       
-      {/* Hero Section */}
-      <section className="py-20 md:py-28 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Make Workplaces
-              <span className="block">Worth Working In</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-10">
-              AI-powered certification for culture that puts people first.
-            </p>
-            <Link to="/certification">
-              <Button size="lg" className="bg-pulse-gradient hover:opacity-90 text-lg px-8 py-6">
-                Get Pulse Certified
-              </Button>
-            </Link>
-          </div>
+      <Hero />
+      
+      <div className="container mx-auto py-4 mt-4">
+        <div className="flex justify-center">
+          <EmailTestButton recipientEmail="hello@pulseplace.ai" />
         </div>
-      </section>
-
-      {/* Problem Section */}
-      <section className="py-16 bg-gray-50 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Work Feels Broken
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
-              Workplaces talk about culture, but employees feel the disconnect.
-            </p>
-            <div className="bg-white rounded-xl shadow-lg p-8 md:p-10 max-w-3xl mx-auto">
-              <p className="text-lg mb-6">
-                Burnout is up. Trust is down. Employee engagement has become a spreadsheet metric.
-              </p>
-              <BrandMessage 
-                message="PulsePlace gives people a voice — and holds leaders accountable." 
-                variant="highlight"
-                className="mt-4"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Solution Section */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Introducing PulseScore™
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              A next-gen score built on emotion, engagement, and trust.<br />
-              Backed by AI. Designed by humans. Built for workplaces with soul.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-              <div className="border-2 border-pulse-100 rounded-xl p-6 transition-all hover:border-pulse-300 hover:shadow-md">
-                <div className="w-16 h-16 bg-pulse-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-pulse-600 text-2xl font-bold">E</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2">Emotion Index</h3>
-                <p className="text-gray-600">Measuring the authentic feelings that drive workplace behavior</p>
-              </div>
-              
-              <div className="border-2 border-pulse-100 rounded-xl p-6 transition-all hover:border-pulse-300 hover:shadow-md">
-                <div className="w-16 h-16 bg-pulse-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-pulse-600 text-2xl font-bold">S</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2">Engagement Stability</h3>
-                <p className="text-gray-600">Tracking consistency of connection across teams and time</p>
-              </div>
-              
-              <div className="border-2 border-pulse-100 rounded-xl p-6 transition-all hover:border-pulse-300 hover:shadow-md">
-                <div className="w-16 h-16 bg-pulse-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-pulse-600 text-2xl font-bold">T</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2">Culture Trust</h3>
-                <p className="text-gray-600">Evaluating psychological safety and leadership credibility</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
+      </div>
+      
       <FeatureSection />
-
-      {/* How It Works Section */}
       <HowItWorks />
-
-      {/* CTA Section */}
-      <section className="py-20 px-4" id="join-beta">
-        <div className="container mx-auto max-w-5xl">
-          <div className="bg-pulse-gradient text-white rounded-2xl p-8 md:p-12 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Be part of the first wave. <br /> Shape the future of work.
-            </h2>
-            <p className="text-xl max-w-3xl mx-auto mb-8">
-              Get early access to our AI engine, pilot the platform with your team, and become Pulse Certified.
-            </p>
-            <Link to="/join-beta">
-              <Button size="lg" className="bg-white text-pulse-600 hover:bg-gray-100 text-lg px-8 py-6">
-                Join the Private Beta <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Founder's Note Section */}
-      <section className="py-16 bg-gray-50 px-4">
-        <div className="container mx-auto max-w-3xl">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4">Why We Built PulsePlace</h2>
-          </div>
-          <div className="bg-white rounded-xl shadow-md p-8">
-            <blockquote className="text-lg text-gray-600 italic">
-              "We believe workplaces should bring out the best in people, not burn them out. 
-              PulsePlace was born from our conviction that the future of work must be more human, 
-              more transparent, and more emotionally intelligent. 
-              Our mission is to help organizations build cultures where people truly thrive."
-            </blockquote>
-            <div className="mt-6 text-right">
-              <p className="font-semibold">— The PulsePlace Team</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <Footer />
+      <WhyPulsePlace />
+      <Testimonials />
+      <CallToAction />
+      <FAQ />
+      <JoinBeta />
+      <StickyCta />
     </div>
   );
 };

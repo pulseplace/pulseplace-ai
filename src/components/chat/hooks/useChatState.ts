@@ -1,6 +1,8 @@
+
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Message, SessionInfo } from '../types';
+import { useConfetti } from './useConfetti';
 
 export const useChatState = () => {
   const [open, setOpen] = useState(false);
@@ -12,10 +14,11 @@ export const useChatState = () => {
   const [messages, setMessages] = useState<Message[]>([
     { 
       id: `welcome_${Date.now()}`,
-      role: 'bot', 
+      role: 'bot' as const, 
       content: "Hi, I'm PulseBot — your workplace guide! Ask me anything about surveys, PulseScore, or certification." 
     }
   ]);
+  const { triggerConfetti } = useConfetti();
 
   const toggleChat = () => setOpen(!open);
 
@@ -24,11 +27,14 @@ export const useChatState = () => {
     // Keep the welcome message but clear everything else
     const welcomeMessage = {
       id: `welcome_${Date.now()}`,
-      role: 'bot',
+      role: 'bot' as const,
       content: "Hi, I'm PulseBot — your workplace guide! Ask me anything about surveys, PulseScore, or certification."
     };
     
     setMessages([welcomeMessage]);
+    
+    // Trigger confetti animation
+    triggerConfetti();
     
     toast({
       description: "Chat history has been cleared",

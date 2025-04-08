@@ -5,6 +5,7 @@ import { useChatState } from './hooks/useChatState';
 import { useSearch } from './hooks/useSearch';
 import { useFeedback } from './hooks/useFeedback';
 import { useLanguage } from './hooks/useLanguage';
+import { useConfetti } from './hooks/useConfetti';
 import { callPulseBotAPI } from './services/api-service';
 
 export const usePulseBot = () => {
@@ -28,6 +29,8 @@ export const usePulseBot = () => {
   } = useFeedback(messages, setMessages, sessionInfo.id);
   
   const { language, languages, handleLanguageChange } = useLanguage(setMessages);
+  
+  const { confetti } = useConfetti();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -105,6 +108,7 @@ export const usePulseBot = () => {
     search,
     handleSearch,
     clearSearch,
-    clearHistory
+    clearHistory,
+    confetti
   };
 };

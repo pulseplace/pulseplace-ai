@@ -7,6 +7,7 @@ import { ChatBubble } from './ChatBubble';
 import { ChatInputBox } from './ChatInputBox';
 import { ChatHeader } from './ChatHeader';
 import { SearchBar } from './SearchBar';
+import { Confetti } from './Confetti';
 import { usePulseBot } from './usePulseBot';
 
 export default function PulseBotChat() {
@@ -25,7 +26,8 @@ export default function PulseBotChat() {
     search,
     handleSearch,
     clearSearch,
-    clearHistory
+    clearHistory,
+    confetti
   } = usePulseBot();
 
   // Determine which messages to display: search results or all messages
@@ -33,6 +35,9 @@ export default function PulseBotChat() {
 
   return (
     <>
+      {/* Confetti Animation */}
+      <Confetti isActive={confetti.isActive} config={confetti.config} />
+      
       {/* Floating chat button with tooltip */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-2">
         <TooltipProvider>

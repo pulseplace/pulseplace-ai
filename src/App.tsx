@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
@@ -9,7 +10,7 @@ import { DashboardProvider } from '@/contexts/DashboardContext';
 import { TaskProvider } from '@/contexts/TaskContext';
 import { ChatProvider } from '@/contexts/ChatbotContext';
 import LoadingState from '@/components/dashboard/admin/components/LoadingState';
-import PulseBot from '@/components/chat/PulseBot';
+import PulseBotChat from '@/components/chat/PulseBotChat';
 
 // Layout
 const DashboardLayout = lazy(() => import('@/layouts/DashboardLayout'));
@@ -103,7 +104,7 @@ function App() {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
-                <PulseBot />
+                <PulseBotChat />
                 <Toaster position="top-right" />
               </ChatProvider>
             </TaskProvider>

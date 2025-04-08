@@ -7,7 +7,6 @@ import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { PanelLeft, Loader2 } from 'lucide-react';
-import PulseBotChat from '@/components/chat/PulseBotChat';
 
 const DashboardLayout = () => {
   const { profile, user } = useAuth();
@@ -92,8 +91,7 @@ const DashboardLayout = () => {
         </main>
       </div>
       
-      {/* Add the PulseBotChat component here */}
-      <PulseBotChat />
+      {/* Remove PulseBotChat from here since it's now added at the App level */}
     </div>
   );
 };

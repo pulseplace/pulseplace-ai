@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,7 +65,7 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
         if (surveys.length === 0) {
           setSurveys([
             {
-              id: 1,
+              id: '1',
               title: 'Demo Survey',
               description: 'This is a demo survey loaded after timeout',
               created_at: new Date().toISOString(),
@@ -162,7 +161,7 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
       // Use demo data if error occurs
       setSurveys([
         {
-          id: 1,
+          id: '1',
           title: 'Sample Survey',
           description: 'This is a sample survey (demo data)',
           created_at: new Date().toISOString(),

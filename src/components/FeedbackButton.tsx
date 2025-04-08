@@ -8,13 +8,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { emailService } from '@/services/emailService';
+import { useAuth } from '@/contexts/AuthContext';
 
 const FeedbackButton = () => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Auto-populate user details if logged in
+  React.useEffect(() => {
+    if (user && user.email) {
+      setEmail(user.email);
+      // Try to get name from user metadata if available
+      if (user.user_metadata) {
+        const firstName = user.user_metadata.first_name || '';
+        const lastName = user.user_metadata.last_name || '';
+        if (firstName || lastName) {
+          setName(`${firstName} ${lastName}`.trim());
+        }
+      }
+    }
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +66,7 @@ const FeedbackButton = () => {
 
       // Send feedback via email
       const emailResult = await emailService.sendEmail({
-        to: "feedback@pulseplace.ai", // Change to your feedback email
+        to: "feedback@pulseplace.ai", 
         subject: `Website Feedback${name ? ' from ' + name : ''}`,
         html: feedbackHtml,
         fromName: "PulsePlace Feedback System",

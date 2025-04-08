@@ -31,7 +31,7 @@ serve(async (req) => {
     // Check if API key is configured
     if (!MAILERSEND_API_KEY) {
       console.error("MailerSend API key is not configured");
-      throw new Error("MailerSend API key is not configured");
+      throw new Error("MailerSend API key is not configured in Supabase secrets. Please set the MAILERSEND_API_KEY secret.");
     }
 
     // Parse request body
@@ -39,8 +39,9 @@ serve(async (req) => {
     
     // Validate required fields
     if (!to || !subject || (!html && !templateId)) {
+      console.error("Missing required fields:", { to, subject, hasHtml: !!html, hasTemplateId: !!templateId });
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({ error: "Missing required fields", details: { to: !!to, subject: !!subject, content: !!(html || templateId) } }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -100,14 +101,35 @@ serve(async (req) => {
       body: JSON.stringify(emailData)
     });
 
+    // Get response as text first for logging
+    const responseText = await response.text();
+    console.log("MailerSend API raw response:", responseText);
+    
+    // Parse JSON response (if possible)
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (e) {
+      responseData = { text: responseText };
+      console.error("Error parsing response JSON:", e);
+    }
+    
     // Log response status for debugging
     console.log("MailerSend API response status:", response.status);
     
-    const responseData = await response.json();
-    
     if (!response.ok) {
       console.error("MailerSend API error:", responseData);
-      throw new Error(`MailerSend API error: ${JSON.stringify(responseData)}`);
+      return new Response(
+        JSON.stringify({ 
+          error: "MailerSend API error", 
+          status: response.status, 
+          details: responseData 
+        }),
+        { 
+          status: response.status, 
+          headers: { "Content-Type": "application/json", ...corsHeaders } 
+        }
+      );
     }
 
     console.log("Email sent successfully to:", Array.isArray(to) ? to.join(', ') : to);
@@ -118,7 +140,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Email sending error:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message, stack: error.stack }),
       { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }

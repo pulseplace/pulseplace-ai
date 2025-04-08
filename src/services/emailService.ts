@@ -1,16 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { generateCertificationHtml } from '@/components/dashboard/email/components/EmailHtmlGenerator';
-import { PulseScoreData } from '@/types/scoring.types';
-import { getTierDisplay } from '@/utils/scoring';
+import { toast } from 'sonner';
 
-interface EmailRecipient {
-  name: string;
-  email: string;
-  company?: string;
-}
-
-interface GenericEmailRequest {
+export interface EmailParams {
   to: string | string[];
   subject: string;
   html: string;
@@ -22,124 +14,171 @@ interface GenericEmailRequest {
   variables?: Record<string, any>;
 }
 
+interface EmailResponse {
+  success: boolean;
+  data?: any;
+  error?: string;
+}
+
 /**
- * Service for sending emails via MailerSend through a Supabase Edge Function
+ * Service for sending emails through the Supabase Edge Function
  */
 export const emailService = {
   /**
-   * Sends a certification summary email via MailerSend
-   * 
-   * @param recipient The email recipient information
-   * @param pulseScoreData The pulse score data for the certification
-   * @returns Promise resolving to success status
+   * Sends an email using the Supabase Edge Function
    */
-  sendCertificationEmail: async (
-    recipient: EmailRecipient,
-    pulseScoreData: PulseScoreData
-  ): Promise<boolean> => {
+  sendEmail: async (params: EmailParams): Promise<EmailResponse> => {
     try {
-      const tierInfo = getTierDisplay(pulseScoreData.tier);
-      console.log('Preparing to send certification email to:', recipient.email);
+      console.log(`Sending email to ${Array.isArray(params.to) ? params.to.join(', ') : params.to}`);
       
-      // Generate the HTML for the certification email
-      const emailHtml = generateCertificationHtml({
-        recipientName: recipient.name,
-        companyName: recipient.company || 'Your Company',
-        pulseScoreData: pulseScoreData,
-        certificationLevel: tierInfo.label
-      });
-      
-      // Send email using our Supabase Edge Function
+      // Call the Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('send-email', {
-        body: {
-          to: recipient.email,
-          subject: `Your PulsePlace Certification: ${tierInfo.label}`,
-          html: emailHtml,
-          fromName: "PulsePlace Certification",
-          fromEmail: "certification@pulseplace.ai",
-          replyTo: "support@pulseplace.ai"
-        }
+        body: params
       });
       
       if (error) {
-        console.error('Failed to send certification email:', error);
-        return false;
-      }
-      
-      console.log('Certification email sent successfully:', data);
-      return true;
-    } catch (error) {
-      console.error('Failed to send certification email:', error);
-      return false;
-    }
-  },
-
-  /**
-   * Sends a generic email using the edge function
-   * 
-   * @param emailRequest Email request configuration
-   * @returns Promise resolving to success status and response data
-   */
-  sendEmail: async (emailRequest: GenericEmailRequest): Promise<{success: boolean, data?: any, error?: any}> => {
-    try {
-      console.log('Sending email to:', emailRequest.to);
-      
-      const { data, error } = await supabase.functions.invoke('send-email', {
-        body: {
-          ...emailRequest,
-          fromName: emailRequest.fromName || "PulsePlace",
-          fromEmail: emailRequest.fromEmail || "no-reply@pulseplace.ai",
-          replyTo: emailRequest.replyTo || "support@pulseplace.ai"
-        }
-      });
-      
-      if (error) {
-        console.error('Failed to send email via edge function:', error);
-        return { success: false, error };
-      }
-      
-      // Check if the edge function response indicates an error
-      if (data && data.error) {
-        console.error('Email sending failed in edge function:', data.error);
-        return { success: false, error: data.error };
+        console.error('Email service error:', error);
+        return { 
+          success: false, 
+          error: error.message || 'Failed to send email' 
+        };
       }
       
       console.log('Email sent successfully:', data);
-      return { success: true, data };
+      return { 
+        success: true, 
+        data 
+      };
     } catch (error) {
-      console.error('Failed to send email (exception):', error);
-      return { success: false, error };
+      console.error('Unexpected error in email service:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      };
     }
   },
   
   /**
-   * Test email sending functionality
-   * 
-   * @param to Recipient email address
-   * @param subject Email subject
-   * @returns Promise resolving to success status
+   * Sends a test email to verify the email service is working
    */
-  sendTestEmail: async (to: string, subject: string = "PulsePlace Test Email"): Promise<boolean> => {
+  sendTestEmail: async (recipientEmail: string): Promise<EmailResponse> => {
     try {
-      const testHtml = `
+      const testEmailHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #22c55e;">PulsePlace Test Email</h1>
-          <p>This is a test email from PulsePlace.</p>
-          <p>If you're receiving this, email sending is working correctly!</p>
-          <p>Time sent: ${new Date().toLocaleString()}</p>
+          <h1 style="color: #4338ca; text-align: center;">PulsePlace.ai Email Test</h1>
+          
+          <p style="font-size: 16px;">This is a test email from PulsePlace.ai to verify that the email service is working correctly.</p>
+          
+          <div style="background-color: #f0f7ff; border-radius: 10px; padding: 15px; margin: 20px 0;">
+            <p>If you received this email, it means the email service is configured correctly.</p>
+          </div>
+          
+          <p style="color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center;">
+            Sent on ${new Date().toLocaleString()}
+          </p>
         </div>
       `;
       
-      const result = await emailService.sendEmail({
-        to,
-        subject,
-        html: testHtml
+      return await emailService.sendEmail({
+        to: recipientEmail,
+        subject: "PulsePlace.ai Email Service Test",
+        html: testEmailHtml,
+        fromName: "PulsePlace.ai System",
+        fromEmail: "system@pulseplace.ai"
       });
-      
-      return result.success;
     } catch (error) {
-      console.error('Failed to send test email:', error);
-      return false;
+      console.error('Test email error:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      };
+    }
+  },
+  
+  /**
+   * Sends a contact form submission
+   */
+  sendContactFormSubmission: async (name: string, email: string, message: string, subject?: string): Promise<EmailResponse> => {
+    try {
+      const contactHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #4338ca; text-align: center;">PulsePlace.ai Contact Form Submission</h1>
+          
+          <div style="background-color: #f7f7ff; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Name:</strong> ${name || 'Not provided'}</p>
+            <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
+          </div>
+          
+          <div style="background-color: #f0f7ff; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Message:</h3>
+            <p style="white-space: pre-line;">${message}</p>
+          </div>
+          
+          <p style="color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center;">
+            Submitted on ${new Date().toLocaleString()}
+          </p>
+        </div>
+      `;
+      
+      return await emailService.sendEmail({
+        to: "contact@pulseplace.ai",
+        subject: subject || "New Contact Form Submission",
+        html: contactHtml,
+        fromName: "PulsePlace Contact Form",
+        fromEmail: "contact-form@pulseplace.ai",
+        replyTo: email
+      });
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      };
+    }
+  },
+  
+  /**
+   * Sends a beta request
+   */
+  sendBetaRequest: async (name: string, email: string, company: string, message?: string): Promise<EmailResponse> => {
+    try {
+      const betaRequestHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #4338ca; text-align: center;">PulsePlace.ai Private Beta Request</h1>
+          
+          <div style="background-color: #f7f7ff; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Name:</strong> ${name || 'Not provided'}</p>
+            <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
+            <p style="margin: 5px 0;"><strong>Company:</strong> ${company || 'Not provided'}</p>
+          </div>
+          
+          ${message ? `
+          <div style="background-color: #f0f7ff; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Message:</h3>
+            <p style="white-space: pre-line;">${message}</p>
+          </div>
+          ` : ''}
+          
+          <p style="color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center;">
+            Submitted on ${new Date().toLocaleString()}
+          </p>
+        </div>
+      `;
+      
+      return await emailService.sendEmail({
+        to: "beta@pulseplace.ai",
+        subject: "Private Beta Request",
+        html: betaRequestHtml,
+        fromName: "PulsePlace Beta Program",
+        fromEmail: "beta-requests@pulseplace.ai",
+        replyTo: email
+      });
+    } catch (error) {
+      console.error('Beta request error:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      };
     }
   }
 };

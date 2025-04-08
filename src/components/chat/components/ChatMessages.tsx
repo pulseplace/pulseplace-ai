@@ -2,44 +2,38 @@
 import React from 'react';
 import { Loader } from 'lucide-react';
 import { ChatBubble } from '../ChatBubble';
-import { Message } from '../types';
+import { Message, BotAvatarState } from '../types';
 
 interface ChatMessagesProps {
   messages: Message[];
   loading: boolean;
-  handleFeedback: (index: number, messageId: string, content: string, isLike: boolean) => void;
+  botAvatarState: BotAvatarState;
+  handleFeedback: (messageId: string, message: Message, feedback: 'up' | 'down') => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
-  search: {
-    isSearching: boolean;
-    results: Message[];
-    query: string;
-  };
+  isSearching: boolean;
 }
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   loading,
+  botAvatarState,
   handleFeedback,
   messagesEndRef,
-  search
+  isSearching
 }) => {
-  // Determine which messages to display: search results or all messages
-  const displayMessages = search.isSearching ? search.results : messages;
-
   return (
     <div className="flex-1 p-3 overflow-y-auto space-y-3 max-h-[300px]">
-      {search.isSearching && search.results.length === 0 && search.query && (
+      {isSearching && messages.length === 0 && (
         <div className="text-center py-4 text-gray-500">
-          No messages found matching "{search.query}"
+          No messages found
         </div>
       )}
       
-      {displayMessages.map((msg, i) => (
+      {messages.map((msg) => (
         <ChatBubble 
           key={msg.id} 
           message={msg} 
-          index={i} 
-          onFeedback={handleFeedback} 
+          onFeedback={(feedback) => handleFeedback(msg.id, msg, feedback)}
         />
       ))}
       

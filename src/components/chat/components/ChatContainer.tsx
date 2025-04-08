@@ -118,7 +118,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
       <div className="p-3 border-t bg-white">
         <ChatInputBox
           onSendMessage={sendMessage}
-          isLoading={loading}
+          loading={loading}
           onClearHistory={clearHistory}
         />
       </div>

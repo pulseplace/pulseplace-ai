@@ -1,24 +1,16 @@
 
 import { useState } from 'react';
-
-// Define the available languages
-const languages = [
-  { code: 'en', name: 'English' },
-  { code: 'es', name: 'Spanish' },
-  { code: 'fr', name: 'French' },
-];
+import { MessageLanguage } from '../types';
 
 export const useLanguageManager = () => {
-  const [language, setLanguage] = useState(languages[0].code);
+  const [language, setLanguage] = useState<MessageLanguage>('en');
 
-  // Handle language change
-  const handleLanguageChange = (code: string) => {
-    setLanguage(code);
+  const handleLanguageChange = (value: MessageLanguage) => {
+    setLanguage(value);
   };
 
   return {
     language,
-    languages,
     handleLanguageChange
   };
 };

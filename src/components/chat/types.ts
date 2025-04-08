@@ -11,6 +11,8 @@ export interface Message {
 
 export type BotAvatarState = 'idle' | 'thinking' | 'typing' | 'happy';
 
+export type MessageLanguage = string;
+
 export interface SessionInfo {
   id: string;
   createdAt: Date;

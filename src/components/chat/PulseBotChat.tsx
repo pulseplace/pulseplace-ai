@@ -5,6 +5,7 @@ import { ChatContainer } from './components/ChatContainer';
 import { Confetti } from './Confetti';
 import { TypingIndicatorStyles } from './components/TypingIndicatorStyles';
 import { usePulseBot } from './usePulseBot';
+import { MessageLanguage } from './types';
 
 export default function PulseBotChat() {
   const {
@@ -13,7 +14,6 @@ export default function PulseBotChat() {
     messages,
     botAvatarState,
     language,
-    languages,
     messagesEndRef,
     sendMessage,
     handleFeedback,
@@ -26,6 +26,19 @@ export default function PulseBotChat() {
     confetti,
     sessionInfo
   } = usePulseBot();
+
+  // Define available languages
+  const languages = [
+    { value: 'en' as MessageLanguage, label: 'English' },
+    { value: 'es' as MessageLanguage, label: 'Spanish' },
+    { value: 'fr' as MessageLanguage, label: 'French' },
+    { value: 'de' as MessageLanguage, label: 'German' },
+    { value: 'it' as MessageLanguage, label: 'Italian' },
+    { value: 'pt' as MessageLanguage, label: 'Portuguese' },
+    { value: 'zh' as MessageLanguage, label: 'Chinese' },
+    { value: 'ja' as MessageLanguage, label: 'Japanese' },
+    { value: 'ko' as MessageLanguage, label: 'Korean' },
+  ];
 
   return (
     <>

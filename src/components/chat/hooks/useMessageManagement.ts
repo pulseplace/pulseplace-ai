@@ -1,7 +1,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Message, BotAvatarState } from '../types';
-import { logInteraction } from '../services/api-service';
+import { logInteraction } from '../services';
 
 export const useMessageManagement = (sessionId: string) => {
   const [messages, setMessages] = useState<Message[]>([]);

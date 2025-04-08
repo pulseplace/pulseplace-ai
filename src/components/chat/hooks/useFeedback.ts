@@ -1,7 +1,8 @@
+
 import { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { Message, BotAvatarState } from '../types';
-import { logFeedback } from '../services/api-service';
+import { logFeedback } from '../services';
 
 export const useFeedback = (
   messages: Message[], 

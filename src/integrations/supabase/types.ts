@@ -9,7 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      pulsebot_feedback: {
+        Row: {
+          feedback_type: string | null
+          id: string
+          message: string
+          timestamp: string | null
+          user_identifier: string | null
+        }
+        Insert: {
+          feedback_type?: string | null
+          id?: string
+          message: string
+          timestamp?: string | null
+          user_identifier?: string | null
+        }
+        Update: {
+          feedback_type?: string | null
+          id?: string
+          message?: string
+          timestamp?: string | null
+          user_identifier?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, X, Send, ThumbsUp, ThumbsDown, Globe } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -80,7 +81,7 @@ export default function PulseBotChat() {
     const userMessageId = `user_${Date.now()}`;
     const userMessage = { 
       id: userMessageId,
-      role: 'user', 
+      role: 'user' as const, 
       content: input.trim() 
     };
     
@@ -113,12 +114,12 @@ export default function PulseBotChat() {
 
       if (error) throw new Error(error.message || 'Failed to get a response');
 
-      // Add bot's response
+      // Add bot's response - ensuring role is typed correctly
       if (data && data.message) {
         const botMessageId = `bot_${Date.now()}`;
         setMessages(prev => [...prev, { 
           id: botMessageId,
-          role: 'bot', 
+          role: 'bot' as const, 
           content: data.message.content 
         }]);
       }
@@ -135,7 +136,7 @@ export default function PulseBotChat() {
         ...prev,
         {
           id: `error_${Date.now()}`,
-          role: 'bot',
+          role: 'bot' as const,
           content: "I'm having trouble connecting right now. Please try again in a moment.",
         },
       ]);

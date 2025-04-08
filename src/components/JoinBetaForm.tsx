@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { Loader2, CheckCircle, ArrowRight } from 'lucide-react';
 import FormFieldWithValidation from "@/components/ui/form-field-with-validation";
 import useFormValidation from "@/hooks/useFormValidation";
+import { supabase } from '@/integrations/supabase/client';
+import { emailService } from '@/services/emailService';
 
 // Enhanced validation schema with detailed error messages
 const formSchema = z.object({
@@ -76,7 +78,86 @@ const JoinBetaForm = () => {
   // Use our custom validation hook
   const validation = useFormValidation(form);
 
-  const onSubmit = (values: FormValues) => {
+  const sendWelcomeEmail = async (values: FormValues) => {
+    try {
+      const firstName = values.name.split(' ')[0];
+      
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
+          <h1 style="color: #4338ca; text-align: center;">PulsePlace.ai</h1>
+          
+          <p style="font-size: 18px;">Hello ${firstName},</p>
+          
+          <p>Thank you for joining the PulsePlace.ai private beta program!</p>
+          
+          <p>We're excited to have ${values.companyName} on board as we redefine workplace culture measurement and certification.</p>
+          
+          <div style="background-color: #f0f7ff; border-radius: 10px; padding: 15px; margin: 20px 0;">
+            <h3>Your Beta Application Details:</h3>
+            <p><strong>Company:</strong> ${values.companyName}</p>
+            <p><strong>Company Size:</strong> ${values.companySize}</p>
+            <p><strong>Industry:</strong> ${values.industry}</p>
+          </div>
+          
+          <h2>What happens next?</h2>
+          <ol style="line-height: 1.6;">
+            <li>Our team will review your application within 48 hours</li>
+            <li>You'll receive an email with login credentials and onboarding instructions</li>
+            <li>You'll get access to your PulsePlace dashboard</li>
+            <li>We'll schedule a quick onboarding call to help you get started</li>
+          </ol>
+          
+          <p>If you have any questions in the meantime, please reply to this email.</p>
+          
+          <p style="margin-top: 30px;">Looking forward to transforming your workplace culture,</p>
+          <p><strong>The PulsePlace Team</strong></p>
+          
+          <div style="text-align: center; color: #64748b; margin-top: 30px; font-size: 12px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            <p>PulsePlace.ai — Redefining workplace trust through data & AI</p>
+            <p>© 2025 PulsePlace, Inc. All rights reserved.</p>
+          </div>
+        </div>
+      `;
+
+      // Send confirmation email to the user
+      const emailResult = await emailService.sendEmail({
+        to: values.email,
+        subject: `Welcome to the PulsePlace Beta Program, ${firstName}!`,
+        html: emailHtml,
+        fromName: "PulsePlace Beta",
+        fromEmail: "beta@pulseplace.ai"
+      });
+
+      // Also send notification to admin
+      const adminEmailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2>New Beta Registration</h2>
+          <p><strong>Name:</strong> ${values.name}</p>
+          <p><strong>Email:</strong> ${values.email}</p>
+          <p><strong>Company:</strong> ${values.companyName}</p>
+          <p><strong>Company Size:</strong> ${values.companySize}</p>
+          <p><strong>Industry:</strong> ${values.industry}</p>
+          ${values.message ? `<p><strong>Message:</strong> ${values.message}</p>` : ''}
+          <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+      `;
+
+      await emailService.sendEmail({
+        to: "admin@pulseplace.ai", // This would be changed to your actual admin email
+        subject: `New Beta Registration: ${values.companyName}`,
+        html: adminEmailHtml,
+        fromName: "PulsePlace Beta System",
+        fromEmail: "noreply@pulseplace.ai"
+      });
+
+      return emailResult.success;
+    } catch (error) {
+      console.error("Failed to send welcome email:", error);
+      return false;
+    }
+  };
+
+  const onSubmit = async (values: FormValues) => {
     if (!validation.isValid) {
       toast.error("Please fix the errors in the form before submitting.");
       return;
@@ -84,23 +165,36 @@ const JoinBetaForm = () => {
     
     setLoading(true);
     
-    // Store data in localStorage for demo purposes
-    const existingLeads = JSON.parse(localStorage.getItem('betaLeads') || '[]');
-    const newLead = {
-      ...values,
-      id: Date.now(),
-      dateSubmitted: new Date().toISOString()
-    };
-    localStorage.setItem('betaLeads', JSON.stringify([...existingLeads, newLead]));
-    
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
+    try {
+      // Store data in localStorage for demo purposes
+      const existingLeads = JSON.parse(localStorage.getItem('betaLeads') || '[]');
+      const newLead = {
+        ...values,
+        id: Date.now(),
+        dateSubmitted: new Date().toISOString()
+      };
+      localStorage.setItem('betaLeads', JSON.stringify([...existingLeads, newLead]));
+      
+      // Send welcome email
+      const emailSent = await sendWelcomeEmail(values);
+      
       setUserName(values.name.split(' ')[0]); // Get first name
-      toast.success("Thank you for joining our beta program! We'll be in touch soon.");
+      setSubmitted(true);
+      
+      if (emailSent) {
+        toast.success("Thank you for joining our beta program! We've sent you a confirmation email.");
+      } else {
+        toast.success("Thank you for joining our beta program! We'll be in touch soon.");
+        console.warn("Email could not be sent, but form was processed");
+      }
+      
       form.reset();
-    }, 1500);
+    } catch (error) {
+      console.error("Error processing form:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -238,3 +332,4 @@ const JoinBetaForm = () => {
 };
 
 export default JoinBetaForm;
+

@@ -80,7 +80,7 @@ export const emailService = {
    * @param emailRequest Email request configuration
    * @returns Promise resolving to success status and response data
    */
-  sendEmail: async (emailRequest: GenericEmailRequest): Promise<{success: boolean, data?: any}> => {
+  sendEmail: async (emailRequest: GenericEmailRequest): Promise<{success: boolean, data?: any, error?: any}> => {
     try {
       console.log('Sending email to:', emailRequest.to);
       
@@ -94,15 +94,21 @@ export const emailService = {
       });
       
       if (error) {
-        console.error('Failed to send email:', error);
-        return { success: false };
+        console.error('Failed to send email via edge function:', error);
+        return { success: false, error };
+      }
+      
+      // Check if the edge function response indicates an error
+      if (data && data.error) {
+        console.error('Email sending failed in edge function:', data.error);
+        return { success: false, error: data.error };
       }
       
       console.log('Email sent successfully:', data);
       return { success: true, data };
     } catch (error) {
-      console.error('Failed to send email:', error);
-      return { success: false };
+      console.error('Failed to send email (exception):', error);
+      return { success: false, error };
     }
   },
   

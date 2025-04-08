@@ -119,6 +119,8 @@ const JoinBetaForm = () => {
         </div>
       `;
 
+      console.log(`Attempting to send welcome email to: ${values.email}`);
+
       // Send confirmation email to the user
       const emailResult = await emailService.sendEmail({
         to: values.email,
@@ -127,6 +129,13 @@ const JoinBetaForm = () => {
         fromName: "PulsePlace Beta",
         fromEmail: "beta@pulseplace.ai"
       });
+
+      if (!emailResult.success) {
+        console.error("Failed to send welcome email:", emailResult);
+        throw new Error("Failed to send welcome email");
+      }
+
+      console.log("Welcome email sent successfully");
 
       // Also send notification to admin
       const adminEmailHtml = `
@@ -142,13 +151,19 @@ const JoinBetaForm = () => {
         </div>
       `;
 
-      await emailService.sendEmail({
+      const adminEmailResult = await emailService.sendEmail({
         to: "admin@pulseplace.ai", // This would be changed to your actual admin email
         subject: `New Beta Registration: ${values.companyName}`,
         html: adminEmailHtml,
         fromName: "PulsePlace Beta System",
         fromEmail: "noreply@pulseplace.ai"
       });
+
+      if (!adminEmailResult.success) {
+        console.warn("Failed to send admin notification email:", adminEmailResult);
+      } else {
+        console.log("Admin notification email sent successfully");
+      }
 
       return emailResult.success;
     } catch (error) {
@@ -185,6 +200,7 @@ const JoinBetaForm = () => {
         toast.success("Thank you for joining our beta program! We've sent you a confirmation email.");
       } else {
         toast.success("Thank you for joining our beta program! We'll be in touch soon.");
+        toast.error("We couldn't send you a confirmation email at this time, but your registration was successful.");
         console.warn("Email could not be sent, but form was processed");
       }
       
@@ -332,4 +348,3 @@ const JoinBetaForm = () => {
 };
 
 export default JoinBetaForm;
-

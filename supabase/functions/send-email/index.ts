@@ -28,7 +28,9 @@ serve(async (req) => {
   }
   
   try {
+    // Check if API key is configured
     if (!MAILERSEND_API_KEY) {
+      console.error("MailerSend API key is not configured");
       throw new Error("MailerSend API key is not configured");
     }
 
@@ -78,7 +80,10 @@ serve(async (req) => {
       emailData.reply_to = { email: replyTo };
     }
 
-    console.log("Sending email via MailerSend:", JSON.stringify(emailData));
+    console.log("Sending email via MailerSend:", JSON.stringify({
+      ...emailData,
+      html: emailData.html ? "HTML content (truncated)" : undefined
+    }));
 
     // Send email using MailerSend API
     const response = await fetch("https://api.mailersend.com/v1/email", {
@@ -91,6 +96,9 @@ serve(async (req) => {
       body: JSON.stringify(emailData)
     });
 
+    // Log response status for debugging
+    console.log("MailerSend API response status:", response.status);
+    
     const responseData = await response.json();
     
     if (!response.ok) {

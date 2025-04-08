@@ -39,16 +39,14 @@ serve(async (req) => {
       );
     }
     
-    // Insert feedback into the database
+    // Insert feedback directly into the database
     const { data, error } = await supabase
       .from('pulsebot_feedback')
-      .insert([
-        { 
-          message, 
-          feedback_type: feedbackType,
-          user_identifier: userIdentifier || null
-        }
-      ]);
+      .insert({
+        message,
+        feedback_type: feedbackType,
+        user_identifier: userIdentifier || null
+      });
     
     if (error) throw error;
     

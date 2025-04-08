@@ -1,7 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Message, SessionInfo } from '../types';
+import { Message, SessionInfo, FeedbackData } from '../types';
 import { pulseAssistantConfig } from '@/config/chatbot-config';
 
 export const callPulseBotAPI = async (
@@ -51,16 +51,17 @@ export const callPulseBotAPI = async (
 
 export const logFeedback = async (messageId: string, content: string, feedbackType: 'up' | 'down', sessionId: string) => {
   try {
-    const { data, error } = await supabase.functions.invoke('log-pulsebot-feedback', {
-      body: { 
+    // Insert feedback directly into the pulsebot_feedback table
+    const { data, error } = await supabase
+      .from('pulsebot_feedback')
+      .insert({
         message: content,
-        feedbackType,
-        userIdentifier: sessionId
-      }
-    });
+        feedback_type: feedbackType,
+        user_identifier: sessionId
+      });
     
     if (error) throw new Error(error.message || 'Failed to log feedback');
-    console.log('Feedback logged successfully', data);
+    console.log('Feedback logged successfully');
     return true;
   } catch (err) {
     console.error('Error logging feedback:', err);

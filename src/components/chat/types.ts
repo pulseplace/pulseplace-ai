@@ -1,6 +1,5 @@
 
 // This file contains the shared types for the chat components
-// Let's assume this is the existing content and add our new types
 
 export type BotAvatarState = 'idle' | 'typing' | 'thinking' | 'happy';
 
@@ -35,4 +34,11 @@ export interface ConfettiState {
     scalar: number;
     ticks: number;
   };
+}
+
+// Types for feedback
+export interface FeedbackData {
+  message: string;
+  feedbackType: 'up' | 'down';
+  userIdentifier?: string;
 }

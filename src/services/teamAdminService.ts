@@ -106,13 +106,23 @@ export const teamAdminService = {
       
       // Calculate average score from pulse_score data
       let averageScore = 0;
-      let themeScores = [
-        { theme: "Trust & Safety", score: 0, count: 0 },
-        { theme: "Engagement", score: 0, count: 0 },
-        { theme: "Culture", score: 0, count: 0 },
-        { theme: "Growth & Development", score: 0, count: 0 },
-        { theme: "Wellbeing", score: 0, count: 0 },
+      // Fixed the type mismatch here - removed count property from themeScores
+      let themeScores: { theme: string; score: number }[] = [
+        { theme: "Trust & Safety", score: 0 },
+        { theme: "Engagement", score: 0 },
+        { theme: "Culture", score: 0 },
+        { theme: "Growth & Development", score: 0 },
+        { theme: "Wellbeing", score: 0 },
       ];
+      
+      // Track counts separately
+      let themeCounts = {
+        "Trust & Safety": 0,
+        "Engagement": 0,
+        "Culture": 0,
+        "Growth & Development": 0,
+        "Wellbeing": 0
+      };
       
       responsesData?.forEach(response => {
         if (response.pulse_score && response.pulse_score.overallScore) {
@@ -124,7 +134,7 @@ export const teamAdminService = {
               const themeIndex = themeScores.findIndex(t => t.theme === themeScore.theme);
               if (themeIndex !== -1) {
                 themeScores[themeIndex].score += themeScore.score;
-                themeScores[themeIndex].count += 1;
+                themeCounts[themeScore.theme as keyof typeof themeCounts] += 1;
               }
             });
           }
@@ -138,7 +148,9 @@ export const teamAdminService = {
         // Calculate average for each theme
         themeScores = themeScores.map(theme => ({
           theme: theme.theme,
-          score: theme.count > 0 ? Math.round(theme.score / theme.count) : 0
+          score: themeCounts[theme.theme as keyof typeof themeCounts] > 0 
+            ? Math.round(theme.score / themeCounts[theme.theme as keyof typeof themeCounts]) 
+            : 0
         }));
       }
       

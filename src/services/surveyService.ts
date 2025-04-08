@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { teamAdminService, ProcessedSurveyResponse } from './teamAdminService';
 
@@ -18,6 +17,12 @@ export interface SurveyResponse {
   userId: string;
   responses: Record<string, any>;
   createdAt?: string;
+}
+
+export interface CreateSurveyParams {
+  title: string;
+  description?: string;
+  department?: string;
 }
 
 export const surveyService = {
@@ -54,6 +59,63 @@ export const surveyService = {
     }
   },
   
+  async createSurvey(params: CreateSurveyParams): Promise<{ success: boolean; id?: string; error?: string }> {
+    try {
+      const { title, description = '', department = null } = params;
+      
+      const defaultQuestions = [
+        {
+          id: 'q1',
+          text: 'How would you rate your work-life balance?',
+          type: 'scale',
+          options: [1, 2, 3, 4, 5],
+          theme: 'Well-being'
+        },
+        {
+          id: 'q2',
+          text: 'How satisfied are you with the team collaboration?',
+          type: 'scale',
+          options: [1, 2, 3, 4, 5],
+          theme: 'Teamwork'
+        },
+        {
+          id: 'q3',
+          text: 'Do you feel recognized for your contributions?',
+          type: 'scale',
+          options: [1, 2, 3, 4, 5],
+          theme: 'Recognition'
+        }
+      ];
+      
+      const { data, error } = await supabase
+        .from('pulse_surveys')
+        .insert({
+          title,
+          description,
+          department,
+          is_active: true,
+          questions: defaultQuestions,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select('id')
+        .single();
+      
+      if (error) throw error;
+      
+      return {
+        success: true,
+        id: data.id
+      };
+    } catch (error: any) {
+      console.error('Error creating survey:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to create survey'
+      };
+    }
+  },
+  
   async submitSurveyResponse(response: SurveyResponse): Promise<{
     success: boolean;
     data?: ProcessedSurveyResponse;
@@ -64,14 +126,12 @@ export const surveyService = {
         throw new Error('User ID and Survey ID are required');
       }
       
-      // Process the survey response to calculate pulse scores
       const processedResponse = await teamAdminService.processSurveyResponse(
         response.surveyId,
         response.userId,
         response.responses
       );
       
-      // Update the user's survey status to 'completed'
       await this.updateTeamMemberSurveyStatus(response.userId, 'completed');
       
       return {
@@ -89,7 +149,6 @@ export const surveyService = {
   
   async updateTeamMemberSurveyStatus(userId: string, status: 'completed' | 'pending' | 'not_sent'): Promise<boolean> {
     try {
-      // Get the team member ID from the user ID
       const { data: teamMember, error: teamMemberError } = await supabase
         .from('team_members')
         .select('id')
@@ -97,12 +156,10 @@ export const surveyService = {
         .single();
       
       if (teamMemberError) {
-        // Team member might not be found if the user is not in the team_members table
         console.warn('Team member not found for user:', userId);
         return false;
       }
       
-      // Update the team member's survey status
       const { error: updateError } = await supabase
         .from('team_members')
         .update({ 
@@ -145,3 +202,5 @@ export const surveyService = {
     }
   }
 };
+
+export const { createSurvey } = surveyService;

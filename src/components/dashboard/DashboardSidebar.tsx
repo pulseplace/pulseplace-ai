@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -14,7 +13,8 @@ import {
   Users,
   Upload,
   Sparkles,
-  Brain
+  Brain,
+  MessageCircle
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/contexts/AuthContext';
@@ -87,6 +87,12 @@ export function DashboardSidebar({ className, isCollapsed }: SidebarNavProps) {
       icon: Mail,
       title: 'Email Templates',
       variant: pathname.includes('/dashboard/email-templates') ? 'default' : 'ghost',
+    },
+    {
+      href: '/dashboard/mailchimp-events',
+      icon: MessageCircle,
+      title: 'Mailchimp Events',
+      variant: pathname.includes('/dashboard/mailchimp-events') ? 'default' : 'ghost',
     },
   ];
   

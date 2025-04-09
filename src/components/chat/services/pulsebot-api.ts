@@ -102,32 +102,41 @@ export const pulseBotAPI = {
     summaryType: 'general' | 'problems' | 'dashboard',
     timeRange: number
   ): Promise<string> => {
-    // In a real implementation, this would call an API
-    // For now, we'll just return mock data
-    console.log(`Generating ${summaryType} summary for last ${timeRange} days`);
+    console.log(`Generating ${summaryType} analytics summary for last ${timeRange} days`);
     
-    // Mock data
-    const summaries = {
-      general: `PulseBot has had strong engagement over the past ${timeRange} days with a total of 1,243 interactions from 327 unique users. The satisfaction rate is at 87%, which is a 3% improvement from the previous period. The most used languages were English (78%), Spanish (12%), and French (5%).
-
-The most common queries were about survey methodology, certification process, and how to improve team scores. Users seem to find the bot most helpful when asking specific questions rather than open-ended ones.`,
-
-      problems: `Analysis of the past ${timeRange} days shows a few areas for improvement. The top downvoted responses were related to complex technical questions about survey implementation and advanced analytics. 
-
-We've identified 14 instances where users asked follow-up questions indicating confusion with the initial response. Most of these were in the "implementation" topic category. Consider enhancing the training data for these specific areas.`,
-
-      dashboard: `In the last ${timeRange} days, PulseBot has processed 1,243 queries with a 87% satisfaction rate. Key metrics show:
-- 327 unique users
-- Average 3.8 interactions per user
-- 91% of sessions completed without abandonment
-- Peak usage during work hours (10am-2pm)
-
-Top performing response categories: Quick Reference (96%), How-To (93%), Definitions (89%)
-Needs improvement: Complex Implementation (73%), Advanced Analytics (68%)`
-    };
-    
-    // Return the appropriate summary based on type
-    return summaries[summaryType] || 'No summary data available for this time period.';
+    try {
+      // Call the Supabase Edge Function with the analytics request
+      const response = await fetch('https://hamqupvdhlfznwnuohsh.supabase.co/functions/v1/ask-pulsebot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          message: `Generate a ${summaryType} summary of PulseBot analytics for the last ${timeRange} days.`,
+          language: localStorage.getItem('pulsebot_language') || 'en',
+          systemPrompt: `You are a PulseBot analytics assistant for PulsePlace.ai. Provide a detailed analysis of bot performance in the requested format for the specified time period. Include metrics like user satisfaction, common queries, and areas for improvement.`
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Analytics summary request failed:', response.status, errorText);
+        throw new Error(`HTTP error ${response.status}: ${errorText}`);
+      }
+      
+      const data = await response.json();
+      
+      // Check if we got a valid response
+      if (!data.message || !data.message.content) {
+        console.warn('Unexpected response format for analytics summary:', data);
+        throw new Error('Invalid response format from analytics summary request');
+      }
+      
+      return data.message.content;
+    } catch (error) {
+      console.error('Error generating analytics summary:', error);
+      return `Unable to generate analytics summary. Please try again later. Error: ${error instanceof Error ? error.message : String(error)}`;
+    }
   }
 };
 

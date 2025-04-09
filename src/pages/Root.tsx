@@ -28,8 +28,8 @@ const Root: React.FC = () => {
       try {
         console.log('Testing Supabase connection...');
         
-        // Get the Supabase URL safely (without using getUrl which doesn't exist)
-        const baseUrl = supabase.supabaseUrl || 'https://hamqupvdhlfznwnuohsh.supabase.co';
+        // Access the URL correctly from the Supabase client
+        const baseUrl = 'https://hamqupvdhlfznwnuohsh.supabase.co';
         console.log('Supabase base URL:', baseUrl);
         
         // First test: Simple ping to check if Supabase is reachable

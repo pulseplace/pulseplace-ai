@@ -38,10 +38,11 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
-const AiEngine = lazy(() => import('./pages/AiEngine'));
-const RoiCalculator = lazy(() => import('./pages/RoiCalculator'));
+const AIEngine = lazy(() => import('./pages/AIEngine')); // Fixed casing
+const RoiCalculator = lazy(() => import('./pages/RoiCalculator')); // Fixed casing
 const Methodology = lazy(() => import('./pages/Methodology'));
 const Pricing = lazy(() => import('./pages/Pricing'));
+const TaskAdmin = lazy(() => import('./pages/TaskAdmin')); // New task admin page
 
 const router = createBrowserRouter([
   {
@@ -159,7 +160,7 @@ const router = createBrowserRouter([
       },
       {
         path: "ai-engine",
-        element: <Suspense fallback={<Loading />}><AiEngine /></Suspense>,
+        element: <Suspense fallback={<Loading />}><AIEngine /></Suspense>,
       },
       {
         path: "roi-calculator",
@@ -172,6 +173,10 @@ const router = createBrowserRouter([
       {
         path: "pricing",
         element: <Suspense fallback={<Loading />}><Pricing /></Suspense>,
+      },
+      {
+        path: "task-admin",
+        element: <Suspense fallback={<Loading />}><TaskAdmin /></Suspense>,
       },
     ],
   },

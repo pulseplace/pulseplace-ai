@@ -6,9 +6,15 @@ interface SearchBarProps {
   query: string;
   onSearch: (query: string) => void;
   onClear: () => void;
+  resultsCount?: number;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ query, onSearch, onClear }) => {
+export const SearchBar: React.FC<SearchBarProps> = ({ 
+  query, 
+  onSearch, 
+  onClear,
+  resultsCount 
+}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     onSearch(value);
@@ -25,18 +31,25 @@ export const SearchBar: React.FC<SearchBarProps> = ({ query, onSearch, onClear }
       </div>
       <input
         type="text"
-        className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pulse-600 focus:border-transparent"
+        className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pulse-600 focus:border-transparent transition-all"
         placeholder="Search messages..."
         value={query}
         onChange={handleChange}
+        aria-label="Search chat history"
       />
       {query && (
-        <button
-          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-          onClick={handleClear}
-        >
-          <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-        </button>
+        <div className="absolute inset-y-0 right-0 pr-3 flex items-center space-x-2">
+          {resultsCount !== undefined && (
+            <span className="text-xs text-gray-500">{resultsCount} results</span>
+          )}
+          <button
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+            onClick={handleClear}
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
       )}
     </div>
   );

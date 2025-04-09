@@ -1,3 +1,4 @@
+
 import { useSession } from './hooks/useSession';
 import { useMessageManagement } from './hooks/useMessageManagement';
 import { useLanguageManager, cleanupPulseBotState } from './hooks/useLanguageManager';
@@ -5,6 +6,7 @@ import { useChatUI } from './hooks/useChatUI';
 import { useConfetti } from './hooks/useConfetti';
 import { useFeedbackHandler } from './hooks/useFeedbackHandler';
 import { useMessageSender } from './hooks/useMessageSender';
+import { useSearch } from './hooks/useSearch';
 import { Message, MessageLanguage } from './types';
 import { useEffect } from 'react';
 
@@ -24,8 +26,9 @@ export function usePulseBot() {
   } = useMessageManagement(sessionInfo.id);
   
   const { language, handleLanguageChange } = useLanguageManager();
-  const { open, search, toggleChat, handleSearch, clearSearch } = useChatUI();
+  const { open, toggleChat } = useChatUI();
   const { confetti, triggerConfetti } = useConfetti();
+  const { search, handleSearch, clearSearch } = useSearch();
   
   // Cleanup effect - when component unmounts
   useEffect(() => {
@@ -59,6 +62,19 @@ export function usePulseBot() {
       const newMessages = [...messages, message];
       setMessages(newMessages);
       scrollToBottom();
+
+      // Clear search when sending a new message
+      if (search.isSearching) {
+        clearSearch();
+      }
+      
+      // Trigger confetti for certain types of responses (basic implementation)
+      if (message.role === 'assistant' && 
+         (message.content.includes('congratulation') || 
+          message.content.includes('great job') ||
+          message.content.includes('well done'))) {
+        triggerConfetti();
+      }
     },
     setLoading,
     handleError
@@ -92,6 +108,7 @@ export function usePulseBot() {
     handleSearch: handleMessageSearch,
     clearSearch,
     confetti,
-    sessionInfo
+    sessionInfo,
+    triggerConfetti // Export triggerConfetti for external use
   };
 }

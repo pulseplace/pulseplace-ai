@@ -25,7 +25,7 @@ interface ChatContainerProps {
   handleFeedback: (messageId: string, message: Message, feedback: 'up' | 'down') => void;
   handleLanguageChange: (value: MessageLanguage) => void;
   toggleChat: () => void;
-  search: { query: string; results: Message[] };
+  search: { query: string; results: Message[]; isSearching: boolean };
   handleSearch: (query: string) => void;
   clearSearch: () => void;
   clearHistory: () => void;
@@ -157,18 +157,20 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
             query={search.query}
             onSearch={handleSearch}
             onClear={clearSearch}
+            resultsCount={search.isSearching ? search.results.length : undefined}
           />
         </div>
 
         {/* Messages */}
         <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
           <ChatMessages
-            messages={search.query ? search.results : messages}
+            messages={search.isSearching ? search.results : messages}
             loading={loading}
             botAvatarState={botAvatarState}
             handleFeedback={handleFeedback}
             messagesEndRef={messagesEndRef}
-            isSearching={!!search.query}
+            isSearching={search.isSearching}
+            searchQuery={search.query}
           />
         </div>
 

@@ -1,16 +1,16 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Message, SearchState } from '../types';
 
-export const useSearch = (messages: Message[]) => {
+export const useSearch = () => {
   const [search, setSearch] = useState<SearchState>({
     query: '',
     isSearching: false,
     results: []
   });
   
-  // Search functionality
-  const handleSearch = (query: string) => {
+  // Enhanced search functionality with highlighting and better result ranking
+  const handleSearch = useCallback((query: string, messages: Message[]) => {
     setSearch(prev => ({
       ...prev,
       query,
@@ -19,9 +19,20 @@ export const useSearch = (messages: Message[]) => {
     
     if (query.trim()) {
       const searchTerms = query.trim().toLowerCase();
-      const results = messages.filter(message => 
-        message.content.toLowerCase().includes(searchTerms)
-      );
+      
+      // Filter messages and rank them by relevance
+      const results = messages
+        .filter(message => message.content.toLowerCase().includes(searchTerms))
+        .map(message => {
+          // Calculate how relevant this message is (simple implementation)
+          const relevanceScore = (message.content.toLowerCase().match(new RegExp(searchTerms, 'g')) || []).length;
+          
+          return {
+            ...message,
+            relevanceScore
+          };
+        })
+        .sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
       
       setSearch(prev => ({
         ...prev,
@@ -30,15 +41,15 @@ export const useSearch = (messages: Message[]) => {
     } else {
       clearSearch();
     }
-  };
+  }, []);
   
-  const clearSearch = () => {
+  const clearSearch = useCallback(() => {
     setSearch({
       query: '',
       isSearching: false,
       results: []
     });
-  };
+  }, []);
 
   return {
     search,

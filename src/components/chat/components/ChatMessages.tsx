@@ -3,6 +3,7 @@ import React from 'react';
 import { ChatBubble } from '../ChatBubble';
 import { Message, BotAvatarState } from '../types';
 import { BotEmoji } from '../BotEmoji';
+import { HighlightedMessage } from './HighlightedMessage';
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -11,6 +12,7 @@ interface ChatMessagesProps {
   handleFeedback: (messageId: string, message: Message, feedback: 'up' | 'down') => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
   isSearching: boolean;
+  searchQuery?: string;
 }
 
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
@@ -19,13 +21,14 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
   botAvatarState,
   handleFeedback,
   messagesEndRef,
-  isSearching
+  isSearching,
+  searchQuery
 }) => {
   return (
     <div className="flex-1 p-3 overflow-y-auto space-y-3 max-h-[300px]">
       {isSearching && messages.length === 0 && (
         <div className="text-center py-4 text-gray-500">
-          No messages found
+          No messages found matching your search
         </div>
       )}
       
@@ -34,6 +37,8 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
           key={msg.id} 
           message={msg} 
           onFeedback={(feedback) => handleFeedback(msg.id, msg, feedback)}
+          isHighlighted={isSearching && searchQuery && msg.content.toLowerCase().includes(searchQuery.toLowerCase())}
+          searchQuery={isSearching ? searchQuery : undefined}
         />
       ))}
       

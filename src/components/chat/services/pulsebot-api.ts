@@ -39,15 +39,19 @@ export const callPulseBotAPI = async (
     // Get system prompt based on selected language
     const systemPrompt = pulseAssistantConfig.systemPrompt[language] || pulseAssistantConfig.systemPrompt.en;
 
-    // Get the URL for the edge function (avoid using .url property directly)
-    const functionEndpoint = `${supabase.functions.fetchUrl('ask-pulsebot')}`;
+    // Get the URL for the edge function (using the correct method)
+    const functionEndpoint = `${supabase.functions.getUrl('ask-pulsebot')}`;
+
+    // Get the authentication token properly
+    const { data: sessionData } = await supabase.auth.getSession();
+    const authToken = sessionData?.session?.access_token || '';
 
     // Call the Supabase Edge Function with abort signal
     const response = await fetch(functionEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${supabase.auth.getSession()?.data?.session?.access_token || ''}`,
+        'Authorization': `Bearer ${authToken}`,
       },
       body: JSON.stringify({ 
         messages: apiMessages,

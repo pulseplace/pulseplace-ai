@@ -52,17 +52,27 @@ const LANGUAGE_PROMPTS: Record<string, string> = {
 };
 
 serve(async (req) => {
+  console.log("Edge Function invoked: ask-pulsebot");
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
+    console.log("Handling CORS preflight request");
     return new Response(null, { headers: corsHeaders });
   }
   
   try {
     // Parse request body
-    const requestData = await req.json();
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log("Request body parsed:", JSON.stringify(requestBody).substring(0, 100) + "...");
+    } catch (e) {
+      console.error("Error parsing request body:", e);
+      throw new Error("Invalid JSON in request body");
+    }
     
     // Determine if the request is using the simple format or the full format
-    const isSimpleFormat = "message" in requestData;
+    const isSimpleFormat = "message" in requestBody;
     
     let messages: Message[] = [];
     let systemPrompt = DEFAULT_SYSTEM_PROMPT;
@@ -71,7 +81,7 @@ serve(async (req) => {
     
     if (isSimpleFormat) {
       // Handle simple format (for testing)
-      const { message, language = "en" } = requestData as SimpleRequestFormat;
+      const { message, language = "en" } = requestBody as SimpleRequestFormat;
       
       // Use language-specific system prompt if available
       systemPrompt = LANGUAGE_PROMPTS[language] || DEFAULT_SYSTEM_PROMPT;
@@ -87,7 +97,7 @@ serve(async (req) => {
         systemPrompt: requestSystemPrompt, 
         maxTokens: requestMaxTokens,
         userIdentifier: requestUserIdentifier
-      } = requestData as FullRequestFormat;
+      } = requestBody as FullRequestFormat;
       
       messages = requestMessages;
       systemPrompt = requestSystemPrompt || DEFAULT_SYSTEM_PROMPT;
@@ -106,10 +116,11 @@ serve(async (req) => {
     }
 
     // Check if OpenAI API key is configured
-    if (!OPENAI_API_KEY || OPENAI_API_KEY === "OPENAI_API_KEY") {
-      console.log("OpenAI API key is missing or not properly configured");
+    if (!OPENAI_API_KEY) {
+      console.error("OpenAI API key is missing or not properly configured");
       return new Response(
         JSON.stringify({
+          error: "OpenAI API key is not configured. Please set the OPENAI_API_KEY secret in your Supabase project.",
           message: {
             role: "assistant",
             content: "I'm currently experiencing technical difficulties connecting to my knowledge base. Please try again later or contact support if this persists."
@@ -119,9 +130,14 @@ serve(async (req) => {
       );
     }
 
+    console.log("API Key configured:", OPENAI_API_KEY ? "✅ Present" : "❌ Missing");
+    console.log("API Key (first 4 chars):", OPENAI_API_KEY?.substring(0, 4) + "...");
+
     try {
       // Determine if this is an analytics request
       const isAnalyticsRequest = systemPrompt.includes('analytics assistant');
+      
+      console.log("Calling OpenAI API with model:", isAnalyticsRequest ? "gpt-4o-mini" : "gpt-4o-mini");
       
       // Call OpenAI API
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -138,18 +154,43 @@ serve(async (req) => {
         }),
       });
 
+      console.log("OpenAI API response status:", response.status);
+
       // Check for errors in the OpenAI response
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("OpenAI API error:", errorData);
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (e) {
+          errorData = { error: "Failed to parse error response" };
+        }
+        
+        console.error("OpenAI API error:", JSON.stringify(errorData));
         
         // Handle quota exceeded error
         if (errorData?.error?.code === "insufficient_quota") {
+          console.error("QUOTA EXCEEDED ERROR DETECTED");
           return new Response(
             JSON.stringify({
+              error: "OpenAI API quota exceeded. Please check your billing status.",
               message: {
                 role: "assistant",
                 content: "I'm currently experiencing high demand and our API quota has been reached. Please try again later or contact support to upgrade your plan."
+              }
+            }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        
+        // Handle invalid API key
+        if (errorData?.error?.code === "invalid_api_key") {
+          console.error("INVALID API KEY ERROR DETECTED");
+          return new Response(
+            JSON.stringify({
+              error: "Invalid OpenAI API key. Please update your API key in Supabase Edge Function Secrets.",
+              message: {
+                role: "assistant",
+                content: "I'm currently experiencing authentication issues with my AI provider. Please contact support to resolve this issue."
               }
             }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -180,9 +221,10 @@ serve(async (req) => {
       // Provide fallback response
       return new Response(
         JSON.stringify({
+          error: `Error calling OpenAI API: ${error.message}`,
           message: {
             role: "assistant",
-            content: "I apologize, but I'm having trouble processing your request right now. Please try again in a moment."
+            content: "I apologize, but I'm having trouble processing your request right now. This might be due to a temporary issue with our AI provider. Please try again in a moment."
           }
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -193,6 +235,7 @@ serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
+        error: `General error in Edge Function: ${error.message}`,
         message: {
           role: "assistant",
           content: "I'm sorry, I encountered an unexpected error. Please try again with a different question or contact support if the issue persists."

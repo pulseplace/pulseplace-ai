@@ -8,6 +8,7 @@ export const pulseBotAPI = {
     
     try {
       // Call the Supabase Edge Function with the message
+      console.log('Attempting to call Edge Function with message:', message);
       const response = await fetch('https://hamqupvdhlfznwnuohsh.supabase.co/functions/v1/ask-pulsebot', {
         method: 'POST',
         headers: {
@@ -19,10 +20,21 @@ export const pulseBotAPI = {
         }),
       });
       
+      console.log('Edge Function response status:', response.status);
+      
+      // If the response itself is not OK, throw immediately
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Response not OK:', response.status, errorText);
+        throw new Error(`HTTP error ${response.status}: ${errorText}`);
+      }
+      
       const data = await response.json();
+      console.log('Received data from Edge Function:', data);
       
       // Check if the response contains an error message from the Edge Function
       if (data.error) {
+        console.error('Error in response data:', data.error);
         throw new Error(data.error || 'Failed to get response from OpenAI');
       }
       
@@ -43,8 +55,9 @@ export const pulseBotAPI = {
       };
     } catch (error) {
       console.error('Error connecting to OpenAI:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       return {
-        message: "I'm having trouble connecting to my AI services right now. Please try again in a moment. This could be due to API quota limits or connectivity issues.",
+        message: `I'm having trouble connecting to my AI services right now. Please try again in a moment. Technical details: ${errorMessage}`,
         avatarState: 'idle' as const,
         context: {
           intent: 'error',

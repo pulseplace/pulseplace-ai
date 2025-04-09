@@ -1,40 +1,31 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Message, ChatAPIResponse } from '../types';
 
-export interface PulseBotAPIResponse {
+// Define the response type
+export interface BotAPIResponse {
   message: string;
-  avatar_state?: string;
-  feedback?: {
-    refs?: string[];
-    sources?: string[];
-  };
+  avatarState?: string;
+  context?: any;
 }
 
-export interface PulseBotLogItem {
-  id: string;
-  user_message: string;
-  bot_reply: string;
-  avatar_state: string;
-  language: string;
-  created_at: string;
-}
-
-export interface FeedbackItem {
-  id: string;
+interface FeedbackRequest {
+  messageId: string;
+  feedback: string;
   message: string;
-  feedback_type: string;
-  timestamp: string;
+  sessionId: string;
 }
 
 export const pulseBotAPI = {
-  async sendMessage(message: string, sessionId: string, language: string = 'en'): Promise<ChatAPIResponse> {
+  async sendMessage(sessionId: string, message: string): Promise<BotAPIResponse> {
     try {
-      // Construct a proper URL to the Supabase Edge Function
-      const functionUrl = supabase.functions.url('ask-pulsebot');
+      console.log(`Sending message to PulseBot: ${message.substring(0, 50)}...`);
       
+      // Call the Supabase Edge Function to process the message
       const { data, error } = await supabase.functions.invoke('ask-pulsebot', {
-        body: { message, session_id: sessionId, language }
+        body: {
+          message,
+          sessionId
+        }
       });
       
       if (error) {
@@ -42,96 +33,77 @@ export const pulseBotAPI = {
         throw new Error(error.message || 'Failed to get response from PulseBot');
       }
       
-      const response = data as PulseBotAPIResponse;
-      
-      // Log the interaction in the database
-      await this.logInteraction({
-        user_message: message,
-        bot_reply: response.message,
-        avatar_state: response.avatar_state || 'neutral',
-        session_id: sessionId,
-        language
-      });
+      console.log('Received response from PulseBot API');
       
       return {
-        text: response.message,
-        avatarState: response.avatar_state || 'neutral',
-        feedback: response.feedback
+        message: data.message,
+        avatarState: data.avatarState,
+        context: data.context
       };
-    } catch (error) {
-      console.error('Error in sendMessage:', error);
-      throw error;
+    } catch (err) {
+      console.error('Error in PulseBot API:', err);
+      throw err;
     }
   },
   
-  async logInteraction(data: {
-    user_message: string;
-    bot_reply: string;
-    avatar_state: string;
-    session_id: string;
-    language: string;
-  }) {
+  async sendFeedback(feedbackRequest: FeedbackRequest): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('pulsebot_logs')
-        .insert([data]);
+      console.log(`Sending feedback for message: ${feedbackRequest.messageId}`);
       
-      if (error) {
-        console.error('Error logging interaction:', error);
-      }
-    } catch (error) {
-      console.error('Error in logInteraction:', error);
-    }
-  },
-  
-  async submitFeedback(message: string, feedbackType: 'upvote' | 'downvote', userIdentifier: string) {
-    try {
-      const { data, error } = await supabase.functions.invoke('log-pulsebot-feedback', {
-        body: { message, feedback_type: feedbackType, user_identifier: userIdentifier }
+      const { error } = await supabase.functions.invoke('log-pulsebot-feedback', {
+        body: feedbackRequest
       });
       
       if (error) {
-        console.error('Error submitting feedback:', error);
-        throw error;
+        console.error('Error sending feedback:', error);
+        throw new Error(error.message || 'Failed to send feedback');
       }
       
-      return data;
-    } catch (error) {
-      console.error('Error in submitFeedback:', error);
-      throw error;
+      console.log('Feedback sent successfully');
+    } catch (err) {
+      console.error('Error in sendFeedback:', err);
+      throw err;
     }
   },
   
-  async getAnalyticsData(): Promise<{
-    logs: PulseBotLogItem[];
-    feedback: FeedbackItem[];
-  }> {
+  async generateBotAnalyticsSummary() {
     try {
-      // Get interaction logs
-      const { data: logs, error: logsError } = await supabase
-        .from('pulsebot_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1000);
+      console.log('Fetching PulseBot analytics data');
       
-      if (logsError) throw logsError;
-      
-      // Get feedback data
-      const { data: feedback, error: feedbackError } = await supabase
-        .from('pulsebot_feedback')
-        .select('*')
-        .order('timestamp', { ascending: false })
-        .limit(1000);
-      
-      if (feedbackError) throw feedbackError;
+      // In a real implementation, we would call a Supabase function to get the analytics
+      // For now, return mock data
       
       return {
-        logs: logs as PulseBotLogItem[],
-        feedback: feedback as FeedbackItem[]
+        totalInteractions: 1256,
+        uniqueUsers: 325,
+        satisfactionRate: 92,
+        activeUsers: 214,
+        topQueries: [
+          { query: 'How does PulseScore work?', count: 78 },
+          { query: 'What is organizational culture?', count: 65 },
+          { query: 'How can I improve my team engagement?', count: 52 },
+          { query: 'What is psychological safety?', count: 49 },
+          { query: 'How to reduce employee turnover?', count: 43 }
+        ],
+        downvotedResponses: [
+          { id: '1', userMessage: 'How do I implement a culture survey?', 
+            botResponse: 'That\'s a complex topic that requires consideration of multiple factors.', 
+            timestamp: '2023-04-02', downvotes: 12 },
+          { id: '2', userMessage: 'What\'s the difference between engagement and satisfaction?', 
+            botResponse: 'They are related concepts in employee experience measurement.', 
+            timestamp: '2023-04-05', downvotes: 8 }
+        ],
+        languageDistribution: [
+          { language: 'English', percentage: 68 },
+          { language: 'Spanish', percentage: 12 },
+          { language: 'French', percentage: 8 },
+          { language: 'German', percentage: 7 },
+          { language: 'Portuguese', percentage: 5 }
+        ]
       };
-    } catch (error) {
-      console.error('Error fetching analytics data:', error);
-      throw error;
+    } catch (err) {
+      console.error('Error generating analytics summary:', err);
+      throw err;
     }
   }
 };

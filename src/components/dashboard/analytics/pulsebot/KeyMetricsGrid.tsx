@@ -1,38 +1,48 @@
 
 import React from 'react';
-import { PulseBotAnalytics } from '@/components/chat/types';
+import { Grid } from "@tremor/react";
+import { Users, MessageSquare, ThumbsUp, Activity } from 'lucide-react';
 import KeyMetricCard from './KeyMetricCard';
 
 interface KeyMetricsGridProps {
-  analytics: PulseBotAnalytics;
-  isLoading: boolean;
+  metrics: {
+    totalInteractions: number;
+    uniqueUsers: number;
+    satisfactionRate: number;
+    activeUsers: number;
+  };
+  isLoading?: boolean;
 }
 
-const KeyMetricsGrid: React.FC<KeyMetricsGridProps> = ({ analytics, isLoading }) => {
-  // Format feedback ratio as percentage
-  const feedbackPositiveRate = analytics.feedbackRatio.ratio * 100;
-  
+const KeyMetricsGrid: React.FC<KeyMetricsGridProps> = ({ metrics, isLoading = false }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <KeyMetricCard 
-        title="Total Interactions" 
-        value={analytics.totalInteractions} 
-        isLoading={isLoading} 
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <KeyMetricCard
+        title="Total Interactions"
+        value={metrics.totalInteractions}
+        icon={<MessageSquare />}
+        color="blue"
       />
-      <KeyMetricCard 
-        title="Unique Users" 
-        value={analytics.uniqueUsers} 
-        isLoading={isLoading} 
+      
+      <KeyMetricCard
+        title="Unique Users"
+        value={metrics.uniqueUsers}
+        icon={<Users />}
+        color="purple"
       />
-      <KeyMetricCard 
-        title="Positive Feedback" 
-        value={isLoading ? '-' : `${feedbackPositiveRate.toFixed(1)}%`} 
-        isLoading={isLoading} 
+      
+      <KeyMetricCard
+        title="Satisfaction Rate"
+        value={`${metrics.satisfactionRate}%`}
+        icon={<ThumbsUp />}
+        color="green"
       />
-      <KeyMetricCard 
-        title="Top Language" 
-        value={isLoading ? '-' : analytics.languageBreakdown[0]?.language || 'N/A'} 
-        isLoading={isLoading} 
+      
+      <KeyMetricCard
+        title="Active Users"
+        value={`${metrics.activeUsers}`}
+        icon={<Activity />}
+        color="amber"
       />
     </div>
   );

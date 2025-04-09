@@ -1,12 +1,10 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { useAuth } from '@/contexts/AuthContext';
-import { emailService } from '@/services/emailService';
-import { teamAdminService } from '@/services/teamAdminService';
+import { AlertTriangle } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
 // Import refactored components
 import TeamAdminFilters from './admin/TeamAdminFilters';
@@ -15,7 +13,6 @@ import LoadingDashboard from './admin/LoadingDashboard';
 import TeamTabContent from './admin/TeamTabContent';
 import InsightsTabContent from './admin/InsightsTabContent';
 import CertificationTabContent from './admin/CertificationTabContent';
-import DashboardHeader from './admin/DashboardHeader';
 import TeamActions from './admin/TeamActions';
 import TeamDataExport from './admin/TeamDataExport';
 import { useTeamAdminData } from './admin/useTeamAdminData';
@@ -25,7 +22,7 @@ const DEMO_DEPARTMENTS = [
 ];
 
 const TeamAdminDashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
   
   // Use our custom hook to manage data and state
@@ -106,10 +103,12 @@ const TeamAdminDashboard: React.FC = () => {
             department={filters.department !== 'All Departments' ? filters.department : undefined}
           />
           
-          <Button onClick={refreshData} disabled={isRefreshing}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh'}
-          </Button>
+          <TeamActions 
+            teamMembers={data.teamMembers}
+            onSendReminders={handleSendReminders}
+            onBulkInvite={handleBulkInvite}
+            isRefreshing={isRefreshing}
+          />
         </div>
       </div>
       
@@ -122,11 +121,11 @@ const TeamAdminDashboard: React.FC = () => {
       
       <TeamAdminFilters
         dateRange={filters.dateRange}
-        setDateRange={(dateRange) => setFilters({...filters, dateRange})}
+        setDateRange={date => setFilters({...filters, dateRange: date})}
         department={filters.department}
-        setDepartment={(department) => setFilters({...filters, department})}
+        setDepartment={department => setFilters({...filters, department})}
         pulseTheme={filters.pulseTheme}
-        setPulseTheme={(pulseTheme) => setFilters({...filters, pulseTheme})}
+        setPulseTheme={theme => setFilters({...filters, pulseTheme: theme})}
         onClose={() => refreshData()}
       />
       
@@ -171,13 +170,9 @@ const TeamAdminDashboard: React.FC = () => {
               <CertificationTabContent 
                 averageScore={data.summaryStats.averageScore}
                 onSendCertificate={handleSendCertificate}
-                onExportPDF={() => {
-                  const teamDataExport = new TeamDataExport({
-                    teamMembersCount: data.teamMembers.length,
-                    department: filters.department !== 'All Departments' ? filters.department : undefined
-                  });
-                  teamDataExport.handleExportPDF();
-                }}
+                onExportPDF={() => exportService.exportToPDF(
+                  filters.department !== 'All Departments' ? filters.department : undefined
+                )}
               />
             </TabsContent>
           </Tabs>

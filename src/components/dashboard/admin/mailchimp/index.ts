@@ -1,5 +1,6 @@
 
 import MailchimpWebhookLogs from './MailchimpWebhookLogs';
+import MailchimpSubscribersTable from './MailchimpSubscribersTable';
 
-export { MailchimpWebhookLogs };
+export { MailchimpWebhookLogs, MailchimpSubscribersTable };
 export default MailchimpWebhookLogs;

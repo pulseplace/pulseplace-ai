@@ -1,8 +1,11 @@
 
 import { useState, useEffect } from 'react';
 import { MessageLanguage } from '../types';
+import { useToast } from '@/hooks/use-toast';
 
 export const useLanguageManager = () => {
+  const { toast } = useToast();
+  
   // Initialize language from localStorage or default to 'en'
   const [language, setLanguage] = useState<MessageLanguage>(() => {
     try {
@@ -28,10 +31,10 @@ export const useLanguageManager = () => {
       toast({
         title: "Warning",
         description: "Language preference couldn't be saved for future sessions",
-        variant: "warning",
+        variant: "default",
       });
     }
-  }, [language]);
+  }, [language, toast]);
 
   // Handler for language change with validation
   const handleLanguageChange = (newLanguage: MessageLanguage) => {

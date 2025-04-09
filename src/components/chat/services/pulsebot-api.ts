@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { Message, SessionInfo } from '../types';
 import { pulseAssistantConfig } from '@/config/chatbot-config';
@@ -38,12 +39,15 @@ export const callPulseBotAPI = async (
     // Get system prompt based on selected language
     const systemPrompt = pulseAssistantConfig.systemPrompt[language] || pulseAssistantConfig.systemPrompt.en;
 
+    // Get the URL for the edge function (avoid using .url property directly)
+    const functionEndpoint = `${supabase.functions.fetchUrl('ask-pulsebot')}`;
+
     // Call the Supabase Edge Function with abort signal
-    const response = await fetch(`${supabase.functions.url}/ask-pulsebot`, {
+    const response = await fetch(functionEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${supabase.auth.session()?.access_token || ''}`,
+        'Authorization': `Bearer ${supabase.auth.getSession()?.data?.session?.access_token || ''}`,
       },
       body: JSON.stringify({ 
         messages: apiMessages,

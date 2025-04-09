@@ -54,7 +54,7 @@ export default function PulseBotChat() {
       toast({
         title: "Language Reset",
         description: "Your language preference was reset to English due to an invalid setting",
-        variant: "warning",
+        variant: "default",
       });
     }
   }, [language]);

@@ -38,7 +38,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
-// Fix: Using consistent casing in imports to match the actual file names
+// Fixed: Using consistent casing in imports to match the actual file names
 const AiEngine = lazy(() => import('./pages/AiEngine')); 
 const RoiCalculator = lazy(() => import('./pages/RoiCalculator')); 
 const Methodology = lazy(() => import('./pages/Methodology'));
@@ -161,11 +161,11 @@ const router = createBrowserRouter([
       },
       {
         path: "ai-engine",
-        element: <Suspense fallback={<Loading />}><AIEngine /></Suspense>,
+        element: <Suspense fallback={<Loading />}><AiEngine /></Suspense>,
       },
       {
         path: "roi-calculator",
-        element: <Suspense fallback={<Loading />}><ROICalculator /></Suspense>,
+        element: <Suspense fallback={<Loading />}><RoiCalculator /></Suspense>,
       },
       {
         path: "methodology",

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import MetaTags from '@/components/MetaTags';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -179,7 +179,7 @@ const TaskAdmin: React.FC = () => {
         toast({
           title: "Task Completed",
           description: `Task has been marked as completed successfully!`,
-          variant: "success"
+          variant: "success" // Now using the success variant
         });
       } else {
         toast({
@@ -297,7 +297,7 @@ const TaskAdmin: React.FC = () => {
   useEffect(() => {
     fetchTasks();
     
-    // Set up real-time subscription if needed
+    // Set up real-time subscription
     const subscription = supabase
       .channel('table-db-changes')
       .on('postgres_changes', 
@@ -580,6 +580,7 @@ const TaskAdmin: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Tasks</CardTitle>
+          <CardDescription>Manage your tasks and track their progress</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>

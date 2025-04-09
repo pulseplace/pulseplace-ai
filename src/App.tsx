@@ -29,6 +29,13 @@ const Auth = lazy(() => import('./pages/Auth'));
 const PulseBot = lazy(() => import('./pages/PulseBot'));
 const MailchimpEvents = lazy(() => import('./pages/dashboard/MailchimpEvents'));
 const CertificationEngine = lazy(() => import('./pages/dashboard/CertificationEngine'));
+const AboutUs = lazy(() => import('./pages/AboutUs'));
+const Certification = lazy(() => import('./pages/Certification'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const HowItWorks = lazy(() => import('./pages/HowItWorks'));
+const Insights = lazy(() => import('./pages/Insights'));
+const Contact = lazy(() => import('./pages/Contact'));
 
 const router = createBrowserRouter([
   {
@@ -103,6 +110,34 @@ const router = createBrowserRouter([
       {
         path: "join-beta",
         element: <JoinBetaPage />,
+      },
+      {
+        path: "about-us",
+        element: <Suspense fallback={<Loading />}><AboutUs /></Suspense>,
+      },
+      {
+        path: "certification",
+        element: <Suspense fallback={<Loading />}><Certification /></Suspense>,
+      },
+      {
+        path: "terms-of-service",
+        element: <Suspense fallback={<Loading />}><TermsOfService /></Suspense>,
+      },
+      {
+        path: "privacy-policy",
+        element: <Suspense fallback={<Loading />}><PrivacyPolicy /></Suspense>,
+      },
+      {
+        path: "how-it-works",
+        element: <Suspense fallback={<Loading />}><HowItWorks /></Suspense>,
+      },
+      {
+        path: "insights",
+        element: <Suspense fallback={<Loading />}><Insights /></Suspense>,
+      },
+      {
+        path: "contact",
+        element: <Suspense fallback={<Loading />}><Contact /></Suspense>,
       },
     ],
   },

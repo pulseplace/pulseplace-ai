@@ -56,14 +56,12 @@ const Navbar = () => {
 
   // Group nav items for easier management as app grows
   const navItems = [
-    { type: 'hash-link', label: 'Features', path: '/#features' },
-    { type: 'hash-link', label: 'How It Works', path: '/#how-it-works' },
-    { type: 'link', label: 'Methodology', path: '/methodology' },
-    { type: 'link', label: 'Our AI Engine', path: '/ai-engine' },
+    { type: 'link', label: 'Features', path: '/features' },
+    { type: 'link', label: 'How It Works', path: '/how-it-works' },
     { type: 'link', label: 'Certification', path: '/certification' },
-    { type: 'link', label: 'Showcase', path: '/certified-companies' },
-    { type: 'link', label: 'About Us', path: '/about' },
-    { type: 'hash-link', label: 'Join Beta', path: '/#join-beta' },
+    { type: 'link', label: 'Insights', path: '/insights' },
+    { type: 'link', label: 'About Us', path: '/about-us' },
+    { type: 'link', label: 'Contact', path: '/contact' },
   ];
 
   return (

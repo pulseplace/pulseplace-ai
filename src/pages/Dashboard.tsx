@@ -1,12 +1,14 @@
+
 import React from 'react';
 import DashboardUI from '@/components/dashboard/DashboardUI';
 import MetaTags from '@/components/MetaTags';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText, ListTodo } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { exportService } from '@/services/team/exportService';
 import CertificationJourney from '@/components/dashboard/CertificationJourney';
+import { Link } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
   const { toast } = useToast();
@@ -122,6 +124,12 @@ const Dashboard: React.FC = () => {
                   <Download className="mr-2 h-4 w-4" />
                   Customize Badge
                 </a>
+              </Button>
+              <Button variant="outline" className="w-full justify-start" asChild>
+                <Link to="/task-admin">
+                  <ListTodo className="mr-2 h-4 w-4" />
+                  Task Administration
+                </Link>
               </Button>
             </div>
           </CardContent>

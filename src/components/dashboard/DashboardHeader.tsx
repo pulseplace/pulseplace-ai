@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Settings, HelpCircle, ListTodo } from 'lucide-react';
+import { Bell, Settings, HelpCircle, ListTodo, Menu } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,14 +13,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link } from 'react-router-dom';
 
-interface DashboardHeaderProps {
+export interface DashboardHeaderProps {
   title?: string;
   subtitle?: string;
+  onMobileMenuClick?: () => void; // Added this property
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   title = "Dashboard",
-  subtitle = "Welcome back to your PulsePlace dashboard"
+  subtitle = "Welcome back to your PulsePlace dashboard",
+  onMobileMenuClick
 }) => {
   const { toast } = useToast();
   
@@ -39,6 +41,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
       </div>
       
       <div className="flex items-center space-x-2">
+        {onMobileMenuClick && (
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="md:hidden"
+            onClick={onMobileMenuClick}
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        )}
+        
         <Button 
           variant="outline" 
           size="icon"

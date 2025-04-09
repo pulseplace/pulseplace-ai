@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import {
   createBrowserRouter,
@@ -38,11 +37,11 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
-const AIEngine = lazy(() => import('./pages/AIEngine')); // Fixed casing
-const RoiCalculator = lazy(() => import('./pages/RoiCalculator')); // Fixed casing
+const AIEngine = lazy(() => import('./pages/AIEngine')); 
+const ROICalculator = lazy(() => import('./pages/ROICalculator')); 
 const Methodology = lazy(() => import('./pages/Methodology'));
 const Pricing = lazy(() => import('./pages/Pricing'));
-const TaskAdmin = lazy(() => import('./pages/TaskAdmin')); // New task admin page
+const TaskAdmin = lazy(() => import('./pages/TaskAdmin')); // Task admin page
 
 const router = createBrowserRouter([
   {
@@ -164,7 +163,7 @@ const router = createBrowserRouter([
       },
       {
         path: "roi-calculator",
-        element: <Suspense fallback={<Loading />}><RoiCalculator /></Suspense>,
+        element: <Suspense fallback={<Loading />}><ROICalculator /></Suspense>,
       },
       {
         path: "methodology",

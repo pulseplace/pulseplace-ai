@@ -11,14 +11,16 @@ export interface Message {
   timestamp: string;
   feedback?: MessageFeedback;
   avatarState?: BotAvatarStateValue;
+  language?: MessageLanguage;
 }
 
 // Bot avatar state
-export type BotAvatarStateValue = 'idle' | 'thinking' | 'happy' | 'neutral' | 'confused' | 'excited';
+export type BotAvatarStateValue = 'idle' | 'thinking' | 'happy' | 'neutral' | 'confused' | 'excited' | 'typing';
 
 export type BotAvatarState = BotAvatarStateValue | { 
   status: BotAvatarStateValue;
   details?: string;
+  animated?: boolean;
 };
 
 // Bot response
@@ -98,4 +100,19 @@ export interface ConfettiConfig {
   spread: number;
   origin: { y: number };
   colors?: string[];
+}
+
+// Search state
+export interface SearchState {
+  query: string;
+  isSearching: boolean;
+  results: Message[] | string[];
+}
+
+// Session info
+export interface SessionInfo {
+  id: string;
+  startTime: Date;
+  userAgent: string;
+  createdAt: Date;
 }

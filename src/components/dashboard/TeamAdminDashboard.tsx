@@ -17,6 +17,7 @@ import TeamActions from './admin/TeamActions';
 import TeamDataExport from './admin/TeamDataExport';
 import { useTeamAdminData } from './admin/useTeamAdminData';
 import { teamAdminService } from '@/services/teamAdminService';
+import { DateRangeFilter } from '@/components/ui/date-range-picker';
 
 const DEMO_DEPARTMENTS = [
   "All Departments", "Engineering", "Marketing", "Sales", "Customer Support", "Human Resources"
@@ -89,6 +90,21 @@ const TeamAdminDashboard: React.FC = () => {
   if (isLoading) {
     return <LoadingDashboard />;
   }
+
+  // Handle date range changes
+  const handleDateRangeChange = (date: DateRangeFilter) => {
+    setFilters({...filters, dateRange: date});
+  };
+
+  // Handle department changes
+  const handleDepartmentChange = (department: string) => {
+    setFilters({...filters, department});
+  };
+
+  // Handle pulse theme changes
+  const handlePulseThemeChange = (theme: string) => {
+    setFilters({...filters, pulseTheme: theme});
+  };
   
   return (
     <div className="space-y-8">
@@ -122,11 +138,11 @@ const TeamAdminDashboard: React.FC = () => {
       
       <TeamAdminFilters
         dateRange={filters.dateRange}
-        setDateRange={(date) => setFilters({...filters, dateRange: date})}
+        setDateRange={handleDateRangeChange}
         department={filters.department}
-        setDepartment={(department) => setFilters({...filters, department})}
+        setDepartment={handleDepartmentChange}
         pulseTheme={filters.pulseTheme}
-        setPulseTheme={(theme) => setFilters({...filters, pulseTheme: theme})}
+        setPulseTheme={handlePulseThemeChange}
         onClose={() => refreshData()}
       />
       

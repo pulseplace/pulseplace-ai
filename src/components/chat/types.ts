@@ -1,9 +1,22 @@
-export type Role = 'user' | 'bot';
+
+export type Role = 'user' | 'bot' | 'assistant';
 
 export interface Message {
   id: string;
   role: Role;
   content: string;
+  liked?: boolean;
+  disliked?: boolean;
+  isError?: boolean;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: Role;
+  content: string;
+  timestamp: Date;
+  avatarState?: BotAvatarState;
+  context?: any;
   liked?: boolean;
   disliked?: boolean;
   isError?: boolean;
@@ -76,7 +89,10 @@ export interface PulseBotAnalytics {
     count: number;
   }[];
   topDownvotedResponses: {
-    response: string;
+    id: string;
+    userMessage: string;
+    botResponse: string;
+    timestamp: string;
     downvotes: number;
   }[];
 }

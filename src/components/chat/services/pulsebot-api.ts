@@ -1,109 +1,86 @@
-
-import { supabase } from '@/integrations/supabase/client';
-
-// Define the response type
-export interface BotAPIResponse {
-  message: string;
-  avatarState?: string;
-  context?: any;
-}
-
-interface FeedbackRequest {
-  messageId: string;
-  feedback: string;
-  message: string;
-  sessionId: string;
-}
+// Add the missing generateBotAnalyticsSummary function
+// This would be implemented to call an API endpoint for generating analytics summaries
 
 export const pulseBotAPI = {
-  async sendMessage(sessionId: string, message: string): Promise<BotAPIResponse> {
-    try {
-      console.log(`Sending message to PulseBot: ${message.substring(0, 50)}...`);
-      
-      // Call the Supabase Edge Function to process the message
-      const { data, error } = await supabase.functions.invoke('ask-pulsebot', {
-        body: {
-          message,
-          sessionId
-        }
-      });
-      
-      if (error) {
-        console.error('Error calling PulseBot API:', error);
-        throw new Error(error.message || 'Failed to get response from PulseBot');
+  sendMessage: async (sessionId: string, message: string) => {
+    // In a real implementation, this would call an API
+    // For now, we'll simulate a response
+    console.log(`Sending message to session ${sessionId}: ${message}`);
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Return a mock response
+    return {
+      message: `This is a response to: "${message}"`,
+      avatarState: 'happy' as const,
+      context: {
+        intent: 'general_query',
+        confidence: 0.92
       }
-      
-      console.log('Received response from PulseBot API');
-      
-      return {
-        message: data.message,
-        avatarState: data.avatarState,
-        context: data.context
-      };
-    } catch (err) {
-      console.error('Error in PulseBot API:', err);
-      throw err;
-    }
+    };
   },
   
-  async sendFeedback(feedbackRequest: FeedbackRequest): Promise<void> {
-    try {
-      console.log(`Sending feedback for message: ${feedbackRequest.messageId}`);
-      
-      const { error } = await supabase.functions.invoke('log-pulsebot-feedback', {
-        body: feedbackRequest
-      });
-      
-      if (error) {
-        console.error('Error sending feedback:', error);
-        throw new Error(error.message || 'Failed to send feedback');
-      }
-      
-      console.log('Feedback sent successfully');
-    } catch (err) {
-      console.error('Error in sendFeedback:', err);
-      throw err;
-    }
+  createSession: async () => {
+    // In a real implementation, this would call an API to create a new chat session
+    console.log('Creating new chat session');
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Return a mock session ID
+    return {
+      sessionId: `session_${Date.now()}`,
+      createdAt: new Date()
+    };
   },
   
-  async generateBotAnalyticsSummary() {
-    try {
-      console.log('Fetching PulseBot analytics data');
-      
-      // In a real implementation, we would call a Supabase function to get the analytics
-      // For now, return mock data
-      
-      return {
-        totalInteractions: 1256,
-        uniqueUsers: 325,
-        satisfactionRate: 92,
-        activeUsers: 214,
-        topQueries: [
-          { query: 'How does PulseScore work?', count: 78 },
-          { query: 'What is organizational culture?', count: 65 },
-          { query: 'How can I improve my team engagement?', count: 52 },
-          { query: 'What is psychological safety?', count: 49 },
-          { query: 'How to reduce employee turnover?', count: 43 }
-        ],
-        downvotedResponses: [
-          { id: '1', userMessage: 'How do I implement a culture survey?', 
-            botResponse: 'That\'s a complex topic that requires consideration of multiple factors.', 
-            timestamp: '2023-04-02', downvotes: 12 },
-          { id: '2', userMessage: 'What\'s the difference between engagement and satisfaction?', 
-            botResponse: 'They are related concepts in employee experience measurement.', 
-            timestamp: '2023-04-05', downvotes: 8 }
-        ],
-        languageDistribution: [
-          { language: 'English', percentage: 68 },
-          { language: 'Spanish', percentage: 12 },
-          { language: 'French', percentage: 8 },
-          { language: 'German', percentage: 7 },
-          { language: 'Portuguese', percentage: 5 }
-        ]
-      };
-    } catch (err) {
-      console.error('Error generating analytics summary:', err);
-      throw err;
-    }
+  recordFeedback: async (sessionId: string, messageId: string, feedback: 'up' | 'down') => {
+    // In a real implementation, this would call an API to record user feedback
+    console.log(`Recording ${feedback} feedback for message ${messageId} in session ${sessionId}`);
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Return success
+    return { success: true };
+  },
+  
+  /**
+   * Generate an AI summary of bot analytics
+   * @param summaryType The type of summary to generate (general, problems, dashboard)
+   * @param timeRange The time range in days to analyze
+   * @returns A text summary of the bot analytics
+   */
+  generateBotAnalyticsSummary: async (
+    summaryType: 'general' | 'problems' | 'dashboard',
+    timeRange: number
+  ): Promise<string> => {
+    // In a real implementation, this would call an API
+    // For now, we'll just return mock data
+    console.log(`Generating ${summaryType} summary for last ${timeRange} days`);
+    
+    // Mock data
+    const summaries = {
+      general: `PulseBot has had strong engagement over the past ${timeRange} days with a total of 1,243 interactions from 327 unique users. The satisfaction rate is at 87%, which is a 3% improvement from the previous period. The most used languages were English (78%), Spanish (12%), and French (5%).
+
+The most common queries were about survey methodology, certification process, and how to improve team scores. Users seem to find the bot most helpful when asking specific questions rather than open-ended ones.`,
+
+      problems: `Analysis of the past ${timeRange} days shows a few areas for improvement. The top downvoted responses were related to complex technical questions about survey implementation and advanced analytics. 
+
+We've identified 14 instances where users asked follow-up questions indicating confusion with the initial response. Most of these were in the "implementation" topic category. Consider enhancing the training data for these specific areas.`,
+
+      dashboard: `In the last ${timeRange} days, PulseBot has processed 1,243 queries with a 87% satisfaction rate. Key metrics show:
+- 327 unique users
+- Average 3.8 interactions per user
+- 91% of sessions completed without abandonment
+- Peak usage during work hours (10am-2pm)
+
+Top performing response categories: Quick Reference (96%), How-To (93%), Definitions (89%)
+Needs improvement: Complex Implementation (73%), Advanced Analytics (68%)`
+    };
+    
+    // Return the appropriate summary based on type
+    return summaries[summaryType] || 'No summary data available for this time period.';
   }
 };

@@ -15,6 +15,15 @@ interface PulseBotTabsProps {
 }
 
 const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => {
+  // Convert the topDownvotedResponses to match the DownvotedResponse type
+  const formattedDownvotedResponses = analytics.topDownvotedResponses.map(item => ({
+    id: item.id,
+    userMessage: item.userMessage,
+    botResponse: item.botResponse,
+    timestamp: item.timestamp,
+    downvotes: item.downvotes
+  }));
+
   return (
     <Tabs defaultValue="overview">
       <TabsList className="mb-4">
@@ -55,7 +64,7 @@ const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => 
             fullSize={true}
           />
           <DownvotedResponsesTable 
-            responses={analytics.topDownvotedResponses} 
+            responses={formattedDownvotedResponses} 
             isLoading={isLoading} 
           />
         </div>

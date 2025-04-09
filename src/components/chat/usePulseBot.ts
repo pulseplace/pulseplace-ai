@@ -42,33 +42,24 @@ export function usePulseBot() {
     };
   }, []);
   
-  // Create feedback handler
-  const handleFeedback = (messageId: string, message: Message, feedback: 'up' | 'down') => {
-    setMessages(
-      messages.map(msg => 
-        msg.id === messageId 
-          ? { 
-              ...msg, 
-              liked: feedback === 'up' ? true : false,
-              disliked: feedback === 'down' ? true : false
-            } 
-          : msg
-      )
-    );
-    
-    // Additional feedback handling like logging to analytics could be added here
-    console.log(`Feedback ${feedback} for message ${messageId}`);
+  // Error handling function
+  const handleError = (error: Error) => {
+    console.error('Error in PulseBot:', error);
+    // You can add more error handling logic here
   };
   
-  const { sendMessage } = useMessageSender(
-    messages,
-    setMessages,
+  // Create feedback handler
+  const handleFeedback = useFeedbackHandler(messages, setMessages);
+  
+  // Setup message sender
+  const { sendMessage, isSending } = useMessageSender(
+    sessionInfo.id,
+    (message) => {
+      setMessages(prev => [...prev, message]);
+      scrollToBottom();
+    },
     setLoading,
-    setBotAvatarState,
-    scrollToBottom,
-    language,
-    sessionInfo,
-    triggerConfetti
+    handleError
   );
 
   // Custom handleSearch to pass messages 

@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import StickyCta from '@/components/StickyCta';
 
 const Root: React.FC = () => {
   const location = useLocation();
@@ -98,6 +99,7 @@ const Root: React.FC = () => {
             <div id="pulsebot-container" className="z-50">
               <PulseBotChat />
             </div>
+            <StickyCta />
             <Toaster />
           </div>
         </ChatProvider>

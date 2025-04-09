@@ -1,144 +1,107 @@
 
-import { Message } from "../types";
+import { Message } from '../types';
+import { jsPDF } from 'jspdf';
+
+// Simple function to format date objects
+const formatDate = (date?: Date) => {
+  if (!date) return 'Unknown date';
+  return new Date(date).toLocaleString();
+};
+
+const formatRole = (role: string) => {
+  if (role === 'assistant') return 'PulseBot';
+  return role.charAt(0).toUpperCase() + role.slice(1);
+};
 
 export const exportUtils = {
-  /**
-   * Export chat history to JSON format and trigger download
-   */
-  exportToJson: (messages: Message[], filename: string = "pulsebot-chat-history") => {
-    // Prepare data for export
-    const exportData = {
-      exportDate: new Date().toISOString(),
-      chatHistory: messages.map(msg => ({
-        role: msg.role,
-        content: msg.content,
-        timestamp: msg.timestamp || new Date().toISOString(),
-        language: msg.language || 'en'
-      }))
-    };
+  exportToJson: (messages: Message[], filename: string) => {
+    // Create a cleaned version of the messages for export
+    const exportData = messages.map(message => ({
+      id: message.id,
+      content: message.content,
+      role: message.role,
+      timestamp: message.timestamp,
+      language: message.language || 'en',
+      feedback: message.feedback
+    }));
     
-    // Convert to JSON string
-    const jsonString = JSON.stringify(exportData, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
     
-    // Create download link
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${filename}.json`;
-    document.body.appendChild(link);
-    link.click();
+    const exportFileDefaultName = `${filename}.json`;
     
-    // Clean up
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
   },
   
-  /**
-   * Export chat history to PDF format using browser's print functionality
-   */
-  exportToPdf: (messages: Message[], title: string = "PulseBot Chat History") => {
-    // Create a new window for printing
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert('Please allow popups to export as PDF');
-      return;
-    }
+  exportToPdf: (messages: Message[], title: string) => {
+    const doc = new jsPDF();
     
-    // Generate HTML content for the PDF
-    const content = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${title}</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-            color: #333;
-          }
-          .header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-          }
-          .chat-container {
-            max-width: 800px;
-            margin: 0 auto;
-          }
-          .message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 10px;
-          }
-          .user {
-            background-color: #f0f0f0;
-            margin-left: 50px;
-          }
-          .assistant {
-            background-color: #e6f7ff;
-            margin-right: 50px;
-          }
-          .timestamp {
-            font-size: 12px;
-            color: #999;
-            margin-top: 5px;
-          }
-          .role {
-            font-weight: bold;
-            margin-bottom: 5px;
-          }
-          .export-info {
-            font-size: 12px;
-            color: #999;
-            text-align: center;
-            margin-top: 30px;
-          }
-          @media print {
-            body { 
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="chat-container">
-          <div class="header">
-            <h1>${title}</h1>
-            <p>Exported on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
-          </div>
-          
-          ${messages.map(msg => `
-            <div class="message ${msg.role}">
-              <div class="role">${msg.role === 'user' ? 'You' : 'PulseBot'}</div>
-              <div class="content">${msg.content.replace(/\n/g, '<br>')}</div>
-              <div class="timestamp">${msg.timestamp ? new Date(msg.timestamp).toLocaleString() : new Date().toLocaleString()}</div>
-            </div>
-          `).join('')}
-          
-          <div class="export-info">
-            <p>Generated by PulsePlace.ai | Powered by PulseBot</p>
-          </div>
-        </div>
-        <script>
-          // Automatically trigger print when loaded
-          window.onload = function() {
-            setTimeout(() => {
-              window.print();
-              setTimeout(() => window.close(), 500);
-            }, 500);
-          };
-        </script>
-      </body>
-      </html>
-    `;
+    // Add title
+    doc.setFontSize(16);
+    doc.text(title, 20, 20);
     
-    // Write the content to the new window
-    printWindow.document.open();
-    printWindow.document.write(content);
-    printWindow.document.close();
+    // Add generation timestamp
+    doc.setFontSize(10);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 30);
+    
+    let yPosition = 40;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    const textWidth = pageWidth - (margin * 2);
+    
+    // Helper to add a new page if we're close to the bottom
+    const checkPageBreak = (y: number, lineHeight = 10) => {
+      if (y + lineHeight > doc.internal.pageSize.getHeight() - margin) {
+        doc.addPage();
+        return margin;
+      }
+      return y;
+    };
+    
+    // Process each message
+    messages.forEach((message, i) => {
+      // Skip system messages
+      if (message.role === 'system') return;
+      
+      yPosition = checkPageBreak(yPosition);
+      
+      // Message header (role & timestamp)
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      const headerText = `${formatRole(message.role)} • ${formatDate(message.timestamp)}`;
+      doc.text(headerText, margin, yPosition);
+      yPosition += 5;
+      
+      // Message content
+      yPosition = checkPageBreak(yPosition);
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      
+      // Split long text into lines
+      const lines = doc.splitTextToSize(message.content, textWidth);
+      lines.forEach(line => {
+        yPosition = checkPageBreak(yPosition, 7);
+        doc.text(line, margin, yPosition);
+        yPosition += 7;
+      });
+      
+      // Add feedback if present
+      if (message.feedback) {
+        yPosition = checkPageBreak(yPosition);
+        doc.setFontSize(9);
+        doc.setTextColor(120, 120, 120);
+        doc.text(`Feedback: ${message.feedback}`, margin, yPosition);
+        yPosition += 5;
+      }
+      
+      // Separator between messages
+      yPosition += 8;
+    });
+    
+    // Save the PDF
+    doc.save(`${title.replace(/\s+/g, '-').toLowerCase()}.pdf`);
   }
 };

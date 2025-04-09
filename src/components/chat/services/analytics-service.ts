@@ -1,175 +1,62 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { AnalyticsFilters, PulseBotAnalytics } from '../types';
+import { PulseBotAnalytics, AnalyticsFilters, PulseBotLog } from '../types';
 
-/**
- * Fetches analytics data for PulseBot
- */
-export const fetchAnalytics = async (filters?: {
-  dateFrom?: Date;
-  dateTo?: Date;
-  language?: string;
-  feedbackType?: string;
-}): Promise<PulseBotAnalytics> => {
+export async function fetchAnalytics(filters: AnalyticsFilters): Promise<PulseBotAnalytics> {
   try {
-    // Query for total interactions
-    let logsQuery = supabase
-      .from('pulsebot_logs')
-      .select('*');
+    // Format date filters
+    const dateFrom = filters.dateFrom ? filters.dateFrom.toISOString() : undefined;
+    const dateTo = filters.dateTo ? filters.dateTo.toISOString() : undefined;
     
-    // Apply date filters if provided
-    if (filters?.dateFrom) {
-      logsQuery = logsQuery.gte('created_at', filters.dateFrom.toISOString());
+    const { data, error } = await supabase.functions.invoke('pulsebot-analytics', {
+      body: { 
+        dateFrom, 
+        dateTo,
+        language: filters.language,
+        feedbackType: filters.feedbackType
+      }
+    });
+    
+    if (error) {
+      console.error('Error fetching analytics:', error);
+      throw new Error(error.message);
     }
     
-    if (filters?.dateTo) {
-      logsQuery = logsQuery.lte('created_at', filters.dateTo.toISOString());
-    }
-    
-    // Apply language filter if provided
-    if (filters?.language && filters.language !== 'all') {
-      logsQuery = logsQuery.eq('language', filters.language);
-    }
-    
-    const { data: logs, error: logsError } = await logsQuery;
-    
-    if (logsError) throw logsError;
-    
-    // Query for feedback data
-    let feedbackQuery = supabase
-      .from('pulsebot_feedback')
-      .select('*');
-    
-    // Apply date filters if provided
-    if (filters?.dateFrom) {
-      feedbackQuery = feedbackQuery.gte('timestamp', filters.dateFrom.toISOString());
-    }
-    
-    if (filters?.dateTo) {
-      feedbackQuery = feedbackQuery.lte('timestamp', filters.dateTo.toISOString());
-    }
-    
-    // Apply feedback type filter if provided
-    if (filters?.feedbackType && filters.feedbackType !== 'all') {
-      feedbackQuery = feedbackQuery.eq('feedback_type', filters.feedbackType);
-    }
-    
-    const { data: feedback, error: feedbackError } = await feedbackQuery;
-    
-    if (feedbackError) throw feedbackError;
-    
-    // Process the data to generate analytics
-    const analytics = processAnalyticsData(logs || [], feedback || []);
-    
-    return analytics;
-  } catch (err) {
-    console.error('Error fetching analytics:', err);
-    throw err;
+    return data as PulseBotAnalytics;
+  } catch (error) {
+    console.error('Failed to fetch PulseBot analytics:', error);
+    // Return fallback data structure in case of error
+    return {
+      totalInteractions: 0,
+      uniqueUsers: 0,
+      positiveRating: 0,
+      topLanguages: [],
+      feedbackDistribution: {
+        positive: 0,
+        negative: 0,
+        neutral: 0
+      },
+      popularQueries: [],
+      mostDownvotedResponses: [],
+      averageResponseTime: 0,
+      logs: []
+    };
   }
-};
+}
 
-/**
- * Helper function to process analytics data
- */
-function processAnalyticsData(logs: any[], feedback: any[]): PulseBotAnalytics {
-  // Calculate unique users
-  const uniqueUsers = new Set(logs.map(log => log.session_id)).size;
-  
-  // Calculate language breakdown
-  const languageCount: Record<string, number> = {};
-  logs.forEach(log => {
-    const lang = log.language || 'unknown';
-    languageCount[lang] = (languageCount[lang] || 0) + 1;
-  });
-  
-  const languageBreakdown = Object.entries(languageCount).map(([language, count]) => ({
-    language,
-    count,
-    percentage: (count / logs.length) * 100
-  }));
-  
-  // Calculate feedback ratio
-  const positiveCount = feedback.filter(f => f.feedback_type === 'up').length;
-  const negativeCount = feedback.filter(f => f.feedback_type === 'down').length;
-  const feedbackRatio = {
-    positive: positiveCount,
-    negative: negativeCount,
-    ratio: positiveCount / (positiveCount + negativeCount) || 0
-  };
-  
-  // Calculate avatar state usage
-  const avatarStateCount: Record<string, number> = {};
-  logs.forEach(log => {
-    // Extract string representation of the state
-    let stateValue: string;
-    const state = log.avatar_state;
+export async function fetchPulseBotLogs(limit = 100, offset = 0): Promise<PulseBotLog[]> {
+  try {
+    const { data, error } = await supabase
+      .from('pulsebot_logs')
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .range(offset, offset + limit - 1);
     
-    if (typeof state === 'string') {
-      stateValue = state;
-    } else if (state && typeof state === 'object' && 'status' in state) {
-      stateValue = state.status;
-    } else {
-      stateValue = 'unknown';
-    }
+    if (error) throw error;
     
-    avatarStateCount[stateValue] = (avatarStateCount[stateValue] || 0) + 1;
-  });
-  
-  const avatarStateUsage = Object.entries(avatarStateCount).map(([state, count]) => ({
-    state,
-    count,
-    percentage: (count / logs.length) * 100
-  }));
-  
-  // Find top queries
-  const queryCount: Record<string, number> = {};
-  logs.forEach(log => {
-    const query = log.user_message;
-    if (query) {
-      queryCount[query] = (queryCount[query] || 0) + 1;
-    }
-  });
-  
-  const topQueries = Object.entries(queryCount)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([query, count]) => ({ query, count }));
-  
-  // Find top downvoted responses - fixed to match expected structure
-  const responseMap = new Map<string, { msg: any, count: number }>();
-  
-  feedback.filter(f => f.feedback_type === 'down').forEach(f => {
-    const msgId = f.id;
-    if (!responseMap.has(msgId)) {
-      responseMap.set(msgId, { 
-        msg: f,
-        count: 0 
-      });
-    }
-    const item = responseMap.get(msgId);
-    if (item) {
-      item.count += 1;
-    }
-  });
-  
-  const topDownvotedResponses = Array.from(responseMap.entries())
-    .sort((a, b) => b[1].count - a[1].count)
-    .slice(0, 10)
-    .map(([id, { msg, count }]) => ({
-      id,
-      userMessage: logs.find(l => l.session_id === msg.user_identifier)?.user_message || 'Unknown question',
-      botResponse: msg.message || 'Unknown response',
-      timestamp: msg.timestamp || new Date().toISOString(),
-      downvotes: count
-    }));
-  
-  return {
-    totalInteractions: logs.length,
-    uniqueUsers,
-    languageBreakdown,
-    feedbackRatio,
-    avatarStateUsage,
-    topQueries,
-    topDownvotedResponses
-  };
+    return data as PulseBotLog[];
+  } catch (error) {
+    console.error('Error fetching PulseBot logs:', error);
+    return [];
+  }
 }

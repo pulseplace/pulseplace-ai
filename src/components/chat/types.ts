@@ -18,6 +18,9 @@ export interface Message {
   role: MessageRole;
   timestamp?: Date;
   feedback?: 'positive' | 'negative';
+  language?: MessageLanguage;
+  liked?: boolean;
+  disliked?: boolean;
 }
 
 export type BotAvatarStateValue = 'idle' | 'thinking' | 'typing' | 'happy' | 'confused';
@@ -25,6 +28,7 @@ export type BotAvatarStateValue = 'idle' | 'thinking' | 'typing' | 'happy' | 'co
 export type BotAvatarState = BotAvatarStateValue | { 
   status: BotAvatarStateValue;
   message?: string;
+  avatar?: string;
 };
 
 export interface SearchState {
@@ -38,6 +42,7 @@ export interface SessionInfo {
   startTime: Date;
   userAgent: string;
   referrer?: string;
+  createdAt?: Date;
 }
 
 export interface ConfettiState {
@@ -50,4 +55,51 @@ export interface ConfettiState {
     decay: number;
     colors: string[];
   };
+}
+
+// Analytics types
+export interface AnalyticsFilters {
+  dateFrom?: Date;
+  dateTo?: Date;
+  language?: string;
+  feedbackType?: string;
+}
+
+export interface PulseBotLog {
+  id: string;
+  timestamp: Date;
+  user_id?: string;
+  session_id: string;
+  message_content: string;
+  response_content: string;
+  language: string;
+  feedback?: 'positive' | 'negative';
+  metadata?: Record<string, any>;
+}
+
+export interface PulseBotAnalytics {
+  totalInteractions: number;
+  uniqueUsers: number;
+  positiveRating: number;
+  topLanguages: {
+    language: string;
+    count: number;
+    percentage: number;
+  }[];
+  feedbackDistribution: {
+    positive: number;
+    negative: number;
+    neutral: number;
+  };
+  popularQueries: {
+    query: string;
+    count: number;
+  }[];
+  mostDownvotedResponses: {
+    query: string;
+    response: string;
+    count: number;
+  }[];
+  averageResponseTime: number;
+  logs: PulseBotLog[];
 }

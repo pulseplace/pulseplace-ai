@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { DateRangeFilter } from "@/components/ui/date-range-picker";
+import { DatePicker } from "@/components/ui/date-picker";
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import ThemeSentimentTable, { ThemeSentimentData } from './ThemeSentimentTable';
 import ThemeSentimentCharts from './ThemeSentimentCharts';
@@ -12,7 +12,6 @@ import { calculateThemeScores } from '@/utils/themeAnalysis';
 import { DateRange } from "react-day-picker";
 import { useToast } from "@/hooks/use-toast";
 
-// Sample data for theme sentiment (can be replaced with actual API call)
 const SAMPLE_SENTIMENT_DATA: ThemeSentimentData[] = [
   {
     department: "Engineering",
@@ -82,7 +81,6 @@ const SAMPLE_SENTIMENT_DATA: ThemeSentimentData[] = [
   }
 ];
 
-// Theme names and descriptions for the dropdown
 const THEMES = [
   { value: "all", label: "All Themes" },
   { value: "trust_in_leadership", label: "Trust in Leadership" },
@@ -100,12 +98,10 @@ const ThemeSentimentAnalysis: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [sentimentData, setSentimentData] = useState<ThemeSentimentData[]>(SAMPLE_SENTIMENT_DATA);
   
-  // Filters
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
-  // List of available departments in the data
   const departments = [
     { value: "all", label: "All Departments" },
     ...sentimentData.map(item => ({ 
@@ -114,7 +110,6 @@ const ThemeSentimentAnalysis: React.FC = () => {
     }))
   ];
 
-  // Effect to load data with filters
   useEffect(() => {
     loadSentimentData();
   }, [selectedDepartment, selectedTheme, dateRange]);
@@ -124,22 +119,11 @@ const ThemeSentimentAnalysis: React.FC = () => {
     setError(null);
     
     try {
-      // In a real implementation, this would fetch from an API with filters
-      // For now, we'll just filter the sample data
-      
       let filteredData = [...SAMPLE_SENTIMENT_DATA];
       
-      // Apply department filter
       if (selectedDepartment && selectedDepartment !== 'all') {
         filteredData = filteredData.filter(item => item.department === selectedDepartment);
       }
-      
-      // Note: Theme filtering is handled in the table component
-      
-      // Date range filtering would happen here in a real implementation
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
       
       setSentimentData(filteredData);
     } catch (err: any) {
@@ -271,14 +255,18 @@ const ThemeSentimentAnalysis: React.FC = () => {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Time Period</label>
-              <DateRangeFilter
-                value={dateRange}
-                onChange={handleDateRangeChange}
+              <DatePicker
+                date={dateRange?.from ? new Date(dateRange.from) : undefined}
+                onSelect={(date) => 
+                  setDateRange(date ? 
+                    { from: date, to: dateRange?.to || date } : 
+                    undefined
+                  )
+                }
               />
             </div>
           </div>
           
-          {/* Display legend for sentiment score ranges */}
           <div className="mb-6">
             <div className="text-sm font-medium text-gray-700 mb-2">Sentiment Score Legend:</div>
             <div className="flex flex-wrap gap-2">

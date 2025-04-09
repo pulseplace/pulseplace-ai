@@ -4,21 +4,21 @@ import { ChatInputBox } from '../ChatInputBox';
 
 interface ChatFooterProps {
   loading: boolean;
-  sendMessage: (message: string) => void;
+  onSendMessage: (message: string) => void;
   placeholderText?: string;
   onClearHistory?: () => void;
 }
 
 export const ChatFooter: React.FC<ChatFooterProps> = ({
   loading,
-  sendMessage,
+  onSendMessage,
   placeholderText,
   onClearHistory
 }) => {
   return (
     <div className="p-3 border-t bg-white shrink-0">
       <ChatInputBox
-        onSendMessage={sendMessage}
+        onSendMessage={onSendMessage}
         loading={loading}
         onClearHistory={onClearHistory}
         placeholderText={placeholderText}

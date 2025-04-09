@@ -1,5 +1,5 @@
 
-import { Message, MessageType } from "../types";
+import { Message } from "../types";
 
 export const exportUtils = {
   /**
@@ -12,8 +12,8 @@ export const exportUtils = {
       chatHistory: messages.map(msg => ({
         role: msg.role,
         content: msg.content,
-        timestamp: msg.timestamp,
-        language: msg.language
+        timestamp: msg.timestamp || new Date().toISOString(),
+        language: msg.language || 'en'
       }))
     };
     
@@ -115,7 +115,7 @@ export const exportUtils = {
             <div class="message ${msg.role}">
               <div class="role">${msg.role === 'user' ? 'You' : 'PulseBot'}</div>
               <div class="content">${msg.content.replace(/\n/g, '<br>')}</div>
-              <div class="timestamp">${new Date(msg.timestamp).toLocaleString()}</div>
+              <div class="timestamp">${msg.timestamp ? new Date(msg.timestamp).toLocaleString() : new Date().toLocaleString()}</div>
             </div>
           `).join('')}
           

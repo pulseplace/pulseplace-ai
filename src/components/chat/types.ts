@@ -5,6 +5,8 @@ export interface Message {
   id: string;
   role: Role;
   content: string;
+  timestamp?: Date;
+  language?: string;
   liked?: boolean;
   disliked?: boolean;
   isError?: boolean;

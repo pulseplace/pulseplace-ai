@@ -85,7 +85,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
       {/* Footer */}
       <ChatFooter
         loading={loading}
-        sendMessage={sendMessage}
+        onSendMessage={sendMessage}
         placeholderText="Ask me about workplace culture or PulseScore..."
       />
     </div>

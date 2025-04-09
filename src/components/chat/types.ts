@@ -27,8 +27,9 @@ export interface ChatMessage {
 }
 
 // BotAvatarState can be either a string status or an object with avatar URL
-export type BotAvatarState = 'idle' | 'thinking' | 'typing' | 'happy' | { 
-  status: 'idle' | 'thinking' | 'typing' | 'happy',
+export type BotAvatarStateValue = 'idle' | 'thinking' | 'typing' | 'happy';
+export type BotAvatarState = BotAvatarStateValue | { 
+  status: BotAvatarStateValue,
   avatar: string 
 };
 
@@ -70,7 +71,7 @@ export interface PulseBotLog {
   user_message: string;
   bot_reply: string;
   language: string;
-  avatar_state: BotAvatarState;
+  avatar_state: string;
   created_at: string;
 }
 

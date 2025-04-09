@@ -10,11 +10,10 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
-import { BotAvatarState } from '@/components/chat/types';
 
 interface AvatarStateChartProps {
   avatarStateUsage: {
-    state: BotAvatarState;
+    state: string;
     count: number;
     percentage: number;
   }[];

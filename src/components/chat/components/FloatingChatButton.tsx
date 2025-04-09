@@ -5,11 +5,12 @@ import { cn } from '@/lib/utils';
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { BotEmoji } from '../BotEmoji';
+import { BotAvatarStateValue } from '../types';
 
 interface FloatingChatButtonProps {
   open: boolean;
   toggleChat: () => void;
-  botState: 'idle' | 'thinking' | 'typing' | 'happy';
+  botState: BotAvatarStateValue;
 }
 
 export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ 

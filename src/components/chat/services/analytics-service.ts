@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { BotAvatarState, AnalyticsFilters, PulseBotAnalytics } from '../types';
+import { AnalyticsFilters, PulseBotAnalytics } from '../types';
 
 /**
  * Fetches analytics data for PulseBot
@@ -100,12 +100,23 @@ function processAnalyticsData(logs: any[], feedback: any[]): PulseBotAnalytics {
   // Calculate avatar state usage
   const avatarStateCount: Record<string, number> = {};
   logs.forEach(log => {
-    const state = log.avatar_state || 'unknown';
-    avatarStateCount[state] = (avatarStateCount[state] || 0) + 1;
+    // Extract string representation of the state
+    let stateValue: string;
+    const state = log.avatar_state;
+    
+    if (typeof state === 'string') {
+      stateValue = state;
+    } else if (state && typeof state === 'object' && 'status' in state) {
+      stateValue = state.status;
+    } else {
+      stateValue = 'unknown';
+    }
+    
+    avatarStateCount[stateValue] = (avatarStateCount[stateValue] || 0) + 1;
   });
   
   const avatarStateUsage = Object.entries(avatarStateCount).map(([state, count]) => ({
-    state: state as BotAvatarState,
+    state,
     count,
     percentage: (count / logs.length) * 100
   }));

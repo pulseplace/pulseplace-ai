@@ -1,10 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
 import { FloatingChatButton } from './components/FloatingChatButton';
 import { ChatContainer } from './components/ChatContainer';
 import { Confetti } from './Confetti';
 import { TypingIndicatorStyles } from './components/TypingIndicatorStyles';
 import { usePulseBot } from './usePulseBot';
-import { MessageLanguage, Message } from './types';
+import { MessageLanguage, Message, BotAvatarState, BotAvatarStateValue } from './types';
 import { useToast } from '@/hooks/use-toast';
 import { TutorialProvider } from './tutorial/TutorialContext';
 import { TutorialOverlay } from './tutorial/TutorialOverlay';
@@ -45,6 +46,16 @@ export default function PulseBotChat() {
     { value: 'ja' as MessageLanguage, label: 'Japanese' },
     { value: 'ko' as MessageLanguage, label: 'Korean' },
   ];
+  
+  // Get the appropriate state for the FloatingChatButton
+  const getBotStateForButton = (): BotAvatarStateValue => {
+    if (typeof botAvatarState === 'string') {
+      return botAvatarState;
+    } else if (botAvatarState && 'status' in botAvatarState) {
+      return botAvatarState.status;
+    }
+    return 'idle';
+  };
   
   // Create an adapter for handleFeedback to match the expected API
   const handleFeedbackAdapter = (messageId: string, value: 'positive' | 'negative') => {
@@ -110,7 +121,7 @@ export default function PulseBotChat() {
       <FloatingChatButton 
         open={open} 
         toggleChat={toggleChat} 
-        botState={botAvatarState}
+        botState={getBotStateForButton()}
       />
 
       {/* Chat dialog */}

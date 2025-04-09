@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { BotAvatarState } from './types';
+import { BotAvatarState, BotAvatarStateValue } from './types';
 
 interface BotEmojiProps {
-  state: BotAvatarState;
+  state: BotAvatarStateValue;
   size?: 'sm' | 'md' | 'lg';
 }
 

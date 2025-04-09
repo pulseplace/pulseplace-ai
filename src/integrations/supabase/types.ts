@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      mailchimp_events: {
+        Row: {
+          email: string | null
+          event_type: string
+          id: string
+          list_id: string | null
+          processed_at: string
+          raw_data: string | null
+          timestamp: string
+        }
+        Insert: {
+          email?: string | null
+          event_type: string
+          id?: string
+          list_id?: string | null
+          processed_at?: string
+          raw_data?: string | null
+          timestamp?: string
+        }
+        Update: {
+          email?: string | null
+          event_type?: string
+          id?: string
+          list_id?: string | null
+          processed_at?: string
+          raw_data?: string | null
+          timestamp?: string
+        }
+        Relationships: []
+      }
       pulsebot_feedback: {
         Row: {
           feedback_type: string | null

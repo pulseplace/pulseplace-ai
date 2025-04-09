@@ -1,4 +1,3 @@
-
 import { useSession } from './hooks/useSession';
 import { useMessageManagement } from './hooks/useMessageManagement';
 import { useLanguageManager, cleanupPulseBotState } from './hooks/useLanguageManager';
@@ -56,7 +55,9 @@ export function usePulseBot() {
   const { sendMessage, isSending } = useMessageSender(
     sessionInfo.id,
     (message: Message) => {
-      setMessages(prev => [...prev, message]);
+      // Fix for the TypeScript error - create a new array directly instead of using a callback
+      const newMessages = [...messages, message];
+      setMessages(newMessages);
       scrollToBottom();
     },
     setLoading,

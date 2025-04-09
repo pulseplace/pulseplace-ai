@@ -8,6 +8,7 @@ import { BotEmoji } from '../BotEmoji';
 import { BotAvatarState, MessageLanguage } from '../types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { TutorialButton } from '../tutorial/TutorialButton';
 
 interface ChatHeaderProps {
   botAvatarState: BotAvatarState;
@@ -81,6 +82,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+        
+        {/* Tutorial button */}
+        <TutorialButton />
         
         <Button
           variant="ghost"

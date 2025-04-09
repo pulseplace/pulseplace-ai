@@ -7,6 +7,8 @@ import { TypingIndicatorStyles } from './components/TypingIndicatorStyles';
 import { usePulseBot } from './usePulseBot';
 import { MessageLanguage } from './types';
 import { useToast } from '@/hooks/use-toast';
+import { TutorialProvider } from './tutorial/TutorialContext';
+import { TutorialOverlay } from './tutorial/TutorialOverlay';
 
 export default function PulseBotChat() {
   const {
@@ -60,7 +62,7 @@ export default function PulseBotChat() {
   }, [language]);
 
   return (
-    <>
+    <TutorialProvider>
       {/* Confetti Animation */}
       <Confetti isActive={confetti.isActive} config={confetti.config} />
       
@@ -90,8 +92,11 @@ export default function PulseBotChat() {
         sendMessage={sendMessage}
       />
 
+      {/* Tutorial Overlay */}
+      <TutorialOverlay />
+
       {/* Typing indicator styles */}
       <TypingIndicatorStyles />
-    </>
+    </TutorialProvider>
   );
 }

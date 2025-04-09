@@ -3,7 +3,7 @@ import React from 'react';
 import { useTutorial } from './TutorialContext';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft, X, HelpCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, X, SkipForward } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const TutorialOverlay: React.FC = () => {
@@ -66,17 +66,29 @@ export const TutorialOverlay: React.FC = () => {
             />
           </div>
           
-          {/* Icon and title */}
+          {/* Icon and title with skip button */}
           <div className="bg-pulse-gradient text-white p-4 flex items-center justify-between">
             <h3 className="text-lg font-semibold">{content.title}</h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={skipTutorial}
-              className="text-white hover:bg-white/20 h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Prominent Skip Tutorial button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={skipTutorial}
+                className="text-white hover:bg-white/20 h-8"
+              >
+                <SkipForward className="h-4 w-4 mr-1" />
+                Skip Tutorial
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={skipTutorial}
+                className="text-white hover:bg-white/20 h-8 w-8"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           
           {/* Content */}
@@ -100,14 +112,7 @@ export const TutorialOverlay: React.FC = () => {
                   </Button>
                 )}
               </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="ghost" 
-                  onClick={skipTutorial}
-                  className="text-gray-500"
-                >
-                  Skip
-                </Button>
+              <div>
                 <Button 
                   onClick={nextStep}
                   className="bg-pulse-gradient flex items-center gap-1"

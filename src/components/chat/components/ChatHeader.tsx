@@ -42,7 +42,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
       <div className="flex items-center space-x-2">
         {!isMobile && (
-          <Select value={language} onValueChange={handleLanguageChange}>
+          <Select value={language} onValueChange={handleLanguageChange} className="language-selector">
             <SelectTrigger className="h-8 w-[110px] bg-white/10 border-white/20 text-white text-xs">
               <SelectValue placeholder="Language" />
             </SelectTrigger>
@@ -60,7 +60,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {isMobile && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-white/20 text-white">
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-white/20 text-white language-selector">
                 <Languages className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>

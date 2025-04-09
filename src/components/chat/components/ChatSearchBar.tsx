@@ -15,7 +15,7 @@ export const ChatSearchBar: React.FC<ChatSearchBarProps> = ({
   clearSearch
 }) => {
   return (
-    <div className="p-2 border-b shrink-0">
+    <div className="p-2 border-b shrink-0 search-bar-container">
       <SearchBar
         query={search.query}
         onSearch={handleSearch}

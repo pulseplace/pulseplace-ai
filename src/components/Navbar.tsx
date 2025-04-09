@@ -49,7 +49,7 @@ const Navbar = () => {
     setIsMenuOpen(false);
   }, [location]);
 
-  const scrollWithOffset = (el: HTMLElement) => {
+  const scrollWithOffset = (el) => {
     const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
     const yOffset = -80; // Adjust this value based on your fixed header height
     window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
@@ -60,7 +60,7 @@ const Navbar = () => {
   }`;
 
   // Helper function to check if a path is active
-  const isActive = (path: string) => {
+  const isActive = (path) => {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 

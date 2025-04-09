@@ -5,7 +5,6 @@ import { ChatContainer } from './components/ChatContainer';
 import { Confetti } from './Confetti';
 import { TypingIndicatorStyles } from './components/TypingIndicatorStyles';
 import { usePulseBot } from './usePulseBot';
-import { MessageLanguage, Message, BotAvatarState, BotAvatarStateValue } from './types';
 import { useToast } from '@/hooks/use-toast';
 import { TutorialProvider } from './tutorial/TutorialContext';
 import { TutorialOverlay } from './tutorial/TutorialOverlay';
@@ -32,23 +31,23 @@ export default function PulseBotChat() {
   } = usePulseBot();
   
   const { toast } = useToast();
-  const [exportFormat, setExportFormat] = useState<'json' | 'pdf'>('json');
+  const [exportFormat, setExportFormat] = useState('json');
   
   // Define available languages
   const languages = [
-    { value: 'en' as MessageLanguage, label: 'English' },
-    { value: 'es' as MessageLanguage, label: 'Spanish' },
-    { value: 'fr' as MessageLanguage, label: 'French' },
-    { value: 'de' as MessageLanguage, label: 'German' },
-    { value: 'it' as MessageLanguage, label: 'Italian' },
-    { value: 'pt' as MessageLanguage, label: 'Portuguese' },
-    { value: 'zh' as MessageLanguage, label: 'Chinese' },
-    { value: 'ja' as MessageLanguage, label: 'Japanese' },
-    { value: 'ko' as MessageLanguage, label: 'Korean' },
+    { value: 'en', label: 'English' },
+    { value: 'es', label: 'Spanish' },
+    { value: 'fr', label: 'French' },
+    { value: 'de', label: 'German' },
+    { value: 'it', label: 'Italian' },
+    { value: 'pt', label: 'Portuguese' },
+    { value: 'zh', label: 'Chinese' },
+    { value: 'ja', label: 'Japanese' },
+    { value: 'ko', label: 'Korean' },
   ];
   
   // Get the appropriate state for the FloatingChatButton
-  const getBotStateForButton = (): BotAvatarStateValue => {
+  const getBotStateForButton = () => {
     if (typeof botAvatarState === 'string') {
       return botAvatarState;
     } else if (botAvatarState && 'status' in botAvatarState) {
@@ -58,7 +57,7 @@ export default function PulseBotChat() {
   };
   
   // Create an adapter for handleFeedback to match the expected API
-  const handleFeedbackAdapter = (messageId: string, value: 'positive' | 'negative') => {
+  const handleFeedbackAdapter = (messageId, value) => {
     // Call the original function with the adapter
     originalHandleFeedback(messageId, value);
   };

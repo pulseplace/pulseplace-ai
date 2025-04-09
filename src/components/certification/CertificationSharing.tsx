@@ -1,19 +1,16 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Globe, Twitter, Linkedin, FileText } from 'lucide-react';
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { PulseScoreTier } from '@/types/scoring.types';
-import { getTierDisplay } from '@/utils/scoring';
-import { BadgeStyle, BadgeVariant } from '@/types/badge.types';
+import { useBadgeSharing } from './hooks/useBadgeSharing';
 import HtmlEmbedTab from './components/HtmlEmbedTab';
 import LinkedInTab from './components/LinkedInTab';
 import TwitterTab from './components/TwitterTab';
 import NotionTab from './components/NotionTab';
+import SharingTabs from './components/SharingTabs';
+import CustomCtaInput from './components/CustomCtaInput';
+import BadgeStyleSelector from './components/BadgeStyleSelector';
 
 interface CertificationSharingProps {
   companyName: string;
@@ -32,43 +29,18 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
   validUntil = 'August 7, 2026',
   isLoading = false,
 }) => {
-  const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('html');
-  const [badgeStyle, setBadgeStyle] = useState<BadgeStyle>('standard');
-  const [customCta, setCustomCta] = useState("We're Pulse Certified!");
-  const [hasCopied, setHasCopied] = useState<Record<string, boolean>>({
-    html: false,
-    linkedin: false, 
-    twitter: false,
-    notion: false
-  });
+  const {
+    activeTab,
+    setActiveTab,
+    badgeStyle,
+    setBadgeStyle,
+    customCta,
+    setCustomCta,
+    hasCopied,
+    handleCopy,
+    handleDownloadBadge
+  } = useBadgeSharing();
   
-  const tierInfo = getTierDisplay(tier);
-  
-  // Handle copy button click
-  const handleCopy = (type: string, text: string) => {
-    navigator.clipboard.writeText(text);
-    setHasCopied(prev => ({ ...prev, [type]: true }));
-    
-    toast({
-      title: "Copied Successfully",
-      description: `${type.charAt(0).toUpperCase() + type.slice(1)} content copied to clipboard`,
-    });
-    
-    setTimeout(() => {
-      setHasCopied(prev => ({ ...prev, [type]: false }));
-    }, 2000);
-  };
-  
-  // Handle badge download
-  const handleDownloadBadge = () => {
-    // In a real implementation, you would convert the SVG to an image and download it
-    toast({
-      title: "Badge Downloaded",
-      description: "Your certification badge has been downloaded",
-    });
-  };
-
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -76,71 +48,12 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
       </CardHeader>
       <CardContent>
         <div className="mb-6 space-y-4">
-          <div>
-            <Label htmlFor="customCta">Custom Badge Message (Optional)</Label>
-            <Input
-              id="customCta"
-              placeholder="e.g., We're Pulse Certified!"
-              value={customCta}
-              onChange={(e) => setCustomCta(e.target.value)}
-              className="mt-1"
-            />
-          </div>
-          
-          <div>
-            <Label>Badge Style</Label>
-            <div className="flex flex-wrap gap-2 mt-1">
-              <Button 
-                variant={badgeStyle === 'standard' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setBadgeStyle('standard')}
-              >
-                Standard
-              </Button>
-              <Button 
-                variant={badgeStyle === 'compact' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setBadgeStyle('compact')}
-              >
-                Compact
-              </Button>
-              <Button 
-                variant={badgeStyle === 'minimal' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setBadgeStyle('minimal')}
-              >
-                Minimal
-              </Button>
-              <Button 
-                variant={badgeStyle === 'colorful' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setBadgeStyle('colorful')}
-              >
-                Colorful
-              </Button>
-            </div>
-          </div>
+          <CustomCtaInput value={customCta} onChange={setCustomCta} />
+          <BadgeStyleSelector badgeStyle={badgeStyle} onChange={setBadgeStyle} />
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-4 mb-6">
-            <TabsTrigger value="html" className="flex items-center">
-              <Globe className="h-4 w-4 mr-2" />
-              HTML
-            </TabsTrigger>
-            <TabsTrigger value="linkedin" className="flex items-center">
-              <Linkedin className="h-4 w-4 mr-2" />
-              LinkedIn
-            </TabsTrigger>
-            <TabsTrigger value="twitter" className="flex items-center">
-              <Twitter className="h-4 w-4 mr-2" />
-              X/Twitter
-            </TabsTrigger>
-            <TabsTrigger value="notion" className="flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
-              Notion
-            </TabsTrigger>
-          </TabsList>
+          <SharingTabs activeTab={activeTab} />
           
           {/* HTML Embed Tab */}
           <TabsContent value="html">

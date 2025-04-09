@@ -6,42 +6,42 @@ import { BadgeStyle } from '@/types/badge.types';
 
 interface BadgeStyleSelectorProps {
   badgeStyle: BadgeStyle;
-  onStyleChange: (style: BadgeStyle) => void;
+  onChange: (style: BadgeStyle) => void;
 }
 
 const BadgeStyleSelector: React.FC<BadgeStyleSelectorProps> = ({
   badgeStyle,
-  onStyleChange
+  onChange
 }) => {
   return (
     <div>
-      <Label className="text-lg font-medium mb-2 block">Badge Style</Label>
-      <div className="flex flex-wrap gap-2">
+      <Label>Badge Style</Label>
+      <div className="flex flex-wrap gap-2 mt-1">
         <Button 
           variant={badgeStyle === 'standard' ? 'default' : 'outline'}
           size="sm"
-          onClick={() => onStyleChange('standard')}
+          onClick={() => onChange('standard')}
         >
           Standard
         </Button>
         <Button 
           variant={badgeStyle === 'compact' ? 'default' : 'outline'}
           size="sm"
-          onClick={() => onStyleChange('compact')}
+          onClick={() => onChange('compact')}
         >
           Compact
         </Button>
         <Button 
           variant={badgeStyle === 'minimal' ? 'default' : 'outline'}
           size="sm"
-          onClick={() => onStyleChange('minimal')}
+          onClick={() => onChange('minimal')}
         >
           Minimal
         </Button>
         <Button 
           variant={badgeStyle === 'colorful' ? 'default' : 'outline'}
           size="sm"
-          onClick={() => onStyleChange('colorful')}
+          onClick={() => onChange('colorful')}
         >
           Colorful
         </Button>

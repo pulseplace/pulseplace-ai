@@ -1,30 +1,30 @@
 
-/**
- * Utility functions for generating certification sharing codes
- */
+import { BadgeStyle } from '@/types/badge.types';
+import { PulseScoreTier } from '@/types/scoring.types';
 
 /**
- * Generates HTML embed code for certification badge
+ * Generates HTML embed code for the certification badge
  */
 export const generateHtmlCode = (
   companyName: string,
-  tier: string,
+  tier: PulseScoreTier,
   score: number,
   issueDate?: string,
   validUntil?: string,
-  badgeSize = 'standard',
-  customCta = ''
+  badgeStyle: BadgeStyle = 'standard',
+  customCta?: string
 ): string => {
   const baseUrl = 'https://pulseplace.ai/certification/verify';
   const params = new URLSearchParams({
     company: companyName,
     tier: tier,
     score: score.toString(),
-    issued: issueDate || '',
-    valid: validUntil || '',
-    style: badgeSize,
-    cta: customCta || ''
+    style: badgeStyle,
   });
+  
+  if (issueDate) params.append('issued', issueDate);
+  if (validUntil) params.append('valid', validUntil);
+  if (customCta) params.append('cta', customCta);
   
   return `<!-- PulsePlace Certification Badge -->
 <script src="https://cdn.pulseplace.ai/badge.js" defer></script>
@@ -33,53 +33,61 @@ export const generateHtmlCode = (
 };
 
 /**
- * Generates Notion embed URL for certification badge
+ * Generates a LinkedIn post text for sharing certification
+ */
+export const generateLinkedInText = (companyName: string, score: number): string => {
+  return `🎉 Proud to announce that ${companyName} has earned PulsePlace Certification™ with a score of ${score}/100!
+
+This certification validates our commitment to creating a workplace built on trust and transparency.
+
+The PulsePlace assessment evaluated key trust metrics across our organization, and we're thrilled to have received this recognition.
+
+What does this mean for our team members and partners?
+• Enhanced workplace satisfaction and engagement
+• Better communication and collaboration
+• A culture where innovation can thrive
+
+We're committed to maintaining and improving our workplace culture, and this certification is just the beginning of our journey.
+
+#PulseCertified #WorkplaceCulture #EmployeeTrust #OrganizationalExcellence
+
+Learn more about PulsePlace: https://pulseplace.ai`;
+};
+
+/**
+ * Generates a Twitter post text for sharing certification
+ */
+export const generateTwitterText = (companyName: string, score: number): string => {
+  return `🎉 We're excited to announce that ${companyName} has earned PulsePlace Certification™ with a score of ${score}/100!
+
+This certification recognizes our commitment to creating a trustworthy workplace culture.
+
+#PulseCertified #WorkplaceTrust`;
+};
+
+/**
+ * Generates a Notion embed URL for the certification badge
  */
 export const generateNotionCode = (
   companyName: string,
-  tier: string,
+  tier: PulseScoreTier,
   score: number,
   issueDate?: string,
   validUntil?: string,
-  badgeSize = 'standard',
-  customCta = ''
+  badgeStyle: BadgeStyle = 'standard',
+  customCta?: string
 ): string => {
-  const baseUrl = 'https://pulseplace.ai/certification/embed';
+  const baseUrl = 'https://pulseplace.ai/embed/badge';
   const params = new URLSearchParams({
     company: companyName,
     tier: tier,
     score: score.toString(),
-    issued: issueDate || '',
-    valid: validUntil || '',
-    style: 'notion',
-    cta: customCta || ''
+    style: badgeStyle,
   });
   
+  if (issueDate) params.append('issued', issueDate);
+  if (validUntil) params.append('valid', validUntil);
+  if (customCta) params.append('cta', customCta);
+  
   return `${baseUrl}?${params.toString()}`;
-};
-
-/**
- * Generates LinkedIn post text for certification announcement
- */
-export const generateLinkedInText = (companyName: string, score: number): string => {
-  return `We're proud to announce that ${companyName} has been officially certified by PulsePlace with a PulseScore™ of ${score}/100! 
-
-This certification reflects our commitment to creating a positive workplace environment where employees can thrive. 
-
-Learn more about what makes us a great place to work: https://pulseplace.ai/certification/${encodeURIComponent(companyName)}
-
-#PulseCertified #WorkplaceCulture #EmployeeExperience`;
-};
-
-/**
- * Generates Twitter/X post text for certification announcement
- */
-export const generateTwitterText = (companyName: string, score: number): string => {
-  return `🎉 ${companyName} is now Pulse Certified™ with a score of ${score}/100! 
-
-We're committed to creating a workplace where people thrive.
-
-Verify our certification: https://pulseplace.ai/c/${encodeURIComponent(companyName)}
-
-#PulseCertified #WorkplaceCulture`;
 };

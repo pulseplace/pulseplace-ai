@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Download, FileText, ExternalLink } from 'lucide-react';
-import CertificationBadge from '../CertificationBadge';
+import CertificationBadgeStyled from '../CertificationBadgeStyled';
 import CopyButton from './CopyButton';
 import { generateNotionCode } from '../utils/sharingCodeGenerators';
 import { PulseScoreTier } from '@/types/scoring.types';
+import { BadgeStyle } from '@/types/badge.types';
 import { useToast } from "@/hooks/use-toast";
 
 interface NotionTabProps {
@@ -16,7 +17,7 @@ interface NotionTabProps {
   score: number;
   issueDate?: string;
   validUntil?: string;
-  badgeSize: 'standard' | 'compact';
+  badgeSize: BadgeStyle;
   customCta: string;
   onCopy: (type: string, text: string) => void;
   onDownload: () => void;
@@ -58,13 +59,13 @@ const NotionTab: React.FC<NotionTabProps> = ({
     <div className="flex flex-col md:flex-row gap-6">
       <div className="md:w-1/2">
         <div className="bg-white p-4 border rounded-md mb-4 flex justify-center shadow-sm hover:shadow-md transition-all duration-300">
-          <CertificationBadge 
+          <CertificationBadgeStyled 
             companyName={companyName}
             tier={tier}
             score={score}
             issueDate={issueDate}
             validUntil={validUntil}
-            size={badgeSize}
+            style={badgeSize}
             customCta={customCta}
             variant="notion"
           />

@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Globe, Twitter, Linkedin, FileText } from 'lucide-react';
 import { PulseScoreTier } from '@/types/scoring.types';
 import { getTierDisplay } from '@/utils/scoring';
+import { BadgeStyle, BadgeVariant } from '@/types/badge.types';
 import HtmlEmbedTab from './components/HtmlEmbedTab';
 import LinkedInTab from './components/LinkedInTab';
 import TwitterTab from './components/TwitterTab';
@@ -33,7 +34,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
 }) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('html');
-  const [badgeSize, setBadgeSize] = useState('standard');
+  const [badgeStyle, setBadgeStyle] = useState<BadgeStyle>('standard');
   const [customCta, setCustomCta] = useState("We're Pulse Certified!");
   const [hasCopied, setHasCopied] = useState<Record<string, boolean>>({
     html: false,
@@ -87,21 +88,35 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
           </div>
           
           <div>
-            <Label>Badge Size</Label>
-            <div className="flex gap-2 mt-1">
+            <Label>Badge Style</Label>
+            <div className="flex flex-wrap gap-2 mt-1">
               <Button 
-                variant={badgeSize === 'standard' ? 'default' : 'outline'}
+                variant={badgeStyle === 'standard' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setBadgeSize('standard')}
+                onClick={() => setBadgeStyle('standard')}
               >
                 Standard
               </Button>
               <Button 
-                variant={badgeSize === 'compact' ? 'default' : 'outline'}
+                variant={badgeStyle === 'compact' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setBadgeSize('compact')}
+                onClick={() => setBadgeStyle('compact')}
               >
                 Compact
+              </Button>
+              <Button 
+                variant={badgeStyle === 'minimal' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setBadgeStyle('minimal')}
+              >
+                Minimal
+              </Button>
+              <Button 
+                variant={badgeStyle === 'colorful' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setBadgeStyle('colorful')}
+              >
+                Colorful
               </Button>
             </div>
           </div>
@@ -135,7 +150,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
               score={score}
               issueDate={issueDate}
               validUntil={validUntil}
-              badgeSize={badgeSize as 'standard' | 'compact'}
+              badgeSize={badgeStyle}
               customCta={customCta}
               onCopy={handleCopy}
               onDownload={handleDownloadBadge}
@@ -150,7 +165,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
               score={score}
               issueDate={issueDate}
               validUntil={validUntil}
-              badgeSize={badgeSize as 'standard' | 'compact'}
+              badgeSize={badgeStyle}
               customCta={customCta}
               onCopy={handleCopy}
               onDownload={handleDownloadBadge}
@@ -165,7 +180,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
               score={score}
               issueDate={issueDate}
               validUntil={validUntil}
-              badgeSize={badgeSize as 'standard' | 'compact'}
+              badgeSize={badgeStyle}
               customCta={customCta}
               onCopy={handleCopy}
               onDownload={handleDownloadBadge}
@@ -180,7 +195,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
               score={score}
               issueDate={issueDate}
               validUntil={validUntil}
-              badgeSize={badgeSize as 'standard' | 'compact'}
+              badgeSize={badgeStyle}
               customCta={customCta}
               onCopy={handleCopy}
               onDownload={handleDownloadBadge}

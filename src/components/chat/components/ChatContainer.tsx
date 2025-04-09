@@ -47,10 +47,16 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
-  // Convert search results to string[] if needed
-  const searchResultsAsStrings = search.results ? 
-    search.results.map(result => typeof result === 'string' ? result : result.content) : 
-    [];
+  // Fix search results handling
+  const searchResultsAsStrings = search.results && Array.isArray(search.results) 
+    ? search.results.map(result => 
+        typeof result === 'string' 
+          ? result 
+          : (typeof result === 'object' && result !== null && 'content' in result) 
+            ? result.content 
+            : ''
+      ).filter(Boolean)
+    : [];
 
   // Adjust positioning and sizing based on device type
   const mobilePositionClass = "fixed inset-0 z-50 m-0 max-w-full max-h-full rounded-none";

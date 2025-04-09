@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { PulseProvider } from '@/contexts/PulseContext';
+import { ChatProvider } from '@/contexts/ChatbotContext';
+import PulseBotChat from '@/components/chat/PulseBotChat';
 
 const Root: React.FC = () => {
   const location = useLocation();
@@ -10,11 +12,6 @@ const Root: React.FC = () => {
   
   // Effect to handle any navigation issues or redirects
   useEffect(() => {
-    // Example: Redirect authenticated users from certain pages
-    // Check for any route-specific logic here
-    
-    console.log('Navigation to:', location.pathname);
-    
     // Log route changes for debugging
     if (process.env.NODE_ENV === 'development') {
       console.log('Current route:', location.pathname);
@@ -24,9 +21,13 @@ const Root: React.FC = () => {
   return (
     <AuthProvider>
       <PulseProvider>
-        <div className="min-h-screen">
-          <Outlet />
-        </div>
+        <ChatProvider>
+          <div className="min-h-screen">
+            <Outlet />
+            {/* Global PulseBot integration - available on all pages */}
+            <PulseBotChat />
+          </div>
+        </ChatProvider>
       </PulseProvider>
     </AuthProvider>
   );

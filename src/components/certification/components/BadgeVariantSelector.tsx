@@ -15,36 +15,37 @@ const BadgeVariantSelector: React.FC<BadgeVariantSelectorProps> = ({
 }) => {
   return (
     <div>
-      <Label className="text-lg font-medium mb-2 block">Badge Variant</Label>
+      <Label className="mb-2 block">Platform</Label>
       <div className="flex flex-wrap gap-2">
         <Button 
           variant={badgeVariant === 'default' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onVariantChange('default')}
+          className={badgeVariant === 'default' ? "bg-soulful-midnight text-white" : ""}
         >
-          Default
+          Website
         </Button>
         <Button 
           variant={badgeVariant === 'linkedin' ? 'default' : 'outline'}
           size="sm"
-          className={badgeVariant === 'linkedin' ? 'bg-[#0A66C2]' : ''}
           onClick={() => onVariantChange('linkedin')}
+          className={badgeVariant === 'linkedin' ? "bg-[#0A66C2] text-white hover:bg-[#0A66C2]/90" : ""}
         >
           LinkedIn
         </Button>
         <Button 
           variant={badgeVariant === 'twitter' ? 'default' : 'outline'}
           size="sm"
-          className={badgeVariant === 'twitter' ? 'bg-[#1DA1F2]' : ''}
           onClick={() => onVariantChange('twitter')}
+          className={badgeVariant === 'twitter' ? "bg-[#1DA1F2] text-white hover:bg-[#1DA1F2]/90" : ""}
         >
           Twitter
         </Button>
         <Button 
           variant={badgeVariant === 'notion' ? 'default' : 'outline'}
           size="sm"
-          className={badgeVariant === 'notion' ? 'bg-black' : ''}
           onClick={() => onVariantChange('notion')}
+          className={badgeVariant === 'notion' ? "bg-black text-white hover:bg-black/90" : ""}
         >
           Notion
         </Button>

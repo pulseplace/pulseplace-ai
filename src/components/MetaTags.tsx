@@ -43,10 +43,13 @@ const MetaTags: React.FC<MetaTagsProps> = ({
       <link rel="apple-touch-icon" href="/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png" />
       
       {/* Mobile viewport optimization */}
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      
-      {/* Mobile theme color */}
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
       <meta name="theme-color" content="#8B5CF6" />
+      
+      {/* Mobile app capability hints */}
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      <meta name="format-detection" content="telephone=no" />
     </Helmet>
   );
 };

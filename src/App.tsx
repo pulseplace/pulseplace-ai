@@ -4,8 +4,6 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { AuthProvider } from './contexts/AuthContext';
-import { PulseProvider } from './contexts/PulseContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -14,15 +12,21 @@ import Loading from './components/Loading';
 import Root from './pages/Root';
 import BrandSystem from './pages/BrandSystem';
 import JoinBetaPage from './pages/JoinBeta';
+import BadgeDemo from './pages/BadgeDemo';
 
+// Lazy-loaded pages for better performance
 const Home = lazy(() => import('./pages/Home'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const BadgeCustomization = lazy(() => import('./pages/dashboard/BadgeCustomization'));
+const DashboardQA = lazy(() => import('./pages/dashboard/DashboardQA'));
+const ShareCertification = lazy(() => import('./pages/dashboard/ShareCertification'));
 const Assessments = lazy(() => import('./pages/Assessments'));
 const Community = lazy(() => import('./pages/Community'));
 const Resources = lazy(() => import('./pages/Resources'));
 const Settings = lazy(() => import('./pages/Settings'));
 const Auth = lazy(() => import('./pages/Auth'));
 const PulseBot = lazy(() => import('./pages/PulseBot'));
+const MailchimpEvents = lazy(() => import('./pages/dashboard/MailchimpEvents'));
 
 const router = createBrowserRouter([
   {
@@ -37,6 +41,26 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <Suspense fallback={<Loading />}><Dashboard /></Suspense>,
+      },
+      {
+        path: "dashboard/share-certification",
+        element: <Suspense fallback={<Loading />}><ShareCertification /></Suspense>,
+      },
+      {
+        path: "dashboard/badge-customization",
+        element: <Suspense fallback={<Loading />}><BadgeCustomization /></Suspense>,
+      },
+      {
+        path: "dashboard/qa",
+        element: <Suspense fallback={<Loading />}><DashboardQA /></Suspense>,
+      },
+      {
+        path: "dashboard/mailchimp-events",
+        element: <Suspense fallback={<Loading />}><MailchimpEvents /></Suspense>,
+      },
+      {
+        path: "badge-demo",
+        element: <BadgeDemo />,
       },
       {
         path: "assessments",

@@ -9,6 +9,8 @@ import { Toaster } from '@/components/ui/toaster';
 import MetaTags from '@/components/MetaTags';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 
 const Root: React.FC = () => {
   const location = useLocation();
@@ -77,13 +79,21 @@ const Root: React.FC = () => {
     testSupabaseConnection();
   }, []);
 
+  // Determine if we should show the navbar and footer based on the path
+  // Typically we'd exclude them from specific paths like login screens
+  const shouldShowNav = !location.pathname.includes('/auth');
+
   return (
     <AuthProvider>
       <PulseProvider>
         <ChatProvider>
           <MetaTags />
-          <div className="min-h-screen">
-            <Outlet />
+          <div className="min-h-screen flex flex-col">
+            {shouldShowNav && <Navbar />}
+            <main className="flex-grow pt-16">
+              <Outlet />
+            </main>
+            {shouldShowNav && <Footer />}
             {/* Global PulseBot integration - available on all pages */}
             <div id="pulsebot-container" className="z-50">
               <PulseBotChat />
@@ -94,6 +104,6 @@ const Root: React.FC = () => {
       </PulseProvider>
     </AuthProvider>
   );
-};
+}
 
 export default Root;

@@ -1,56 +1,31 @@
 
-export type Role = 'user' | 'bot' | 'assistant';
+export type MessageRole = 'system' | 'user' | 'assistant';
+
+export type MessageLanguage = 
+  | 'en'  // English
+  | 'es'  // Spanish
+  | 'fr'  // French
+  | 'de'  // German
+  | 'it'  // Italian
+  | 'pt'  // Portuguese
+  | 'zh'  // Chinese
+  | 'ja'  // Japanese
+  | 'ko'; // Korean
 
 export interface Message {
   id: string;
-  role: Role;
   content: string;
+  role: MessageRole;
   timestamp?: Date;
-  language?: string;
-  liked?: boolean;
-  disliked?: boolean;
-  isError?: boolean;
+  feedback?: 'positive' | 'negative';
 }
 
-export type MessageType = Message;
+export type BotAvatarStateValue = 'idle' | 'thinking' | 'typing' | 'happy' | 'confused';
 
-export interface ChatMessage {
-  id: string;
-  role: Role;
-  content: string;
-  timestamp: Date;
-  avatarState?: BotAvatarState;
-  context?: any;
-  liked?: boolean;
-  disliked?: boolean;
-  isError?: boolean;
-}
-
-// BotAvatarState can be either a string status or an object with avatar URL
-export type BotAvatarStateValue = 'idle' | 'thinking' | 'typing' | 'happy';
 export type BotAvatarState = BotAvatarStateValue | { 
-  status: BotAvatarStateValue,
-  avatar: string 
+  status: BotAvatarStateValue;
+  message?: string;
 };
-
-export type MessageLanguage = string;
-
-export interface SessionInfo {
-  id: string;
-  createdAt: Date;
-}
-
-export interface ConfettiState {
-  run: boolean;
-  config: object;
-  isActive?: boolean;
-}
-
-export interface FeedbackData {
-  messageId: string;
-  content: string;
-  feedbackType: 'up' | 'down';
-}
 
 export interface SearchState {
   query: string;
@@ -58,50 +33,21 @@ export interface SearchState {
   results: Message[] | string[];
 }
 
-export interface AnalyticsFilters {
-  dateFrom?: Date;
-  dateTo?: Date;
-  language?: string;
-  feedbackType?: string;
-}
-
-export interface PulseBotLog {
+export interface SessionInfo {
   id: string;
-  session_id: string;
-  user_message: string;
-  bot_reply: string;
-  language: string;
-  avatar_state: string;
-  created_at: string;
+  startTime: Date;
+  userAgent: string;
+  referrer?: string;
 }
 
-export interface PulseBotAnalytics {
-  totalInteractions: number;
-  uniqueUsers: number;
-  languageBreakdown: {
-    language: string;
-    count: number;
-    percentage: number;
-  }[];
-  feedbackRatio: {
-    positive: number;
-    negative: number;
-    ratio: number;
+export interface ConfettiState {
+  isActive: boolean;
+  config: {
+    particleCount: number;
+    spread: number;
+    startVelocity: number;
+    gravity: number;
+    decay: number;
+    colors: string[];
   };
-  avatarStateUsage: {
-    state: string;
-    count: number;
-    percentage: number;
-  }[];
-  topQueries: {
-    query: string;
-    count: number;
-  }[];
-  topDownvotedResponses: {
-    id: string;
-    userMessage: string;
-    botResponse: string;
-    timestamp: string;
-    downvotes: number;
-  }[];
 }

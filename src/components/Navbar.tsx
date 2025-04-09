@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, Calendar, Cpu, Search, ChevronDown } from 'lucide-react';
@@ -49,7 +48,7 @@ const Navbar = () => {
     setIsMenuOpen(false);
   }, [location]);
 
-  const scrollWithOffset = (el) => {
+  const scrollWithOffset = (el: HTMLElement) => {
     const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
     const yOffset = -80; // Adjust this value based on your fixed header height
     window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
@@ -60,7 +59,7 @@ const Navbar = () => {
   }`;
 
   // Helper function to check if a path is active
-  const isActive = (path) => {
+  const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 

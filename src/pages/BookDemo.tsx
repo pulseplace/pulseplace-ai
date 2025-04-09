@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { Mail } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'react-toastify';
 
 // Define the window interface to include Calendly
 declare global {
@@ -25,9 +27,22 @@ const BookDemo = () => {
     document.body.appendChild(script);
 
     // Set up event listener for booking confirmation
-    const handleMessage = (e: MessageEvent) => {
+    const handleMessage = async (e: MessageEvent) => {
       if (e.data.event === 'calendly.event_scheduled') {
         setIsBooked(true);
+        
+        try {
+          // Log the booking to our Supabase function
+          const { error } = await supabase.functions.invoke('log-booking', {
+            body: e.data,
+          });
+          
+          if (error) {
+            console.error('Error logging booking:', error);
+          }
+        } catch (err) {
+          console.error('Failed to log booking:', err);
+        }
       }
     };
 

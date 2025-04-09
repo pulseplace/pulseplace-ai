@@ -12,3 +12,6 @@ verify_jwt = false
 
 [functions.mailchimp-webhook]
 verify_jwt = false
+
+[functions.log-booking]
+verify_jwt = false

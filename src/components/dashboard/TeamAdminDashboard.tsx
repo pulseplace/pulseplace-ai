@@ -16,6 +16,7 @@ import CertificationTabContent from './admin/CertificationTabContent';
 import TeamActions from './admin/TeamActions';
 import TeamDataExport from './admin/TeamDataExport';
 import { useTeamAdminData } from './admin/useTeamAdminData';
+import { teamAdminService } from '@/services/teamAdminService';
 
 const DEMO_DEPARTMENTS = [
   "All Departments", "Engineering", "Marketing", "Sales", "Customer Support", "Human Resources"
@@ -121,11 +122,11 @@ const TeamAdminDashboard: React.FC = () => {
       
       <TeamAdminFilters
         dateRange={filters.dateRange}
-        setDateRange={date => setFilters({...filters, dateRange: date})}
+        setDateRange={(date) => setFilters({...filters, dateRange: date})}
         department={filters.department}
-        setDepartment={department => setFilters({...filters, department})}
+        setDepartment={(department) => setFilters({...filters, department})}
         pulseTheme={filters.pulseTheme}
-        setPulseTheme={theme => setFilters({...filters, pulseTheme: theme})}
+        setPulseTheme={(theme) => setFilters({...filters, pulseTheme: theme})}
         onClose={() => refreshData()}
       />
       
@@ -170,7 +171,7 @@ const TeamAdminDashboard: React.FC = () => {
               <CertificationTabContent 
                 averageScore={data.summaryStats.averageScore}
                 onSendCertificate={handleSendCertificate}
-                onExportPDF={() => exportService.exportToPDF(
+                onExportPDF={() => teamAdminService.exportToPDF(
                   filters.department !== 'All Departments' ? filters.department : undefined
                 )}
               />

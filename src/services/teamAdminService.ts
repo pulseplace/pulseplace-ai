@@ -5,7 +5,7 @@ import { statsService } from './team/statsService';
 import { exportService } from './team/exportService';
 import { certificationService } from './team/certificationService';
 import { surveyService } from './team/surveyService';
-export { TeamMember, SummaryStats, ProcessedSurveyResponse } from './team/types';
+export type { TeamMember, SummaryStats, ProcessedSurveyResponse } from './team/types';
 
 // Consolidate all service methods into a single exported object
 export const teamAdminService = {

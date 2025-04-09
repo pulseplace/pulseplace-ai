@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Grid } from "@tremor/react";
 import { Users, MessageSquare, ThumbsUp, Activity } from 'lucide-react';
 import KeyMetricCard from './KeyMetricCard';
 

@@ -27,7 +27,10 @@ const Root: React.FC = () => {
     const testSupabaseConnection = async () => {
       try {
         console.log('Testing Supabase connection...');
-        console.log('Supabase URL:', supabase.supabaseUrl);
+        
+        // Use a safe way to get the base URL without accessing protected properties
+        const baseUrl = supabase.getUrl().replace('/rest/v1', '');
+        console.log('Supabase base URL:', baseUrl);
         
         // First test: Simple ping to check if Supabase is reachable
         console.log('1. Testing basic Supabase connectivity...');
@@ -50,7 +53,7 @@ const Root: React.FC = () => {
         // Test health endpoint
         console.log('3. Testing Supabase health endpoint...');
         try {
-          const response = await fetch(`${supabase.supabaseUrl}/health`);
+          const response = await fetch(`${baseUrl}/health`);
           const healthData = await response.json();
           console.log('Supabase health check:', healthData);
         } catch (healthErr) {

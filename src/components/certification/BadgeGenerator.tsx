@@ -7,6 +7,7 @@ import BadgeStyleSelector from './components/BadgeStyleSelector';
 import BadgeVariantSelector from './components/BadgeVariantSelector';
 import BadgePreview from './components/BadgePreview';
 import BadgeDownloadButton from './components/BadgeDownloadButton';
+import CustomCtaInput from './components/CustomCtaInput';
 
 interface BadgeGeneratorProps {
   companyName: string;
@@ -55,9 +56,14 @@ const BadgeGenerator: React.FC<BadgeGeneratorProps> = ({
             customCta={customCta}
           />
           
+          <CustomCtaInput
+            value={customCta}
+            onChange={setCustomCta}
+          />
+          
           <BadgeStyleSelector 
             badgeStyle={badgeStyle} 
-            onStyleChange={handleStyleChange} 
+            onChange={handleStyleChange} 
           />
           
           <BadgeVariantSelector 

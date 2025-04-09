@@ -21,6 +21,7 @@ const BadgeStyleSelector: React.FC<BadgeStyleSelectorProps> = ({
           variant={badgeStyle === 'standard' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onChange('standard')}
+          className="bg-soulful-midnight text-white hover:bg-pulse-blue"
         >
           Standard
         </Button>
@@ -28,6 +29,7 @@ const BadgeStyleSelector: React.FC<BadgeStyleSelectorProps> = ({
           variant={badgeStyle === 'compact' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onChange('compact')}
+          className={badgeStyle === 'compact' ? "bg-pulse-blue" : ""}
         >
           Compact
         </Button>
@@ -35,6 +37,7 @@ const BadgeStyleSelector: React.FC<BadgeStyleSelectorProps> = ({
           variant={badgeStyle === 'minimal' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onChange('minimal')}
+          className={badgeStyle === 'minimal' ? "bg-grey-mist text-white" : ""}
         >
           Minimal
         </Button>
@@ -42,6 +45,7 @@ const BadgeStyleSelector: React.FC<BadgeStyleSelectorProps> = ({
           variant={badgeStyle === 'colorful' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onChange('colorful')}
+          className={badgeStyle === 'colorful' ? "bg-ember-coral text-white" : ""}
         >
           Colorful
         </Button>

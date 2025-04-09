@@ -1,8 +1,8 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import JoinBetaForm from '@/components/JoinBetaForm';
+import MailchimpSignup from '@/components/MailchimpSignup';
 import MetaTags from '@/components/MetaTags';
 
 const JoinBetaPage = () => {
@@ -21,10 +21,20 @@ const JoinBetaPage = () => {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Be among the first to transform your workplace with AI-powered culture insights and get early access to PulseScore certification.
           </p>
+          
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8 max-w-xl mx-auto">
+            <MailchimpSignup 
+              title="Quick Beta Registration" 
+              buttonText="Join Beta"
+              placeholder="Enter your work email"
+            />
+            <p className="text-sm text-gray-500 mt-2">Get early access with just your email</p>
+          </div>
         </div>
         
         <div className="max-w-3xl mx-auto">
           <div className="bg-white rounded-xl shadow-xl p-8 mb-12">
+            <h2 className="text-2xl font-bold mb-6 text-center">Full Registration Form</h2>
             <JoinBetaForm />
           </div>
           

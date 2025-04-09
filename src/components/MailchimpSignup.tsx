@@ -1,13 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 interface MailchimpSignupProps {
   title?: string;
   buttonText?: string;
   placeholder?: string;
   className?: string;
+  listId?: string;
 }
 
 const MailchimpSignup = ({
@@ -16,16 +18,46 @@ const MailchimpSignup = ({
   placeholder = "Your work email",
   className = ""
 }: MailchimpSignupProps) => {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes('@')) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Send directly to Mailchimp using their embedded form
+      const form = e.target as HTMLFormElement;
+      form.submit();
+      
+      // Clear the input and show success message
+      setEmail('');
+      toast.success("Thank you for subscribing! Check your email to confirm.");
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className={`w-full ${className}`}>
       <div id="mc_embed_signup">
         <form 
-          action="https://YOUR-USERNAME.usXX.list-manage.com/subscribe/post?u=XXXXXXX&id=XXXXXXX"
+          action="https://pulseplace.us21.list-manage.com/subscribe/post?u=e9413013593fc6137371d577d&amp;id=2da64936d1"
           method="post" 
           id="mc-embedded-subscribe-form" 
           name="mc-embedded-subscribe-form"
           className="validate flex flex-col space-y-4" 
           target="_blank" 
+          onSubmit={handleSubmit}
           noValidate
         >
           <div id="mc_embed_signup_scroll" className="w-full">
@@ -40,6 +72,8 @@ const MailchimpSignup = ({
                 type="email" 
                 name="EMAIL" 
                 id="mce-EMAIL"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder={placeholder} 
                 required
                 className="flex-grow"
@@ -51,15 +85,16 @@ const MailchimpSignup = ({
                   name="subscribe"
                   id="mc-embedded-subscribe" 
                   className="bg-pulse-gradient hover:opacity-90 w-full sm:w-auto"
+                  disabled={isSubmitting}
                 >
-                  {buttonText}
+                  {isSubmitting ? "Submitting..." : buttonText}
                 </Button>
               </div>
             </div>
             
             {/* Hidden field to prevent bot signups */}
             <div style={{ position: "absolute", left: "-5000px" }} aria-hidden="true">
-              <input type="text" name="b_XXXXXX_XXXXXX" tabIndex={-1} />
+              <input type="text" name="b_e9413013593fc6137371d577d_2da64936d1" tabIndex={-1} />
             </div>
           </div>
         </form>

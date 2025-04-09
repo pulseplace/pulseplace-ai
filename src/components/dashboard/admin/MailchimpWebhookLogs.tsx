@@ -24,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Download, Eye, RefreshCw, Search } from 'lucide-react';
+import { ChevronDown, Download, Eye, RefreshCw, Search, CheckCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
@@ -38,6 +38,7 @@ interface MailchimpEvent {
   list_id: string | null;
   raw_data: string | null;
   processed_at: string;
+  confirmed_at: string | null;
 }
 
 const getEventTypeBadge = (eventType: string) => {
@@ -48,6 +49,7 @@ const getEventTypeBadge = (eventType: string) => {
     upemail: "bg-yellow-100 text-yellow-800",
     cleaned: "bg-purple-100 text-purple-800",
     campaign: "bg-indigo-100 text-indigo-800",
+    confirm: "bg-teal-100 text-teal-800",
   };
 
   return typeColors[eventType.toLowerCase()] || "bg-gray-100 text-gray-800";
@@ -114,13 +116,14 @@ const MailchimpWebhookLogs: React.FC = () => {
   const exportToCSV = () => {
     try {
       // Create CSV content
-      const headers = ["Event Type", "Email", "Timestamp", "List ID"];
+      const headers = ["Event Type", "Email", "Timestamp", "Confirmed", "List ID"];
       const csvContent = [
         headers.join(","),
         ...filteredEvents.map(event => [
           event.event_type,
           event.email || "",
           new Date(event.timestamp).toISOString(),
+          event.confirmed_at ? "Yes" : "No",
           event.list_id || ""
         ].join(","))
       ].join("\n");
@@ -236,6 +239,7 @@ const MailchimpWebhookLogs: React.FC = () => {
                   <TableHead>Event Type</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Timestamp</TableHead>
+                  <TableHead>Confirmed</TableHead>
                   <TableHead>List ID</TableHead>
                   <TableHead className="w-[80px]">Actions</TableHead>
                 </TableRow>
@@ -243,13 +247,13 @@ const MailchimpWebhookLogs: React.FC = () => {
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
+                    <TableCell colSpan={6} className="h-24 text-center">
                       Loading events...
                     </TableCell>
                   </TableRow>
                 ) : filteredEvents.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
+                    <TableCell colSpan={6} className="h-24 text-center">
                       No events found matching your criteria
                     </TableCell>
                   </TableRow>
@@ -264,6 +268,18 @@ const MailchimpWebhookLogs: React.FC = () => {
                       <TableCell>{event.email || "—"}</TableCell>
                       <TableCell>
                         {new Date(event.timestamp).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {event.confirmed_at ? (
+                          <div className="flex items-center text-green-600">
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            <span className="text-xs">
+                              {new Date(event.confirmed_at).toLocaleString()}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-500">No</span>
+                        )}
                       </TableCell>
                       <TableCell>{event.list_id || "—"}</TableCell>
                       <TableCell>
@@ -316,6 +332,14 @@ const MailchimpWebhookLogs: React.FC = () => {
                       <h4 className="text-sm font-medium mb-1">Processed At</h4>
                       <p className="text-sm text-gray-700">
                         {new Date(selectedEvent.processed_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium mb-1">Confirmed At</h4>
+                      <p className="text-sm text-gray-700">
+                        {selectedEvent.confirmed_at ? 
+                          new Date(selectedEvent.confirmed_at).toLocaleString() : 
+                          "Not confirmed yet"}
                       </p>
                     </div>
                     <div>

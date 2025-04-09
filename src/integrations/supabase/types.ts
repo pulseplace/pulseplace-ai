@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       mailchimp_events: {
         Row: {
+          confirmed_at: string | null
           email: string | null
           event_type: string
           id: string
@@ -20,6 +21,7 @@ export type Database = {
           timestamp: string
         }
         Insert: {
+          confirmed_at?: string | null
           email?: string | null
           event_type: string
           id?: string
@@ -29,6 +31,7 @@ export type Database = {
           timestamp?: string
         }
         Update: {
+          confirmed_at?: string | null
           email?: string | null
           event_type?: string
           id?: string
@@ -42,6 +45,7 @@ export type Database = {
       profiles: {
         Row: {
           company: string | null
+          confirmed_opt_in: boolean | null
           created_at: string | null
           department: string | null
           email: string | null
@@ -54,6 +58,7 @@ export type Database = {
         }
         Insert: {
           company?: string | null
+          confirmed_opt_in?: boolean | null
           created_at?: string | null
           department?: string | null
           email?: string | null
@@ -66,6 +71,7 @@ export type Database = {
         }
         Update: {
           company?: string | null
+          confirmed_opt_in?: boolean | null
           created_at?: string | null
           department?: string | null
           email?: string | null

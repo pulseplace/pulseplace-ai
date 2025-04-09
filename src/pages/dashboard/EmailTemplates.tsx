@@ -4,7 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CertificationEmailTemplate from "@/components/dashboard/email/CertificationEmailTemplate";
 import CertificationEmailGenerator from "@/components/dashboard/email/CertificationEmailGenerator";
 import MailchimpEmailPreview from "@/components/dashboard/email/MailchimpEmailPreview";
+import MailchimpWebhookLogs from "@/components/dashboard/admin/MailchimpWebhookLogs";
+import MailchimpSubscribersTable from "@/components/dashboard/admin/MailchimpSubscribersTable";
 import { BrandMessage } from '@/components/BrandMessage';
+import EmailSendTest from '@/components/dashboard/email/EmailSendTest';
 
 const EmailTemplates = () => {
   return (
@@ -26,6 +29,8 @@ const EmailTemplates = () => {
         <TabsList className="mb-6">
           <TabsTrigger value="certification">Certification Emails</TabsTrigger>
           <TabsTrigger value="mailchimp">Mailchimp Templates</TabsTrigger>
+          <TabsTrigger value="logs">Webhook Logs</TabsTrigger>
+          <TabsTrigger value="subscribers">Subscribers</TabsTrigger>
           <TabsTrigger value="custom">Custom Template</TabsTrigger>
         </TabsList>
         
@@ -39,6 +44,19 @@ const EmailTemplates = () => {
         <TabsContent value="mailchimp">
           <div className="space-y-8">
             <MailchimpEmailPreview />
+            <EmailSendTest />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="logs">
+          <div className="space-y-8">
+            <MailchimpWebhookLogs />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="subscribers">
+          <div className="space-y-8">
+            <MailchimpSubscribersTable />
           </div>
         </TabsContent>
         

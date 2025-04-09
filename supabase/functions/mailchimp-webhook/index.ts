@@ -20,7 +20,8 @@ type MailchimpEventType =
   | 'profile' 
   | 'upemail' 
   | 'cleaned' 
-  | 'campaign';
+  | 'campaign'
+  | 'confirm';  // Added confirm event type for double opt-in
 
 // Define a type for the mailchimp tags
 interface MailchimpTag {
@@ -88,6 +89,50 @@ function extractMailchimpData(rawPayload: string): EventData | null {
   } catch (error) {
     console.error("Error extracting Mailchimp data:", error);
     return null;
+  }
+}
+
+// Helper function to process subscription events
+async function processSubscriberOptIn(email: string, isConfirmed: boolean): Promise<void> {
+  if (!email) {
+    return;
+  }
+
+  try {
+    console.log(`Processing ${isConfirmed ? 'confirmed' : 'unconfirmed'} opt-in for subscriber: ${email}`);
+
+    // Check if we have a profiles table with this user
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, email')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("Error finding user profile:", profileError);
+      return;
+    }
+
+    if (profileData) {
+      // Update the user's profile with the opt-in status
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          confirmed_opt_in: isConfirmed,
+          updated_at: new Date().toISOString() 
+        })
+        .eq('id', profileData.id);
+
+      if (updateError) {
+        console.error("Error updating user profile with opt-in status:", updateError);
+      } else {
+        console.log(`Successfully updated profile with opt-in status (${isConfirmed}) for user: ${email}`);
+      }
+    } else {
+      console.log(`No profile found for email: ${email}, opt-in status won't be stored`);
+    }
+  } catch (error) {
+    console.error("Error processing subscriber opt-in:", error);
   }
 }
 
@@ -183,7 +228,11 @@ serve(async (req) => {
 
     console.log(`Received Mailchimp ${eventData.event_type} event for ${eventData.email}`);
 
-    // Store in Supabase
+    // Check if this is a confirmation event
+    const isConfirmEvent = eventData.event_type === 'confirm';
+    const currentTime = new Date().toISOString();
+
+    // Store in Supabase with confirmation timestamp if applicable
     const { data, error } = await supabase
       .from("mailchimp_events")
       .insert([{
@@ -191,7 +240,8 @@ serve(async (req) => {
         email: eventData.email,
         timestamp: eventData.timestamp,
         list_id: eventData.list_id,
-        raw_data: rawBody
+        raw_data: rawBody,
+        confirmed_at: isConfirmEvent ? currentTime : null
       }]);
 
     if (error) {
@@ -201,8 +251,20 @@ serve(async (req) => {
       console.log("Successfully stored webhook data in Supabase");
     }
 
-    // Process subscriber tags if this is a subscribe or profile update event
-    if ((eventData.event_type === 'subscribe' || eventData.event_type === 'profile') && eventData.email) {
+    // Process subscriber opt-in status if this is a subscription or confirmation event
+    if (eventData.email) {
+      if (isConfirmEvent) {
+        // For confirmation events, mark the user as confirmed
+        await processSubscriberOptIn(eventData.email, true);
+      } else if (eventData.event_type === 'subscribe') {
+        // For subscribe events without confirmation, we still process but don't mark as confirmed
+        // If using double opt-in, this would be the initial subscription
+        await processSubscriberOptIn(eventData.email, false);
+      }
+    }
+
+    // Process subscriber tags if this is a subscribe, confirm, or profile update event
+    if ((eventData.event_type === 'subscribe' || eventData.event_type === 'confirm' || eventData.event_type === 'profile') && eventData.email) {
       await processSubscriberTags(eventData.email, eventData.tags);
     }
 

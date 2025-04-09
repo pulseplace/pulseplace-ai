@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { AlertCircle, Info } from "lucide-react";
+import { AlertCircle, Info, Mail } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface MailchimpSignupProps {
   title?: string;
@@ -23,6 +24,7 @@ interface MailchimpSignupProps {
   gdprCompliance?: string;
   showTooltip?: boolean;
   tooltipContent?: string;
+  showDoubleOptInReminder?: boolean;
 }
 
 const MailchimpSignup = ({
@@ -35,11 +37,13 @@ const MailchimpSignup = ({
   showGdprCompliance = true,
   gdprCompliance = "By submitting this form, you agree to receive marketing emails. We'll handle your information in accordance with our Privacy Policy.",
   showTooltip = true,
-  tooltipContent = "We only send emails that provide value. No spam, ever."
+  tooltipContent = "We only send emails that provide value. No spam, ever.",
+  showDoubleOptInReminder = true
 }: MailchimpSignupProps) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [webhookError, setWebhookError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +63,8 @@ const MailchimpSignup = ({
       
       // Clear the input and show success message
       setEmail('');
-      toast.success("Thank you for subscribing! Check your email to confirm.");
+      setSubmitted(true);
+      toast.success("Thank you for subscribing! Please check your email to confirm your subscription.");
     } catch (error) {
       console.error("Signup error:", error);
       setWebhookError("Unable to process your signup. Please try again later.");
@@ -89,57 +94,66 @@ const MailchimpSignup = ({
               </h2>
             )}
             
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-grow">
-                <Input 
-                  type="email" 
-                  name="EMAIL" 
-                  id="mce-EMAIL"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={placeholder} 
-                  required
-                  className="flex-grow pr-8"
-                  aria-label="Your email address"
-                />
-                {showTooltip && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-help">
-                          <Info className="h-4 w-4" />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        <p>{tooltipContent}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+            {submitted && showDoubleOptInReminder ? (
+              <Alert variant="default" className="mb-4 bg-green-50 border-green-200">
+                <Mail className="h-5 w-5 text-green-600" />
+                <AlertDescription className="text-green-800">
+                  Please check your email inbox to confirm your subscription. You won't receive any emails until you confirm.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-grow">
+                  <Input 
+                    type="email" 
+                    name="EMAIL" 
+                    id="mce-EMAIL"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={placeholder} 
+                    required
+                    className="flex-grow pr-8"
+                    aria-label="Your email address"
+                  />
+                  {showTooltip && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-help">
+                            <Info className="h-4 w-4" />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p>{tooltipContent}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
+                
+                <div className="clear">
+                  <Button 
+                    type="submit" 
+                    name="subscribe"
+                    id="mc-embedded-subscribe" 
+                    className="bg-pulse-gradient hover:opacity-90 w-full sm:w-auto"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Submitting..." : buttonText}
+                  </Button>
+                </div>
               </div>
-              
-              <div className="clear">
-                <Button 
-                  type="submit" 
-                  name="subscribe"
-                  id="mc-embedded-subscribe" 
-                  className="bg-pulse-gradient hover:opacity-90 w-full sm:w-auto"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Submitting..." : buttonText}
-                </Button>
-              </div>
-            </div>
+            )}
             
             {/* Privacy Message */}
-            {showPrivacyMessage && (
+            {showPrivacyMessage && !submitted && (
               <p className="text-xs text-gray-500 mt-2">
                 {privacyMessage}
               </p>
             )}
             
             {/* GDPR Compliance Message */}
-            {showGdprCompliance && (
+            {showGdprCompliance && !submitted && (
               <p className="text-xs text-gray-500 mt-1">
                 {gdprCompliance}
               </p>

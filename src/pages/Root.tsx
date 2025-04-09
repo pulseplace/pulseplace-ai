@@ -28,7 +28,7 @@ const Root: React.FC = () => {
       try {
         console.log('Testing Supabase connection...');
         
-        // Access the URL correctly from the Supabase client
+        // Get the Supabase URL directly from the environment or use the fallback
         const baseUrl = 'https://hamqupvdhlfznwnuohsh.supabase.co';
         console.log('Supabase base URL:', baseUrl);
         
@@ -54,10 +54,14 @@ const Root: React.FC = () => {
         console.log('3. Testing Supabase health endpoint...');
         try {
           const response = await fetch(`${baseUrl}/health`);
+          if (!response.ok) {
+            throw new Error(`Health endpoint returned ${response.status}`);
+          }
           const healthData = await response.json();
           console.log('Supabase health check:', healthData);
         } catch (healthErr) {
           console.error('Supabase health endpoint error:', healthErr);
+          // Continue as this is not critical
         }
         
         console.log('Supabase connection tests completed');

@@ -13,7 +13,19 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Only allow POST requests
+  // Allow both GET (for verification) and POST (for actual webhook data)
+  if (req.method === "GET") {
+    // Return a simple success response for GET requests (used by Mailchimp for verification)
+    return new Response(JSON.stringify({ status: "success", message: "Webhook endpoint ready" }), { 
+      status: 200, 
+      headers: {
+        "Content-Type": "application/json",
+        ...corsHeaders
+      }
+    });
+  }
+
+  // Only allow POST and GET requests
   if (req.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405, headers: corsHeaders })
   }

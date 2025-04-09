@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +53,7 @@ export default {
 					foreground: '#FFFFFF',
 				},
 				background: {
+					DEFAULT: 'hsl(var(--background))',
 					light: '#F7F9FB', // Soft Cloud
 					dark: '#121417', // Midnight Fog
 				},

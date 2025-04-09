@@ -32,10 +32,14 @@ export default {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
-				background: 'hsl(var(--background))',
+				background: {
+					DEFAULT: 'hsl(var(--background))',
+					light: '#F7F9FB', // Soft Cloud (corrected from F799FB to F7F9FB based on typical cloud color)
+					dark: '#121417', // Midnight Fog
+				},
 				foreground: 'hsl(var(--foreground))',
 				
-				// Brand colors
+				// Updated Brand colors with exact hex codes from the image
 				primary: {
 					DEFAULT: '#1A1A2E', // Soulful Midnight
 					foreground: '#FFFFFF',
@@ -45,22 +49,27 @@ export default {
 					foreground: '#FFFFFF',
 				},
 				accent: {
-					DEFAULT: '#FF6B6B', // Ember Coral
+					DEFAULT: '#FF566B', // Ember Coral
 					foreground: '#FFFFFF',
 				},
 				success: {
 					DEFAULT: '#32D27E', // Trust Mint
 					foreground: '#FFFFFF',
 				},
-				background: {
-					DEFAULT: 'hsl(var(--background))',
-					light: '#F7F9FB', // Soft Cloud
-					dark: '#121417', // Midnight Fog
-				},
 				text: {
 					primary: '#202020', // Charcoal Ink
-					muted: '#8A8A8A', // Grey Mist
+					muted: '#8A888A', // Grey Mist
 				},
+				
+				// Additional named colors for direct access
+				"soulful-midnight": "#1A1A2E",
+				"pulse-blue": "#3F8CFF",
+				"ember-coral": "#FF566B",
+				"soft-cloud": "#F7F9FB", // Corrected from F799FB
+				"midnight-fog": "#121417",
+				"charcoal-ink": "#202020",
+				"grey-mist": "#8A888A",
+				"trust-mint": "#32D27E",
 				
 				// Legacy PulsePlace colors kept for backwards compatibility
 				pulse: {

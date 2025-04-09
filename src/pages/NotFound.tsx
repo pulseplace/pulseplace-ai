@@ -43,8 +43,8 @@ const NotFound = () => {
               variant="outline" 
               asChild
             >
-              <Link to="/dashboard">
-                Go to Dashboard
+              <Link to="/join-beta">
+                Join Our Beta
               </Link>
             </Button>
           </div>

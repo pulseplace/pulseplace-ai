@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import {
   createBrowserRouter,
@@ -13,6 +14,7 @@ import NotFound from './pages/NotFound';
 import Loading from './components/Loading';
 import Root from './pages/Root';
 import BrandSystem from './pages/BrandSystem';
+import JoinBetaPage from './pages/JoinBeta';
 
 const Home = lazy(() => import('./pages/Home'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -64,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: "brand-system",
         element: <BrandSystem />,
+      },
+      {
+        path: "join-beta",
+        element: <JoinBetaPage />,
       },
     ],
   },

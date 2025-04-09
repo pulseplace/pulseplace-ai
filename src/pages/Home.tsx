@@ -17,6 +17,7 @@ import DashboardPreview from '@/components/DashboardPreview';
 import Footer from '@/components/Footer';
 import { ArrowRight, BarChart2, Building2, Lock, Shield, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   const [ref, inView] = useInView({
@@ -41,7 +42,7 @@ const Home = () => {
         keywords="workplace trust, employee trust, trust metrics, AI for HR, workplace analytics"
       />
       
-      <Navbar />
+      {/* Navbar is handled by the Root component */}
       <Hero />
       
       {/* Brand Pitch Section */}
@@ -106,9 +107,11 @@ const Home = () => {
               </motion.div>
               
               <motion.div variants={itemVariants} className="mt-12">
-                <Button className="bg-pulse-gradient">
-                  Schedule Demo <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link to="/book-demo">
+                  <Button className="bg-pulse-gradient">
+                    Schedule Demo <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </motion.div>
             </motion.div>
           </div>

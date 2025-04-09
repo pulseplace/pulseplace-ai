@@ -22,24 +22,47 @@ const Root: React.FC = () => {
     }
   }, [location, navigate]);
 
-  // Test Supabase connection on app load
+  // Enhanced Supabase connection test on app load
   useEffect(() => {
     const testSupabaseConnection = async () => {
       try {
         console.log('Testing Supabase connection...');
-        const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
+        console.log('Supabase URL:', supabase.supabaseUrl);
         
-        if (error) {
-          console.error('Supabase connection error:', error);
-          toast.error('Database connection error. Please try again later.');
-          return false;
+        // First test: Simple ping to check if Supabase is reachable
+        console.log('1. Testing basic Supabase connectivity...');
+        const { data: pingData, error: pingError } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
+        
+        if (pingError) {
+          console.error('Supabase connection error (profiles table):', pingError);
+          
+          // Try another table as fallback
+          console.log('2. Trying alternate table connection...');
+          const { error: fallbackError } = await supabase.from('pulsebot_logs').select('count', { count: 'exact', head: true });
+          
+          if (fallbackError) {
+            console.error('Alternate table connection also failed:', fallbackError);
+            toast.error('Database connection failed. Network or configuration issue detected.');
+            return false;
+          }
         }
         
-        console.log('Supabase connection successful!');
+        // Test health endpoint
+        console.log('3. Testing Supabase health endpoint...');
+        try {
+          const response = await fetch(`${supabase.supabaseUrl}/health`);
+          const healthData = await response.json();
+          console.log('Supabase health check:', healthData);
+        } catch (healthErr) {
+          console.error('Supabase health endpoint error:', healthErr);
+        }
+        
+        console.log('Supabase connection tests completed');
+        toast.success('Database connection successful');
         return true;
       } catch (err) {
-        console.error('Failed to connect to Supabase:', err);
-        toast.error('Database connection error. Please try again later.');
+        console.error('Critical failure connecting to Supabase:', err);
+        toast.error('Unable to reach database. Please check network connection and DNS configuration.');
         return false;
       }
     };

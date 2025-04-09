@@ -1,11 +1,9 @@
-
 import React, { Suspense, lazy } from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Toaster } from 'sonner';
 import './App.css';
 import NotFound from './pages/NotFound';
 import Loading from './components/Loading';
@@ -162,7 +160,7 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
-      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+      <Toaster position="bottom-right" richColors closeButton />
     </>
   );
 }

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { X, Settings, Trash2, Bot, BotIcon } from 'lucide-react';
-import { BotAvatarState } from './types';
+import { BotAvatarState, BotAvatarStateValue } from './types';
 import { cn } from '@/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -22,14 +22,26 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   onClose,
   onClearHistory
 }) => {
+  // Get the status value, whether it's a direct string or from an object
+  const getBotStateValue = (): BotAvatarStateValue => {
+    if (typeof botAvatarState === 'string') {
+      return botAvatarState;
+    } else if (botAvatarState && 'status' in botAvatarState) {
+      return botAvatarState.status;
+    }
+    return 'idle';
+  };
+  
+  const botStateValue = getBotStateValue();
+  
   return (
     <div className="flex items-center justify-between p-3 border-b bg-pulse-gradient text-white">
       <div className="flex items-center space-x-2">
         <div 
           className={cn(
             "w-8 h-8 rounded-full flex items-center justify-center",
-            botAvatarState === 'idle' ? "bg-gray-600" : 
-            botAvatarState === 'thinking' || botAvatarState === 'typing' ? "bg-yellow-500" : 
+            botStateValue === 'idle' ? "bg-gray-600" : 
+            botStateValue === 'thinking' || botStateValue === 'typing' ? "bg-yellow-500" : 
             "bg-green-500"
           )}
         >

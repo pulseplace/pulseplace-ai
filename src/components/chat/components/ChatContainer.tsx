@@ -4,13 +4,13 @@ import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
 import { ChatSearchBar } from './ChatSearchBar';
 import { ChatFooter } from './ChatFooter';
-import { BotAvatarState, MessageLanguage, MessageType, SearchState } from '../types';
+import { BotAvatarState, MessageLanguage, Message, SearchState } from '../types';
 import { cn } from '@/lib/utils';
 
 interface ChatContainerProps {
   open: boolean;
   loading: boolean;
-  messages: MessageType[];
+  messages: Message[];
   botAvatarState: BotAvatarState;
   language: MessageLanguage;
   languages: { value: MessageLanguage; label: string }[];

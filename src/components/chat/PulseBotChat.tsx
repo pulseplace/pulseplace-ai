@@ -5,7 +5,7 @@ import { ChatContainer } from './components/ChatContainer';
 import { Confetti } from './Confetti';
 import { TypingIndicatorStyles } from './components/TypingIndicatorStyles';
 import { usePulseBot } from './usePulseBot';
-import { MessageLanguage } from './types';
+import { MessageLanguage, Message } from './types';
 import { useToast } from '@/hooks/use-toast';
 import { TutorialProvider } from './tutorial/TutorialContext';
 import { TutorialOverlay } from './tutorial/TutorialOverlay';
@@ -20,7 +20,7 @@ export default function PulseBotChat() {
     language,
     messagesEndRef,
     sendMessage,
-    handleFeedback,
+    handleFeedback: originalHandleFeedback,
     handleLanguageChange,
     toggleChat,
     search,
@@ -46,6 +46,22 @@ export default function PulseBotChat() {
     { value: 'ja' as MessageLanguage, label: 'Japanese' },
     { value: 'ko' as MessageLanguage, label: 'Korean' },
   ];
+  
+  // Create an adapter for handleFeedback to match the expected API
+  const handleFeedbackAdapter = (messageId: string, value: 'positive' | 'negative') => {
+    // Find the message from the messages array
+    const message = messages.find(m => m.id === messageId);
+    if (!message) {
+      console.error(`Message with ID ${messageId} not found`);
+      return;
+    }
+    
+    // Convert the value to the format expected by the original function
+    const feedbackType = value === 'positive' ? 'up' : 'down';
+    
+    // Call the original function
+    originalHandleFeedback(messageId, message, feedbackType);
+  };
   
   // Export chat history
   const handleExportChat = () => {
@@ -117,7 +133,7 @@ export default function PulseBotChat() {
         language={language}
         languages={languages}
         messagesEndRef={messagesEndRef}
-        handleFeedback={handleFeedback}
+        handleFeedback={handleFeedbackAdapter}
         handleLanguageChange={handleLanguageChange}
         toggleChat={toggleChat}
         search={search}

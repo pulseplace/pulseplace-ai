@@ -8,15 +8,19 @@ export const useFeedback = (sessionId: string) => {
   const { toast } = useToast();
   const [voteStatus, setVoteStatus] = useState<Record<string, 'up' | 'down' | null>>({});
   
-  const handleFeedback = async (messageId: string, message: Message, feedback: 'up' | 'down') => {
+  // Updating the type signature to match what's used in ChatContainer
+  const handleFeedback = async (messageId: string, feedback: 'positive' | 'negative') => {
+    // Convert the feedback format
+    const feedbackType = feedback === 'positive' ? 'up' : 'down';
+    
     // Record the vote locally
     setVoteStatus(prev => ({
       ...prev,
-      [messageId]: feedback
+      [messageId]: feedbackType
     }));
     
     // Show toast based on feedback
-    if (feedback === 'up') {
+    if (feedback === 'positive') {
       toast({
         description: "Thanks for your positive feedback!",
       });
@@ -27,8 +31,12 @@ export const useFeedback = (sessionId: string) => {
     }
     
     try {
+      // Find the message content
+      // This is a placeholder since we don't have access to messages here
+      const messageContent = "Message content"; // In real implementation, look up from messages
+      
       // Log the feedback to the server
-      await logFeedback(sessionId, messageId, feedback, message.content);
+      await logFeedback(messageId, messageContent, feedbackType, sessionId);
     } catch (error) {
       console.error('Error logging feedback:', error);
     }

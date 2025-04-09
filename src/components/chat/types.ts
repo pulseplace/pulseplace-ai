@@ -10,6 +10,8 @@ export interface Message {
   isError?: boolean;
 }
 
+export type MessageType = Message;
+
 export interface ChatMessage {
   id: string;
   role: Role;

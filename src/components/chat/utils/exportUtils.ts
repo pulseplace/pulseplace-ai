@@ -1,11 +1,11 @@
 
-import { MessageType } from "../types";
+import { Message, MessageType } from "../types";
 
 export const exportUtils = {
   /**
    * Export chat history to JSON format and trigger download
    */
-  exportToJson: (messages: MessageType[], filename: string = "pulsebot-chat-history") => {
+  exportToJson: (messages: Message[], filename: string = "pulsebot-chat-history") => {
     // Prepare data for export
     const exportData = {
       exportDate: new Date().toISOString(),
@@ -37,7 +37,7 @@ export const exportUtils = {
   /**
    * Export chat history to PDF format using browser's print functionality
    */
-  exportToPdf: (messages: MessageType[], title: string = "PulseBot Chat History") => {
+  exportToPdf: (messages: Message[], title: string = "PulseBot Chat History") => {
     // Create a new window for printing
     const printWindow = window.open('', '_blank');
     if (!printWindow) {

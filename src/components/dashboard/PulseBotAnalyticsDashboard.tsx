@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PulseBotAnalytics } from '@/components/chat/types';
 import KeyMetricsGrid from './analytics/pulsebot/KeyMetricsGrid';
 import PulseBotTabs from './analytics/pulsebot/PulseBotTabs';
+import TrendsAnalysis from './analytics/pulsebot/TrendsAnalysis';
 
 interface PulseBotAnalyticsDashboardProps {
   analytics: PulseBotAnalytics;

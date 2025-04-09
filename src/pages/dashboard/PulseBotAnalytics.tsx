@@ -23,7 +23,7 @@ const PulseBotAnalytics: React.FC = () => {
     to: new Date()
   });
   const [language, setLanguage] = useState('all');
-  const [feedbackType, setFeedbackType] = useState('all');
+  const [feedbackType, setFeedbackType] = useState<'all' | 'positive' | 'negative'>('all');
   
   // Load analytics data
   useEffect(() => {
@@ -101,14 +101,14 @@ const PulseBotAnalytics: React.FC = () => {
             </SelectContent>
           </Select>
           
-          <Select value={feedbackType} onValueChange={setFeedbackType}>
+          <Select value={feedbackType} onValueChange={(value: 'all' | 'positive' | 'negative') => setFeedbackType(value)}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Feedback Type" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Feedback</SelectItem>
-              <SelectItem value="up">Positive Only</SelectItem>
-              <SelectItem value="down">Negative Only</SelectItem>
+              <SelectItem value="positive">Positive Only</SelectItem>
+              <SelectItem value="negative">Negative Only</SelectItem>
             </SelectContent>
           </Select>
           

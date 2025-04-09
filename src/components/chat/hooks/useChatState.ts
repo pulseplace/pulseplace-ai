@@ -1,57 +1,54 @@
+
 import { useState } from 'react';
-import { toast } from '@/hooks/use-toast';
-import { Message, SessionInfo } from '../types';
-import { useConfetti } from './useConfetti';
+import { Message } from '../types';
 
 export const useChatState = () => {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [sessionInfo] = useState<SessionInfo>(() => ({
-    id: `session_${Math.random().toString(36).substring(2, 11)}`,
-    startTime: new Date(),
-    userAgent: navigator.userAgent,
-    createdAt: new Date()
-  }));
   const [messages, setMessages] = useState<Message[]>([
-    { 
-      id: `welcome_${Date.now()}`,
-      role: 'assistant', 
-      content: "Hi, I'm PulseBot — your workplace guide! Ask me anything about surveys, PulseScore, or certification." 
-    }
-  ]);
-  const { triggerConfetti } = useConfetti();
-
-  const toggleChat = () => setOpen(!open);
-
-  // Clear chat history functionality
-  const clearHistory = () => {
-    // Keep the welcome message but clear everything else
-    const welcomeMessage: Message = {
-      id: `welcome_${Date.now()}`,
+    {
+      id: 'welcome',
       role: 'assistant',
-      content: "Hi, I'm PulseBot — your workplace guide! Ask me anything about surveys, PulseScore, or certification."
+      content: 'Hello! Welcome to PulsePlace. How can I help you today?',
+      timestamp: new Date().toISOString(),
+    },
+  ]);
+
+  const addMessage = (message: Omit<Message, 'timestamp'>) => {
+    const newMessage: Message = {
+      ...message,
+      timestamp: new Date().toISOString(),
     };
-    
-    setMessages([welcomeMessage]);
-    
-    // Trigger confetti animation
-    triggerConfetti();
-    
-    toast({
-      description: "Chat history has been cleared",
-      duration: 3000,
+    setMessages(prev => [...prev, newMessage]);
+    return newMessage;
+  };
+
+  const updateLastMessage = (content: string) => {
+    setMessages(prev => {
+      const updatedMessages = [...prev];
+      if (updatedMessages.length > 0) {
+        const lastMessage = { ...updatedMessages[updatedMessages.length - 1] };
+        lastMessage.content = content;
+        updatedMessages[updatedMessages.length - 1] = lastMessage;
+      }
+      return updatedMessages;
     });
   };
 
+  const clearMessages = () => {
+    setMessages([
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: 'Hello! Welcome to PulsePlace. How can I help you today?',
+        timestamp: new Date().toISOString(),
+      },
+    ]);
+  };
+
   return {
-    open,
-    setOpen,
-    loading,
-    setLoading,
-    sessionInfo,
     messages,
     setMessages,
-    toggleChat,
-    clearHistory
+    addMessage,
+    updateLastMessage,
+    clearMessages,
   };
 };

@@ -354,10 +354,10 @@ const TaskAdmin: React.FC = () => {
 
   const getStatusBadgeVariant = (status: string) => {
     switch(status) {
-      case 'completed': return 'success';
+      case 'completed': return 'default';
       case 'failed': return 'destructive';
       case 'pending': return 'default';
-      case 'in-progress': return 'secondary';
+      case 'in-progress': return 'default';
       default: return 'outline';
     }
   };

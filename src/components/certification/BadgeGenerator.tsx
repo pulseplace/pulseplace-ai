@@ -1,379 +1,150 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Download, DownloadCloud, Loader2, RefreshCw } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
-import { useScreenshot } from 'use-react-screenshot';
-import { BadgeStyle, BadgeType } from '@/types';
-import { useAuth } from '@/contexts/AuthContext';
-import { certificationService } from '@/services/certificationService';
-import { useConfettiStore } from '@/stores/useConfettiStore';
-import { useDashboard } from '@/contexts/DashboardContext';
-import { useOnboarding } from '@/hooks/useOnboarding';
-import { Progress } from "@/components/ui/progress";
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { BadgeStyle, BadgeVariant } from '@/types/badge.types';
+import CertificationBadgeStyled from './CertificationBadgeStyled';
+import { PulseScoreTier } from '@/types/scoring.types';
 
 interface BadgeGeneratorProps {
-  badgeType: BadgeType;
-  badgeStyle: BadgeStyle;
   companyName: string;
-  showcaseUrl: string;
-  employeeCount: number;
-  pulseScore: number;
+  tier: PulseScoreTier;
+  score: number;
+  badgeStyle: BadgeStyle;
+  badgeVariant: BadgeVariant;
   onStyleChange: (style: BadgeStyle) => void;
+  onVariantChange: (variant: BadgeVariant) => void;
 }
 
 const BadgeGenerator: React.FC<BadgeGeneratorProps> = ({
-  badgeType,
-  badgeStyle,
   companyName,
-  showcaseUrl,
-  employeeCount,
-  pulseScore,
-  onStyleChange
+  tier,
+  score,
+  badgeStyle = 'standard',
+  badgeVariant = 'default',
+  onStyleChange,
+  onVariantChange
 }) => {
-  const { user, profile } = useAuth();
-  const { toast } = useToast();
-  const { setConfetti } = useConfettiStore();
-  const { refreshData } = useDashboard();
-  const { markStepComplete } = useOnboarding();
+  const [customCta, setCustomCta] = useState("We're Pulse Certified!");
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [isCopied, setIsCopied] = useState(false);
-  const [embedCode, setEmbedCode] = useState('');
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [isUploadComplete, setIsUploadComplete] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
-  const [isUploaded, setIsUploaded] = useState(false);
-  const [isEmbedReady, setIsEmbedReady] = useState(false);
-  const [isSavingToProfile, setIsSavingToProfile] = useState(false);
-  const [isProfileSaved, setIsProfileSaved] = useState(false);
-  const [profileSaveError, setProfileSaveError] = useState<string | null>(null);
-  const [profileSaveSuccess, setProfileSaveSuccess] = useState(false);
-  const [profileSaveMessage, setProfileSaveMessage] = useState<string | null>(null);
-  const [isJourneyComplete, setIsJourneyComplete] = useState(false);
-  const [isJourneyStarted, setIsJourneyStarted] = useState(false);
-  const [isJourneyContinued, setIsJourneyContinued] = useState(false);
-  const [isJourneySkipped, setIsJourneySkipped] = useState(false);
-  const [isJourneyCancelled, setIsJourneyCancelled] = useState(false);
-  const [isJourneyFailed, setIsJourneyFailed] = useState(false);
-  const [isJourneyLoading, setIsJourneyLoading] = useState(false);
-  const [isJourneySuccess, setIsJourneySuccess] = useState(false);
-  const [journeyMessage, setJourneyMessage] = useState<string | null>(null);
-  const [journeyError, setJourneyError] = useState<string | null>(null);
-  const [journeyProgress, setJourneyProgress] = useState(0);
-  const [isJourneyProgressVisible, setIsJourneyProgressVisible] = useState(false);
-  const [isJourneyButtonVisible, setIsJourneyButtonVisible] = useState(false);
-  const [isJourneyButtonDisabled, setIsJourneyButtonDisabled] = useState(false);
-  const [journeyButtonText, setJourneyButtonText] = useState('Complete Certification');
-  const [journeyButtonIcon, setJourneyButtonIcon] = useState<React.ReactNode>(<ArrowRight className="ml-1 h-4 w-4" />);
-  const [isJourneyButtonLoading, setIsJourneyButtonLoading] = useState(false);
-  const [isJourneyButtonSuccess, setIsJourneyButtonSuccess] = useState(false);
-  const [isJourneyButtonError, setIsJourneyButtonError] = useState(false);
-  const [journeyButtonErrorText, setJourneyButtonErrorText] = useState<string | null>(null);
-  const [journeyButtonSuccessText, setJourneyButtonSuccessText] = useState<string | null>(null);
-  const [isJourneyButtonSkipped, setIsJourneyButtonSkipped] = useState(false);
-  const [journeyButtonSkippedText, setJourneyButtonSkippedText] = useState<string | null>(null);
-  const [isJourneyButtonCancelled, setIsJourneyButtonCancelled] = useState(false);
-  const [journeyButtonCancelledText, setJourneyButtonCancelledText] = useState<string | null>(null);
-  const [isJourneyButtonFailed, setIsJourneyButtonFailed] = useState(false);
-  const [journeyButtonFailedText, setJourneyButtonFailedText] = useState<string | null>(null);
-  const [isJourneyButtonStarted, setIsJourneyButtonStarted] = useState(false);
-  const [journeyButtonStartedText, setJourneyButtonStartedText] = useState<string | null>(null);
-  const [isJourneyButtonContinued, setIsJourneyButtonContinued] = useState(false);
-  const [journeyButtonContinuedText, setJourneyButtonContinuedText] = useState<string | null>(null);
-  const [isJourneyButtonComplete, setIsJourneyButtonComplete] = useState(false);
-  const [journeyButtonCompleteText, setJourneyButtonCompleteText] = useState<string | null>(null);
-  const [isJourneyButtonLoadingText, setJourneyButtonLoadingText] = useState<string | null>(null);
-  const [isJourneyButtonSuccessText, setJourneyButtonSuccessText] = useState<string | null>(null);
-  const [isJourneyButtonErrorText, setJourneyButtonErrorText] = useState<string | null>(null);
-  const [isJourneyButtonSkippedText, setJourneyButtonSkippedText] = useState<string | null>(null);
-  const [isJourneyButtonCancelledText, setJourneyButtonCancelledText] = useState<string | null>(null);
-  const [isJourneyButtonFailedText, setJourneyButtonFailedText] = useState<string | null>(null);
-  const [isJourneyButtonStartedText, setJourneyButtonStartedText] = useState<string | null>(null);
-  const [isJourneyButtonContinuedText, setJourneyButtonContinuedText] = useState<string | null>(null);
-  const [isJourneyButtonCompleteText, setJourneyButtonCompleteText] = useState<string | null>(null);
-  const [isJourneyButtonLoadingIcon, setJourneyButtonLoadingIcon] = useState<React.ReactNode>(<Loader2 className="ml-1 h-4 w-4 animate-spin" />);
-  const [isJourneyButtonSuccessIcon, setJourneyButtonSuccessIcon] = useState<React.ReactNode>(<ArrowRight className="ml-1 h-4 w-4" />);
-  const [isJourneyButtonErrorIcon, setJourneyButtonErrorIcon] = useState<React.ReactNode>(<ArrowRight className="ml-1 h-4 w-4" />);
-  const [isJourneyButtonSkippedIcon, setJourneyButtonSkippedIcon] = useState<React.ReactNode>(<ArrowRight className="ml-1 h-4 w-4" />);
-  const [isJourneyButtonCancelledIcon, setJourneyButtonCancelledIcon] = useState<React.ReactNode>(<ArrowRight className="ml-1 h-4 w-4" />);
-  const [isJourneyButtonFailedIcon, setJourneyButtonFailedIcon] = useState<React.ReactNode>(<ArrowRight className="ml-1 h-4 w-4" />);
-  const [isJourneyButtonStartedIcon, setJourneyButtonStartedIcon] = useState<React.ReactNode>(<ArrowRight className="ml-1 h-4 w-4" />);
-  const [isJourneyButtonContinuedIcon, setJourneyButtonContinuedIcon] = useState<React.ReactNode>(<ArrowRight className="ml-1 h-4 w-4" />);
-  const [isJourneyButtonCompleteIcon, setJourneyButtonCompleteIcon] = useState<React.ReactNode>(<ArrowRight className="ml-1 h-4 w-4" />);
-  const [isJourneyButtonLoadingDisabled, setIsJourneyButtonLoadingDisabled] = useState(false);
-  const [isJourneyButtonSuccessDisabled, setIsJourneyButtonSuccessDisabled] = useState(false);
-  const [isJourneyButtonErrorDisabled, setIsJourneyButtonErrorDisabled] = useState(false);
-  const [isJourneyButtonSkippedDisabled, setIsJourneyButtonSkippedDisabled] = useState(false);
-  const [isJourneyButtonCancelledDisabled, setIsJourneyButtonCancelledDisabled] = useState(false);
-  const [isJourneyButtonFailedDisabled, setIsJourneyButtonFailedDisabled] = useState(false);
-  const [isJourneyButtonStartedDisabled, setIsJourneyButtonStartedDisabled] = useState(false);
-  const [isJourneyButtonContinuedDisabled, setIsJourneyButtonContinuedDisabled] = useState(false);
-  const [isJourneyButtonCompleteDisabled, setIsJourneyButtonCompleteDisabled] = useState(false);
-  const [isJourneyButtonLoadingVisible, setIsJourneyButtonLoadingVisible] = useState(false);
-  const [isJourneyButtonSuccessVisible, setIsJourneyButtonSuccessVisible] = useState(false);
-  const [isJourneyButtonErrorVisible, setIsJourneyButtonErrorVisible] = useState(false);
-  const [isJourneyButtonSkippedVisible, setIsJourneyButtonSkippedVisible] = useState(false);
-  const [isJourneyButtonCancelledVisible, setIsJourneyButtonCancelledVisible] = useState(false);
-  const [isJourneyButtonFailedVisible, setIsJourneyButtonFailedVisible] = useState(false);
-  const [isJourneyButtonStartedVisible, setIsJourneyButtonStartedVisible] = useState(false);
-  const [isJourneyButtonContinuedVisible, setIsJourneyButtonContinuedVisible] = useState(false);
-  const [isJourneyButtonCompleteVisible, setIsJourneyButtonCompleteVisible] = useState(false);
-  const [isJourneyButtonLoadingTextVisible, setIsJourneyButtonLoadingTextVisible] = useState(false);
-  const [isJourneyButtonSuccessTextVisible, setIsJourneyButtonSuccessTextVisible] = useState(false);
-  const [isJourneyButtonErrorTextVisible, setIsJourneyButtonErrorTextVisible] = useState(false);
-  const [isJourneyButtonSkippedTextVisible, setIsJourneyButtonSkippedTextVisible] = useState(false);
-  const [isJourneyButtonCancelledTextVisible, setIsJourneyButtonCancelledTextVisible] = useState(false);
-  const [isJourneyButtonFailedTextVisible, setIsJourneyButtonFailedTextVisible] = useState(false);
-  const [isJourneyButtonStartedTextVisible, setIsJourneyButtonStartedTextVisible] = useState(false);
-  const [isJourneyButtonContinuedTextVisible, setIsJourneyButtonContinuedTextVisible] = useState(false);
-  const [isJourneyButtonCompleteTextVisible, setIsJourneyButtonCompleteTextVisible] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIsJourneyButtonContinuedIconVisible] = useState(false);
-  const [isJourneyButtonCompleteIconVisible, setIsJourneyButtonCompleteIconVisible] = useState(false);
-  const [isJourneyButtonLoadingIconDisabled, setIsJourneyButtonLoadingIconDisabled] = useState(false);
-  const [isJourneyButtonSuccessIconDisabled, setIsJourneyButtonSuccessIconDisabled] = useState(false);
-  const [isJourneyButtonErrorIconDisabled, setIsJourneyButtonErrorIconDisabled] = useState(false);
-  const [isJourneyButtonSkippedIconDisabled, setIsJourneyButtonSkippedIconDisabled] = useState(false);
-  const [isJourneyButtonCancelledIconDisabled, setIsJourneyButtonCancelledIconDisabled] = useState(false);
-  const [isJourneyButtonFailedIconDisabled, setIsJourneyButtonFailedIconDisabled] = useState(false);
-  const [isJourneyButtonStartedIconDisabled, setIsJourneyButtonStartedIconDisabled] = useState(false);
-  const [isJourneyButtonContinuedIconDisabled, setIsJourneyButtonContinuedIconDisabled] = useState(false);
-  const [isJourneyButtonCompleteIconDisabled, setIsJourneyButtonCompleteIconDisabled] = useState(false);
-  const [isJourneyButtonLoadingIconVisible, setIsJourneyButtonLoadingIconVisible] = useState(false);
-  const [isJourneyButtonSuccessIconVisible, setIsJourneyButtonSuccessIconVisible] = useState(false);
-  const [isJourneyButtonErrorIconVisible, setIsJourneyButtonErrorIconVisible] = useState(false);
-  const [isJourneyButtonSkippedIconVisible, setIsJourneyButtonSkippedIconVisible] = useState(false);
-  const [isJourneyButtonCancelledIconVisible, setIsJourneyButtonCancelledIconVisible] = useState(false);
-  const [isJourneyButtonFailedIconVisible, setIsJourneyButtonFailedIconVisible] = useState(false);
-  const [isJourneyButtonStartedIconVisible, setIsJourneyButtonStartedIconVisible] = useState(false);
-  const [isJourneyButtonContinuedIconVisible, setIs
+  
+  const handleStyleChange = (style: BadgeStyle) => {
+    if (onStyleChange) onStyleChange(style);
+  };
+  
+  const handleVariantChange = (variant: BadgeVariant) => {
+    if (onVariantChange) onVariantChange(variant);
+  };
+  
+  const handleDownload = () => {
+    setIsDownloading(true);
+    // Simulated download delay
+    setTimeout(() => {
+      setIsDownloading(false);
+    }, 1500);
+  };
+  
+  return (
+    <Card className="shadow-sm">
+      <CardContent className="p-6">
+        <div className="space-y-6">
+          <div className="flex flex-col space-y-4">
+            <Label className="text-lg font-medium">Badge Preview</Label>
+            <div className="bg-white p-4 border rounded-lg flex justify-center shadow-sm">
+              <CertificationBadgeStyled 
+                companyName={companyName}
+                tier={tier}
+                score={score}
+                style={badgeStyle}
+                variant={badgeVariant}
+                customCta={customCta}
+              />
+            </div>
+          </div>
+          
+          <div>
+            <Label className="text-lg font-medium mb-2 block">Badge Style</Label>
+            <div className="flex flex-wrap gap-2">
+              <Button 
+                variant={badgeStyle === 'standard' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleStyleChange('standard')}
+              >
+                Standard
+              </Button>
+              <Button 
+                variant={badgeStyle === 'compact' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleStyleChange('compact')}
+              >
+                Compact
+              </Button>
+              <Button 
+                variant={badgeStyle === 'minimal' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleStyleChange('minimal')}
+              >
+                Minimal
+              </Button>
+              <Button 
+                variant={badgeStyle === 'colorful' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleStyleChange('colorful')}
+              >
+                Colorful
+              </Button>
+            </div>
+          </div>
+          
+          <div>
+            <Label className="text-lg font-medium mb-2 block">Badge Variant</Label>
+            <div className="flex flex-wrap gap-2">
+              <Button 
+                variant={badgeVariant === 'default' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleVariantChange('default')}
+              >
+                Default
+              </Button>
+              <Button 
+                variant={badgeVariant === 'linkedin' ? 'default' : 'outline'}
+                size="sm"
+                className={badgeVariant === 'linkedin' ? 'bg-[#0A66C2]' : ''}
+                onClick={() => handleVariantChange('linkedin')}
+              >
+                LinkedIn
+              </Button>
+              <Button 
+                variant={badgeVariant === 'twitter' ? 'default' : 'outline'}
+                size="sm"
+                className={badgeVariant === 'twitter' ? 'bg-[#1DA1F2]' : ''}
+                onClick={() => handleVariantChange('twitter')}
+              >
+                Twitter
+              </Button>
+              <Button 
+                variant={badgeVariant === 'notion' ? 'default' : 'outline'}
+                size="sm"
+                className={badgeVariant === 'notion' ? 'bg-black' : ''}
+                onClick={() => handleVariantChange('notion')}
+              >
+                Notion
+              </Button>
+            </div>
+          </div>
+          
+          <Button 
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="w-full"
+          >
+            {isDownloading ? 'Downloading...' : 'Download Badge'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default BadgeGenerator;

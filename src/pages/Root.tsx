@@ -28,8 +28,8 @@ const Root: React.FC = () => {
       try {
         console.log('Testing Supabase connection...');
         
-        // Use a safe way to get the base URL without accessing protected properties
-        const baseUrl = supabase.getUrl().replace('/rest/v1', '');
+        // Get the Supabase URL safely (without using getUrl which doesn't exist)
+        const baseUrl = supabase.supabaseUrl || 'https://hamqupvdhlfznwnuohsh.supabase.co';
         console.log('Supabase base URL:', baseUrl);
         
         // First test: Simple ping to check if Supabase is reachable

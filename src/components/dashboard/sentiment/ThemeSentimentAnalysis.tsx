@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRangeFilter } from "@/components/ui/date-range-picker";
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import ThemeSentimentTable, { ThemeSentimentData } from './ThemeSentimentTable';
 import ThemeSentimentCharts from './ThemeSentimentCharts';
@@ -272,7 +271,7 @@ const ThemeSentimentAnalysis: React.FC = () => {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Time Period</label>
-              <DateRangePicker
+              <DateRangeFilter
                 value={dateRange}
                 onChange={handleDateRangeChange}
               />

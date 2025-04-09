@@ -6,12 +6,14 @@ interface BotEmojiProps {
   state: BotAvatarStateValue;
   size?: 'sm' | 'md' | 'lg';
   animated?: boolean;
+  className?: string;
 }
 
 export const BotEmoji: React.FC<BotEmojiProps> = ({ 
   state, 
   size = 'md',
-  animated = true
+  animated = true,
+  className = ''
 }) => {
   const [displayState, setDisplayState] = useState<BotAvatarStateValue>(state);
   
@@ -40,6 +42,8 @@ export const BotEmoji: React.FC<BotEmojiProps> = ({
         return '⌨️'; // Typing
       case 'happy':
         return '😊'; // Happy/Thanking
+      case 'confused':
+        return '❓'; // Confused
       default:
         return '🤖'; // Default fallback
     }
@@ -56,7 +60,7 @@ export const BotEmoji: React.FC<BotEmojiProps> = ({
     <div 
       className={`flex items-center justify-center ${sizeClass} transition-all duration-300 ${
         animated ? 'transform hover:scale-110' : ''
-      }`}
+      } ${className}`}
     >
       {getEmoji()}
     </div>

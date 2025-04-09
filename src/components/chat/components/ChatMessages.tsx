@@ -57,7 +57,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
       {visibleMessages.length === 0 && !loading ? (
         <div className="flex flex-col items-center justify-center h-full text-gray-500">
-          <BotEmoji state="wave" size={64} />
+          <BotEmoji state="idle" size="lg" />
           <p className="mt-4 text-center max-w-md">
             Welcome to PulseBot! I'm here to help with questions about workplace culture, 
             PulseScore certification, and using our platform. How can I assist you today?
@@ -69,17 +69,16 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
             key={message.id}
             message={message}
             handleFeedback={handleFeedback}
+            searchQuery=""
           >
-            {message.content && (
-              <Markdown content={message.content} />
-            )}
+            {message.content && <Markdown content={message.content} />}
           </ChatBubble>
         ))
       )}
 
       {loading && (
         <div className="flex items-start">
-          <BotEmoji state={getBotEmoji()} className="mr-2 mt-1" />
+          <BotEmoji state={getBotEmoji()} />
           <TypingIndicator isVisible={true} />
         </div>
       )}

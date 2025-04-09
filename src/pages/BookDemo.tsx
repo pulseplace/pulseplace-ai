@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Mail } from 'lucide-react';
+import { Mail, Calendar } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +17,7 @@ declare global {
 
 const BookDemo = () => {
   const [isBooked, setIsBooked] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Load Calendly script and set up event listener
   useEffect(() => {
@@ -30,18 +31,43 @@ const BookDemo = () => {
     const handleMessage = async (e: MessageEvent) => {
       if (e.data.event === 'calendly.event_scheduled') {
         setIsBooked(true);
+        setIsProcessing(true);
         
         try {
+          // Extract visitor data from the event payload
+          const visitorData = {
+            email: e.data.payload.email,
+            name: e.data.payload.name,
+            eventType: e.data.event_type?.name,
+            scheduledTime: e.data.payload?.scheduled_event_time
+          };
+          
           // Log the booking to our Supabase function
-          const { error } = await supabase.functions.invoke('log-booking', {
+          const { error: logError } = await supabase.functions.invoke('log-booking', {
             body: e.data,
           });
           
-          if (error) {
-            console.error('Error logging booking:', error);
+          if (logError) {
+            console.error('Error logging booking:', logError);
+            toast.error('There was an issue logging your booking.');
+          }
+          
+          // Send confirmation email
+          const { error: emailError } = await supabase.functions.invoke('send-booking-confirmation', {
+            body: visitorData,
+          });
+          
+          if (emailError) {
+            console.error('Error sending confirmation email:', emailError);
+            toast.error('There was an issue sending your confirmation email.');
+          } else {
+            toast.success('Booking confirmed! A confirmation email has been sent to your inbox.');
           }
         } catch (err) {
-          console.error('Failed to log booking:', err);
+          console.error('Failed to process booking:', err);
+          toast.error('An unexpected error occurred while processing your booking.');
+        } finally {
+          setIsProcessing(false);
         }
       }
     };
@@ -114,7 +140,7 @@ const BookDemo = () => {
                 className="mt-6 p-4 rounded-md border border-green-300 bg-green-50 text-green-900 text-center"
               >
                 <h3 className="text-lg font-semibold mb-2">Booking Confirmed!</h3>
-                <p>We're excited to show you around PulsePlace. You'll receive a confirmation email shortly.</p>
+                <p>We're excited to show you around PulsePlace. {isProcessing ? 'Sending confirmation email...' : 'You\'ll receive a confirmation email shortly.'}</p>
               </motion.div>
             )}
             

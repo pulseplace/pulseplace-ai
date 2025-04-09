@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-interface HighlightedMessageProps {
+export interface HighlightedMessageProps {
   content: string;
   searchQuery?: string;
 }

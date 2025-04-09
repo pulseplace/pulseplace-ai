@@ -26,7 +26,11 @@ export interface ChatMessage {
   isError?: boolean;
 }
 
-export type BotAvatarState = 'idle' | 'thinking' | 'typing' | 'happy';
+// BotAvatarState can be either a string status or an object with avatar URL
+export type BotAvatarState = 'idle' | 'thinking' | 'typing' | 'happy' | { 
+  status: 'idle' | 'thinking' | 'typing' | 'happy',
+  avatar: string 
+};
 
 export type MessageLanguage = string;
 
@@ -50,7 +54,7 @@ export interface FeedbackData {
 export interface SearchState {
   query: string;
   isSearching: boolean;
-  results: Message[];
+  results: Message[] | string[];
 }
 
 export interface AnalyticsFilters {
@@ -84,7 +88,7 @@ export interface PulseBotAnalytics {
     ratio: number;
   };
   avatarStateUsage: {
-    state: BotAvatarState;
+    state: string;
     count: number;
     percentage: number;
   }[];

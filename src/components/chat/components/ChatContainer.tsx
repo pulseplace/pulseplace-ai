@@ -44,6 +44,11 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   sendMessage,
   onExportChat
 }) => {
+  // Convert search results to string[] if needed
+  const searchResultsAsStrings = search.results ? 
+    search.results.map(result => typeof result === 'string' ? result : result.content) : 
+    [];
+
   return (
     <div
       className={cn(
@@ -78,7 +83,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
         messagesEndRef={messagesEndRef}
         handleFeedback={handleFeedback}
         isSearching={search.isSearching}
-        searchResults={search.results}
+        searchResults={searchResultsAsStrings}
         botAvatarState={botAvatarState}
       />
 

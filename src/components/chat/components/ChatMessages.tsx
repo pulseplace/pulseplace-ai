@@ -1,3 +1,4 @@
+
 import React, { RefObject } from 'react';
 import { Message, BotAvatarState } from '../types';
 import { HighlightedMessage } from './HighlightedMessage';
@@ -32,15 +33,16 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
   return (
     <div className="flex-1 overflow-y-auto p-4">
       {messages.map((message) => {
-        const isBot = message.sender === 'bot';
-        const avatar = isBot ? botAvatarState.avatar : undefined;
+        const isBot = message.role === 'bot' || message.role === 'assistant';
+        // BotAvatarState can be a string or an object with avatar property
+        const avatarUrl = typeof botAvatarState === 'string' ? undefined : botAvatarState.avatar;
 
         return (
           <div key={message.id} className="mb-4">
             <div className={`flex items-start ${isBot ? 'items-start' : 'flex-row-reverse items-start'}`}>
-              {avatar && (
+              {avatarUrl && isBot && (
                 <img
-                  src={avatar}
+                  src={avatarUrl}
                   alt="Bot Avatar"
                   className="w-8 h-8 rounded-full mr-3"
                 />
@@ -49,8 +51,8 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                 <div className={`px-4 py-2 rounded-lg ${isBot ? 'bg-gray-100 text-gray-800' : 'bg-pulse-500 text-white'}`}>
                   {isSearching && searchResults.length > 0 ? (
                     <HighlightedMessage
-                      message={message.content}
-                      searchResults={searchResults}
+                      content={message.content}
+                      searchQuery={searchResults.join('|')}
                     />
                   ) : (
                     message.content

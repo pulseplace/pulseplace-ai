@@ -16,10 +16,11 @@ import BadgeDemo from './pages/BadgeDemo';
 
 // Lazy-loaded pages for better performance
 const Home = lazy(() => import('./pages/Home'));
-const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
 const BadgeCustomization = lazy(() => import('./pages/dashboard/BadgeCustomization'));
 const DashboardQA = lazy(() => import('./pages/dashboard/DashboardQA'));
 const ShareCertification = lazy(() => import('./pages/dashboard/ShareCertification'));
+const ExportCertification = lazy(() => import('./pages/dashboard/ExportCertification'));
 const Assessments = lazy(() => import('./pages/Assessments'));
 const Community = lazy(() => import('./pages/Community'));
 const Resources = lazy(() => import('./pages/Resources'));
@@ -27,6 +28,7 @@ const Settings = lazy(() => import('./pages/Settings'));
 const Auth = lazy(() => import('./pages/Auth'));
 const PulseBot = lazy(() => import('./pages/PulseBot'));
 const MailchimpEvents = lazy(() => import('./pages/dashboard/MailchimpEvents'));
+const CertificationEngine = lazy(() => import('./pages/dashboard/CertificationEngine'));
 
 const router = createBrowserRouter([
   {
@@ -49,6 +51,14 @@ const router = createBrowserRouter([
       {
         path: "dashboard/badge-customization",
         element: <Suspense fallback={<Loading />}><BadgeCustomization /></Suspense>,
+      },
+      {
+        path: "dashboard/export-certification",
+        element: <Suspense fallback={<Loading />}><ExportCertification /></Suspense>,
+      },
+      {
+        path: "dashboard/certification-engine",
+        element: <Suspense fallback={<Loading />}><CertificationEngine /></Suspense>,
       },
       {
         path: "dashboard/qa",

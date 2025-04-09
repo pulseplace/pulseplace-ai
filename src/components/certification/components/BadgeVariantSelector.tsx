@@ -14,14 +14,14 @@ const BadgeVariantSelector: React.FC<BadgeVariantSelectorProps> = ({
   onVariantChange
 }) => {
   return (
-    <div>
+    <div className="w-full">
       <Label className="mb-2 block">Platform</Label>
       <div className="flex flex-wrap gap-2">
         <Button 
           variant={badgeVariant === 'default' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onVariantChange('default')}
-          className={badgeVariant === 'default' ? "bg-soulful-midnight text-white" : ""}
+          className={`flex-1 min-w-[80px] md:min-w-0 ${badgeVariant === 'default' ? "bg-soulful-midnight text-white" : ""}`}
         >
           Website
         </Button>
@@ -29,7 +29,7 @@ const BadgeVariantSelector: React.FC<BadgeVariantSelectorProps> = ({
           variant={badgeVariant === 'linkedin' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onVariantChange('linkedin')}
-          className={badgeVariant === 'linkedin' ? "bg-[#0A66C2] text-white hover:bg-[#0A66C2]/90" : ""}
+          className={`flex-1 min-w-[80px] md:min-w-0 ${badgeVariant === 'linkedin' ? "bg-[#0A66C2] text-white hover:bg-[#0A66C2]/90" : ""}`}
         >
           LinkedIn
         </Button>
@@ -37,7 +37,7 @@ const BadgeVariantSelector: React.FC<BadgeVariantSelectorProps> = ({
           variant={badgeVariant === 'twitter' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onVariantChange('twitter')}
-          className={badgeVariant === 'twitter' ? "bg-[#1DA1F2] text-white hover:bg-[#1DA1F2]/90" : ""}
+          className={`flex-1 min-w-[80px] md:min-w-0 ${badgeVariant === 'twitter' ? "bg-[#1DA1F2] text-white hover:bg-[#1DA1F2]/90" : ""}`}
         >
           Twitter
         </Button>
@@ -45,7 +45,7 @@ const BadgeVariantSelector: React.FC<BadgeVariantSelectorProps> = ({
           variant={badgeVariant === 'notion' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onVariantChange('notion')}
-          className={badgeVariant === 'notion' ? "bg-black text-white hover:bg-black/90" : ""}
+          className={`flex-1 min-w-[80px] md:min-w-0 ${badgeVariant === 'notion' ? "bg-black text-white hover:bg-black/90" : ""}`}
         >
           Notion
         </Button>

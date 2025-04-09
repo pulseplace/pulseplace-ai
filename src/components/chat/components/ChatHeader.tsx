@@ -52,9 +52,26 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     setIsConfirmDialogOpen(false);
   };
 
+  // Extract the state and animated values based on the type of botAvatarState
+  const getBotState = () => {
+    if (typeof botAvatarState === 'string') {
+      return botAvatarState;
+    } else if (botAvatarState && typeof botAvatarState === 'object' && 'status' in botAvatarState) {
+      return botAvatarState.status;
+    }
+    return 'idle';
+  };
+
+  const isAnimated = () => {
+    if (typeof botAvatarState === 'object' && botAvatarState && 'animated' in botAvatarState) {
+      return !!botAvatarState.animated;
+    }
+    return true; // Default to true if not specified
+  };
+
   // Function to get bot state text
   const getBotStateText = () => {
-    const botState = botAvatarState.state;
+    const botState = getBotState();
     switch (botState) {
       case 'idle':
         return 'PulseBot';
@@ -74,15 +91,15 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       <div className="flex items-center space-x-2">
         <div className="flex-shrink-0">
           <BotEmoji 
-            state={botAvatarState.state} 
-            animated={botAvatarState.animated} 
+            state={getBotState()} 
+            animated={isAnimated()} 
             size={isMobile ? "sm" : "md"} 
           />
         </div>
         <div>
           <div className="font-medium">{getBotStateText()}</div>
           <div className="text-xs text-gray-500">
-            {botAvatarState.state === 'typing' || botAvatarState.state === 'thinking'
+            {getBotState() === 'typing' || getBotState() === 'thinking'
               ? 'Working on your request...'
               : 'AI assistant powered by PulsePlace'}
           </div>

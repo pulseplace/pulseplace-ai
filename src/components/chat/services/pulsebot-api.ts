@@ -8,7 +8,7 @@ export const pulseBotAPI = {
     
     try {
       // Call the Supabase Edge Function with the message
-      const { data, error } = await fetch('https://hamqupvdhlfznwnuohsh.supabase.co/functions/v1/ask-pulsebot', {
+      const response = await fetch('https://hamqupvdhlfznwnuohsh.supabase.co/functions/v1/ask-pulsebot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -17,9 +17,20 @@ export const pulseBotAPI = {
           message,
           language: localStorage.getItem('pulsebot_language') || 'en'
         }),
-      }).then(res => res.json());
+      });
       
-      if (error) throw new Error(error.message || 'Failed to get response from OpenAI');
+      const data = await response.json();
+      
+      // Check if the response contains an error message from the Edge Function
+      if (data.error) {
+        throw new Error(data.error || 'Failed to get response from OpenAI');
+      }
+      
+      // Check if the expected message structure exists
+      if (!data.message || !data.message.content) {
+        console.warn('Unexpected response format from OpenAI:', data);
+        throw new Error('Invalid response format from OpenAI');
+      }
       
       // Return the response from OpenAI
       return {
@@ -33,7 +44,7 @@ export const pulseBotAPI = {
     } catch (error) {
       console.error('Error connecting to OpenAI:', error);
       return {
-        message: "I'm having trouble connecting to my AI services right now. Please try again in a moment.",
+        message: "I'm having trouble connecting to my AI services right now. Please try again in a moment. This could be due to API quota limits or connectivity issues.",
         avatarState: 'idle' as const,
         context: {
           intent: 'error',

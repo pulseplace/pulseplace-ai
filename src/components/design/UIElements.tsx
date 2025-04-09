@@ -1,271 +1,234 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { CheckCircle, AlertTriangle, Info, X, AlertCircle } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const UIElements: React.FC = () => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="p-8 bg-background-light rounded-xl">
-      <h2 className="text-3xl font-display font-bold mb-8">UI Elements</h2>
+    <div className="p-4 sm:p-8 bg-background-light rounded-xl">
+      <h2 className="text-2xl sm:text-3xl font-display font-bold mb-6 sm:mb-8">UI Elements</h2>
       
-      <div className="grid gap-12">
-        <section>
-          <h3 className="text-xl font-medium mb-6">Buttons</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-lg font-medium">Primary</h4>
-              <div className="space-y-4">
-                <Button variant="default">Primary Button</Button>
-                <div className="text-sm space-y-1">
-                  <p className="text-text-muted">Used for primary actions</p>
-                  <code className="bg-gray-100 px-2 py-1 rounded text-xs block mt-2 mb-2">
-                    {`<Button variant="default">Primary Button</Button>`}
-                  </code>
-                </div>
+      <div className="space-y-8">
+        {/* Buttons Section */}
+        <div>
+          <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">Buttons</h3>
+          <div className="p-4 sm:p-6 bg-white rounded-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <button className="btn-primary w-full">Primary Button</button>
+                <p className="text-xs text-text-muted text-center">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">btn-primary</code>
+                </p>
               </div>
-            </div>
-            
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-lg font-medium">Secondary</h4>
-              <div className="space-y-4">
-                <Button variant="secondary">Secondary Button</Button>
-                <div className="text-sm space-y-1">
-                  <p className="text-text-muted">Used for secondary actions</p>
-                  <code className="bg-gray-100 px-2 py-1 rounded text-xs block mt-2 mb-2">
-                    {`<Button variant="secondary">Secondary Button</Button>`}
-                  </code>
-                </div>
+              
+              <div className="space-y-2">
+                <button className="btn-secondary w-full">Secondary Button</button>
+                <p className="text-xs text-text-muted text-center">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">btn-secondary</code>
+                </p>
               </div>
-            </div>
-            
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-lg font-medium">Outline</h4>
-              <div className="space-y-4">
-                <Button variant="outline">Outline Button</Button>
-                <div className="text-sm space-y-1">
-                  <p className="text-text-muted">Used for tertiary actions</p>
-                  <code className="bg-gray-100 px-2 py-1 rounded text-xs block mt-2 mb-2">
-                    {`<Button variant="outline">Outline Button</Button>`}
-                  </code>
-                </div>
+              
+              <div className="space-y-2">
+                <button className="btn-success w-full">Success Button</button>
+                <p className="text-xs text-text-muted text-center">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">btn-success</code>
+                </p>
               </div>
-            </div>
-            
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-lg font-medium">Accent</h4>
-              <div className="space-y-4">
-                <Button variant="accent">Accent Button</Button>
-                <div className="text-sm space-y-1">
-                  <p className="text-text-muted">Used for emphasizing important actions</p>
-                  <code className="bg-gray-100 px-2 py-1 rounded text-xs block mt-2 mb-2">
-                    {`<Button variant="accent">Accent Button</Button>`}
-                  </code>
-                </div>
+              
+              <div className="space-y-2">
+                <button className="btn-outline w-full">Outline Button</button>
+                <p className="text-xs text-text-muted text-center">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">btn-outline</code>
+                </p>
               </div>
-            </div>
-            
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-lg font-medium">Success</h4>
-              <div className="space-y-4">
-                <Button variant="success">Success Button</Button>
-                <div className="text-sm space-y-1">
-                  <p className="text-text-muted">Used to indicate successful actions</p>
-                  <code className="bg-gray-100 px-2 py-1 rounded text-xs block mt-2 mb-2">
-                    {`<Button variant="success">Success Button</Button>`}
-                  </code>
-                </div>
+              
+              <div className="space-y-2">
+                <button className="bg-gradient-to-r from-pulse-blue to-soulful-midnight text-white font-medium rounded-lg px-4 py-2 w-full">
+                  Gradient Button
+                </button>
+                <p className="text-xs text-text-muted text-center">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">bg-gradient-to-r from-pulse-blue to-soulful-midnight</code>
+                </p>
               </div>
-            </div>
-            
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-lg font-medium">Ghost</h4>
-              <div className="space-y-4">
-                <Button variant="ghost">Ghost Button</Button>
-                <div className="text-sm space-y-1">
-                  <p className="text-text-muted">Used for subtle actions</p>
-                  <code className="bg-gray-100 px-2 py-1 rounded text-xs block mt-2 mb-2">
-                    {`<Button variant="ghost">Ghost Button</Button>`}
-                  </code>
-                </div>
+              
+              <div className="space-y-2">
+                <button disabled className="btn-primary opacity-50 cursor-not-allowed w-full">
+                  Disabled Button
+                </button>
+                <p className="text-xs text-text-muted text-center">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">opacity-50 cursor-not-allowed</code>
+                </p>
               </div>
             </div>
           </div>
-        </section>
+        </div>
         
-        <section>
-          <h3 className="text-xl font-medium mb-6">Badges</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-base font-medium">Default</h4>
-              <Badge>Default</Badge>
-              <code className="bg-gray-100 px-2 py-1 rounded text-xs">
-                {`<Badge>Default</Badge>`}
-              </code>
-            </div>
-            
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-base font-medium">Secondary</h4>
-              <Badge variant="secondary">Secondary</Badge>
-              <code className="bg-gray-100 px-2 py-1 rounded text-xs">
-                {`<Badge variant="secondary">Secondary</Badge>`}
-              </code>
-            </div>
-            
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-base font-medium">Success</h4>
-              <Badge variant="success">Success</Badge>
-              <code className="bg-gray-100 px-2 py-1 rounded text-xs">
-                {`<Badge variant="success">Success</Badge>`}
-              </code>
-            </div>
-            
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-base font-medium">Certified</h4>
-              <Badge variant="certified">Certified</Badge>
-              <code className="bg-gray-100 px-2 py-1 rounded text-xs">
-                {`<Badge variant="certified">Certified</Badge>`}
-              </code>
-            </div>
-          </div>
-        </section>
-        
-        <section>
-          <h3 className="text-xl font-medium mb-6">Alerts</h3>
-          <div className="grid grid-cols-1 gap-6">
-            <Alert className="bg-secondary/10 border-secondary/30 text-secondary">
-              <Info className="h-4 w-4" />
-              <AlertTitle>Information</AlertTitle>
-              <AlertDescription>
-                This is an information alert — check it out!
-              </AlertDescription>
-            </Alert>
-            
-            <Alert className="bg-success/10 border-success/30 text-success">
-              <CheckCircle className="h-4 w-4" />
-              <AlertTitle>Success</AlertTitle>
-              <AlertDescription>
-                Your action was completed successfully.
-              </AlertDescription>
-            </Alert>
-            
-            <Alert className="bg-accent/10 border-accent/30 text-accent">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Warning</AlertTitle>
-              <AlertDescription>
-                This is a warning alert — pay attention!
-              </AlertDescription>
-            </Alert>
-            
-            <Alert className="bg-destructive/10 border-destructive/30 text-destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                There was a problem with your request.
-              </AlertDescription>
-            </Alert>
-            
-            <div className="bg-white p-4 rounded-lg">
-              <code className="bg-gray-100 px-4 py-3 rounded text-xs block whitespace-pre">
-{`<Alert className="bg-secondary/10 border-secondary/30 text-secondary">
-  <Info className="h-4 w-4" />
-  <AlertTitle>Information</AlertTitle>
-  <AlertDescription>
-    This is an information alert — check it out!
-  </AlertDescription>
-</Alert>`}
-              </code>
-            </div>
-          </div>
-        </section>
-        
-        <section>
-          <h3 className="text-xl font-medium mb-6">Form Elements</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-lg font-medium mb-4">Input</h4>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input type="email" id="email" placeholder="Enter your email" />
-                </div>
-                <div className="bg-gray-100 p-4 rounded-lg mt-4">
-                  <code className="text-xs whitespace-pre">
-{`<div className="space-y-2">
-  <Label htmlFor="email">Email</Label>
-  <Input type="email" id="email" placeholder="Enter your email" />
-</div>`}
-                  </code>
-                </div>
+        {/* Badges Section */}
+        <div>
+          <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">Badges</h3>
+          <div className="p-4 sm:p-6 bg-white rounded-lg">
+            <div className="flex flex-wrap gap-4">
+              <div className="space-y-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary text-white">
+                  Default Badge
+                </span>
+                <p className="text-xs text-text-muted">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">bg-primary text-white</code>
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-white">
+                  Secondary Badge
+                </span>
+                <p className="text-xs text-text-muted">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">bg-secondary text-white</code>
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <span className="certified-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                  Certified
+                </span>
+                <p className="text-xs text-text-muted">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">certified-badge</code>
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-ember-coral text-white">
+                  Accent Badge
+                </span>
+                <p className="text-xs text-text-muted">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">bg-ember-coral text-white</code>
+                </p>
               </div>
             </div>
-            
-            <div className="p-6 bg-white rounded-lg shadow-sm">
-              <h4 className="text-lg font-medium mb-4">Input with Button</h4>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="subscribe">Subscribe to Newsletter</Label>
-                  <div className="flex gap-2">
-                    <Input type="email" id="subscribe" placeholder="Enter your email" className="flex-1" />
-                    <Button>Subscribe</Button>
+          </div>
+        </div>
+        
+        {/* Alerts Section */}
+        <div>
+          <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">Alerts</h3>
+          <div className="p-4 sm:p-6 bg-white rounded-lg">
+            <div className="space-y-4">
+              <div className="bg-secondary/10 border border-secondary/30 text-secondary p-4 rounded-lg">
+                <div className="flex">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h4 className="text-sm font-medium">Information</h4>
+                    <p className="text-xs mt-1">This is an information alert</p>
                   </div>
                 </div>
-                <div className="bg-gray-100 p-4 rounded-lg mt-4">
-                  <code className="text-xs whitespace-pre">
-{`<div className="space-y-2">
-  <Label htmlFor="subscribe">Subscribe to Newsletter</Label>
-  <div className="flex gap-2">
-    <Input type="email" id="subscribe" placeholder="Enter your email" className="flex-1" />
-    <Button>Subscribe</Button>
-  </div>
-</div>`}
-                  </code>
+              </div>
+              
+              <div className="bg-success/10 border border-success/30 text-success p-4 rounded-lg">
+                <div className="flex">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div>
+                    <h4 className="text-sm font-medium">Success</h4>
+                    <p className="text-xs mt-1">This is a success alert</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-ember-coral/10 border border-ember-coral/30 text-ember-coral p-4 rounded-lg">
+                <div className="flex">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div>
+                    <h4 className="text-sm font-medium">Warning</h4>
+                    <p className="text-xs mt-1">This is a warning alert</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
         
-        <section>
-          <h3 className="text-xl font-medium mb-6">Cards</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Feature Highlight</CardTitle>
-                <CardDescription>This card showcases a key product feature</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>Cards can be used to group related content and actions, providing a clean interface for users to interact with.</p>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline">Cancel</Button>
-                <Button>Continue</Button>
-              </CardFooter>
-            </Card>
-            
-            <div className="bg-white p-4 rounded-lg">
-              <code className="bg-gray-100 px-4 py-3 rounded text-xs block whitespace-pre">
-{`<Card>
-  <CardHeader>
-    <CardTitle>Feature Highlight</CardTitle>
-    <CardDescription>This card showcases a key product feature</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <p>Cards can be used to group related content and actions, providing a clean interface for users to interact with.</p>
-  </CardContent>
-  <CardFooter className="flex justify-between">
-    <Button variant="outline">Cancel</Button>
-    <Button>Continue</Button>
-  </CardFooter>
-</Card>`}
-              </code>
+        {/* Form Elements Section */}
+        <div>
+          <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">Form Elements</h3>
+          <div className="p-4 sm:p-6 bg-white rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-text-primary">Input Field</label>
+                <input 
+                  type="text" 
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary" 
+                  placeholder="Enter text"
+                />
+                <p className="text-xs text-text-muted">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">focus:ring-2 focus:ring-secondary/50</code>
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-text-primary">Select Field</label>
+                <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary">
+                  <option>Option 1</option>
+                  <option>Option 2</option>
+                  <option>Option 3</option>
+                </select>
+                <p className="text-xs text-text-muted">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">border-gray-300 focus:border-secondary</code>
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-text-primary">Checkbox</label>
+                <div className="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    className="h-4 w-4 text-secondary focus:ring-secondary/50 border-gray-300 rounded"
+                  />
+                  <label className="ml-2 block text-sm text-text-primary">
+                    I agree to terms
+                  </label>
+                </div>
+                <p className="text-xs text-text-muted">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">text-secondary focus:ring-secondary/50</code>
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-text-primary">Radio Button</label>
+                <div className="space-y-1">
+                  <div className="flex items-center">
+                    <input 
+                      type="radio" 
+                      name="radio-group" 
+                      className="h-4 w-4 text-secondary focus:ring-secondary/50 border-gray-300"
+                      checked
+                    />
+                    <label className="ml-2 block text-sm text-text-primary">
+                      Option A
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input 
+                      type="radio" 
+                      name="radio-group" 
+                      className="h-4 w-4 text-secondary focus:ring-secondary/50 border-gray-300"
+                    />
+                    <label className="ml-2 block text-sm text-text-primary">
+                      Option B
+                    </label>
+                  </div>
+                </div>
+                <p className="text-xs text-text-muted">
+                  <code className="bg-gray-100 px-1 py-0.5 rounded">text-secondary focus:ring-secondary/50</code>
+                </p>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );

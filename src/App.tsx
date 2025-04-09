@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import {
   createBrowserRouter,
@@ -16,7 +15,7 @@ import BadgeDemo from './pages/BadgeDemo';
 
 // Lazy-loaded pages for better performance
 const Home = lazy(() => import('./pages/Home'));
-const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 const BadgeCustomization = lazy(() => import('./pages/dashboard/BadgeCustomization'));
 const DashboardQA = lazy(() => import('./pages/dashboard/DashboardQA'));
 const ShareCertification = lazy(() => import('./pages/dashboard/ShareCertification'));

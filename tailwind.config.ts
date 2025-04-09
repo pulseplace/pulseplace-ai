@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,12 +18,49 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				display: ['"Neue Haas Grotesk Display Pro"', 'Inter', 'sans-serif'],
+				sans: ['Inter', 'sans-serif'],
+				body: ['Inter', 'sans-serif'],
+			},
+			letterSpacing: {
+				wider: '0.05em',
+				widest: '0.1em',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				
+				// Brand colors
+				primary: {
+					DEFAULT: '#1A1A2E', // Soulful Midnight
+					foreground: '#FFFFFF',
+				},
+				secondary: {
+					DEFAULT: '#3F8CFF', // Pulse Blue
+					foreground: '#FFFFFF',
+				},
+				accent: {
+					DEFAULT: '#FF6B6B', // Ember Coral
+					foreground: '#FFFFFF',
+				},
+				success: {
+					DEFAULT: '#32D27E', // Trust Mint
+					foreground: '#FFFFFF',
+				},
+				background: {
+					light: '#F7F9FB', // Soft Cloud
+					dark: '#121417', // Midnight Fog
+				},
+				text: {
+					primary: '#202020', // Charcoal Ink
+					muted: '#8A8A8A', // Grey Mist
+				},
+				
+				// Legacy PulsePlace colors kept for backwards compatibility
 				pulse: {
 					50: '#f5f7ff',
 					100: '#ecf0ff',
@@ -49,14 +85,8 @@ export default {
 					800: '#115e59',
 					900: '#134e4a',
 				},
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
-				},
-				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
-				},
+				
+				// ShadCN colors that need to be maintained
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
@@ -132,8 +162,8 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-				'pulse-gradient': 'linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #3730a3 100%)',
-				'teal-gradient': 'linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%)',
+				'pulse-gradient': 'linear-gradient(135deg, #3F8CFF 0%, #1A1A2E 100%)',
+				'teal-gradient': 'linear-gradient(135deg, #32D27E 0%, #1A1A2E 100%)',
 			}
 		}
 	},

@@ -87,7 +87,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border-b">
+    <div className="flex items-center justify-between p-4 border-b bg-primary text-white">
       <div className="flex items-center space-x-2">
         <div className="flex-shrink-0">
           <BotEmoji 
@@ -98,7 +98,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         </div>
         <div>
           <div className="font-medium">{getBotStateText()}</div>
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-gray-300">
             {getBotState() === 'typing' || getBotState() === 'thinking'
               ? 'Working on your request...'
               : 'AI assistant powered by PulsePlace'}
@@ -110,7 +110,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {/* Language Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
               <Globe className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
@@ -133,7 +133,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {(onClearHistory || onExportChat) && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -164,7 +164,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
               {onClearHistory && (
                 <DropdownMenuItem 
                   onClick={handleOpenConfirmDialog}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="text-accent hover:text-accent hover:bg-accent/10"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Clear History
@@ -175,7 +175,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         )}
 
         {/* Close Button */}
-        <Button variant="ghost" size="icon" onClick={toggleChat}>
+        <Button variant="ghost" size="icon" onClick={toggleChat} className="text-white hover:bg-white/10">
           <X className="h-5 w-5" />
         </Button>
       </div>

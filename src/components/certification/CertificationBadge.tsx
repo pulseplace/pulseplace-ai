@@ -54,9 +54,9 @@ const CertificationBadge: React.FC<CertificationBadgeProps> = ({
       default:
         return {
           bg: 'url(#badge-gradient)',
-          stroke: '#22C55E',
-          textPrimary: '#22C55E',
-          textSecondary: '#4B5563'
+          stroke: '#32D27E', // Trust Mint (success color)
+          textPrimary: '#1A1A2E', // Soulful Midnight (primary color)
+          textSecondary: '#8A8A8A' // Grey Mist (text-muted)
         };
     }
   };
@@ -71,18 +71,18 @@ const CertificationBadge: React.FC<CertificationBadgeProps> = ({
           <rect width="180" height="60" rx="4" fill={colors.bg} />
           <path d="M24 30.5L27 33.5L33 26" stroke={colors.stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           <rect x="20" y="23" width="20" height="20" rx="10" stroke={colors.stroke} strokeWidth="2" />
-          <text x="50" y="32" fontFamily="Arial" fontWeight="bold" fontSize="12" fill={colors.textPrimary}>{tierInfo.label.toUpperCase()}</text>
-          <text x="50" y="46" fontFamily="Arial" fontSize="10" fill={colors.textSecondary}>PulseScore: {score}/100</text>
+          <text x="50" y="32" fontFamily="Inter, sans-serif" fontWeight="bold" fontSize="12" fill={colors.textPrimary}>{tierInfo.label.toUpperCase()}</text>
+          <text x="50" y="46" fontFamily="Inter, sans-serif" fontSize="10" fill={colors.textSecondary}>PulseScore: {score}/100</text>
           {customCta && (
             <>
               <rect x="0" y="50" width="180" height="10" rx="0" fill={colors.stroke + "20"} />
-              <text x="90" y="57" fontFamily="Arial" fontSize="8" fill={colors.textPrimary} textAnchor="middle">{customCta}</text>
+              <text x="90" y="57" fontFamily="Inter, sans-serif" fontSize="8" fill={colors.textPrimary} textAnchor="middle">{customCta}</text>
             </>
           )}
           <defs>
             <linearGradient id="badge-gradient-compact" x1="0" y1="0" x2="180" y2="60" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#F0FDF4" />
-              <stop offset="1" stopColor="#DCFCE7" />
+              <stop stopColor="#F7F9FB" /> {/* Soft Cloud (background light) */}
+              <stop offset="1" stopColor="#E9F4F0" /> {/* Lighter version of success */}
             </linearGradient>
             <linearGradient id="linkedin-gradient" x1="0" y1="0" x2="180" y2="60" gradientUnits="userSpaceOnUse">
               <stop stopColor="#E6F2FF" />
@@ -106,20 +106,20 @@ const CertificationBadge: React.FC<CertificationBadgeProps> = ({
         <rect width="240" height="120" rx="8" fill={colors.bg} />
         <path d="M31.5 42.5L37 48L46 36" stroke={colors.stroke} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         <rect x="24" y="30" width="36" height="36" rx="18" stroke={colors.stroke} strokeWidth="2.5" />
-        <text x="80" y="40" fontFamily="Arial" fontWeight="bold" fontSize="14" fill={colors.textPrimary}>{tierInfo.label.toUpperCase()}</text>
-        <text x="80" y="60" fontFamily="Arial" fontSize="12" fill={colors.textSecondary}>{companyName}</text>
-        <text x="80" y="75" fontFamily="Arial" fontSize="10" fill={colors.textSecondary}>PulseScore: {score}/100</text>
-        <text x="80" y="90" fontFamily="Arial" fontSize="10" fill={colors.textSecondary}>Valid: {issueDate} - {validUntil}</text>
+        <text x="80" y="40" fontFamily="Inter, sans-serif" fontWeight="bold" fontSize="14" fill={colors.textPrimary}>{tierInfo.label.toUpperCase()}</text>
+        <text x="80" y="60" fontFamily="Inter, sans-serif" fontSize="12" fill={colors.textSecondary}>{companyName}</text>
+        <text x="80" y="75" fontFamily="Inter, sans-serif" fontSize="10" fill={colors.textSecondary}>PulseScore: {score}/100</text>
+        <text x="80" y="90" fontFamily="Inter, sans-serif" fontSize="10" fill={colors.textSecondary}>Valid: {issueDate} - {validUntil}</text>
         {customCta && (
           <>
             <rect x="0" y="105" width="240" height="15" rx="0" fill={colors.stroke + "20"} />
-            <text x="120" y="115" fontFamily="Arial" fontSize="10" fill={colors.textPrimary} textAnchor="middle">{customCta}</text>
+            <text x="120" y="115" fontFamily="Inter, sans-serif" fontSize="10" fill={colors.textPrimary} textAnchor="middle">{customCta}</text>
           </>
         )}
         <defs>
           <linearGradient id="badge-gradient" x1="0" y1="0" x2="240" y2="120" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#F0FDF4" />
-            <stop offset="1" stopColor="#DCFCE7" />
+            <stop stopColor="#F7F9FB" /> {/* Soft Cloud (background light) */}
+            <stop offset="1" stopColor="#E9F4F0" /> {/* Lighter version of success */}
           </linearGradient>
           <linearGradient id="linkedin-gradient" x1="0" y1="0" x2="240" y2="120" gradientUnits="userSpaceOnUse">
             <stop stopColor="#E6F2FF" />

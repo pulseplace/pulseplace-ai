@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 interface BrandMessageProps {
   message: string;
   className?: string;
-  variant?: 'default' | 'highlight' | 'subtle';
+  variant?: 'default' | 'highlight' | 'subtle' | 'success';
 }
 
 export const BrandMessage = ({ 
@@ -14,12 +14,13 @@ export const BrandMessage = ({
   variant = 'default' 
 }: BrandMessageProps) => {
   return (
-    <div className={cn("text-center my-6", className)}>
+    <div className={cn("text-center my-8", className)}>
       <p className={cn(
-        "text-lg font-medium",
-        variant === 'default' && "bg-gradient-to-r from-pulse-600 to-teal-500 bg-clip-text text-transparent",
-        variant === 'highlight' && "text-pulse-600 font-semibold",
-        variant === 'subtle' && "text-gray-600 italic"
+        "text-lg font-medium tracking-wide",
+        variant === 'default' && "bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent",
+        variant === 'highlight' && "text-secondary font-semibold",
+        variant === 'subtle' && "text-text-muted italic",
+        variant === 'success' && "text-success font-semibold"
       )}>
         {message}
       </p>

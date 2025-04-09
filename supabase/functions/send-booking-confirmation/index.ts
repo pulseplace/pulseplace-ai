@@ -39,9 +39,9 @@ serve(async (req) => {
     // Log information about the email being sent
     console.log(`Sending booking confirmation email to: ${email}, name: ${name}`);
     
-    // Send email using the new format with Resend default sender domain
+    // Send email using the verified domain
     const emailData = {
-      from: "PulsePlace <onboarding@resend.dev>",
+      from: "PulsePlace <hello@pulseplace.ai>",
       to: email,
       subject: "Your PulsePlace Booking is Confirmed",
       html: `

@@ -36,6 +36,45 @@ export type Database = {
         }
         Relationships: []
       }
+      lovable_tasks: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          description: string | null
+          error_message: string | null
+          execution_log: string | null
+          id: string
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          description?: string | null
+          error_message?: string | null
+          execution_log?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          description?: string | null
+          error_message?: string | null
+          execution_log?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mailchimp_events: {
         Row: {
           confirmed_at: string | null

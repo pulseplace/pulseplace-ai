@@ -3,3 +3,7 @@ project_id = "hamqupvdhlfznwnuohsh"
 
 [functions.send-certification]
 verify_jwt = true
+
+[functions.generate-pdf-report]
+verify_jwt = true
+

@@ -1,21 +1,17 @@
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow 
-} from '@/components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ResponsiveDataTable from './ResponsiveDataTable';
+
+interface DownvotedResponse {
+  id: string;
+  userMessage: string;
+  botResponse: string;
+  timestamp: string;
+}
 
 interface DownvotedResponsesTableProps {
-  responses: {
-    response: string;
-    downvotes: number;
-  }[];
+  responses: DownvotedResponse[];
   isLoading: boolean;
 }
 
@@ -23,41 +19,48 @@ const DownvotedResponsesTable: React.FC<DownvotedResponsesTableProps> = ({
   responses, 
   isLoading 
 }) => {
+  const columns = [
+    {
+      key: 'userMessage',
+      header: 'User Message',
+      cell: (item: DownvotedResponse) => (
+        <div className="max-w-sm truncate" title={item.userMessage}>
+          {item.userMessage}
+        </div>
+      ),
+      className: 'w-1/3'
+    },
+    {
+      key: 'botResponse',
+      header: 'Bot Response',
+      cell: (item: DownvotedResponse) => (
+        <div className="max-w-sm truncate" title={item.botResponse}>
+          {item.botResponse}
+        </div>
+      ),
+      className: 'w-1/3'
+    },
+    {
+      key: 'timestamp',
+      header: 'Date',
+      cell: (item: DownvotedResponse) => new Date(item.timestamp).toLocaleString(),
+      className: 'text-right'
+    }
+  ];
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Most Downvoted Responses</CardTitle>
-        <CardDescription>Bot responses with the most negative feedback</CardDescription>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-medium">Top Downvoted Responses</CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-80 w-full" />
-        ) : responses.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Response</TableHead>
-                <TableHead className="w-[100px] text-right">Downvotes</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {responses.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">
-                    {item.response.length > 100 
-                      ? `${item.response.substring(0, 100)}...` 
-                      : item.response}
-                  </TableCell>
-                  <TableCell className="text-right">{item.downvotes}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div className="text-center py-8 text-gray-500">
-            No downvoted responses found
-          </div>
-        )}
+        <ResponsiveDataTable
+          data={responses}
+          columns={columns}
+          isLoading={isLoading}
+          keyExtractor={(item) => item.id}
+          noDataMessage="No downvoted responses recorded yet"
+        />
       </CardContent>
     </Card>
   );

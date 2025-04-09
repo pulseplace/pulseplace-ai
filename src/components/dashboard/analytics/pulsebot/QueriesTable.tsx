@@ -1,63 +1,47 @@
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow 
-} from '@/components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ResponsiveDataTable from './ResponsiveDataTable';
+
+interface Query {
+  query: string;
+  count: number;
+}
 
 interface QueriesTableProps {
-  queries: {
-    query: string;
-    count: number;
-  }[];
+  queries: Query[];
   isLoading: boolean;
 }
 
-const QueriesTable: React.FC<QueriesTableProps> = ({ 
-  queries, 
-  isLoading 
-}) => {
+const QueriesTable: React.FC<QueriesTableProps> = ({ queries, isLoading }) => {
+  const columns = [
+    {
+      key: 'query',
+      header: 'User Query',
+      cell: (item: Query) => item.query,
+      className: 'w-3/4'
+    },
+    {
+      key: 'count',
+      header: 'Count',
+      cell: (item: Query) => item.count,
+      className: 'text-right'
+    }
+  ];
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Most Common User Queries</CardTitle>
-        <CardDescription>Top 10 most frequently asked questions</CardDescription>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-medium">Top User Queries</CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-80 w-full" />
-        ) : queries.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Query</TableHead>
-                <TableHead className="w-[100px] text-right">Count</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {queries.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">
-                    {item.query.length > 100 
-                      ? `${item.query.substring(0, 100)}...` 
-                      : item.query}
-                  </TableCell>
-                  <TableCell className="text-right">{item.count}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div className="text-center py-8 text-gray-500">
-            No queries found
-          </div>
-        )}
+        <ResponsiveDataTable
+          data={queries}
+          columns={columns}
+          isLoading={isLoading}
+          keyExtractor={(item) => item.query}
+          noDataMessage="No queries recorded yet"
+        />
       </CardContent>
     </Card>
   );

@@ -8,12 +8,14 @@ interface TeamExportOptionsProps {
   onExportCSV: () => void;
   onExportPDF: () => void;
   dataAvailable: boolean;
+  className?: string;
 }
 
 const TeamExportOptions: React.FC<TeamExportOptionsProps> = ({
   onExportCSV,
   onExportPDF,
-  dataAvailable
+  dataAvailable,
+  className
 }) => {
   const { toast } = useToast();
   
@@ -35,24 +37,26 @@ const TeamExportOptions: React.FC<TeamExportOptionsProps> = ({
   };
   
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-2 ${className || ''}`}>
       <Button
         variant="outline"
         size="sm"
         onClick={() => handleExport('csv')}
-        className="text-xs"
+        className="text-xs flex items-center"
       >
         <FileSpreadsheet className="h-3.5 w-3.5 mr-1" />
-        Export CSV
+        <span className="hidden sm:inline">Export CSV</span>
+        <span className="sm:hidden">CSV</span>
       </Button>
       <Button
         variant="outline"
         size="sm"
         onClick={() => handleExport('pdf')}
-        className="text-xs"
+        className="text-xs flex items-center"
       >
         <FileText className="h-3.5 w-3.5 mr-1" />
-        Export PDF
+        <span className="hidden sm:inline">Export PDF</span>
+        <span className="sm:hidden">PDF</span>
       </Button>
     </div>
   );

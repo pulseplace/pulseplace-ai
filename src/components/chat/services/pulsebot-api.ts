@@ -38,8 +38,8 @@ export const callPulseBotAPI = async (
     // Get system prompt based on selected language
     const systemPrompt = pulseAssistantConfig.systemPrompt[language] || pulseAssistantConfig.systemPrompt.en;
 
-    // Get the URL for the edge function (updated: using the correct method)
-    const functionEndpoint = `${supabase.functions.url}/ask-pulsebot`;
+    // Get the URL for the edge function (fixed: construct URL properly)
+    const functionEndpoint = `${supabase.functions._url}/ask-pulsebot`;
 
     // Get the authentication token properly
     const { data: sessionData } = await supabase.auth.getSession();

@@ -29,7 +29,7 @@ const BadgeStyleSelector: React.FC<BadgeStyleSelectorProps> = ({
           variant={badgeStyle === 'compact' ? 'default' : 'outline'}
           size="sm"
           onClick={() => onChange('compact')}
-          className={badgeStyle === 'compact' ? "bg-pulse-blue" : ""}
+          className={badgeStyle === 'compact' ? "bg-pulse-blue text-white" : ""}
         >
           Compact
         </Button>

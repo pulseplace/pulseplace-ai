@@ -4,22 +4,43 @@
 
 export const pulseBotAPI = {
   sendMessage: async (sessionId: string, message: string) => {
-    // In a real implementation, this would call an API
-    // For now, we'll simulate a response
-    console.log(`Sending message to session ${sessionId}: ${message}`);
+    console.log(`Sending message to OpenAI via Edge Function for session ${sessionId}`);
     
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Return a mock response
-    return {
-      message: `This is a response to: "${message}"`,
-      avatarState: 'happy' as const,
-      context: {
-        intent: 'general_query',
-        confidence: 0.92
-      }
-    };
+    try {
+      // Call the Supabase Edge Function with the message
+      const { data, error } = await fetch('https://hamqupvdhlfznwnuohsh.supabase.co/functions/v1/ask-pulsebot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          message,
+          language: localStorage.getItem('pulsebot_language') || 'en'
+        }),
+      }).then(res => res.json());
+      
+      if (error) throw new Error(error.message || 'Failed to get response from OpenAI');
+      
+      // Return the response from OpenAI
+      return {
+        message: data.message.content,
+        avatarState: determineAvatarState(data.message.content),
+        context: {
+          intent: 'openai_response',
+          confidence: 0.95
+        }
+      };
+    } catch (error) {
+      console.error('Error connecting to OpenAI:', error);
+      return {
+        message: "I'm having trouble connecting to my AI services right now. Please try again in a moment.",
+        avatarState: 'idle' as const,
+        context: {
+          intent: 'error',
+          confidence: 1.0
+        }
+      };
+    }
   },
   
   createSession: async () => {
@@ -85,3 +106,15 @@ Needs improvement: Complex Implementation (73%), Advanced Analytics (68%)`
     return summaries[summaryType] || 'No summary data available for this time period.';
   }
 };
+
+// Helper function to determine avatar state based on message content
+function determineAvatarState(content: string): 'idle' | 'happy' | 'thinking' | 'typing' {
+  // Simple algorithm to determine avatar state based on message content
+  if (content.includes('error') || content.includes('trouble') || content.includes('sorry')) {
+    return 'idle';
+  } else if (content.includes('!') || content.includes('😊') || content.includes('great')) {
+    return 'happy';
+  } else {
+    return 'happy'; // Default to happy for most responses
+  }
+}

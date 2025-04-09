@@ -7,3 +7,5 @@ verify_jwt = true
 [functions.generate-pdf-report]
 verify_jwt = true
 
+[functions.ask-pulsebot]
+verify_jwt = false

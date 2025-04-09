@@ -5,6 +5,8 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { PulseProvider } from '@/contexts/PulseContext';
 import { ChatProvider } from '@/contexts/ChatbotContext';
 import PulseBotChat from '@/components/chat/PulseBotChat';
+import { Toaster } from '@/components/ui/toaster';
+import MetaTags from '@/components/MetaTags';
 
 const Root: React.FC = () => {
   const location = useLocation();
@@ -22,10 +24,14 @@ const Root: React.FC = () => {
     <AuthProvider>
       <PulseProvider>
         <ChatProvider>
+          <MetaTags />
           <div className="min-h-screen">
             <Outlet />
             {/* Global PulseBot integration - available on all pages */}
-            <PulseBotChat />
+            <div id="pulsebot-container" className="z-50">
+              <PulseBotChat />
+            </div>
+            <Toaster />
           </div>
         </ChatProvider>
       </PulseProvider>

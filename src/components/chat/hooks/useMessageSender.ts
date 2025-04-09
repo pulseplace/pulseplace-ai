@@ -8,9 +8,13 @@ export const useMessageSender = (
   sessionId: string,
   addMessage: (message: Message) => void,
   setLoading: (isLoading: boolean) => void,
-  handleError: (error: Error) => void
+  handleError: (error: Error) => void,
+  language: string = 'en'
 ) => {
   const [isSending, setIsSending] = useState(false);
+  const [lastError, setLastError] = useState<Error | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 2;
 
   const sendMessage = async (messageText: string) => {
     if (!messageText.trim() || isSending) return;
@@ -33,7 +37,8 @@ export const useMessageSender = (
       const { data, error } = await supabase.functions.invoke('ask-pulsebot', {
         body: { 
           messages: [{ role: 'user', content: messageText }],
-          systemPrompt: "You are PulseBot, the helpful AI assistant for PulsePlace.ai. Answer questions about workplace culture assessment, PulseScore certification, and platform usage." 
+          systemPrompt: "You are PulseBot, the helpful AI assistant for PulsePlace.ai. Answer questions about workplace culture assessment, PulseScore certification, and platform usage.",
+          language: language
         },
       });
 
@@ -49,11 +54,26 @@ export const useMessageSender = (
         };
         
         addMessage(botMessage);
+        // Reset retry count on success
+        setRetryCount(0);
+        setLastError(null);
       } else {
         throw new Error('Invalid response format from assistant');
       }
     } catch (error) {
       console.error('Error sending message:', error);
+      setLastError(error as Error);
+      
+      // Implement auto-retry for network errors
+      if (retryCount < MAX_RETRIES && (error as Error).message.includes('network')) {
+        setRetryCount(prev => prev + 1);
+        // Wait and retry
+        setTimeout(() => {
+          sendMessage(messageText);
+        }, 1000 * retryCount);
+        return;
+      }
+      
       handleError(error as Error);
       
       // Add error message to chat
@@ -72,5 +92,7 @@ export const useMessageSender = (
   return {
     sendMessage,
     isSending,
+    lastError,
+    retryCount
   };
 };

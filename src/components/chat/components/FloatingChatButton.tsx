@@ -27,8 +27,8 @@ export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({
   
   // Use responsive positioning based on device type
   const positionClasses = {
-    mobile: 'bottom-4 right-4 z-50',
-    desktop: 'bottom-6 right-6 z-50'
+    mobile: 'bottom-4 right-4 z-[100]',
+    desktop: 'bottom-6 right-6 z-[100]'
   };
   
   // Use responsive sizing based on device type

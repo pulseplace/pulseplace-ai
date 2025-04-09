@@ -59,8 +59,8 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
     : [];
 
   // Adjust positioning and sizing based on device type
-  const mobilePositionClass = "fixed inset-0 z-50 m-0 max-w-full max-h-full rounded-none";
-  const desktopPositionClass = "fixed bottom-24 right-6 z-50 flex flex-col w-80 sm:w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)] rounded-lg";
+  const mobilePositionClass = "fixed inset-0 z-[101] m-0 max-w-full max-h-full rounded-none";
+  const desktopPositionClass = "fixed bottom-24 right-6 z-[101] flex flex-col w-80 sm:w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)] rounded-lg";
 
   // Use a different animation for mobile versus desktop
   const mobileAnimation = open

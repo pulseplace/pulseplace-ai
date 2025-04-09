@@ -15,7 +15,7 @@ const MetaTags: React.FC<MetaTagsProps> = ({
   description = "PulsePlace.ai is an AI-powered certification engine for workplace culture and people-first organizations.",
   imageUrl = "/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png",
   url = "https://pulseplace.ai",
-  keywords
+  keywords = "workplace culture, certification, AI assistant, PulseScore, employee engagement"
 }) => {
   return (
     <Helmet>
@@ -40,6 +40,13 @@ const MetaTags: React.FC<MetaTagsProps> = ({
       
       {/* Favicon */}
       <link rel="icon" href="/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png" type="image/png" />
+      <link rel="apple-touch-icon" href="/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png" />
+      
+      {/* Mobile viewport optimization */}
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      
+      {/* Mobile theme color */}
+      <meta name="theme-color" content="#8B5CF6" />
     </Helmet>
   );
 };

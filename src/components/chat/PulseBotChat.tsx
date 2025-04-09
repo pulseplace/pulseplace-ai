@@ -33,7 +33,7 @@ export default function PulseBotChat() {
   
   const { toast } = useToast();
   const [exportFormat, setExportFormat] = useState<'json' | 'pdf'>('json');
-
+  
   // Define available languages
   const languages = [
     { value: 'en' as MessageLanguage, label: 'English' },
@@ -110,7 +110,14 @@ export default function PulseBotChat() {
         variant: "default",
       });
     }
-  }, [language]);
+  }, [language, handleLanguageChange]);
+
+  // Automatically open chat when directly navigating to /pulsebot
+  useEffect(() => {
+    if (window.location.pathname.includes('/pulsebot') && !open) {
+      toggleChat();
+    }
+  }, [window.location.pathname, open, toggleChat]);
 
   return (
     <TutorialProvider>

@@ -1,21 +1,42 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Mail } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
+// Define the window interface to include Calendly
+declare global {
+  interface Window {
+    Calendly?: any;
+  }
+}
+
 const BookDemo = () => {
-  // Load Calendly script manually
+  const [isBooked, setIsBooked] = useState(false);
+
+  // Load Calendly script and set up event listener
   useEffect(() => {
+    // Create and load the Calendly script
     const script = document.createElement('script');
     script.src = "https://assets.calendly.com/assets/external/widget.js";
     script.async = true;
     document.body.appendChild(script);
 
+    // Set up event listener for booking confirmation
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data.event === 'calendly.event_scheduled') {
+        setIsBooked(true);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
     return () => {
+      // Clean up
       document.body.removeChild(script);
+      window.removeEventListener('message', handleMessage);
     };
   }, []);
 
@@ -68,6 +89,19 @@ const BookDemo = () => {
                 style={{ minWidth: "320px", height: "700px" }}
               ></div>
             </motion.div>
+            
+            {/* Booking confirmation message */}
+            {isBooked && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="mt-6 p-4 rounded-md border border-green-300 bg-green-50 text-green-900 text-center"
+              >
+                <h3 className="text-lg font-semibold mb-2">Booking Confirmed!</h3>
+                <p>We're excited to show you around PulsePlace. You'll receive a confirmation email shortly.</p>
+              </motion.div>
+            )}
             
             <div className="mt-8 text-center">
               <p className="flex items-center justify-center text-gray-600">

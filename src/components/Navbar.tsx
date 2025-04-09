@@ -1,10 +1,20 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calendar } from 'lucide-react';
+import { Menu, X, Calendar, Cpu, Search, ChevronDown } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,6 +74,13 @@ const Navbar = () => {
     { type: 'link', label: 'Contact', path: '/contact' },
   ];
 
+  const featuresSubItems = [
+    { label: 'AI Analytics', description: 'Transform data into actionable insights', path: '/features#ai-analytics' },
+    { label: 'PulseBot', description: 'AI assistant for engagement', path: '/pulsebot' },
+    { label: 'Certification Engine', description: 'Validate workplace culture', path: '/certification' },
+    { label: 'Dashboard', description: 'Real-time culture metrics', path: '/dashboard-preview' },
+  ];
+
   return (
     <nav className={navClasses}>
       <div className="container mx-auto px-4 flex justify-between items-center">
@@ -74,8 +91,53 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-8">
-          {navItems.map((item, index) => (
+        <div className="hidden md:flex items-center space-x-6">
+          <NavigationMenu className="z-50">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger 
+                  className={isActive('/features') ? 'text-pulse-600' : ''}
+                >
+                  Features
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    {featuresSubItems.map((item, index) => (
+                      <li key={index}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to={item.path}
+                            className={cn(
+                              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                              isActive(item.path) ? "bg-pulse-50 text-pulse-600" : ""
+                            )}
+                          >
+                            <div className="text-sm font-medium leading-none">{item.label}</div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              {item.description}
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                    <li className="col-span-2">
+                      <div className="mt-2 bg-pulse-50 p-3 rounded-md">
+                        <div className="flex items-center space-x-2 text-pulse-600 mb-1">
+                          <Cpu className="h-4 w-4" />
+                          <span className="text-sm font-medium">AI-Powered Technology</span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Our platform uses advanced AI and LLM technology to provide deep insights into workplace culture.
+                        </p>
+                      </div>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+          
+          {navItems.slice(1).map((item, index) => (
             item.type === 'hash-link' ? (
               <HashLink 
                 key={index}
@@ -135,7 +197,21 @@ const Navbar = () => {
             className="md:hidden bg-white w-full py-4 px-4 shadow-lg max-h-[80vh] overflow-y-auto"
           >
             <div className="flex flex-col space-y-4">
-              {navItems.map((item, index) => (
+              <div className="border-b pb-2 mb-2">
+                <p className="font-medium text-sm text-gray-500 mb-1">Features</p>
+                {featuresSubItems.map((item, index) => (
+                  <Link 
+                    key={index}
+                    to={item.path}
+                    className="block py-2 pl-3 text-gray-700 hover:text-pulse-600"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+              
+              {navItems.slice(1).map((item, index) => (
                 item.type === 'hash-link' ? (
                   <HashLink 
                     key={index}

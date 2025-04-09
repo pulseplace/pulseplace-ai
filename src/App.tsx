@@ -1,4 +1,3 @@
-
 import React, { Suspense, lazy } from 'react';
 import {
   createBrowserRouter,
@@ -26,6 +25,7 @@ const Resources = lazy(() => import('./pages/Resources'));
 const Settings = lazy(() => import('./pages/Settings'));
 const Auth = lazy(() => import('./pages/Auth'));
 const PulseBot = lazy(() => import('./pages/PulseBot'));
+const PulseBotAnalytics = lazy(() => import('./pages/PulseBotAnalytics'));
 const MailchimpEvents = lazy(() => import('./pages/dashboard/MailchimpEvents'));
 const CertificationEngine = lazy(() => import('./pages/dashboard/CertificationEngine'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
@@ -38,9 +38,9 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
-// Fixed: Using consistent casing in imports to match the actual file names
-const AiEngine = lazy(() => import('./pages/AiEngine')); 
-const RoiCalculator = lazy(() => import('./pages/RoiCalculator')); 
+// Using consistent casing in imports to match the actual file names
+const AIEngine = lazy(() => import('./pages/AIEngine')); 
+const ROICalculator = lazy(() => import('./pages/ROICalculator')); 
 const Methodology = lazy(() => import('./pages/Methodology'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const TaskAdmin = lazy(() => import('./pages/TaskAdmin')); // Task admin page
@@ -112,6 +112,10 @@ const router = createBrowserRouter([
         element: <Suspense fallback={<Loading />}><PulseBot /></Suspense>,
       },
       {
+        path: "pulsebot-analytics",
+        element: <Suspense fallback={<Loading />}><PulseBotAnalytics /></Suspense>,
+      },
+      {
         path: "brand-system",
         element: <BrandSystem />,
       },
@@ -161,11 +165,11 @@ const router = createBrowserRouter([
       },
       {
         path: "ai-engine",
-        element: <Suspense fallback={<Loading />}><AiEngine /></Suspense>,
+        element: <Suspense fallback={<Loading />}><AIEngine /></Suspense>,
       },
       {
         path: "roi-calculator",
-        element: <Suspense fallback={<Loading />}><RoiCalculator /></Suspense>,
+        element: <Suspense fallback={<Loading />}><ROICalculator /></Suspense>,
       },
       {
         path: "methodology",

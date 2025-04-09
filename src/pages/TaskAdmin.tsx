@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import MetaTags from '@/components/MetaTags';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -28,7 +27,6 @@ import { PlusCircle, Trash2, RefreshCw, CheckCircle, XCircle, Clock, ArrowUp, Ar
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import ImportTasksDialog from '@/components/task-admin/ImportTasksDialog';
 
-// Define task type
 interface Task {
   id: string;
   title: string;
@@ -42,7 +40,6 @@ interface Task {
   execution_log?: string;
 }
 
-// Define task form state
 interface TaskFormState {
   title: string;
   description: string;
@@ -51,13 +48,11 @@ interface TaskFormState {
   assigned_to?: string;
 }
 
-// Define sort configuration
 interface SortConfig {
   key: string;
   direction: 'asc' | 'desc';
 }
 
-// Define filter state
 interface FilterState {
   status: string;
   priority: string;
@@ -77,7 +72,6 @@ const TaskAdmin: React.FC = () => {
     assigned_to: ''
   });
   
-  // State for sorting and filtering
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'updated_at', direction: 'desc' });
   const [filters, setFilters] = useState<FilterState>({
     status: 'all',
@@ -85,10 +79,8 @@ const TaskAdmin: React.FC = () => {
     assignee: 'all'
   });
   
-  // For task duplication
   const [duplicateTask, setDuplicateTask] = useState<Task | null>(null);
 
-  // Fetch tasks from Supabase
   const fetchTasks = async () => {
     setLoading(true);
     try {
@@ -112,7 +104,6 @@ const TaskAdmin: React.FC = () => {
     }
   };
 
-  // Create a new task
   const createTask = async () => {
     try {
       if (!taskForm.title) {
@@ -142,7 +133,6 @@ const TaskAdmin: React.FC = () => {
         description: "Task created successfully"
       });
       
-      // Reset form and close dialog
       setTaskForm({
         title: '',
         description: '',
@@ -152,7 +142,6 @@ const TaskAdmin: React.FC = () => {
       });
       setIsAddDialogOpen(false);
       
-      // Refresh tasks
       fetchTasks();
     } catch (error: any) {
       console.error('Error creating task:', error);
@@ -164,7 +153,6 @@ const TaskAdmin: React.FC = () => {
     }
   };
 
-  // Update task status
   const updateTaskStatus = async (id: string, status: string) => {
     try {
       const { error } = await supabase
@@ -174,12 +162,11 @@ const TaskAdmin: React.FC = () => {
       
       if (error) throw error;
       
-      // Show toast notification for completed tasks
       if (status === 'completed') {
         toast({
           title: "Task Completed",
           description: `Task has been marked as completed successfully!`,
-          variant: "success" // Now using the success variant
+          variant: "default"
         });
       } else {
         toast({
@@ -188,7 +175,6 @@ const TaskAdmin: React.FC = () => {
         });
       }
       
-      // Refresh tasks
       fetchTasks();
     } catch (error: any) {
       console.error('Error updating task:', error);
@@ -200,7 +186,6 @@ const TaskAdmin: React.FC = () => {
     }
   };
 
-  // Delete a task
   const deleteTask = async (id: string) => {
     try {
       const { error } = await supabase
@@ -215,7 +200,6 @@ const TaskAdmin: React.FC = () => {
         description: "Task deleted successfully"
       });
       
-      // Refresh tasks
       fetchTasks();
     } catch (error: any) {
       console.error('Error deleting task:', error);
@@ -226,15 +210,14 @@ const TaskAdmin: React.FC = () => {
       });
     }
   };
-  
-  // Duplicate a task
+
   const handleDuplicateTask = async (task: Task) => {
     try {
       const newTask = {
         title: `${task.title} (Copy)`,
         description: task.description,
         priority: task.priority,
-        status: 'pending', // Always set as pending for duplicated tasks
+        status: 'pending',
         assigned_to: task.assigned_to || null
       };
       
@@ -250,7 +233,6 @@ const TaskAdmin: React.FC = () => {
         description: "Task duplicated successfully"
       });
       
-      // Refresh tasks
       fetchTasks();
     } catch (error: any) {
       console.error('Error duplicating task:', error);
@@ -261,8 +243,7 @@ const TaskAdmin: React.FC = () => {
       });
     }
   };
-  
-  // Run a task manually
+
   const runTask = async (task: Task) => {
     try {
       toast({
@@ -270,8 +251,6 @@ const TaskAdmin: React.FC = () => {
         description: `Task "${task.title}" has been triggered to run.`
       });
       
-      // In a real implementation, this would call a function to execute the task
-      // For now, we'll just mark it as in-progress
       await supabase
         .from('lovable_tasks')
         .update({ 
@@ -281,7 +260,6 @@ const TaskAdmin: React.FC = () => {
         })
         .eq('id', task.id);
       
-      // Refresh tasks
       fetchTasks();
     } catch (error: any) {
       console.error('Error running task:', error);
@@ -293,11 +271,9 @@ const TaskAdmin: React.FC = () => {
     }
   };
 
-  // Load tasks on component mount
   useEffect(() => {
     fetchTasks();
     
-    // Set up real-time subscription
     const subscription = supabase
       .channel('table-db-changes')
       .on('postgres_changes', 
@@ -309,18 +285,15 @@ const TaskAdmin: React.FC = () => {
       )
       .subscribe();
       
-    // Cleanup subscription on unmount
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
-  // Handle form changes
   const handleFormChange = (field: keyof TaskFormState, value: string) => {
     setTaskForm(prev => ({ ...prev, [field]: value }));
   };
-  
-  // Preset form with duplicated task data
+
   useEffect(() => {
     if (duplicateTask) {
       setTaskForm({
@@ -335,7 +308,6 @@ const TaskAdmin: React.FC = () => {
     }
   }, [duplicateTask]);
 
-  // Handle sorting
   const handleSort = (key: string) => {
     setSortConfig(prev => {
       if (prev.key === key) {
@@ -344,11 +316,9 @@ const TaskAdmin: React.FC = () => {
       return { key, direction: 'asc' };
     });
   };
-  
-  // Apply sorting and filtering
+
   const sortedAndFilteredTasks = React.useMemo(() => {
     return [...tasks]
-      // Apply filters
       .filter(task => {
         return (
           (filters.status === 'all' || task.status === filters.status) &&
@@ -357,7 +327,6 @@ const TaskAdmin: React.FC = () => {
             (!task.assigned_to && filters.assignee === 'unassigned'))
         );
       })
-      // Apply sorting
       .sort((a, b) => {
         const key = sortConfig.key as keyof Task;
         if (!a[key] || !b[key]) return 0;
@@ -372,8 +341,7 @@ const TaskAdmin: React.FC = () => {
         return sortConfig.direction === 'asc' ? comparison : -comparison;
       });
   }, [tasks, sortConfig, filters]);
-  
-  // Get unique assignees for filter dropdown
+
   const uniqueAssignees = React.useMemo(() => {
     const assignees = tasks
       .map(task => task.assigned_to)
@@ -384,7 +352,6 @@ const TaskAdmin: React.FC = () => {
     return ['all', 'unassigned', ...assignees];
   }, [tasks]);
 
-  // Get badge variant based on status
   const getStatusBadgeVariant = (status: string) => {
     switch(status) {
       case 'completed': return 'success';
@@ -395,7 +362,6 @@ const TaskAdmin: React.FC = () => {
     }
   };
 
-  // Get badge variant based on priority
   const getPriorityBadgeVariant = (priority: string) => {
     switch(priority) {
       case 'high': return 'destructive';
@@ -518,7 +484,6 @@ const TaskAdmin: React.FC = () => {
         </div>
       </div>
       
-      {/* Filtering and sorting controls */}
       <div className="mb-4 flex flex-wrap gap-2">
         <div>
           <Select 

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Message, SessionInfo } from '../types';
 import { pulseAssistantConfig } from '@/config/chatbot-config';
@@ -9,7 +8,8 @@ import { pulseAssistantConfig } from '@/config/chatbot-config';
 export const callPulseBotAPI = async (
   messages: Message[],
   language: string,
-  sessionInfo: SessionInfo
+  sessionInfo: SessionInfo,
+  signal?: AbortSignal
 ): Promise<string | null> => {
   try {
     // Format messages for the API
@@ -38,20 +38,36 @@ export const callPulseBotAPI = async (
     // Get system prompt based on selected language
     const systemPrompt = pulseAssistantConfig.systemPrompt[language] || pulseAssistantConfig.systemPrompt.en;
 
-    // Call the Supabase Edge Function
-    const { data, error } = await supabase.functions.invoke('ask-pulsebot', {
-      body: { 
+    // Call the Supabase Edge Function with abort signal
+    const response = await fetch(`${supabase.functions.url}/ask-pulsebot`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabase.auth.session()?.access_token || ''}`,
+      },
+      body: JSON.stringify({ 
         messages: apiMessages,
         systemPrompt,
         maxTokens: 500,
         userIdentifier: sessionInfo.id
-      },
+      }),
+      signal
     });
 
-    if (error) {
-      console.error('Error from Supabase edge function:', error);
-      return "I'm having trouble connecting to my knowledge base right now. Please try again in a moment.";
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error from edge function:', errorData);
+      
+      if (response.status === 429) {
+        throw new Error('rate limit exceeded');
+      } else if (response.status === 400 && errorData.error?.includes('content_filter')) {
+        throw new Error('content filter triggered');
+      } else {
+        throw new Error(`API error: ${response.status}`);
+      }
     }
+
+    const data = await response.json();
     
     // Return the message content
     if (data && data.message) {
@@ -60,7 +76,24 @@ export const callPulseBotAPI = async (
     
     return "I wasn't able to generate a response. Please try a different question.";
   } catch (error) {
+    // Re-throw aborted errors for proper handling
+    if (error.name === 'AbortError') {
+      throw error;
+    }
+    
     console.error('Error calling PulseBot API:', error);
+    
+    // Handle network errors
+    if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+      return "I'm having trouble connecting to my knowledge base. Please check your internet connection and try again.";
+    }
+    
+    // Pass through specific errors we want to handle differently
+    if (error.message?.includes('rate limit') || 
+        error.message?.includes('content filter')) {
+      throw error;
+    }
+    
     return "An unexpected error occurred. Please try again later.";
   }
 };

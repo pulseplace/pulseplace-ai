@@ -1,74 +1,78 @@
 
 import React from 'react';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Message } from './types';
+import { ThumbsUp, ThumbsDown, AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { BotEmoji } from './BotEmoji';
 
 interface ChatBubbleProps {
   message: Message;
-  onFeedback: (feedback: 'up' | 'down') => void;
+  onFeedback?: (feedback: 'up' | 'down') => void;
 }
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, onFeedback }) => {
-  const isBot = message.role === 'bot';
+  const isUser = message.role === 'user';
+  const isError = message.isError;
   
   return (
-    <div
-      className={cn(
-        'flex w-full mb-4',
-        isBot ? 'justify-start' : 'justify-end'
-      )}
-    >
-      {isBot && (
+    <div className="flex items-start mb-4 relative">
+      {!isUser && (
         <div className="flex-shrink-0 mr-2">
-          <div className="w-8 h-8 rounded-full bg-pulse-600 flex items-center justify-center">
-            <BotEmoji state="idle" size="sm" />
+          <div className={cn(
+            "w-8 h-8 rounded-full flex items-center justify-center",
+            isError ? "bg-yellow-500" : "bg-pulse-600"
+          )}>
+            {isError ? (
+              <AlertCircle className="w-4 h-4 text-white" />
+            ) : (
+              <BotEmoji state="idle" size="sm" />
+            )}
           </div>
         </div>
       )}
       
-      <div className="flex flex-col max-w-[80%]">
-        <div
-          className={cn(
-            'rounded-2xl px-4 py-2 shadow-sm',
-            isBot ? 'bg-gray-100 text-gray-800' : 'bg-pulse-600 text-white'
-          )}
-        >
-          <div className="whitespace-pre-wrap">{message.content}</div>
-        </div>
+      <div 
+        className={cn(
+          "p-3 rounded-xl max-w-[80%] shadow-sm",
+          isUser 
+            ? "bg-pulse-600 text-white ml-auto" 
+            : isError
+              ? "bg-yellow-50 text-yellow-800 border border-yellow-200"
+              : "bg-gray-100 text-gray-800"
+        )}
+      >
+        <div className="whitespace-pre-wrap">{message.content}</div>
         
-        {/* Feedback buttons for bot messages only */}
-        {isBot && (
-          <div className="flex mt-1 space-x-2 justify-end">
-            <button
+        {!isUser && !isError && onFeedback && (
+          <div className="flex items-center justify-end mt-2 space-x-2">
+            <button 
               onClick={() => onFeedback('up')}
               className={cn(
-                "p-1 rounded-full hover:bg-gray-200",
-                message.liked && "bg-green-100 text-green-600"
+                "p-1 rounded-full transition-colors", 
+                message.liked ? "bg-green-100 text-green-600" : "hover:bg-gray-200 text-gray-400"
               )}
-              aria-label="Thumbs up"
+              aria-label="Helpful"
             >
-              <ThumbsUp className="h-3 w-3" />
+              <ThumbsUp className="w-3 h-3" />
             </button>
-            <button
+            <button 
               onClick={() => onFeedback('down')}
               className={cn(
-                "p-1 rounded-full hover:bg-gray-200",
-                message.disliked && "bg-red-100 text-red-600"
+                "p-1 rounded-full transition-colors", 
+                message.disliked ? "bg-red-100 text-red-600" : "hover:bg-gray-200 text-gray-400"
               )}
-              aria-label="Thumbs down"
+              aria-label="Not helpful"
             >
-              <ThumbsDown className="h-3 w-3" />
+              <ThumbsDown className="w-3 h-3" />
             </button>
           </div>
         )}
       </div>
       
-      {!isBot && (
+      {isUser && (
         <div className="flex-shrink-0 ml-2">
-          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-            <span>👤</span>
+          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+            <span className="text-xs">You</span>
           </div>
         </div>
       )}

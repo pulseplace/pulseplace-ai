@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FloatingChatButton } from './components/FloatingChatButton';
 import { ChatContainer } from './components/ChatContainer';
 import { Confetti } from './Confetti';
 import { TypingIndicatorStyles } from './components/TypingIndicatorStyles';
 import { usePulseBot } from './usePulseBot';
 import { MessageLanguage } from './types';
+import { useToast } from '@/hooks/use-toast';
 
 export default function PulseBotChat() {
   const {
@@ -26,6 +27,8 @@ export default function PulseBotChat() {
     confetti,
     sessionInfo
   } = usePulseBot();
+  
+  const { toast } = useToast();
 
   // Define available languages
   const languages = [
@@ -39,6 +42,22 @@ export default function PulseBotChat() {
     { value: 'ja' as MessageLanguage, label: 'Japanese' },
     { value: 'ko' as MessageLanguage, label: 'Korean' },
   ];
+  
+  // Verify the language is valid, or default to English
+  useEffect(() => {
+    const isValidLanguage = languages.some(lang => lang.value === language);
+    
+    if (!isValidLanguage && language !== 'en') {
+      console.warn(`Invalid language detected: ${language}, resetting to English`);
+      handleLanguageChange('en');
+      
+      toast({
+        title: "Language Reset",
+        description: "Your language preference was reset to English due to an invalid setting",
+        variant: "warning",
+      });
+    }
+  }, [language]);
 
   return (
     <>

@@ -1,4 +1,3 @@
-
 export type Role = 'user' | 'bot';
 
 export interface Message {
@@ -7,6 +6,7 @@ export interface Message {
   content: string;
   liked?: boolean;
   disliked?: boolean;
+  isError?: boolean;
 }
 
 export type BotAvatarState = 'idle' | 'thinking' | 'typing' | 'happy';

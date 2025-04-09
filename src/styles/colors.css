@@ -1,0 +1,9 @@
+
+/* Brand gradients */
+.bg-pulse-gradient {
+  @apply bg-gradient-to-r from-secondary to-primary;
+}
+
+.bg-success-gradient {
+  @apply bg-gradient-to-r from-success to-success/80;
+}

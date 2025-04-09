@@ -1,0 +1,7 @@
+
+/* Import all CSS files */
+@import './base.css';
+@import './colors.css';
+@import './animations.css';
+@import './buttons.css';
+@import './components.css';

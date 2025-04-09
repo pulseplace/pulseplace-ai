@@ -61,9 +61,9 @@ serve(async (req) => {
     </table>
     `;
 
-    // Send email using Resend API
+    // Send email using Resend API with the default sender domain
     const emailData = {
-      from: "PulsePlace Booking <bookings@pulseplace.ai>",
+      from: "PulsePlace <onboarding@resend.dev>",
       to: email,
       subject: "Your PulsePlace Demo is Confirmed!",
       html: htmlContent,

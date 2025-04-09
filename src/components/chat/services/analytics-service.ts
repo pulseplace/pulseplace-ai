@@ -124,16 +124,33 @@ function processAnalyticsData(logs: any[], feedback: any[]): PulseBotAnalytics {
     .slice(0, 10)
     .map(([query, count]) => ({ query, count }));
   
-  // Find top downvoted responses
-  const downvotedResponses: Record<string, number> = {};
+  // Find top downvoted responses - fixed to match expected structure
+  const responseMap = new Map<string, { msg: any, count: number }>();
+  
   feedback.filter(f => f.feedback_type === 'down').forEach(f => {
-    downvotedResponses[f.message] = (downvotedResponses[f.message] || 0) + 1;
+    const msgId = f.id;
+    if (!responseMap.has(msgId)) {
+      responseMap.set(msgId, { 
+        msg: f,
+        count: 0 
+      });
+    }
+    const item = responseMap.get(msgId);
+    if (item) {
+      item.count += 1;
+    }
   });
   
-  const topDownvotedResponses = Object.entries(downvotedResponses)
-    .sort((a, b) => b[1] - a[1])
+  const topDownvotedResponses = Array.from(responseMap.entries())
+    .sort((a, b) => b[1].count - a[1].count)
     .slice(0, 10)
-    .map(([response, downvotes]) => ({ response, downvotes }));
+    .map(([id, { msg, count }]) => ({
+      id,
+      userMessage: logs.find(l => l.session_id === msg.user_identifier)?.user_message || 'Unknown question',
+      botResponse: msg.message || 'Unknown response',
+      timestamp: msg.timestamp || new Date().toISOString(),
+      downvotes: count
+    }));
   
   return {
     totalInteractions: logs.length,

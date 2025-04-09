@@ -1,3 +1,4 @@
+
 import { useSession } from './hooks/useSession';
 import { useMessageManagement } from './hooks/useMessageManagement';
 import { useLanguageManager, cleanupPulseBotState } from './hooks/useLanguageManager';
@@ -49,12 +50,12 @@ export function usePulseBot() {
   };
   
   // Create feedback handler
-  const handleFeedback = useFeedbackHandler(messages, setMessages);
+  const handleFeedback = useFeedbackHandler(messages, setMessages, sessionInfo.id);
   
   // Setup message sender
   const { sendMessage, isSending } = useMessageSender(
     sessionInfo.id,
-    (message) => {
+    (message: Message) => {
       setMessages(prev => [...prev, message]);
       scrollToBottom();
     },

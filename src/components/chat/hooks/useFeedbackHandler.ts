@@ -6,31 +6,26 @@ import { logFeedback } from '../services';
 export const useFeedbackHandler = (messages: Message[], setMessages: (messages: Message[]) => void, sessionId: string) => {
   // Handle feedback
   const handleFeedback = useCallback(
-    async (index: number, messageId: string, content: string, isLike: boolean) => {
-      const message = messages.find((m) => m.id === messageId);
-      
-      if (!message) return;
-      
+    async (messageId: string, message: Message, feedback: 'up' | 'down') => {
       // Optimistically update the UI
       setMessages(
         messages.map((m) => {
           if (m.id === messageId) {
             return {
               ...m,
-              liked: isLike,
-              disliked: !isLike,
+              liked: feedback === 'up',
+              disliked: feedback === 'down',
             };
           }
           return m;
         })
       );
       
-      // Log the feedback with the correct feedback type
-      const feedbackType = isLike ? 'up' : 'down';
-      await logFeedback(messageId, content, feedbackType, sessionId);
+      // Log the feedback
+      await logFeedback(messageId, message.content, feedback, sessionId);
     },
     [messages, setMessages, sessionId]
   );
 
-  return { handleFeedback };
+  return handleFeedback;
 };

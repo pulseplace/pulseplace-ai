@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RefreshCw } from "lucide-react";
-import { generateBotAnalyticsSummary } from '@/components/chat/services/pulsebot-api';
+import { pulseBotAPI } from '@/components/chat/services/pulsebot-api';
 import { useToast } from "@/hooks/use-toast";
 
 const BotAnalyticsSummary: React.FC = () => {
@@ -22,7 +22,7 @@ const BotAnalyticsSummary: React.FC = () => {
   const loadSummary = async () => {
     setIsLoading(true);
     try {
-      const summaryData = await generateBotAnalyticsSummary(activeTab, timeRange);
+      const summaryData = await pulseBotAPI.generateBotAnalyticsSummary(activeTab, timeRange);
       setSummary(summaryData);
     } catch (error) {
       console.error('Error loading bot analytics summary:', error);

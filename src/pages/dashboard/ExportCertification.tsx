@@ -62,8 +62,7 @@ const ExportCertification: React.FC = () => {
                   and official certification status with digital verification.
                 </p>
                 <TeamDataExport 
-                  teamMembersCount={24} 
-                  onExportPDF={() => {}}
+                  teamMembersCount={24}
                 />
               </CardContent>
             </Card>
@@ -81,8 +80,7 @@ const ExportCertification: React.FC = () => {
                   for further analysis or integration with other systems.
                 </p>
                 <TeamDataExport 
-                  teamMembersCount={24} 
-                  onExportCSV={() => {}}
+                  teamMembersCount={24}
                 />
               </CardContent>
             </Card>

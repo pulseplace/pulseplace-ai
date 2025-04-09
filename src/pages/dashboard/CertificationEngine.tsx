@@ -9,6 +9,7 @@ import EmbeddableBadgeWidget from '@/components/dashboard/badge/EmbeddableBadgeW
 import CertificatePdfExport from '@/components/dashboard/admin/components/CertificatePdfExport';
 import CertificateVerification from '@/components/dashboard/admin/components/CertificateVerification';
 import CertificationSharing from '@/components/certification/CertificationSharing';
+import ThemeSentimentAnalysis from '@/components/dashboard/sentiment/ThemeSentimentAnalysis';
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -48,7 +49,7 @@ const CertificationEngine = () => {
     setError(null);
     
     // Simulate loading on certain data-heavy tabs
-    if (value === 'admin' || value === 'badge' || value === 'pdf' || value === 'verify' || value === 'sharing') {
+    if (value === 'admin' || value === 'badge' || value === 'pdf' || value === 'verify' || value === 'sharing' || value === 'sentiment') {
       setIsLoading(true);
       
       // Simulate network request
@@ -71,6 +72,7 @@ const CertificationEngine = () => {
       case 'pdf': return 'PDF Certificate';
       case 'verify': return 'Certificate Verification';
       case 'sharing': return 'Sharing Options';
+      case 'sentiment': return 'Theme Sentiment';
       default: return tab.charAt(0).toUpperCase() + tab.slice(1);
     }
   };
@@ -102,6 +104,7 @@ const CertificationEngine = () => {
           <TabsTrigger value="workflow">AI Workflow</TabsTrigger>
           <TabsTrigger value="email">Email Template</TabsTrigger>
           <TabsTrigger value="admin">Admin Dashboard</TabsTrigger>
+          <TabsTrigger value="sentiment">Theme Sentiment</TabsTrigger>
           <TabsTrigger value="badge">Badge Widget</TabsTrigger>
           <TabsTrigger value="pdf">PDF Certificate</TabsTrigger>
           <TabsTrigger value="verify">Verify Certificate</TabsTrigger>
@@ -126,6 +129,10 @@ const CertificationEngine = () => {
             
             <TabsContent value="admin">
               <AdminHRDashboard />
+            </TabsContent>
+            
+            <TabsContent value="sentiment">
+              <ThemeSentimentAnalysis />
             </TabsContent>
             
             <TabsContent value="badge">

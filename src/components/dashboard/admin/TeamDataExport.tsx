@@ -1,20 +1,46 @@
 
 import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { exportService } from '@/services/team/exportService';
 import { useToast } from "@/hooks/use-toast";
-import { teamAdminService } from '@/services/teamAdminService';
-import TeamExportOptions from './TeamExportOptions';
 
-interface TeamDataExportProps {
+export interface TeamDataExportProps {
   teamMembersCount: number;
   department?: string;
 }
 
-const TeamDataExport: React.FC<TeamDataExportProps> = ({ teamMembersCount, department }) => {
+const TeamDataExport: React.FC<TeamDataExportProps> = ({ 
+  teamMembersCount,
+  department 
+}) => {
   const { toast } = useToast();
   
+  const handleExportPDF = async () => {
+    try {
+      const result = await exportService.exportToPDF(department);
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to export PDF');
+      }
+      
+      toast({
+        title: "PDF Export Complete",
+        description: "Your PDF certification report has been generated and downloaded.",
+      });
+    } catch (error: any) {
+      console.error('Error exporting PDF:', error);
+      toast({
+        title: "Export Failed",
+        description: error.message || "Failed to export report to PDF",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleExportCSV = async () => {
     try {
-      const result = await teamAdminService.exportTeamDataCSV(department);
+      const result = await exportService.exportTeamDataCSV(department);
       
       if (!result.success || !result.data) {
         throw new Error(result.error || 'Failed to export CSV');
@@ -25,7 +51,7 @@ const TeamDataExport: React.FC<TeamDataExportProps> = ({ teamMembersCount, depar
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', `tayana-team-pulse-${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `pulseplace-certification-${new Date().toISOString().split('T')[0]}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -45,34 +71,27 @@ const TeamDataExport: React.FC<TeamDataExportProps> = ({ teamMembersCount, depar
     }
   };
   
-  const handleExportPDF = async () => {
-    try {
-      const result = await teamAdminService.exportToPDF(department);
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to export PDF');
-      }
-      
-      toast({
-        title: "PDF Export Complete",
-        description: "Your PDF report has been generated and downloaded.",
-      });
-    } catch (error: any) {
-      console.error('Error exporting PDF:', error);
-      toast({
-        title: "Export Failed",
-        description: error.message || "Failed to export report to PDF",
-        variant: "destructive"
-      });
-    }
-  };
-
   return (
-    <TeamExportOptions
-      onExportCSV={handleExportCSV}
-      onExportPDF={handleExportPDF}
-      dataAvailable={teamMembersCount > 0}
-    />
+    <div className="flex flex-wrap gap-2">
+      <Button 
+        variant="outline" 
+        size="sm" 
+        className="flex items-center gap-2"
+        onClick={handleExportPDF}
+      >
+        <FileText className="h-4 w-4" />
+        <span>Export PDF</span>
+      </Button>
+      <Button 
+        variant="outline" 
+        size="sm" 
+        className="flex items-center gap-2"
+        onClick={handleExportCSV}
+      >
+        <FileSpreadsheet className="h-4 w-4" />
+        <span>Export CSV ({teamMembersCount})</span>
+      </Button>
+    </div>
   );
 };
 

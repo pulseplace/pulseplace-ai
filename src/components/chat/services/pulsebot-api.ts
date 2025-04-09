@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Message, SessionInfo } from '../types';
 import { pulseAssistantConfig } from '@/config/chatbot-config';
@@ -39,8 +38,8 @@ export const callPulseBotAPI = async (
     // Get system prompt based on selected language
     const systemPrompt = pulseAssistantConfig.systemPrompt[language] || pulseAssistantConfig.systemPrompt.en;
 
-    // Get the URL for the edge function (using the correct method)
-    const functionEndpoint = `${supabase.functions.getUrl('ask-pulsebot')}`;
+    // Get the URL for the edge function (updated: using the correct method)
+    const functionEndpoint = `${supabase.functions.url}/ask-pulsebot`;
 
     // Get the authentication token properly
     const { data: sessionData } = await supabase.auth.getSession();

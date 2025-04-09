@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Github, Twitter, Linkedin, Mail, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,10 @@ const Footer = () => {
               <li><Link to="/insights" className="hover:text-white transition-colors">Insights</Link></li>
               <li><Link to="/resources" className="hover:text-white transition-colors">Resources</Link></li>
               <li><Link to="/join-beta" className="hover:text-white transition-colors">Join Beta</Link></li>
+              <li><Link to="/book-demo" className="hover:text-white transition-colors flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                Book a Demo
+              </Link></li>
             </ul>
           </div>
           
@@ -61,12 +65,13 @@ const Footer = () => {
             </ul>
             
             <div className="mt-6">
-              <Link to="/join-beta">
+              <Link to="/book-demo">
                 <Button 
                   variant="outline" 
-                  className="text-white border-white hover:bg-white hover:text-gray-900 transition-colors"
+                  className="text-white border-white hover:bg-white hover:text-gray-900 transition-colors flex items-center gap-2"
                 >
-                  Start Free Trial
+                  <Calendar className="h-4 w-4" />
+                  Book a Demo
                 </Button>
               </Link>
             </div>

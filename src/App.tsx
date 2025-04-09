@@ -38,6 +38,7 @@ const Insights = lazy(() => import('./pages/Insights'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
+const BookDemo = lazy(() => import('./pages/BookDemo'));
 
 const router = createBrowserRouter([
   {
@@ -148,6 +149,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard-preview",
         element: <Suspense fallback={<Loading />}><DashboardPreview /></Suspense>,
+      },
+      {
+        path: "book-demo",
+        element: <Suspense fallback={<Loading />}><BookDemo /></Suspense>,
       },
     ],
   },

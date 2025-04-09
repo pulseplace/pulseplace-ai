@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Calendar } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -103,8 +103,11 @@ const Navbar = () => {
               </Link>
             )
           ))}
-          <Link to="/join-beta">
-            <Button className="bg-pulse-gradient hover:opacity-90 transition-all">Get Started</Button>
+          <Link to="/book-demo">
+            <Button className="bg-pulse-gradient hover:opacity-90 transition-all flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Book a Demo
+            </Button>
           </Link>
         </div>
 
@@ -162,9 +165,10 @@ const Navbar = () => {
                   </Link>
                 )
               ))}
-              <Link to="/join-beta" onClick={() => setIsMenuOpen(false)}>
-                <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full">
-                  Get Started
+              <Link to="/book-demo" onClick={() => setIsMenuOpen(false)}>
+                <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full flex items-center justify-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Book a Demo
                 </Button>
               </Link>
             </div>

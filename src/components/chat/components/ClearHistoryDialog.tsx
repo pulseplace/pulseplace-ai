@@ -1,33 +1,41 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
-interface ClearHistoryDialogProps {
+export interface ClearHistoryDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  onCancel: () => void;
 }
 
 export const ClearHistoryDialog: React.FC<ClearHistoryDialogProps> = ({
   open,
-  onOpenChange,
-  onConfirm
+  onConfirm,
+  onCancel
 }) => {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Clear Chat History</DialogTitle>
-          <DialogDescription>
-            Are you sure you want to clear your chat history? This action cannot be undone.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button variant="destructive" onClick={onConfirm}>Clear History</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <AlertDialog open={open}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Clear Chat History</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will permanently delete your entire conversation history. This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>Clear History</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };

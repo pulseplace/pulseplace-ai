@@ -1,12 +1,17 @@
 
 import React, { useState } from 'react';
-import { X, MoreVertical, Languages, Trash2, Download } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { BotEmoji } from '../BotEmoji';
+import { X, Trash2, Globe, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { BotAvatarState, MessageLanguage } from '../types';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ClearHistoryDialog } from './ClearHistoryDialog';
 
 interface ChatHeaderProps {
@@ -15,7 +20,7 @@ interface ChatHeaderProps {
   languages: { value: MessageLanguage; label: string }[];
   handleLanguageChange: (language: MessageLanguage) => void;
   toggleChat: () => void;
-  onClearHistory: () => void;
+  onClearHistory?: () => void;
   onExportChat?: () => void;
   isMobile?: boolean;
 }
@@ -28,125 +33,142 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   toggleChat,
   onClearHistory,
   onExportChat,
-  isMobile = false
+  isMobile = false,
 }) => {
-  const [clearDialogOpen, setClearDialogOpen] = useState(false);
-  
-  // Get the appropriate bot state
-  const botState = typeof botAvatarState === 'string' 
-    ? botAvatarState 
-    : botAvatarState?.status || 'idle';
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
-  const handleClearHistory = () => {
-    setClearDialogOpen(true);
+  const handleOpenConfirmDialog = () => {
+    setIsConfirmDialogOpen(true);
   };
 
-  const confirmClearHistory = () => {
-    onClearHistory();
-    setClearDialogOpen(false);
+  const handleCloseConfirmDialog = () => {
+    setIsConfirmDialogOpen(false);
   };
 
-  const cancelClearHistory = () => {
-    setClearDialogOpen(false);
+  const handleConfirmClear = () => {
+    if (onClearHistory) {
+      onClearHistory();
+    }
+    setIsConfirmDialogOpen(false);
+  };
+
+  // Function to get bot state text
+  const getBotStateText = () => {
+    const botState = botAvatarState.state;
+    switch (botState) {
+      case 'idle':
+        return 'PulseBot';
+      case 'thinking':
+        return 'Thinking...';
+      case 'typing':
+        return 'Typing...';
+      case 'happy':
+        return 'PulseBot';
+      default:
+        return 'PulseBot';
+    }
   };
 
   return (
-    <>
-      <div className={cn(
-        "flex items-center justify-between px-4 py-3 bg-pulse-gradient text-white",
-        isMobile ? "rounded-none" : "rounded-t-lg"
-      )}>
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center">
-            <BotEmoji state={botState} size="sm" />
-          </div>
-          <h3 className="font-semibold text-sm md:text-base">PulseBot Assistant</h3>
+    <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex items-center space-x-2">
+        <div className="flex-shrink-0">
+          <BotEmoji 
+            state={botAvatarState.state} 
+            animated={botAvatarState.animated} 
+            size={isMobile ? "sm" : "md"} 
+          />
         </div>
-        
-        <div className="flex items-center space-x-2">
-          {/* Language selector (simplified on mobile) */}
-          {!isMobile ? (
-            <Select 
-              value={language} 
-              onValueChange={handleLanguageChange}
-            >
-              <SelectTrigger className="w-[80px] h-8 bg-white bg-opacity-10 border-none text-white text-xs">
-                <SelectValue placeholder={language.toUpperCase()} />
-              </SelectTrigger>
-              <SelectContent>
-                {languages.map((lang) => (
-                  <SelectItem key={lang.value} value={lang.value}>
-                    {lang.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white hover:bg-opacity-20">
-                  <Languages className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Select Language</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {languages.map((lang) => (
-                  <DropdownMenuItem 
-                    key={lang.value}
-                    onClick={() => handleLanguageChange(lang.value)}
-                    className={cn(
-                      "cursor-pointer",
-                      language === lang.value && "bg-muted"
-                    )}
-                  >
-                    {lang.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-          
-          {/* Additional actions menu */}
+        <div>
+          <div className="font-medium">{getBotStateText()}</div>
+          <div className="text-xs text-gray-500">
+            {botAvatarState.state === 'typing' || botAvatarState.state === 'thinking'
+              ? 'Working on your request...'
+              : 'AI assistant powered by PulsePlace'}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-1">
+        {/* Language Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Globe className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Select Language</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {languages.map((lang) => (
+              <DropdownMenuItem
+                key={lang.value}
+                onClick={() => handleLanguageChange(lang.value)}
+                className={language === lang.value ? 'bg-muted' : ''}
+              >
+                {lang.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Actions Dropdown */}
+        {(onClearHistory || onExportChat) && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white hover:bg-opacity-20">
-                <MoreVertical className="h-4 w-4" />
+              <Button variant="ghost" size="icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5"
+                >
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="12" cy="5" r="1" />
+                  <circle cx="12" cy="19" r="1" />
+                </svg>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleClearHistory} className="cursor-pointer">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Clear History
-              </DropdownMenuItem>
+              <DropdownMenuLabel>Chat Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
               {onExportChat && (
-                <DropdownMenuItem onClick={onExportChat} className="cursor-pointer">
-                  <Download className="mr-2 h-4 w-4" />
+                <DropdownMenuItem onClick={onExportChat}>
+                  <Download className="h-4 w-4 mr-2" />
                   Export Chat
+                </DropdownMenuItem>
+              )}
+              {onClearHistory && (
+                <DropdownMenuItem 
+                  onClick={handleOpenConfirmDialog}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Clear History
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          {/* Close button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleChat}
-            className="h-8 w-8 text-white hover:bg-white hover:bg-opacity-20"
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </Button>
-        </div>
+        )}
+
+        {/* Close Button */}
+        <Button variant="ghost" size="icon" onClick={toggleChat}>
+          <X className="h-5 w-5" />
+        </Button>
       </div>
-      
-      {/* Clear history confirmation dialog */}
+
+      {/* Clear History Confirmation Dialog */}
       <ClearHistoryDialog
-        open={clearDialogOpen}
-        onConfirm={confirmClearHistory}
-        onCancel={cancelClearHistory}
+        open={isConfirmDialogOpen}
+        onConfirm={handleConfirmClear}
+        onCancel={handleCloseConfirmDialog}
       />
-    </>
+    </div>
   );
 };

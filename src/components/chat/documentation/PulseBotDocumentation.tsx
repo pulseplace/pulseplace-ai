@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageCircle, Search, Globe, ThumbsUp, Bot, Info } from 'lucide-react';
+import { MessageCircle, Search, Globe, ThumbsUp, Bot, Info, Download } from 'lucide-react';
 
 interface PulseBotDocumentationProps {
   open: boolean;

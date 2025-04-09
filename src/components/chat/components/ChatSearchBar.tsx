@@ -33,7 +33,7 @@ export const ChatSearchBar: React.FC<ChatSearchBarProps> = ({
               <Info className="h-4 w-4" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="right">
+          <TooltipContent side="bottom">
             <p className="text-sm">Search your conversation history.<br />Use keywords to find specific topics.</p>
           </TooltipContent>
         </Tooltip>

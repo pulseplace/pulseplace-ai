@@ -7,8 +7,8 @@ import { useConfetti } from './hooks/useConfetti';
 import { useFeedbackHandler } from './hooks/useFeedbackHandler';
 import { useMessageSender } from './hooks/useMessageSender';
 import { useSearch } from './hooks/useSearch';
-import { Message, MessageLanguage } from './types';
-import { useEffect } from 'react';
+import { Message, MessageLanguage, BotAvatarStateValue } from './types';
+import { useEffect, useState } from 'react';
 
 export function usePulseBot() {
   // Get necessary state from our custom hooks
@@ -30,10 +30,53 @@ export function usePulseBot() {
   const { confetti, triggerConfetti } = useConfetti();
   const { search, handleSearch, clearSearch } = useSearch();
   
+  // Add a state to track timer for avatar state transitions
+  const [stateTransitionTimer, setStateTransitionTimer] = useState<NodeJS.Timeout | null>(null);
+  
+  // Update bot avatar state with proper transitions
+  const updateBotAvatarState = (newState: BotAvatarStateValue, duration?: number) => {
+    // Clear any existing timer
+    if (stateTransitionTimer) {
+      clearTimeout(stateTransitionTimer);
+      setStateTransitionTimer(null);
+    }
+    
+    // Set the new state
+    setBotAvatarState(newState);
+    
+    // If duration is provided, schedule reverting back to idle after that time
+    if (duration) {
+      const timer = setTimeout(() => {
+        setBotAvatarState('idle');
+        setStateTransitionTimer(null);
+      }, duration);
+      
+      setStateTransitionTimer(timer);
+    }
+  };
+  
+  // Effect to handle loading state changes
+  useEffect(() => {
+    if (loading) {
+      // When loading starts, transition to typing state
+      updateBotAvatarState('typing');
+    } else {
+      // When loading ends, if we have messages transition to happy state briefly
+      if (messages.length > 0) {
+        updateBotAvatarState('happy', 3000); // Show happy state for 3 seconds then revert to idle
+      }
+    }
+  }, [loading, messages.length]);
+  
   // Cleanup effect - when component unmounts
   useEffect(() => {
     // Return cleanup function
     return () => {
+      // Clear any transition timers
+      if (stateTransitionTimer) {
+        clearTimeout(stateTransitionTimer);
+      }
+      
       // Only cleanup when application exits or navigates away
       if (document.visibilityState === 'hidden') {
         // We keep the language preference but clean up other temporary state
@@ -43,11 +86,14 @@ export function usePulseBot() {
         setLoading(false);
       }
     };
-  }, []);
+  }, [stateTransitionTimer]);
   
   // Error handling function
   const handleError = (error: Error) => {
     console.error('Error in PulseBot:', error);
+    // When error occurs, show idle state
+    updateBotAvatarState('idle');
+    
     // You can add more error handling logic here
   };
   
@@ -109,6 +155,7 @@ export function usePulseBot() {
     clearSearch,
     confetti,
     sessionInfo,
-    triggerConfetti // Export triggerConfetti for external use
+    triggerConfetti, // Export triggerConfetti for external use
+    updateBotAvatarState // Export the state transition function for direct control
   };
 }

@@ -1,26 +1,47 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BotAvatarState, BotAvatarStateValue } from './types';
 
 interface BotEmojiProps {
   state: BotAvatarStateValue;
   size?: 'sm' | 'md' | 'lg';
+  animated?: boolean;
 }
 
-export const BotEmoji: React.FC<BotEmojiProps> = ({ state, size = 'md' }) => {
+export const BotEmoji: React.FC<BotEmojiProps> = ({ 
+  state, 
+  size = 'md',
+  animated = true
+}) => {
+  const [displayState, setDisplayState] = useState<BotAvatarStateValue>(state);
+  
+  // Add animation effect when state changes
+  useEffect(() => {
+    if (animated && state !== displayState) {
+      // Short delay to allow for transition animation
+      const timer = setTimeout(() => {
+        setDisplayState(state);
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setDisplayState(state);
+    }
+  }, [state, displayState, animated]);
+  
   // Map the state to emoji
   const getEmoji = () => {
-    switch (state) {
+    switch (displayState) {
       case 'idle':
-        return '😀'; // Idle
+        return '🤖'; // Idle/Default
       case 'thinking':
         return '🤔'; // Thinking
       case 'typing':
-        return '✨'; // Typing
+        return '⌨️'; // Typing
       case 'happy':
-        return '😊'; // Thanking
+        return '😊'; // Happy/Thanking
       default:
-        return '🤖'; // Default
+        return '🤖'; // Default fallback
     }
   };
   
@@ -32,7 +53,11 @@ export const BotEmoji: React.FC<BotEmojiProps> = ({ state, size = 'md' }) => {
   }[size];
   
   return (
-    <div className={`flex items-center justify-center ${sizeClass} transition-all duration-300`}>
+    <div 
+      className={`flex items-center justify-center ${sizeClass} transition-all duration-300 ${
+        animated ? 'transform hover:scale-110' : ''
+      }`}
+    >
       {getEmoji()}
     </div>
   );

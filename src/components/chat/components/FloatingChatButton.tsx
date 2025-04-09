@@ -25,19 +25,36 @@ export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({
     ? botState 
     : 'idle';
   
-  // Safe position that works across all device sizes
-  const buttonPositionClass = isMobile 
-    ? 'bottom-4 right-4 z-40' 
-    : 'bottom-6 right-6 z-40';
+  // Use responsive positioning based on device type
+  const positionClasses = {
+    mobile: 'bottom-4 right-4 z-50',
+    desktop: 'bottom-6 right-6 z-50'
+  };
   
-  // Size that works across all device sizes  
-  const buttonSizeClass = isMobile
-    ? 'h-12 w-12'
-    : 'h-14 w-14';
+  // Use responsive sizing based on device type
+  const sizeClasses = {
+    mobile: 'h-12 w-12',
+    desktop: 'h-14 w-14'
+  };
+  
+  // Determine the position and size based on device type
+  const buttonPositionClass = isMobile ? positionClasses.mobile : positionClasses.desktop;
+  const buttonSizeClass = isMobile ? sizeClasses.mobile : sizeClasses.desktop;
+  
+  // Add pulsing animation for better visibility when bot is in specific states
+  const shouldPulse = !open && (botState === 'happy' || botState === 'typing');
+  const pulseAnimation = shouldPulse ? 'animate-pulse' : '';
   
   return (
     <div className={`fixed ${buttonPositionClass} flex flex-col items-end space-y-2`}>
-      {/* Only show tooltip on desktop */}
+      {/* Optional label that appears above the button on mobile */}
+      {!open && isMobile && (
+        <div className="bg-white rounded-full px-3 py-1 shadow-sm mb-1 text-sm">
+          <span>Ask PulseBot</span>
+        </div>
+      )}
+      
+      {/* Use Tooltip only on desktop devices */}
       {!isMobile ? (
         <TooltipProvider>
           <Tooltip>
@@ -46,7 +63,9 @@ export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({
                 onClick={toggleChat}
                 className={cn(
                   `${buttonSizeClass} rounded-full shadow-lg transition-all duration-300 flex items-center justify-center`,
-                  open ? 'bg-gray-600 hover:bg-gray-700' : 'bg-pulse-gradient animate-pulse hover:bg-pulse-700'
+                  open 
+                    ? 'bg-gray-600 hover:bg-gray-700' 
+                    : `bg-pulse-gradient ${pulseAnimation} hover:bg-pulse-700`
                 )}
                 aria-label={open ? "Close chat" : "Talk to PulseBot"}
               >
@@ -58,7 +77,7 @@ export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({
               </button>
             </TooltipTrigger>
             <TooltipContent side="left">
-              <p>Talk to PulseBot</p>
+              <p>{open ? "Close chat" : "Talk to PulseBot"}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -67,7 +86,9 @@ export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({
           onClick={toggleChat}
           className={cn(
             `${buttonSizeClass} rounded-full shadow-lg transition-all duration-300 flex items-center justify-center`,
-            open ? 'bg-gray-600 hover:bg-gray-700' : 'bg-pulse-gradient animate-pulse hover:bg-pulse-700'
+            open 
+              ? 'bg-gray-600 hover:bg-gray-700 active:bg-gray-800' 
+              : `bg-pulse-gradient ${pulseAnimation} hover:bg-pulse-700 active:bg-pulse-800`
           )}
           aria-label={open ? "Close chat" : "Talk to PulseBot"}
         >

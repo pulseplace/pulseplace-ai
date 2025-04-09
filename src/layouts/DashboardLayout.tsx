@@ -1,14 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { PanelLeft, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
-const DashboardLayout = () => {
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { profile, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -87,11 +90,9 @@ const DashboardLayout = () => {
               </div>
             </div>
           ) : null}
-          <Outlet />
+          {children}
         </main>
       </div>
-      
-      {/* Remove PulseBotChat from here since it's now added at the App level */}
     </div>
   );
 };

@@ -42,8 +42,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
       <div className="flex items-center space-x-2">
         {!isMobile && (
-          <Select value={language} onValueChange={handleLanguageChange} className="language-selector">
-            <SelectTrigger className="h-8 w-[110px] bg-white/10 border-white/20 text-white text-xs">
+          <Select value={language} onValueChange={handleLanguageChange}>
+            <SelectTrigger className="h-8 w-[110px] bg-white/10 border-white/20 text-white text-xs language-selector">
               <SelectValue placeholder="Language" />
             </SelectTrigger>
             <SelectContent>

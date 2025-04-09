@@ -1,33 +1,29 @@
 
-import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { useEffect, useState } from 'react';
 import { SessionInfo } from '../types';
 
-export function useSession() {
-  const [sessionInfo, setSessionInfo] = useState<SessionInfo>(() => {
-    // Try to retrieve existing session from localStorage
-    const storedSession = localStorage.getItem('pulsebot_session');
-    if (storedSession) {
-      try {
-        return JSON.parse(storedSession);
-      } catch (e) {
-        console.error('Failed to parse stored session:', e);
-      }
-    }
+export const useSession = () => {
+  const [sessionInfo] = useState<SessionInfo>(() => {
+    // Generate a unique session ID
+    const sessionId = `session_${Math.random().toString(36).substring(2, 11)}`;
     
-    // Create new session if none exists
     return {
-      id: uuidv4(),
+      id: sessionId,
       startTime: new Date(),
       userAgent: navigator.userAgent,
-      referrer: document.referrer || undefined
+      createdAt: new Date()
     };
   });
 
-  // Store session in localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('pulsebot_session', JSON.stringify(sessionInfo));
-  }, [sessionInfo]);
+    // Log session start for debugging
+    console.log(`PulseBot session started: ${sessionInfo.id}`);
+    
+    return () => {
+      // Log session end for debugging
+      console.log(`PulseBot session ended: ${sessionInfo.id}`);
+    };
+  }, [sessionInfo.id]);
 
   return { sessionInfo };
-}
+};

@@ -2,103 +2,105 @@
 import { Message } from '../types';
 import { jsPDF } from 'jspdf';
 
-// Simple function to format date objects
-const formatDate = (date?: Date) => {
-  if (!date) return 'Unknown date';
-  return new Date(date).toLocaleString();
-};
-
-const formatRole = (role: string) => {
-  if (role === 'assistant') return 'PulseBot';
-  return role.charAt(0).toUpperCase() + role.slice(1);
-};
-
 export const exportUtils = {
   exportToJson: (messages: Message[], filename: string) => {
-    // Create a cleaned version of the messages for export
-    const exportData = messages.map(message => ({
-      id: message.id,
-      content: message.content,
-      role: message.role,
-      timestamp: message.timestamp,
-      language: message.language || 'en',
-      feedback: message.feedback
-    }));
+    // Prepare messages for export - remove internal props and format dates
+    const exportedMessages = messages.map(msg => {
+      const { id, role, content, timestamp, language, feedback } = msg;
+      return {
+        id,
+        role,
+        content,
+        timestamp: timestamp ? timestamp.toISOString() : undefined,
+        language: language || 'en',
+        feedback
+      };
+    });
     
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+    const conversationData = {
+      exportTime: new Date().toISOString(),
+      messages: exportedMessages
+    };
     
-    const exportFileDefaultName = `${filename}.json`;
+    // Create a Blob and download it
+    const jsonString = JSON.stringify(conversationData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}.json`;
+    a.click();
+    
+    URL.revokeObjectURL(url);
   },
   
   exportToPdf: (messages: Message[], title: string) => {
     const doc = new jsPDF();
-    
-    // Add title
-    doc.setFontSize(16);
-    doc.text(title, 20, 20);
-    
-    // Add generation timestamp
-    doc.setFontSize(10);
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 30);
-    
-    let yPosition = 40;
-    const pageWidth = doc.internal.pageSize.getWidth();
+    const textColor = '#333333';
+    const accentColor = '#3F8CFF';
     const margin = 20;
-    const textWidth = pageWidth - (margin * 2);
+    let y = margin;
     
-    // Helper to add a new page if we're close to the bottom
-    const checkPageBreak = (y: number, lineHeight = 10) => {
-      if (y + lineHeight > doc.internal.pageSize.getHeight() - margin) {
-        doc.addPage();
-        return margin;
-      }
-      return y;
-    };
+    // Title
+    doc.setFontSize(18);
+    doc.setTextColor(accentColor);
+    doc.text(title, margin, y);
+    y += 10;
     
-    // Process each message
-    messages.forEach((message, i) => {
-      // Skip system messages
-      if (message.role === 'system') return;
+    // Date
+    doc.setFontSize(10);
+    doc.setTextColor(textColor);
+    doc.text(`Exported on: ${new Date().toLocaleString()}`, margin, y);
+    y += 15;
+    
+    // Messages
+    doc.setFontSize(10);
+    
+    messages.forEach((msg) => {
+      if (msg.role === 'system') return; // Skip system messages
       
-      yPosition = checkPageBreak(yPosition);
+      const isUser = msg.role === 'user';
+      const name = isUser ? 'You' : 'PulseBot';
+      const languageText = msg.language && msg.language !== 'en' ? ` (${msg.language})` : '';
       
-      // Message header (role & timestamp)
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      const headerText = `${formatRole(message.role)} • ${formatDate(message.timestamp)}`;
-      doc.text(headerText, margin, yPosition);
-      yPosition += 5;
+      // Speaker name
+      doc.setTextColor(isUser ? accentColor : '#32D27E');
+      doc.setFont(undefined, 'bold');
+      doc.text(`${name}${languageText}:`, margin, y);
+      y += 5;
       
       // Message content
-      yPosition = checkPageBreak(yPosition);
-      doc.setFontSize(11);
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(textColor);
+      doc.setFont(undefined, 'normal');
       
-      // Split long text into lines
-      const lines = doc.splitTextToSize(message.content, textWidth);
-      lines.forEach(line => {
-        yPosition = checkPageBreak(yPosition, 7);
-        doc.text(line, margin, yPosition);
-        yPosition += 7;
-      });
+      // Split long messages to fit page width
+      const contentLines = doc.splitTextToSize(msg.content, doc.internal.pageSize.width - (margin * 2));
       
-      // Add feedback if present
-      if (message.feedback) {
-        yPosition = checkPageBreak(yPosition);
-        doc.setFontSize(9);
-        doc.setTextColor(120, 120, 120);
-        doc.text(`Feedback: ${message.feedback}`, margin, yPosition);
-        yPosition += 5;
+      // Check if we need a new page
+      if (y + (contentLines.length * 5) > doc.internal.pageSize.height - margin) {
+        doc.addPage();
+        y = margin;
       }
       
-      // Separator between messages
-      yPosition += 8;
+      doc.text(contentLines, margin, y);
+      y += (contentLines.length * 5) + 10;
+      
+      // Add timestamp if available
+      if (msg.timestamp) {
+        doc.setFontSize(8);
+        doc.setTextColor('#999999');
+        
+        // Check if we need a new page for timestamp
+        if (y > doc.internal.pageSize.height - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        
+        doc.text(`${new Date(msg.timestamp).toLocaleString()}`, margin, y);
+        y += 10;
+        doc.setFontSize(10);
+      }
     });
     
     // Save the PDF

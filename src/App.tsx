@@ -38,6 +38,10 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
+const AiEngine = lazy(() => import('./pages/AiEngine'));
+const RoiCalculator = lazy(() => import('./pages/RoiCalculator'));
+const Methodology = lazy(() => import('./pages/Methodology'));
+const Pricing = lazy(() => import('./pages/Pricing'));
 
 const router = createBrowserRouter([
   {
@@ -153,17 +157,31 @@ const router = createBrowserRouter([
         path: "book-demo",
         element: <Suspense fallback={<Loading />}><BookDemo /></Suspense>,
       },
+      {
+        path: "ai-engine",
+        element: <Suspense fallback={<Loading />}><AiEngine /></Suspense>,
+      },
+      {
+        path: "roi-calculator",
+        element: <Suspense fallback={<Loading />}><RoiCalculator /></Suspense>,
+      },
+      {
+        path: "methodology",
+        element: <Suspense fallback={<Loading />}><Methodology /></Suspense>,
+      },
+      {
+        path: "pricing",
+        element: <Suspense fallback={<Loading />}><Pricing /></Suspense>,
+      },
     ],
   },
 ]);
 
-function App() {
+export default function App() {
   return (
     <>
       <RouterProvider router={router} />
-      <Toaster position="bottom-right" richColors closeButton />
+      <Toaster position="top-right" />
     </>
   );
 }
-
-export default App;

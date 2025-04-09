@@ -1,6 +1,6 @@
 
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import './App.css';
 import { Toaster } from "@/components/ui/sonner";
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -81,7 +81,9 @@ function App() {
                       path="/dashboard"
                       element={
                         <ProtectedRoute>
-                          <DashboardLayout />
+                          <DashboardLayout>
+                            <Outlet />
+                          </DashboardLayout>
                         </ProtectedRoute>
                       }
                     >

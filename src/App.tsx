@@ -36,6 +36,8 @@ const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const HowItWorks = lazy(() => import('./pages/HowItWorks'));
 const Insights = lazy(() => import('./pages/Insights'));
 const Contact = lazy(() => import('./pages/Contact'));
+const Features = lazy(() => import('./pages/Features'));
+const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 
 const router = createBrowserRouter([
   {
@@ -138,6 +140,14 @@ const router = createBrowserRouter([
       {
         path: "contact",
         element: <Suspense fallback={<Loading />}><Contact /></Suspense>,
+      },
+      {
+        path: "features",
+        element: <Suspense fallback={<Loading />}><Features /></Suspense>,
+      },
+      {
+        path: "dashboard-preview",
+        element: <Suspense fallback={<Loading />}><DashboardPreview /></Suspense>,
       },
     ],
   },

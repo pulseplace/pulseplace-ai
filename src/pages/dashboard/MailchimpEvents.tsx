@@ -1,6 +1,6 @@
 
 import React from 'react';
-import MailchimpWebhookLogs from "@/components/dashboard/admin/MailchimpWebhookLogs";
+import MailchimpWebhookLogs from "@/components/dashboard/admin/mailchimp";
 import DashboardLayout from "@/layouts/DashboardLayout";
 
 interface DashboardLayoutProps {

@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CertificationEmailTemplate from "@/components/dashboard/email/CertificationEmailTemplate";
 import CertificationEmailGenerator from "@/components/dashboard/email/CertificationEmailGenerator";
 import MailchimpEmailPreview from "@/components/dashboard/email/MailchimpEmailPreview";
-import MailchimpWebhookLogs from "@/components/dashboard/admin/MailchimpWebhookLogs";
+import MailchimpWebhookLogs from "@/components/dashboard/admin/mailchimp";
 import MailchimpSubscribersTable from "@/components/dashboard/admin/MailchimpSubscribersTable";
 import { BrandMessage } from '@/components/BrandMessage';
 import EmailSendTest from '@/components/dashboard/email/EmailSendTest';

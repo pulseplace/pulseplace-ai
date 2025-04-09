@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 export interface DashboardHeaderProps {
   title?: string;
   subtitle?: string;
-  onMobileMenuClick?: () => void; // Added this property
+  onMobileMenuClick?: () => void;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -75,7 +75,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <DropdownMenuSeparator />
             <DropdownMenuItem>Profile Settings</DropdownMenuItem>
             <DropdownMenuItem>Notification Preferences</DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <Link to="/task-admin" className="flex items-center w-full">
                 <ListTodo className="mr-2 h-4 w-4" />
                 Task Admin

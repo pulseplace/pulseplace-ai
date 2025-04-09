@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import MetaTags from '@/components/MetaTags';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,8 +24,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
-import { PlusCircle, Trash2, RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { PlusCircle, Trash2, RefreshCw, CheckCircle, XCircle, Clock, ArrowUp, ArrowDown, PlayCircle, Copy } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import ImportTasksDialog from '@/components/task-admin/ImportTasksDialog';
 
 // Define task type
@@ -50,6 +51,19 @@ interface TaskFormState {
   assigned_to?: string;
 }
 
+// Define sort configuration
+interface SortConfig {
+  key: string;
+  direction: 'asc' | 'desc';
+}
+
+// Define filter state
+interface FilterState {
+  status: string;
+  priority: string;
+  assignee: string;
+}
+
 const TaskAdmin: React.FC = () => {
   const { toast } = useToast();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -62,6 +76,17 @@ const TaskAdmin: React.FC = () => {
     status: 'pending',
     assigned_to: ''
   });
+  
+  // State for sorting and filtering
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'updated_at', direction: 'desc' });
+  const [filters, setFilters] = useState<FilterState>({
+    status: 'all',
+    priority: 'all',
+    assignee: 'all'
+  });
+  
+  // For task duplication
+  const [duplicateTask, setDuplicateTask] = useState<Task | null>(null);
 
   // Fetch tasks from Supabase
   const fetchTasks = async () => {
@@ -149,10 +174,19 @@ const TaskAdmin: React.FC = () => {
       
       if (error) throw error;
       
-      toast({
-        title: "Success",
-        description: `Task marked as ${status}`
-      });
+      // Show toast notification for completed tasks
+      if (status === 'completed') {
+        toast({
+          title: "Task Completed",
+          description: `Task has been marked as completed successfully!`,
+          variant: "success"
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: `Task marked as ${status}`
+        });
+      }
       
       // Refresh tasks
       fetchTasks();
@@ -192,16 +226,163 @@ const TaskAdmin: React.FC = () => {
       });
     }
   };
+  
+  // Duplicate a task
+  const handleDuplicateTask = async (task: Task) => {
+    try {
+      const newTask = {
+        title: `${task.title} (Copy)`,
+        description: task.description,
+        priority: task.priority,
+        status: 'pending', // Always set as pending for duplicated tasks
+        assigned_to: task.assigned_to || null
+      };
+      
+      const { data, error } = await supabase
+        .from('lovable_tasks')
+        .insert([newTask])
+        .select();
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Task duplicated successfully"
+      });
+      
+      // Refresh tasks
+      fetchTasks();
+    } catch (error: any) {
+      console.error('Error duplicating task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to duplicate task. " + error.message,
+        variant: "destructive"
+      });
+    }
+  };
+  
+  // Run a task manually
+  const runTask = async (task: Task) => {
+    try {
+      toast({
+        title: "Task Started",
+        description: `Task "${task.title}" has been triggered to run.`
+      });
+      
+      // In a real implementation, this would call a function to execute the task
+      // For now, we'll just mark it as in-progress
+      await supabase
+        .from('lovable_tasks')
+        .update({ 
+          status: 'in-progress', 
+          updated_at: new Date().toISOString(),
+          execution_log: `Manual execution started at ${new Date().toISOString()}`
+        })
+        .eq('id', task.id);
+      
+      // Refresh tasks
+      fetchTasks();
+    } catch (error: any) {
+      console.error('Error running task:', error);
+      toast({
+        title: "Error",
+        description: "Failed to run task. " + error.message,
+        variant: "destructive"
+      });
+    }
+  };
 
   // Load tasks on component mount
   useEffect(() => {
     fetchTasks();
+    
+    // Set up real-time subscription if needed
+    const subscription = supabase
+      .channel('table-db-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'lovable_tasks' }, 
+        (payload) => {
+          console.log('Change received!', payload);
+          fetchTasks();
+        }
+      )
+      .subscribe();
+      
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Handle form changes
   const handleFormChange = (field: keyof TaskFormState, value: string) => {
     setTaskForm(prev => ({ ...prev, [field]: value }));
   };
+  
+  // Preset form with duplicated task data
+  useEffect(() => {
+    if (duplicateTask) {
+      setTaskForm({
+        title: `${duplicateTask.title} (Copy)`,
+        description: duplicateTask.description,
+        priority: duplicateTask.priority,
+        status: 'pending',
+        assigned_to: duplicateTask.assigned_to || ''
+      });
+      setIsAddDialogOpen(true);
+      setDuplicateTask(null);
+    }
+  }, [duplicateTask]);
+
+  // Handle sorting
+  const handleSort = (key: string) => {
+    setSortConfig(prev => {
+      if (prev.key === key) {
+        return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
+  
+  // Apply sorting and filtering
+  const sortedAndFilteredTasks = React.useMemo(() => {
+    return [...tasks]
+      // Apply filters
+      .filter(task => {
+        return (
+          (filters.status === 'all' || task.status === filters.status) &&
+          (filters.priority === 'all' || task.priority === filters.priority) &&
+          (filters.assignee === 'all' || task.assigned_to === filters.assignee || 
+            (!task.assigned_to && filters.assignee === 'unassigned'))
+        );
+      })
+      // Apply sorting
+      .sort((a, b) => {
+        const key = sortConfig.key as keyof Task;
+        if (!a[key] || !b[key]) return 0;
+        
+        let comparison = 0;
+        if (key === 'created_at' || key === 'updated_at') {
+          comparison = new Date(a[key] as string).getTime() - new Date(b[key] as string).getTime();
+        } else if (typeof a[key] === 'string' && typeof b[key] === 'string') {
+          comparison = (a[key] as string).localeCompare(b[key] as string);
+        }
+        
+        return sortConfig.direction === 'asc' ? comparison : -comparison;
+      });
+  }, [tasks, sortConfig, filters]);
+  
+  // Get unique assignees for filter dropdown
+  const uniqueAssignees = React.useMemo(() => {
+    const assignees = tasks
+      .map(task => task.assigned_to)
+      .filter((assignee, index, self) => 
+        assignee && self.indexOf(assignee) === index
+      ) as string[];
+    
+    return ['all', 'unassigned', ...assignees];
+  }, [tasks]);
 
   // Get badge variant based on status
   const getStatusBadgeVariant = (status: string) => {
@@ -233,7 +414,7 @@ const TaskAdmin: React.FC = () => {
 
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Task Admin</h1>
+          <h1 className="text-3xl font-bold text-gradient-primary">Task Admin</h1>
           <p className="text-gray-600">Manage and track tasks in the PulsePlace platform</p>
         </div>
         <div className="flex gap-2">
@@ -324,16 +505,75 @@ const TaskAdmin: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="flex justify-end gap-2">
+              <DialogFooter>
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Cancel
                 </Button>
                 <Button onClick={createTask}>
                   Save Task
                 </Button>
-              </div>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
+        </div>
+      </div>
+      
+      {/* Filtering and sorting controls */}
+      <div className="mb-4 flex flex-wrap gap-2">
+        <div>
+          <Select 
+            value={filters.status} 
+            onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}
+          >
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="in-progress">In Progress</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div>
+          <Select 
+            value={filters.priority} 
+            onValueChange={(value) => setFilters(prev => ({ ...prev, priority: value }))}
+          >
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Filter by priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Priorities</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+              <SelectItem value="medium">Medium</SelectItem>
+              <SelectItem value="low">Low</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div>
+          <Select 
+            value={filters.assignee} 
+            onValueChange={(value) => setFilters(prev => ({ ...prev, assignee: value }))}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by assignee" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Assignees</SelectItem>
+              <SelectItem value="unassigned">Unassigned</SelectItem>
+              {uniqueAssignees
+                .filter(a => a !== 'all' && a !== 'unassigned')
+                .map(assignee => (
+                  <SelectItem key={assignee} value={assignee}>{assignee}</SelectItem>
+                ))
+              }
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -346,11 +586,46 @@ const TaskAdmin: React.FC = () => {
             <TableCaption>A list of all tasks in the system.</TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Assigned To</TableHead>
-                <TableHead>Created</TableHead>
+                <TableHead 
+                  className="cursor-pointer"
+                  onClick={() => handleSort('title')}
+                >
+                  Title {sortConfig.key === 'title' && (
+                    sortConfig.direction === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />
+                  )}
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer"
+                  onClick={() => handleSort('priority')}
+                >
+                  Priority {sortConfig.key === 'priority' && (
+                    sortConfig.direction === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />
+                  )}
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer"
+                  onClick={() => handleSort('status')}
+                >
+                  Status {sortConfig.key === 'status' && (
+                    sortConfig.direction === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />
+                  )}
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer"
+                  onClick={() => handleSort('assigned_to')}
+                >
+                  Assigned To {sortConfig.key === 'assigned_to' && (
+                    sortConfig.direction === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />
+                  )}
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer"
+                  onClick={() => handleSort('updated_at')}
+                >
+                  Updated {sortConfig.key === 'updated_at' && (
+                    sortConfig.direction === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />
+                  )}
+                </TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -364,14 +639,14 @@ const TaskAdmin: React.FC = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ) : tasks.length === 0 ? (
+              ) : sortedAndFilteredTasks.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8">
                     No tasks found. Click "Add Task" to create one.
                   </TableCell>
                 </TableRow>
               ) : (
-                tasks.map((task) => (
+                sortedAndFilteredTasks.map((task) => (
                   <TableRow key={task.id}>
                     <TableCell className="font-medium max-w-[200px]">
                       <div className="truncate">{task.title}</div>
@@ -391,10 +666,11 @@ const TaskAdmin: React.FC = () => {
                         {task.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{task.assigned_to || '-'}</TableCell>
+                    <TableCell>{task.assigned_to || 'Unassigned'}</TableCell>
                     <TableCell>
-                      {task.created_at 
-                        ? new Date(task.created_at).toLocaleDateString() 
+                      {task.updated_at 
+                        ? new Date(task.updated_at).toLocaleDateString() + ' ' + 
+                          new Date(task.updated_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
                         : '-'}
                     </TableCell>
                     <TableCell className="text-right">
@@ -404,6 +680,7 @@ const TaskAdmin: React.FC = () => {
                           size="icon"
                           onClick={() => updateTaskStatus(task.id, 'completed')}
                           title="Mark as completed"
+                          disabled={task.status === 'completed'}
                         >
                           <CheckCircle className="h-4 w-4 text-green-500" />
                         </Button>
@@ -412,8 +689,26 @@ const TaskAdmin: React.FC = () => {
                           size="icon"
                           onClick={() => updateTaskStatus(task.id, 'in-progress')}
                           title="Mark as in progress"
+                          disabled={task.status === 'in-progress'}
                         >
                           <Clock className="h-4 w-4 text-blue-500" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => runTask(task)}
+                          title="Run task now"
+                          disabled={task.status === 'in-progress' || task.status === 'completed'}
+                        >
+                          <PlayCircle className="h-4 w-4 text-purple-500" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleDuplicateTask(task)}
+                          title="Duplicate task"
+                        >
+                          <Copy className="h-4 w-4 text-gray-500" />
                         </Button>
                         <Button
                           variant="outline"

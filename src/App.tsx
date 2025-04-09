@@ -4,7 +4,6 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { PulseProvider } from './contexts/PulseContext';
 import { ToastContainer } from 'react-toastify';
@@ -77,14 +76,10 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <PulseProvider>
-          <RouterProvider router={router} />
-          <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
-        </PulseProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <>
+      <RouterProvider router={router} />
+      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+    </>
   );
 }
 

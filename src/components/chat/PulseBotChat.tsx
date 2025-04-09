@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { FloatingChatButton } from './components/FloatingChatButton';
 import { ChatContainer } from './components/ChatContainer';
@@ -49,18 +48,8 @@ export default function PulseBotChat() {
   
   // Create an adapter for handleFeedback to match the expected API
   const handleFeedbackAdapter = (messageId: string, value: 'positive' | 'negative') => {
-    // Find the message from the messages array
-    const message = messages.find(m => m.id === messageId);
-    if (!message) {
-      console.error(`Message with ID ${messageId} not found`);
-      return;
-    }
-    
-    // Convert the value to the format expected by the original function
-    const feedbackType = value === 'positive' ? 'up' : 'down';
-    
-    // Call the original function
-    originalHandleFeedback(messageId, message, feedbackType);
+    // Call the original function with the adapter
+    originalHandleFeedback(messageId, value);
   };
   
   // Export chat history

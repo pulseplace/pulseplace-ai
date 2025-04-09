@@ -15,7 +15,7 @@ interface ChatContainerProps {
   language: MessageLanguage;
   languages: { value: MessageLanguage; label: string }[];
   messagesEndRef: RefObject<HTMLDivElement>;
-  handleFeedback: (messageId: string, value: 'positive' | 'negative') => void;
+  handleFeedback: (messageId: string, feedback: 'positive' | 'negative') => void;
   handleLanguageChange: (language: MessageLanguage) => void;
   toggleChat: () => void;
   search: SearchState;

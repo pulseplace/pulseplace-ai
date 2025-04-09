@@ -8,7 +8,7 @@ export const useFeedback = (sessionId: string) => {
   const { toast } = useToast();
   const [voteStatus, setVoteStatus] = useState<Record<string, 'up' | 'down' | null>>({});
   
-  // Updating the type signature to match what's used in ChatContainer
+  // Updated signature to match what's used in ChatContainer
   const handleFeedback = async (messageId: string, feedback: 'positive' | 'negative') => {
     // Convert the feedback format
     const feedbackType = feedback === 'positive' ? 'up' : 'down';

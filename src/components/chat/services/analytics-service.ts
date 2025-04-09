@@ -36,8 +36,16 @@ export async function fetchAnalytics(filters: AnalyticsFilters): Promise<PulseBo
         negative: 0,
         neutral: 0
       },
+      feedbackRatio: {
+        positive: 0,
+        negative: 0
+      },
+      topQueries: [],
       popularQueries: [],
       mostDownvotedResponses: [],
+      topDownvotedResponses: [],
+      avatarStateUsage: [],
+      languageBreakdown: [],
       averageResponseTime: 0,
       logs: []
     };

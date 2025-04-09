@@ -1,5 +1,5 @@
 
-export type MessageRole = 'system' | 'user' | 'assistant';
+export type MessageRole = 'system' | 'user' | 'assistant' | 'bot';
 
 export type MessageLanguage = 
   | 'en'  // English
@@ -91,14 +91,39 @@ export interface PulseBotAnalytics {
     negative: number;
     neutral: number;
   };
+  feedbackRatio: {
+    positive: number;
+    negative: number;
+  };
   popularQueries: {
     query: string;
     count: number;
+  }[];
+  topQueries: {
+    query: string;
+    count: number;
+  }[];
+  topDownvotedResponses: {
+    id: string;
+    userMessage: string;
+    botResponse: string;
+    timestamp: string;
+    downvotes: number;
   }[];
   mostDownvotedResponses: {
     query: string;
     response: string;
     count: number;
+  }[];
+  avatarStateUsage: {
+    state: string;
+    count: number;
+    percentage: number;
+  }[];
+  languageBreakdown: {
+    language: string;
+    count: number;
+    percentage: number;
   }[];
   averageResponseTime: number;
   logs: PulseBotLog[];

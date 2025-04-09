@@ -21,7 +21,7 @@ export const useLanguage = (setMessages: React.Dispatch<React.SetStateAction<Mes
         ...prev,
         {
           id: `lang_${Date.now()}`,
-          role: 'bot',
+          role: 'assistant',
           content: lang === 'en' 
             ? "Language switched to English." 
             : lang === 'es'

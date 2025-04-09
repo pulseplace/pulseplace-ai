@@ -8,7 +8,7 @@ import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DatePickerWithRange, DateRangeFilter } from '@/components/ui/date-range-picker';
 import { PulseBotAnalytics as PulseBotAnalyticsType, PulseBotLog, AnalyticsFilters } from '@/components/chat/types';
-import { fetchAnalytics } from '@/components/chat/services';
+import { fetchAnalytics } from '@/components/chat/services/analytics-service';
 import PulseBotAnalyticsDashboard from '@/components/dashboard/PulseBotAnalyticsDashboard';
 
 const PulseBotAnalytics: React.FC = () => {

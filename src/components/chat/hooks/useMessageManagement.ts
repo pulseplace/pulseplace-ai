@@ -20,7 +20,7 @@ export const useMessageManagement = (sessionId: string) => {
       // Default welcome message if no saved messages or invalid format
       return [{
         id: 'welcome_msg',
-        role: 'bot',
+        role: 'assistant',
         content: "Hi! I'm your PulsePlace Assistant. Ask me anything about culture surveys, PulseScore, or certification.",
       }];
     } catch (error) {
@@ -28,7 +28,7 @@ export const useMessageManagement = (sessionId: string) => {
       // Default welcome message on error
       return [{
         id: 'welcome_msg',
-        role: 'bot',
+        role: 'assistant',
         content: "Hi! I'm your PulsePlace Assistant. Ask me anything about culture surveys, PulseScore, or certification.",
       }];
     }
@@ -56,7 +56,7 @@ export const useMessageManagement = (sessionId: string) => {
   const clearHistory = () => {
     const welcomeMessage: Message = {
       id: 'welcome_msg',
-      role: 'bot',
+      role: 'assistant',
       content: "Hi! I'm your PulsePlace Assistant. Ask me anything about culture surveys, PulseScore, or certification.",
     };
     setMessages([welcomeMessage]);

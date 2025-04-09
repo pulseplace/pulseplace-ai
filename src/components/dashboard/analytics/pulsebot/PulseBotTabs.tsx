@@ -15,13 +15,13 @@ interface PulseBotTabsProps {
 }
 
 const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => {
-  // Convert the topDownvotedResponses to match the DownvotedResponse type
-  const formattedDownvotedResponses = analytics.topDownvotedResponses.map(item => ({
-    id: item.id,
-    userMessage: item.userMessage,
-    botResponse: item.botResponse,
-    timestamp: item.timestamp,
-    downvotes: item.downvotes
+  // Convert the mostDownvotedResponses to match the DownvotedResponse type
+  const formattedDownvotedResponses = analytics.topDownvotedResponses || analytics.mostDownvotedResponses.map(item => ({
+    id: crypto.randomUUID(),
+    userMessage: item.query,
+    botResponse: item.response,
+    timestamp: new Date().toISOString(),
+    downvotes: item.count
   }));
 
   return (

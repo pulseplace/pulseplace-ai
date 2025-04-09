@@ -48,7 +48,7 @@ export const useMessageSender = (
       if (data && data.message) {
         const botMessage: Message = {
           id: uuidv4(),
-          role: data.message.role === 'assistant' ? 'bot' : data.message.role,
+          role: data.message.role === 'assistant' ? 'assistant' : data.message.role,
           content: data.message.content,
           timestamp: new Date(),
         };
@@ -79,7 +79,7 @@ export const useMessageSender = (
       // Add error message to chat
       addMessage({
         id: uuidv4(),
-        role: 'bot',
+        role: 'assistant',
         content: "I'm having trouble connecting right now. Please try again in a moment.",
         timestamp: new Date(),
       });

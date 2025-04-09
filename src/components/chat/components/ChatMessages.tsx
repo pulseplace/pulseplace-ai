@@ -43,7 +43,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
       {messages.map((message) => {
         const isBot = message.role === 'bot' || message.role === 'assistant';
         // BotAvatarState can be a string or an object with avatar property
-        const avatarUrl = typeof botAvatarState === 'string' ? undefined : botAvatarState.avatar;
+        const avatarUrl = typeof botAvatarState === 'object' && 'avatar' in botAvatarState ? botAvatarState.avatar : undefined;
 
         return (
           <div key={message.id} className="mb-4">

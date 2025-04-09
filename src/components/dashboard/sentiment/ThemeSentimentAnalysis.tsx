@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,6 @@ import { AlertTriangle, RefreshCw } from 'lucide-react';
 import ThemeSentimentTable, { ThemeSentimentData } from './ThemeSentimentTable';
 import ThemeSentimentCharts from './ThemeSentimentCharts';
 import { calculateThemeScores } from '@/utils/themeAnalysis';
-import { DateRange } from "react-day-picker";
 import { useToast } from "@/hooks/use-toast";
 
 const SAMPLE_SENTIMENT_DATA: ThemeSentimentData[] = [
@@ -100,7 +100,8 @@ const ThemeSentimentAnalysis: React.FC = () => {
   
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   const departments = [
     { value: "all", label: "All Departments" },
@@ -112,7 +113,7 @@ const ThemeSentimentAnalysis: React.FC = () => {
 
   useEffect(() => {
     loadSentimentData();
-  }, [selectedDepartment, selectedTheme, dateRange]);
+  }, [selectedDepartment, selectedTheme, startDate, endDate]);
 
   const loadSentimentData = async () => {
     setIsLoading(true);
@@ -124,6 +125,8 @@ const ThemeSentimentAnalysis: React.FC = () => {
       if (selectedDepartment && selectedDepartment !== 'all') {
         filteredData = filteredData.filter(item => item.department === selectedDepartment);
       }
+      
+      // Additional date filtering would go here in a real implementation
       
       setSentimentData(filteredData);
     } catch (err: any) {
@@ -155,8 +158,12 @@ const ThemeSentimentAnalysis: React.FC = () => {
     setSelectedTheme(value === 'all' ? null : value);
   };
 
-  const handleDateRangeChange = (range: DateRange | undefined) => {
-    setDateRange(range);
+  const handleStartDateChange = (date: Date | undefined) => {
+    setStartDate(date);
+  };
+
+  const handleEndDateChange = (date: Date | undefined) => {
+    setEndDate(date);
   };
 
   return (
@@ -254,16 +261,20 @@ const ThemeSentimentAnalysis: React.FC = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Time Period</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
               <DatePicker
-                date={dateRange?.from ? new Date(dateRange.from) : undefined}
-                onSelect={(date) => 
-                  setDateRange(date ? 
-                    { from: date, to: dateRange?.to || date } : 
-                    undefined
-                  )
-                }
+                date={startDate}
+                onSelect={handleStartDateChange}
+                placeholder="Select start date"
               />
+              <div className="mt-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <DatePicker
+                  date={endDate}
+                  onSelect={handleEndDateChange}
+                  placeholder="Select end date"
+                />
+              </div>
             </div>
           </div>
           

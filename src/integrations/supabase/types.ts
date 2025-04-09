@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      demo_bookings: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          event_type: string | null
+          id: string
+          name: string | null
+          scheduled_time: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          event_type?: string | null
+          id?: string
+          name?: string | null
+          scheduled_time?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          event_type?: string | null
+          id?: string
+          name?: string | null
+          scheduled_time?: string | null
+        }
+        Relationships: []
+      }
       mailchimp_events: {
         Row: {
           confirmed_at: string | null

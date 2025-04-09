@@ -1,30 +1,29 @@
 
-import React, { useEffect } from 'react';
-import { Message, BotAvatarState, MessageLanguage, SearchState } from '../types';
-import { cn } from '@/lib/utils';
-import { ChatMessages } from './ChatMessages';
-import { useIsMobile } from '@/hooks/use-mobile';
+import React, { RefObject } from 'react';
 import { ChatHeader } from './ChatHeader';
+import { ChatMessages } from './ChatMessages';
 import { ChatSearchBar } from './ChatSearchBar';
 import { ChatFooter } from './ChatFooter';
-import { ClearHistoryDialog } from './ClearHistoryDialog';
+import { BotAvatarState, MessageLanguage, MessageType, SearchState } from '../types';
+import { cn } from '@/lib/utils';
 
 interface ChatContainerProps {
   open: boolean;
   loading: boolean;
-  messages: Message[];
+  messages: MessageType[];
   botAvatarState: BotAvatarState;
   language: MessageLanguage;
   languages: { value: MessageLanguage; label: string }[];
-  messagesEndRef: React.RefObject<HTMLDivElement>;
-  handleFeedback: (messageId: string, message: Message, feedback: 'up' | 'down') => void;
-  handleLanguageChange: (value: MessageLanguage) => void;
+  messagesEndRef: RefObject<HTMLDivElement>;
+  handleFeedback: (messageId: string, value: 'positive' | 'negative') => void;
+  handleLanguageChange: (language: MessageLanguage) => void;
   toggleChat: () => void;
   search: SearchState;
   handleSearch: (query: string) => void;
   clearSearch: () => void;
   clearHistory: () => void;
   sendMessage: (message: string) => void;
+  onExportChat?: () => void;
 }
 
 export const ChatContainer: React.FC<ChatContainerProps> = ({
@@ -43,87 +42,52 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   clearSearch,
   clearHistory,
   sendMessage,
+  onExportChat
 }) => {
-  const isMobile = useIsMobile();
-  const [clearConfirmOpen, setClearConfirmOpen] = React.useState(false);
-  
-  // When component mounts or 'open' state changes, handle body scroll
-  useEffect(() => {
-    // If chat is open on mobile, prevent body scroll
-    if (open && isMobile) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    
-    // Cleanup when component unmounts
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open, isMobile]);
-  
-  const handleClearConfirm = () => {
-    clearHistory();
-    setClearConfirmOpen(false);
-  };
-  
   return (
-    <>
-      <div
-        className={cn(
-          'fixed z-50 flex flex-col bg-white rounded-lg shadow-xl border border-gray-200 transition-all duration-300 ease-in-out',
-          isMobile 
-            ? 'inset-0 m-2 max-h-[calc(100vh-16px)]' 
-            : 'bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)]',
-          open
-            ? 'opacity-100 translate-y-0'
-            : 'opacity-0 translate-y-4 pointer-events-none'
-        )}
-      >
-        {/* Header */}
-        <ChatHeader
-          botAvatarState={botAvatarState}
-          language={language}
-          languages={languages}
-          handleLanguageChange={handleLanguageChange}
-          toggleChat={toggleChat}
-          onClearHistory={() => setClearConfirmOpen(true)}
-        />
-
-        {/* Search bar */}
-        <ChatSearchBar 
-          search={search}
-          handleSearch={handleSearch}
-          clearSearch={clearSearch}
-        />
-
-        {/* Messages */}
-        <div className="flex-grow overflow-y-auto p-4 bg-gray-50">
-          <ChatMessages
-            messages={search.isSearching ? search.results : messages}
-            loading={loading}
-            botAvatarState={botAvatarState}
-            handleFeedback={handleFeedback}
-            messagesEndRef={messagesEndRef}
-            isSearching={search.isSearching}
-            searchQuery={search.query}
-          />
-        </div>
-
-        {/* Footer with input */}
-        <ChatFooter
-          onSendMessage={sendMessage}
-          loading={loading}
-          onClearHistory={() => setClearConfirmOpen(true)}
-        />
-      </div>
-      
-      {/* Clear history confirmation dialog */}
-      <ClearHistoryDialog
-        open={clearConfirmOpen}
-        onOpenChange={setClearConfirmOpen}
-        onConfirm={handleClearConfirm}
+    <div
+      className={cn(
+        'fixed bottom-24 right-6 z-50 flex flex-col w-80 sm:w-96 max-w-[calc(100vw-3rem)] h-[500px] max-h-[calc(100vh-10rem)] bg-white rounded-lg shadow-xl border border-gray-200 transition-all duration-300 ease-in-out',
+        open
+          ? 'opacity-100 translate-y-0'
+          : 'opacity-0 translate-y-4 pointer-events-none'
+      )}
+    >
+      {/* Header */}
+      <ChatHeader
+        botAvatarState={botAvatarState}
+        language={language}
+        languages={languages}
+        handleLanguageChange={handleLanguageChange}
+        toggleChat={toggleChat}
+        onClearHistory={clearHistory}
+        onExportChat={onExportChat}
       />
-    </>
+
+      {/* Search Bar */}
+      <ChatSearchBar
+        search={search}
+        handleSearch={handleSearch}
+        clearSearch={clearSearch}
+      />
+
+      {/* Messages */}
+      <ChatMessages
+        messages={messages}
+        loading={loading}
+        messagesEndRef={messagesEndRef}
+        handleFeedback={handleFeedback}
+        isSearching={search.isSearching}
+        searchResults={search.results}
+        botAvatarState={botAvatarState}
+      />
+
+      {/* Footer */}
+      <ChatFooter
+        loading={loading}
+        sendMessage={sendMessage}
+        placeholderText="Ask me about workplace culture or PulseScore..."
+      />
+    </div>
   );
 };

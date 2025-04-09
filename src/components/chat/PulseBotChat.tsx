@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FloatingChatButton } from './components/FloatingChatButton';
 import { ChatContainer } from './components/ChatContainer';
 import { Confetti } from './Confetti';
@@ -9,6 +9,7 @@ import { MessageLanguage } from './types';
 import { useToast } from '@/hooks/use-toast';
 import { TutorialProvider } from './tutorial/TutorialContext';
 import { TutorialOverlay } from './tutorial/TutorialOverlay';
+import { exportUtils } from './utils/exportUtils';
 
 export default function PulseBotChat() {
   const {
@@ -31,6 +32,7 @@ export default function PulseBotChat() {
   } = usePulseBot();
   
   const { toast } = useToast();
+  const [exportFormat, setExportFormat] = useState<'json' | 'pdf'>('json');
 
   // Define available languages
   const languages = [
@@ -44,6 +46,39 @@ export default function PulseBotChat() {
     { value: 'ja' as MessageLanguage, label: 'Japanese' },
     { value: 'ko' as MessageLanguage, label: 'Korean' },
   ];
+  
+  // Export chat history
+  const handleExportChat = () => {
+    if (messages.length <= 1) {
+      toast({
+        title: "Nothing to export",
+        description: "Please have a conversation with PulseBot first",
+        variant: "default",
+      });
+      return;
+    }
+    
+    try {
+      if (exportFormat === 'json') {
+        exportUtils.exportToJson(messages, `pulsebot-chat-${new Date().toISOString().split('T')[0]}`);
+      } else {
+        exportUtils.exportToPdf(messages, "PulseBot Chat History");
+      }
+      
+      toast({
+        title: "Export Successful",
+        description: `Chat history exported as ${exportFormat.toUpperCase()}`,
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Export error:", error);
+      toast({
+        title: "Export Failed",
+        description: "Could not export chat history. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
   
   // Verify the language is valid, or default to English
   useEffect(() => {
@@ -90,6 +125,7 @@ export default function PulseBotChat() {
         clearSearch={clearSearch}
         clearHistory={clearHistory}
         sendMessage={sendMessage}
+        onExportChat={handleExportChat}
       />
 
       {/* Tutorial Overlay */}

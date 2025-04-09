@@ -22,7 +22,18 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
     // Parse request body
-    const { session_id, user_message, bot_reply, language, avatar_state } = await req.json();
+    const { 
+      session_id, 
+      user_message, 
+      bot_reply, 
+      language, 
+      avatar_state,
+      user_agent,
+      platform,
+      response_time_ms,
+      message_tokens,
+      conversation_id
+    } = await req.json();
     
     if (!session_id || !user_message || !bot_reply) {
       return new Response(
@@ -40,6 +51,11 @@ serve(async (req) => {
         bot_reply,
         language: language || 'en',
         avatar_state: avatar_state || 'idle',
+        user_agent: user_agent || req.headers.get('user-agent') || '',
+        platform: platform || 'web',
+        response_time_ms: response_time_ms || null,
+        message_tokens: message_tokens || null,
+        conversation_id: conversation_id || session_id,
         created_at: new Date().toISOString()
       });
     

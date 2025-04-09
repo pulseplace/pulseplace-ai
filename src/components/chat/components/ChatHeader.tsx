@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, Languages, Trash2 } from 'lucide-react';
+import { X, Languages, Trash2, Download, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,6 +9,7 @@ import { BotAvatarState, MessageLanguage } from '../types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { TutorialButton } from '../tutorial/TutorialButton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ChatHeaderProps {
   botAvatarState: BotAvatarState;
@@ -17,6 +18,7 @@ interface ChatHeaderProps {
   handleLanguageChange: (value: MessageLanguage) => void;
   toggleChat: () => void;
   onClearHistory: () => void;
+  onExportChat?: () => void;
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -25,7 +27,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   languages,
   handleLanguageChange,
   toggleChat,
-  onClearHistory
+  onClearHistory,
+  onExportChat
 }) => {
   const isMobile = useIsMobile();
   
@@ -56,7 +59,28 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           </Select>
         )}
         
-        {/* More options dropdown for mobile (language + clear) */}
+        {/* Export button with tooltip */}
+        {!isMobile && onExportChat && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onExportChat}
+                  className="h-8 w-8 rounded-full hover:bg-white/20 text-white"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Export Chat History</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+        
+        {/* More options dropdown for mobile (language + clear + export) */}
         {isMobile && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -75,6 +99,12 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                 </DropdownMenuItem>
               ))}
               <Separator className="my-1" />
+              {onExportChat && (
+                <DropdownMenuItem onClick={onExportChat}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Chat
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={onClearHistory}>
                 <Trash2 className="h-4 w-4 mr-2" />
                 Clear History

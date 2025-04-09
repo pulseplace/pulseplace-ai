@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BotEmoji } from '../BotEmoji';
-import { BotAvatarState, MessageLanguage } from '../types';
+import { BotAvatarState, BotAvatarStateValue, MessageLanguage } from '../types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { TutorialButton } from '../tutorial/TutorialButton';
@@ -32,11 +32,23 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
+  // Get the status value, whether it's a direct string or from an object
+  const getBotStateValue = (): BotAvatarStateValue => {
+    if (typeof botAvatarState === 'string') {
+      return botAvatarState;
+    } else if (botAvatarState && 'status' in botAvatarState) {
+      return botAvatarState.status;
+    }
+    return 'idle';
+  };
+  
+  const botStateValue = getBotStateValue();
+  
   return (
     <div className="flex items-center justify-between px-4 py-3 bg-pulse-gradient text-white rounded-t-lg shrink-0">
       <div className="flex items-center space-x-2">
         <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-          <BotEmoji state={botAvatarState} size="sm" />
+          <BotEmoji state={botStateValue} size="sm" />
         </div>
         <div className="flex flex-col">
           <h3 className="font-semibold">PulseBot AI Assistant</h3>

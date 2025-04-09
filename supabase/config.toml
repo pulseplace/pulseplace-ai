@@ -9,3 +9,6 @@ verify_jwt = true
 
 [functions.ask-pulsebot]
 verify_jwt = false
+
+[functions.mailchimp-webhook]
+verify_jwt = false

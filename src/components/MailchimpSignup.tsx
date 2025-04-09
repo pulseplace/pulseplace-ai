@@ -3,7 +3,13 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface MailchimpSignupProps {
   title?: string;
@@ -13,6 +19,10 @@ interface MailchimpSignupProps {
   listId?: string;
   showPrivacyMessage?: boolean;
   privacyMessage?: string;
+  showGdprCompliance?: boolean;
+  gdprCompliance?: string;
+  showTooltip?: boolean;
+  tooltipContent?: string;
 }
 
 const MailchimpSignup = ({
@@ -21,7 +31,11 @@ const MailchimpSignup = ({
   placeholder = "Your work email",
   className = "",
   showPrivacyMessage = true,
-  privacyMessage = "We respect your privacy. Unsubscribe at any time."
+  privacyMessage = "We respect your privacy. You can unsubscribe at any time with one click.",
+  showGdprCompliance = true,
+  gdprCompliance = "By submitting this form, you agree to receive marketing emails. We'll handle your information in accordance with our Privacy Policy.",
+  showTooltip = true,
+  tooltipContent = "We only send emails that provide value. No spam, ever."
 }: MailchimpSignupProps) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,17 +90,33 @@ const MailchimpSignup = ({
             )}
             
             <div className="flex flex-col sm:flex-row gap-3">
-              <Input 
-                type="email" 
-                name="EMAIL" 
-                id="mce-EMAIL"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={placeholder} 
-                required
-                className="flex-grow"
-                aria-label="Your email address"
-              />
+              <div className="relative flex-grow">
+                <Input 
+                  type="email" 
+                  name="EMAIL" 
+                  id="mce-EMAIL"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={placeholder} 
+                  required
+                  className="flex-grow pr-8"
+                  aria-label="Your email address"
+                />
+                {showTooltip && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-help">
+                          <Info className="h-4 w-4" />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p>{tooltipContent}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
               
               <div className="clear">
                 <Button 
@@ -105,6 +135,13 @@ const MailchimpSignup = ({
             {showPrivacyMessage && (
               <p className="text-xs text-gray-500 mt-2">
                 {privacyMessage}
+              </p>
+            )}
+            
+            {/* GDPR Compliance Message */}
+            {showGdprCompliance && (
+              <p className="text-xs text-gray-500 mt-1">
+                {gdprCompliance}
               </p>
             )}
             

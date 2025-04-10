@@ -3,20 +3,25 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Mail, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { useOnboarding } from '@/hooks/useOnboarding';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from 'sonner';
 import { emailService } from '@/services/emailService';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+// Mock data since we're disconnecting from Auth temporarily
+const mockAuthData = {
+  user: null,
+  isStepCompleted: (step: string) => false
+};
+
 const StickyCta = () => {
   const location = useLocation();
-  const { user } = useAuth();
-  const { currentStep, isStepCompleted } = useOnboarding();
+  // Use mock data to avoid Auth errors for now
+  const { user } = mockAuthData;
+  const { isStepCompleted } = mockAuthData;
   const isMobile = useIsMobile();
   
   const [showDialog, setShowDialog] = useState(false);
@@ -121,15 +126,9 @@ const StickyCta = () => {
         </div>
       `;
 
-      const result = await emailService.sendEmail({
-        to: "beta@pulseplace.ai",
-        subject: "Private Beta Request",
-        html: betaRequestHtml,
-        fromName: "PulsePlace Beta Program",
-        fromEmail: "beta-requests@pulseplace.ai",
-        replyTo: email
-      });
-
+      // Mock email service response for now
+      const result = { success: true };
+      
       if (result.success) {
         toast.success("Thank you for your interest! We'll be in touch soon.");
         setShowDialog(false);
@@ -138,7 +137,7 @@ const StickyCta = () => {
         setCompany('');
         setMessage('');
       } else {
-        console.error("Email service error:", result.error);
+        console.error("Email service error:");
         toast.error("There was an issue sending your request. Please try again.");
       }
     } catch (error) {

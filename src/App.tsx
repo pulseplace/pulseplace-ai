@@ -41,7 +41,7 @@ const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
 // Fix casing issues in imports
 const AiEngine = lazy(() => import('./pages/AiEngine')); 
-const RoiCalculator = lazy(() => import('./pages/RoiCalculator'));
+const ROICalculator = lazy(() => import('./pages/ROICalculator'));
 const Methodology = lazy(() => import('./pages/Methodology'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const TaskAdmin = lazy(() => import('./pages/TaskAdmin'));
@@ -81,7 +81,7 @@ export default function App() {
           <Route path="dashboard-preview" element={<Suspense fallback={<Loading />}><DashboardPreview /></Suspense>} />
           <Route path="book-demo" element={<Suspense fallback={<Loading />}><BookDemo /></Suspense>} />
           <Route path="ai-engine" element={<Suspense fallback={<Loading />}><AiEngine /></Suspense>} />
-          <Route path="roi-calculator" element={<Suspense fallback={<Loading />}><RoiCalculator /></Suspense>} />
+          <Route path="roi-calculator" element={<Suspense fallback={<Loading />}><ROICalculator /></Suspense>} />
           <Route path="methodology" element={<Suspense fallback={<Loading />}><Methodology /></Suspense>} />
           <Route path="pricing" element={<Suspense fallback={<Loading />}><Pricing /></Suspense>} />
           <Route path="task-admin" element={<Suspense fallback={<Loading />}><TaskAdmin /></Suspense>} />

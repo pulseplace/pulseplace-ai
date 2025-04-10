@@ -3,7 +3,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '@/components/navigation';
 import Footer from '@/components/Footer';
-import StickyCta from '@/components/StickyCta';
+import StickyCta from '@/components/sticky-cta';
 
 const Root = () => {
   return (

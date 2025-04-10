@@ -1,5 +1,5 @@
 
-import { Calendar, Cpu } from 'lucide-react';
+import { type Icon } from 'lucide-react';
 
 // Define types for navigation items
 export interface NavItem {

@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Message, MessageLanguage, BotAvatarStateValue, SessionInfo, SearchState } from './types';
 import { useToast } from '@/hooks/use-toast';
@@ -13,7 +14,19 @@ export const usePulseBot = () => {
     isSearching: false,
     results: []
   });
-  const [confetti, setConfetti] = useState({ isActive: false, config: { particleCount: 50, spread: 70, startVelocity: 30, decay: 0.95, gravity: 1, drift: 0, scalar: 1, ticks: 200 } });
+  const [confetti, setConfetti] = useState({ 
+    isActive: false, 
+    config: { 
+      particleCount: 50, 
+      spread: 70, 
+      startVelocity: 30, 
+      decay: 0.95, 
+      gravity: 1, 
+      drift: 0, 
+      scalar: 1, 
+      ticks: 200 
+    } 
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
@@ -114,8 +127,7 @@ export const usePulseBot = () => {
             gravity: 1, 
             drift: 0,
             scalar: 1,
-            ticks: 200,
-            colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
+            ticks: 200
           }
         });
         setTimeout(() => setConfetti({ 

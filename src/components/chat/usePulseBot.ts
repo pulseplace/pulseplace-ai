@@ -104,9 +104,9 @@ export function usePulseBot() {
     onError: handleError
   });
 
-  // Fix the TypeScript error by providing a fixed implementation that uses the correct parameter count
-  const handleMessageSearch = (query: string, messagesArray = messages, additionalParam?: any) => {
-    handleSearch(query, messagesArray);
+  // This version passes the correct arguments to handleSearch
+  const handleMessageSearch = (query: string) => {
+    handleSearch(query, messages);
   };
   
   const hardReset = () => {

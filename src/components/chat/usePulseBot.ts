@@ -1,4 +1,3 @@
-
 import { useSession } from './hooks/useSession';
 import { useChatState } from './hooks/useChatState';
 import { useLanguageManager, cleanupPulseBotState } from './hooks/useLanguageManager';
@@ -104,7 +103,6 @@ export function usePulseBot() {
     onError: handleError
   });
 
-  // Passing all the expected arguments to match the function signature
   const handleMessageSearch = (query: string) => {
     handleSearch(query, messages);
   };

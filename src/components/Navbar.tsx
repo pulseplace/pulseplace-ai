@@ -94,20 +94,18 @@ const Navbar = () => {
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                     {featuresSubItems.map((item, index) => (
                       <li key={index}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to={item.path}
-                            className={cn(
-                              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                              isActive(item.path) ? "bg-pulse-50 text-pulse-600" : ""
-                            )}
-                          >
-                            <div className="text-sm font-medium leading-none">{item.label}</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              {item.description}
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
+                        <Link
+                          to={item.path}
+                          className={cn(
+                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                            isActive(item.path) ? "bg-pulse-50 text-pulse-600" : ""
+                          )}
+                        >
+                          <div className="text-sm font-medium leading-none">{item.label}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {item.description}
+                          </p>
+                        </Link>
                       </li>
                     ))}
                     <li className="col-span-2">

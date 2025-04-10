@@ -4,10 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, Cpu, LineChart, MessageSquare, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
+import MetaTags from '@/components/MetaTags';
 
 const AiEngine = () => {
   return (
     <div className="container mx-auto px-4 py-12">
+      <MetaTags
+        title="AI Engine | PulsePlace.ai"
+        description="Discover how PulsePlace.ai uses advanced AI to measure and improve workplace trust."
+      />
+    
       <h1 className="text-3xl font-bold mb-6">AI Engine</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">

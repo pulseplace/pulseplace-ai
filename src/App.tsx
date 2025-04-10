@@ -40,8 +40,8 @@ const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
 // Using the actual file names that exist in the filesystem
-const AIEngine = lazy(() => import('./pages/AIEngine'));
-const ROICalculator = lazy(() => import('./pages/ROICalculator'));
+const AiEngine = lazy(() => import('./pages/AiEngine'));
+const RoiCalculator = lazy(() => import('./pages/RoiCalculator'));
 const Methodology = lazy(() => import('./pages/Methodology'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const TaskAdmin = lazy(() => import('./pages/TaskAdmin'));

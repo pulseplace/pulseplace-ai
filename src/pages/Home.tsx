@@ -42,7 +42,7 @@ const Home = () => {
       <Hero />
       
       {/* Brand Pitch Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white" id="mission">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div

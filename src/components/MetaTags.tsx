@@ -1,55 +1,64 @@
 
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 interface MetaTagsProps {
   title?: string;
   description?: string;
-  imageUrl?: string;
-  url?: string;
   keywords?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  ogUrl?: string;
+  twitterCard?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+  canonicalUrl?: string;
 }
 
 const MetaTags: React.FC<MetaTagsProps> = ({
-  title = "PulsePlace.ai - Make Workplaces Worth Working In",
-  description = "PulsePlace.ai is an AI-powered certification engine for workplace culture and people-first organizations.",
-  imageUrl = "/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png",
-  url = "https://pulseplace.ai",
-  keywords = "workplace culture, certification, AI assistant, PulseScore, employee engagement"
+  title = 'PulsePlace.ai | Measuring Trust Through Data',
+  description = 'Quantify, track, and improve workplace trust with AI. Get started with PulsePlace.ai today.',
+  keywords = 'workplace trust, employee trust, trust metrics, AI for HR, workplace analytics',
+  ogTitle,
+  ogDescription,
+  ogImage = '/assets/images/og-image.jpg',
+  ogUrl,
+  twitterCard = 'summary_large_image',
+  twitterTitle,
+  twitterDescription,
+  twitterImage,
+  canonicalUrl,
 }) => {
+  const finalOgTitle = ogTitle || title;
+  const finalOgDescription = ogDescription || description;
+  const finalTwitterTitle = twitterTitle || finalOgTitle;
+  const finalTwitterDescription = twitterDescription || finalOgDescription;
+  const finalTwitterImage = twitterImage || ogImage;
+
   return (
     <Helmet>
+      {/* Basic Meta Tags */}
       <title>{title}</title>
       <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
       
-      {keywords && <meta name="keywords" content={keywords} />}
-      
-      {/* Open Graph / Facebook */}
+      {/* Open Graph Meta Tags */}
+      <meta property="og:title" content={finalOgTitle} />
+      <meta property="og:description" content={finalOgDescription} />
+      <meta property="og:image" content={ogImage} />
+      {ogUrl && <meta property="og:url" content={ogUrl} />}
       <meta property="og:type" content="website" />
-      <meta property="og:url" content={url} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={imageUrl} />
       
-      {/* Twitter */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={url} />
-      <meta property="twitter:title" content={title} />
-      <meta property="twitter:description" content={description} />
-      <meta property="twitter:image" content={imageUrl} />
+      {/* Twitter Meta Tags */}
+      <meta name="twitter:card" content={twitterCard} />
+      <meta name="twitter:title" content={finalTwitterTitle} />
+      <meta name="twitter:description" content={finalTwitterDescription} />
+      <meta name="twitter:image" content={finalTwitterImage} />
       
-      {/* Favicon */}
-      <link rel="icon" href="/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png" type="image/png" />
-      <link rel="apple-touch-icon" href="/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png" />
-      
-      {/* Mobile viewport optimization */}
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-      <meta name="theme-color" content="#8B5CF6" />
-      
-      {/* Mobile app capability hints */}
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-      <meta name="format-detection" content="telephone=no" />
+      {/* Canonical URL */}
+      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     </Helmet>
   );
 };

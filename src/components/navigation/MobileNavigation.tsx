@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Calendar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { navItems, featuresSubItems, isActive } from './NavigationConfig';
 
 interface MobileNavigationProps {
@@ -13,6 +14,8 @@ interface MobileNavigationProps {
 }
 
 const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigationProps) => {
+  const [openAccordion, setOpenAccordion] = useState<string | null>("features");
+
   return (
     <>
       {/* Mobile Navigation Toggle */}
@@ -38,21 +41,30 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
             className="md:hidden bg-white w-full py-4 px-4 shadow-lg max-h-[80vh] overflow-y-auto absolute top-full left-0 right-0 z-50"
           >
             <div className="flex flex-col space-y-4">
-              <div className="border-b pb-2 mb-2">
-                <p className="font-medium text-sm text-gray-500 mb-1">Features</p>
-                {featuresSubItems.map((item, index) => (
-                  <Link 
-                    key={index}
-                    to={item.path}
-                    className="block py-2 pl-3 text-gray-700 hover:text-pulse-600"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
+              <Accordion type="single" collapsible value={openAccordion || undefined} onValueChange={(value) => setOpenAccordion(value)}>
+                <AccordionItem value="features" className="border-b pb-2">
+                  <AccordionTrigger className="font-medium text-gray-700 hover:text-pulse-600 py-2">
+                    Features
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-2 pl-3">
+                      {featuresSubItems.map((item, index) => (
+                        <Link 
+                          key={index}
+                          to={item.path}
+                          className="block py-2 text-gray-700 hover:text-pulse-600"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <div className="font-medium">{item.label}</div>
+                          <p className="text-sm text-gray-500">{item.description}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
               
-              {navItems.map((item, index) => (
+              {navItems.slice(1).map((item, index) => (
                 <Link 
                   key={index}
                   to={item.path}
@@ -68,7 +80,7 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
               ))}
 
               <Link to="/demo" onClick={() => setIsMenuOpen(false)}>
-                <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full flex items-center justify-center gap-2">
+                <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full flex items-center justify-center gap-2 mt-2">
                   <Calendar className="h-4 w-4" />
                   Book a Demo
                 </Button>

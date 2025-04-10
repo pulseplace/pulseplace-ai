@@ -26,9 +26,15 @@ export const featuresSubItems: SubNavItem[] = [
   { label: 'AI Analytics', description: 'Transform data into actionable insights', path: '/features#ai-analytics' },
   { label: 'PulseBot', description: 'AI assistant for engagement', path: '/pulsebot' },
   { label: 'Dashboard', description: 'Real-time culture metrics', path: '/dashboard-preview' },
+  { label: 'ROI Calculator', description: 'See the business impact', path: '/roi-calculator' },
 ];
 
 // Helper to check if a path is active
 export const isActive = (location: { pathname: string }, path: string): boolean => {
+  if (path.includes('#')) {
+    // For hash links, just check the main path
+    const mainPath = path.split('#')[0];
+    return location.pathname === mainPath || location.pathname.startsWith(`${mainPath}/`);
+  }
   return location.pathname === path || location.pathname.startsWith(`${path}/`);
 };

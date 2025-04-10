@@ -9,7 +9,7 @@ import { Message, MessageLanguage, BotAvatarState, BotAvatarStateValue } from '.
 import { useToast } from '@/hooks/use-toast';
 import { TutorialProvider } from './tutorial/TutorialContext';
 import { TutorialOverlay } from './tutorial/TutorialOverlay';
-import { exportUtils } from './utils/exportUtils';
+import { exportUtils } from '../chat/utils/exportUtils';
 
 export default function PulseBotChat() {
   const {
@@ -51,8 +51,9 @@ export default function PulseBotChat() {
   const getBotStateForButton = (): BotAvatarStateValue => {
     if (typeof botAvatarState === 'string') {
       return botAvatarState as BotAvatarStateValue;
-    } else if (botAvatarState && typeof botAvatarState === 'object' && 'status' in botAvatarState) {
-      return botAvatarState.status;
+    } else if (botAvatarState && typeof botAvatarState === 'object') {
+      // Safer check that doesn't rely on specific property
+      return 'idle'; // Default to idle if the object structure is not as expected
     }
     return 'idle';
   };

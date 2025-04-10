@@ -1,3 +1,4 @@
+
 import React, { Suspense, lazy } from 'react';
 import {
   createBrowserRouter,
@@ -38,9 +39,9 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
-// Fix casing to match actual file names
-const AIEngine = lazy(() => import('./pages/AIEngine')); 
-const ROICalculator = lazy(() => import('./pages/ROICalculator')); 
+// Fix casing in imports to match the actual file names
+const AIEngine = lazy(() => import('./pages/AiEngine')); 
+const ROICalculator = lazy(() => import('./pages/RoiCalculator')); 
 const Methodology = lazy(() => import('./pages/Methodology'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const TaskAdmin = lazy(() => import('./pages/TaskAdmin'));

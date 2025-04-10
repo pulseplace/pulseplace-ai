@@ -107,7 +107,7 @@ export function usePulseBot() {
   const handleFeedback = useFeedbackHandler(messages, setMessages);
   
   // Setup message sender
-  const { sendMessage, isLoading: isSending } = useMessageSender({
+  const { sendMessage, isLoading } = useMessageSender({
     onMessageSent: (message: Message) => {
       // Fix for the TypeScript error - create a new array directly instead of using a callback
       const newMessages = [...messages, message];

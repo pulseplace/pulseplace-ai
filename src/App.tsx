@@ -39,7 +39,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
-// Using the actual file names that exist in the filesystem
+// Import with the exact case matching the actual file names
 const AiEngine = lazy(() => import('./pages/AiEngine'));
 const RoiCalculator = lazy(() => import('./pages/RoiCalculator'));
 const Methodology = lazy(() => import('./pages/Methodology'));

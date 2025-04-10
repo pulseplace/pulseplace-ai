@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calendar, Cpu, Search, ChevronDown } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Calendar, Cpu, ChevronDown } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -20,7 +20,6 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Memoize the scroll handler to avoid recreating on each render
   const handleScroll = useCallback(() => {
@@ -64,20 +63,19 @@ const Navbar = () => {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
-  // Group nav items for easier management as app grows
+  // Primary navigation items
   const navItems = [
-    { type: 'link', label: 'Features', path: '/features' },
-    { type: 'link', label: 'How It Works', path: '/how-it-works' },
-    { type: 'link', label: 'Certification', path: '/certification' },
-    { type: 'link', label: 'Insights', path: '/insights' },
-    { type: 'link', label: 'About Us', path: '/about-us' },
-    { type: 'link', label: 'Contact', path: '/contact' },
+    { label: 'Features', path: '/features' },
+    { label: 'How It Works', path: '/how-it-works' },
+    { label: 'Certification', path: '/certification' },
+    { label: 'Insights', path: '/insights' },
+    { label: 'Contact', path: '/contact' },
   ];
 
   const featuresSubItems = [
+    { label: 'Pulse Surveys', description: 'Collect real-time employee feedback', path: '/features#surveys' },
     { label: 'AI Analytics', description: 'Transform data into actionable insights', path: '/features#ai-analytics' },
     { label: 'PulseBot', description: 'AI assistant for engagement', path: '/pulsebot' },
-    { label: 'Certification Engine', description: 'Validate workplace culture', path: '/certification' },
     { label: 'Dashboard', description: 'Real-time culture metrics', path: '/dashboard-preview' },
   ];
 
@@ -137,35 +135,23 @@ const Navbar = () => {
             </NavigationMenuList>
           </NavigationMenu>
           
+          {/* Primary navigation items */}
           {navItems.slice(1).map((item, index) => (
-            item.type === 'hash-link' ? (
-              <HashLink 
-                key={index}
-                to={item.path} 
-                scroll={scrollWithOffset}
-                className={`transition-colors ${
-                  location.pathname === '/' && item.path.startsWith('/#') 
-                    ? 'text-pulse-600 hover:text-pulse-700' 
-                    : 'text-gray-700 hover:text-pulse-600'
-                }`}
-              >
-                {item.label}
-              </HashLink>
-            ) : (
-              <Link 
-                key={index}
-                to={item.path}
-                className={`transition-colors ${
-                  isActive(item.path) 
-                    ? 'text-pulse-600 hover:text-pulse-700' 
-                    : 'text-gray-700 hover:text-pulse-600'
-                }`}
-              >
-                {item.label}
-              </Link>
-            )
+            <Link 
+              key={index}
+              to={item.path}
+              className={`transition-colors ${
+                isActive(item.path) 
+                  ? 'text-pulse-600 hover:text-pulse-700' 
+                  : 'text-gray-700 hover:text-pulse-600'
+              }`}
+            >
+              {item.label}
+            </Link>
           ))}
-          <Link to="/book-demo">
+
+          {/* Call to action button */}
+          <Link to="/demo">
             <Button className="bg-pulse-gradient hover:opacity-90 transition-all flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               Book a Demo
@@ -211,37 +197,22 @@ const Navbar = () => {
                 ))}
               </div>
               
-              {navItems.slice(1).map((item, index) => (
-                item.type === 'hash-link' ? (
-                  <HashLink 
-                    key={index}
-                    to={item.path} 
-                    scroll={scrollWithOffset}
-                    className={`transition-colors py-2 ${
-                      location.pathname === '/' && item.path.startsWith('/#') 
-                        ? 'text-pulse-600 hover:text-pulse-700' 
-                        : 'text-gray-700 hover:text-pulse-600'
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.label}
-                  </HashLink>
-                ) : (
-                  <Link 
-                    key={index}
-                    to={item.path}
-                    className={`transition-colors py-2 ${
-                      isActive(item.path) 
-                        ? 'text-pulse-600 hover:text-pulse-700' 
-                        : 'text-gray-700 hover:text-pulse-600'
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                )
+              {navItems.map((item, index) => (
+                <Link 
+                  key={index}
+                  to={item.path}
+                  className={`transition-colors py-2 ${
+                    isActive(item.path) 
+                      ? 'text-pulse-600 hover:text-pulse-700' 
+                      : 'text-gray-700 hover:text-pulse-600'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
               ))}
-              <Link to="/book-demo" onClick={() => setIsMenuOpen(false)}>
+
+              <Link to="/demo" onClick={() => setIsMenuOpen(false)}>
                 <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full flex items-center justify-center gap-2">
                   <Calendar className="h-4 w-4" />
                   Book a Demo

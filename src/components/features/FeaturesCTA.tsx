@@ -1,35 +1,56 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
 
-const FeaturesCTA: React.FC = () => {
+const FeaturesCTA = () => {
   return (
-    <section className="py-16 bg-pulse-gradient text-white">
-      <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold mb-6">Ready to Experience PulsePlace?</h2>
-        <p className="text-xl mb-8 max-w-2xl mx-auto">
-          Join our beta program today and be among the first to transform your workplace culture with AI.
-        </p>
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Link to="/join-beta">
-            <Button className="bg-white text-pulse-600 hover:bg-gray-100 transition-colors px-6">
-              Join the Beta
-            </Button>
-          </Link>
-          <Link to="/contact">
-            <Button variant="outline" className="border-white text-white hover:bg-white/20 transition-colors px-6">
-              Contact Sales
-            </Button>
-          </Link>
-        </div>
-        
-        <div className="mt-12 max-w-lg mx-auto">
-          <p className="text-sm text-white/80 mb-2">Special beta program for Tayana users</p>
-          <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-            <p className="font-medium">Use code <span className="font-bold">TAYANA25</span> for priority access</p>
+    <section className="py-20 bg-gradient-to-b from-pulse-50 to-white">
+      <div className="container mx-auto px-4">
+        <motion.div 
+          className="max-w-4xl mx-auto text-center"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to Transform Your Workplace Culture?
+          </h2>
+          <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
+            Experience how PulsePlace.ai's advanced AI technology can help you measure, improve, and showcase your authentic workplace culture.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/join-beta">
+              <Button size="lg" className="bg-pulse-gradient hover:opacity-90">
+                Join Beta Program <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/book-demo">
+              <Button size="lg" variant="outline">
+                Book a Demo
+              </Button>
+            </Link>
           </div>
-        </div>
+          
+          <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow">
+              <span className="block text-2xl font-bold text-pulse-600 mb-1">4x</span>
+              <p className="text-gray-600">Faster feedback collection compared to traditional surveys</p>
+            </div>
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow">
+              <span className="block text-2xl font-bold text-pulse-600 mb-1">87%</span>
+              <p className="text-gray-600">Of employees prefer pulse surveys over annual reviews</p>
+            </div>
+            <div className="p-6 bg-white rounded-xl shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow">
+              <span className="block text-2xl font-bold text-pulse-600 mb-1">23%</span>
+              <p className="text-gray-600">Average improvement in retention after certification</p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

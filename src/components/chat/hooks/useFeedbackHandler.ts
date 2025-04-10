@@ -3,7 +3,11 @@ import { useCallback } from 'react';
 import { Message } from '../types';
 import { logFeedback } from '../services';
 
-export const useFeedbackHandler = (messages: Message[], setMessages: (messages: Message[]) => void, sessionId: string) => {
+export const useFeedbackHandler = (
+  messages: Message[], 
+  setMessages: (messages: Message[]) => void, 
+  sessionId: string
+) => {
   // Handle feedback with support for different parameter formats
   const handleFeedback = useCallback(
     async (messageId: string, messageOrFeedback: Message | 'positive' | 'negative', feedbackType?: 'up' | 'down') => {

@@ -1,3 +1,4 @@
+
 import { useSession } from './hooks/useSession';
 import { useChatState } from './hooks/useChatState';
 import { useLanguageManager, cleanupPulseBotState } from './hooks/useLanguageManager';
@@ -6,10 +7,12 @@ import { useConfetti } from './hooks/useConfetti';
 import { useFeedbackHandler } from './hooks/useFeedbackHandler';
 import { useMessageSender } from './hooks/useMessageSender';
 import { useSearch } from './hooks/useSearch';
+import { useAvatarState } from './hooks/useAvatarState';
 import { Message, MessageLanguage, BotAvatarStateValue } from './types';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 export function usePulseBot() {
+  // Core hooks
   const { sessionInfo } = useSession();
   const { 
     messages, 
@@ -19,69 +22,35 @@ export function usePulseBot() {
     clearMessages: clearHistory
   } = useChatState();
   
-  const [loading, setLoading] = useState(false);
-  const [botAvatarState, setBotAvatarState] = useState<BotAvatarStateValue>('idle');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  
   const { language, handleLanguageChange } = useLanguageManager();
   const { open, search, toggleChat, handleSearch, clearSearch } = useChatUI();
   const { confetti, triggerConfetti } = useConfetti();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const [stateTransitionTimer, setStateTransitionTimer] = useState<NodeJS.Timeout | null>(null);
+  // Bot avatar state management
+  const { 
+    loading,
+    botAvatarState, 
+    updateBotAvatarState 
+  } = useAvatarState(messages);
   
+  // Scroll to bottom functionality
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
   
-  const updateBotAvatarState = (newState: BotAvatarStateValue, duration?: number) => {
-    if (stateTransitionTimer) {
-      clearTimeout(stateTransitionTimer);
-      setStateTransitionTimer(null);
-    }
-    
-    setBotAvatarState(newState);
-    
-    if (duration) {
-      const timer = setTimeout(() => {
-        setBotAvatarState('idle');
-        setStateTransitionTimer(null);
-      }, duration);
-      
-      setStateTransitionTimer(timer);
-    }
-  };
-  
-  useEffect(() => {
-    if (loading) {
-      updateBotAvatarState('typing');
-    } else {
-      if (messages.length > 0) {
-        updateBotAvatarState('happy', 3000);
-      }
-    }
-  }, [loading, messages.length]);
-  
-  useEffect(() => {
-    return () => {
-      if (stateTransitionTimer) {
-        clearTimeout(stateTransitionTimer);
-      }
-      
-      if (document.visibilityState === 'hidden') {
-        setLoading(false);
-      }
-    };
-  }, [stateTransitionTimer]);
-  
+  // Error handling
   const handleError = (error: Error) => {
     console.error('Error in PulseBot:', error);
     updateBotAvatarState('idle');
   };
   
-  const handleFeedback = useFeedbackHandler(messages, setMessages);
+  // Feedback handling
+  const handleFeedback = useFeedbackHandler(messages, setMessages, sessionInfo.id);
   
+  // Message sending
   const { sendMessage, isLoading, inputValue, setInputValue } = useMessageSender({
     onMessageSent: (message: Message) => {
       const newMessages = [...messages, message];
@@ -99,18 +68,29 @@ export function usePulseBot() {
         triggerConfetti();
       }
     },
-    onLoading: setLoading,
+    onLoading: (isLoading) => updateBotAvatarState(isLoading ? 'typing' : 'idle'),
     onError: handleError
   });
 
+  // Search handling
   const handleMessageSearch = (query: string) => {
     handleSearch(query, messages);
   };
   
+  // Complete reset functionality
   const hardReset = () => {
     clearHistory();
     cleanupPulseBotState();
   };
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      if (document.visibilityState === 'hidden') {
+        updateBotAvatarState('idle');
+      }
+    };
+  }, []);
 
   return {
     open,

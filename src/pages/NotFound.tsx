@@ -1,74 +1,53 @@
 
-import React from "react";
-import { useLocation, Link } from "react-router-dom";
-import { useEffect } from "react";
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Home, HelpCircle } from "lucide-react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Home, ArrowLeft, Search } from 'lucide-react';
 import MetaTags from '@/components/MetaTags';
 
 const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
-
   return (
-    <div className="min-h-screen flex flex-col">
-      <MetaTags 
-        title="Page Not Found | PulsePlace.ai" 
-        description="The page you're looking for couldn't be found." 
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      <MetaTags
+        title="Page Not Found | PulsePlace.ai"
+        description="The page you are looking for doesn't exist or has been moved."
       />
-      <Navbar />
-      <div className="flex-grow flex items-center justify-center bg-gray-50">
-        <div className="text-center max-w-lg px-6">
-          <div className="mb-8">
-            <span className="inline-block text-7xl font-bold bg-clip-text text-transparent bg-pulse-gradient">404</span>
-          </div>
-          <h1 className="text-2xl font-bold mb-4">Page Not Found</h1>
-          <p className="text-gray-600 mb-8">
-            Sorry, we couldn't find the page you're looking for. It might have been moved or doesn't exist.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button 
-              className="bg-pulse-gradient hover:opacity-90 w-full sm:w-auto"
-              asChild
-            >
-              <Link to="/">
-                <Home className="mr-2 h-4 w-4" />
-                Back to Home
-              </Link>
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full sm:w-auto"
-              asChild
-            >
-              <Link to="/join-beta">
-                <HelpCircle className="mr-2 h-4 w-4" />
-                Join Our Beta
-              </Link>
-            </Button>
-          </div>
+      
+      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg text-center">
+        <div className="mb-6">
+          <span className="inline-block h-24 w-24 rounded-full bg-gray-100 p-4">
+            <Search className="h-full w-full text-gray-400" />
+          </span>
+        </div>
+        
+        <h1 className="text-4xl font-bold mb-2">404</h1>
+        <h2 className="text-2xl font-semibold mb-4">Page Not Found</h2>
+        
+        <p className="text-gray-600 mb-8">
+          The page you're looking for doesn't exist or has been moved.
+          Let's get you back on track.
+        </p>
+        
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button variant="outline" asChild>
+            <Link to="/" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Link>
+          </Button>
           
-          <div className="mt-12 text-sm text-gray-500">
-            <p>Looking for something specific? Try checking out:</p>
-            <div className="mt-2 flex flex-wrap gap-2 justify-center">
-              <Link to="/dashboard" className="text-pulse-600 hover:underline">Dashboard</Link>
-              <span className="text-gray-300">•</span>
-              <Link to="/community" className="text-pulse-600 hover:underline">Community</Link>
-              <span className="text-gray-300">•</span>
-              <Link to="/resources" className="text-pulse-600 hover:underline">Resources</Link>
-            </div>
-          </div>
+          <Button className="bg-pulse-gradient" asChild>
+            <Link to="/" className="flex items-center gap-2">
+              <Home className="h-4 w-4" />
+              Back to Home
+            </Link>
+          </Button>
         </div>
       </div>
-      <Footer />
+      
+      <div className="mt-8 text-gray-500 text-sm">
+        <p>Looking for something specific? <Link to="/contact" className="text-pulse-600 hover:underline">Contact our team</Link></p>
+      </div>
     </div>
   );
 };

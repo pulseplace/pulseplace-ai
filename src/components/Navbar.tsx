@@ -3,13 +3,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, Calendar, Cpu, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { HashLink } from 'react-router-hash-link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
@@ -48,12 +46,6 @@ const Navbar = () => {
     setIsMenuOpen(false);
   }, [location]);
 
-  const scrollWithOffset = (el: HTMLElement) => {
-    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
-    const yOffset = -80; // Adjust this value based on your fixed header height
-    window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
-  };
-
   const navClasses = `w-full py-4 fixed top-0 z-50 transition-all duration-300 ${
     scrolled ? 'bg-white/95 backdrop-blur-sm shadow-sm' : 'bg-transparent'
   }`;
@@ -63,7 +55,7 @@ const Navbar = () => {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
-  // Primary navigation items
+  // Primary navigation items - Updated according to your wireframe
   const navItems = [
     { label: 'Features', path: '/features' },
     { label: 'How It Works', path: '/how-it-works' },

@@ -39,7 +39,7 @@ const Footer = () => {
             </div>
           </div>
           
-          {/* Quick Links */}
+          {/* Quick Links - Updated per your wireframe plan */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
@@ -75,11 +75,6 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/blog" className="text-gray-300 hover:text-white transition-colors">
-                  Blog
-                </Link>
-              </li>
               <li>
                 <Link to="/resources" className="text-gray-300 hover:text-white transition-colors">
                   Resources

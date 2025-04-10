@@ -28,7 +28,11 @@ export function usePulseBot() {
   ]);
   const [botAvatarState, setBotAvatarState] = useState<BotAvatarState>('idle');
   const [language, setLanguage] = useState<MessageLanguage>('en');
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState({
+    query: '',
+    isSearching: false,
+    results: [] as Message[]
+  });
   const [confetti, setConfetti] = useState<{ isActive: boolean; config: ConfettiConfig }>({
     isActive: false,
     config: defaultConfetti
@@ -193,12 +197,34 @@ export function usePulseBot() {
     setOpen(prev => !prev);
   }, []);
   
-  const handleSearch = useCallback((term: string) => {
-    setSearch(term);
-  }, []);
+  const handleSearch = useCallback((term: string, messagesArray = messages) => {
+    if (!term.trim()) {
+      setSearch({
+        query: '',
+        isSearching: false,
+        results: []
+      });
+      return;
+    }
+    
+    const lowerCaseTerm = term.toLowerCase();
+    const filteredMessages = messagesArray.filter(
+      message => message.content.toLowerCase().includes(lowerCaseTerm)
+    );
+    
+    setSearch({
+      query: term,
+      isSearching: true,
+      results: filteredMessages
+    });
+  }, [messages]);
   
   const clearSearch = useCallback(() => {
-    setSearch('');
+    setSearch({
+      query: '',
+      isSearching: false,
+      results: []
+    });
   }, []);
   
   const clearHistory = useCallback(() => {
@@ -232,6 +258,7 @@ export function usePulseBot() {
     clearSearch,
     clearHistory,
     confetti,
-    sessionInfo
+    sessionInfo,
+    triggerConfetti: () => setConfetti(prev => ({ ...prev, isActive: true }))
   };
 }

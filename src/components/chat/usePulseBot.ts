@@ -104,9 +104,9 @@ export function usePulseBot() {
     onError: handleError
   });
 
-  // Fix the function to match the expected parameter count by passing a dummy third parameter
+  // Adjust the handleMessageSearch function to match expected parameter signature
   const handleMessageSearch = (query: string) => {
-    handleSearch(query, messages, null);
+    handleSearch(query, messages);
   };
   
   const hardReset = () => {

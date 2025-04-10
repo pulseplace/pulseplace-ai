@@ -104,7 +104,7 @@ export function usePulseBot() {
     onError: handleError
   });
 
-  // Adjust the handleMessageSearch function to match expected parameter signature
+  // Passing all the expected arguments to match the function signature
   const handleMessageSearch = (query: string) => {
     handleSearch(query, messages);
   };

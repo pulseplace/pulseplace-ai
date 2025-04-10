@@ -39,9 +39,9 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
-// Import with the exact filename as it exists in the filesystem
-const AiEngine = lazy(() => import('./pages/AiEngine')); 
-const RoiCalculator = lazy(() => import('./pages/RoiCalculator')); 
+// Using the exact filenames as they exist in the filesystem
+const AIEngine = lazy(() => import('./pages/AIEngine')); 
+const ROICalculator = lazy(() => import('./pages/ROICalculator')); 
 const Methodology = lazy(() => import('./pages/Methodology'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const TaskAdmin = lazy(() => import('./pages/TaskAdmin'));
@@ -166,11 +166,11 @@ const router = createBrowserRouter([
       },
       {
         path: "ai-engine",
-        element: <Suspense fallback={<Loading />}><AiEngine /></Suspense>,
+        element: <Suspense fallback={<Loading />}><AIEngine /></Suspense>,
       },
       {
         path: "roi-calculator",
-        element: <Suspense fallback={<Loading />}><RoiCalculator /></Suspense>,
+        element: <Suspense fallback={<Loading />}><ROICalculator /></Suspense>,
       },
       {
         path: "methodology",

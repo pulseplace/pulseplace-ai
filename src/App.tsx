@@ -39,9 +39,9 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Features = lazy(() => import('./pages/Features'));
 const DashboardPreview = lazy(() => import('./pages/DashboardPreview'));
 const BookDemo = lazy(() => import('./pages/BookDemo'));
-// Import with the exact case matching the actual file names
-const AiEngine = lazy(() => import('./pages/AiEngine'));
-const RoiCalculator = lazy(() => import('./pages/RoiCalculator'));
+// Fixing casing to match actual file names
+const AiEngine = lazy(() => import('./pages/AIEngine'));
+const RoiCalculator = lazy(() => import('./pages/ROICalculator'));
 const Methodology = lazy(() => import('./pages/Methodology'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const TaskAdmin = lazy(() => import('./pages/TaskAdmin'));

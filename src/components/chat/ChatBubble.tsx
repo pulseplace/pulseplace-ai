@@ -9,7 +9,7 @@ export interface ChatBubbleProps {
   message: Message;
   handleFeedback: (messageId: string, feedback: 'positive' | 'negative') => void;
   searchQuery?: string;
-  children?: React.ReactNode; // Add children prop
+  children?: React.ReactNode;
 }
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({
@@ -23,7 +23,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`flex ${isUser ? 'flex-row-reverse' : 'flex-row'} gap-2 max-w-[85%]`}>
-        {!isUser && <BotEmoji state="idle" />}
+        {!isUser && <BotEmoji state="neutral" />}
 
         <div 
           className={`p-3 rounded-lg ${

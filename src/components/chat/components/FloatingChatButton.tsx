@@ -21,8 +21,8 @@ export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({
   const isMobile = useIsMobile();
   
   // Additional validation for bot state
-  const validBotState = ['idle', 'thinking', 'typing', 'happy'].includes(botState) 
-    ? botState 
+  const validBotState: BotAvatarStateValue = ['idle', 'thinking', 'typing', 'happy', 'excited', 'confused', 'sad', 'neutral'].includes(botState as BotAvatarStateValue) 
+    ? botState as BotAvatarStateValue
     : 'idle';
   
   // Use responsive positioning based on device type
@@ -42,7 +42,7 @@ export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({
   const buttonSizeClass = isMobile ? sizeClasses.mobile : sizeClasses.desktop;
   
   // Add pulsing animation for better visibility when bot is in specific states
-  const shouldPulse = !open && (botState === 'happy' || botState === 'typing');
+  const shouldPulse = !open && (validBotState === 'happy' || validBotState === 'typing');
   const pulseAnimation = shouldPulse ? 'animate-pulse' : '';
   
   return (

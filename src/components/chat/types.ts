@@ -1,9 +1,11 @@
 
 export interface Message {
   id: string;
-  sender: 'user' | 'bot';
-  text: string;
-  timestamp: Date;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: string | Date;
+  avatarState?: BotAvatarStateValue;
+  feedback?: 'positive' | 'negative';
   language?: MessageLanguage;
   liked?: boolean;
   disliked?: boolean;
@@ -11,14 +13,46 @@ export interface Message {
 
 export type MessageLanguage = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ru' | 'zh' | 'ja' | 'ko' | 'ar' | 'hi' | 'other';
 
-export type BotAvatarStateValue = 'neutral' | 'happy' | 'thinking' | 'excited' | 'confused' | 'sad';
+export type MessageFeedback = 'positive' | 'negative' | null;
+
+export type BotAvatarStateValue = 'idle' | 'thinking' | 'typing' | 'happy' | 'excited' | 'confused' | 'sad' | 'neutral';
+
+// Can be either a string representing the state or an object with additional properties
+export type BotAvatarState = BotAvatarStateValue | { 
+  status: BotAvatarStateValue; 
+  animated?: boolean;
+  duration?: number;
+};
 
 export interface SessionInfo {
+  id?: string;
   startTime: Date;
   language: MessageLanguage;
   messageCount: number;
   userMessageCount: number;
   botMessageCount: number;
+  userAgent?: string;
+  createdAt?: Date;
+}
+
+export interface SearchState {
+  query: string;
+  isSearching: boolean;
+  results: Message[];
+}
+
+export interface ConfettiConfig {
+  particleCount: number;
+  spread: number;
+  startVelocity?: number;
+  decay?: number;
+  gravity?: number;
+  drift?: number;
+  scalar?: number;
+  origin?: {
+    x?: number;
+    y?: number;
+  };
 }
 
 export interface PulseBotAnalytics {
@@ -57,6 +91,11 @@ export interface PulseBotAnalytics {
     count: number;
     percentage: number;
   }[];
+  topLanguages?: {
+    language: string;
+    count: number;
+    percentage: number;
+  }[];
 }
 
 export interface PulseBotConfig {
@@ -75,3 +114,26 @@ export interface PulseBotConfig {
     fontFamily: string;
   };
 }
+
+export interface PulseBotLog {
+  id: string;
+  sessionId: string;
+  userMessage: string;
+  botResponse: string;
+  timestamp: string;
+  language: string;
+  avatarState: BotAvatarStateValue;
+}
+
+export interface AnalyticsFilters {
+  dateFrom?: Date;
+  dateTo?: Date;
+  language?: string;
+  feedbackType?: 'positive' | 'negative' | 'all';
+  avatarState?: BotAvatarStateValue;
+}
+
+export type DateRangeFilter = {
+  from: Date;
+  to: Date;
+};

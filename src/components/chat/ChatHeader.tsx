@@ -25,11 +25,11 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   // Get the status value, whether it's a direct string or from an object
   const getBotStateValue = (): BotAvatarStateValue => {
     if (typeof botAvatarState === 'string') {
-      return botAvatarState;
+      return botAvatarState as BotAvatarStateValue;
     } else if (botAvatarState && 'status' in botAvatarState) {
       return botAvatarState.status;
     }
-    return 'idle';
+    return 'idle' as BotAvatarStateValue;
   };
   
   const botStateValue = getBotStateValue();
@@ -41,7 +41,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           className={cn(
             "w-8 h-8 rounded-full flex items-center justify-center",
             botStateValue === 'idle' ? "bg-gray-600" : 
-            botStateValue === 'thinking' || botStateValue === 'typing' ? "bg-yellow-500" : 
+            (botStateValue === 'thinking' || botStateValue === 'typing') ? "bg-yellow-500" : 
             "bg-green-500"
           )}
         >

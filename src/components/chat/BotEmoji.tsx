@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { BotAvatarState, BotAvatarStateValue } from './types';
+import { BotAvatarStateValue } from './types';
 
 interface BotEmojiProps {
   state: BotAvatarStateValue;
@@ -44,6 +44,12 @@ export const BotEmoji: React.FC<BotEmojiProps> = ({
         return '😊'; // Happy/Thanking
       case 'confused':
         return '❓'; // Confused
+      case 'excited':
+        return '🎉'; // Excited
+      case 'sad':
+        return '😔'; // Sad
+      case 'neutral':
+        return '😐'; // Neutral
       default:
         return '🤖'; // Default fallback
     }

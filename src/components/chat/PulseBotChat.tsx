@@ -50,8 +50,8 @@ export default function PulseBotChat() {
   // Get the appropriate state for the FloatingChatButton
   const getBotStateForButton = (): BotAvatarStateValue => {
     if (typeof botAvatarState === 'string') {
-      return botAvatarState;
-    } else if (botAvatarState && 'status' in botAvatarState) {
+      return botAvatarState as BotAvatarStateValue;
+    } else if (botAvatarState && typeof botAvatarState === 'object' && 'status' in botAvatarState) {
       return botAvatarState.status;
     }
     return 'idle';

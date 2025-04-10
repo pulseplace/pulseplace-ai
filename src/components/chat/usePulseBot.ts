@@ -1,6 +1,5 @@
-
 import { useSession } from './hooks/useSession';
-import { useMessageManagement } from './hooks/useMessageManagement';
+import { useChatState } from './hooks/useChatState';
 import { useLanguageManager, cleanupPulseBotState } from './hooks/useLanguageManager';
 import { useChatUI } from './hooks/useChatUI';
 import { useConfetti } from './hooks/useConfetti';
@@ -8,7 +7,7 @@ import { useFeedbackHandler } from './hooks/useFeedbackHandler';
 import { useMessageSender } from './hooks/useMessageSender';
 import { useSearch } from './hooks/useSearch';
 import { Message, MessageLanguage, BotAvatarStateValue } from './types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export function usePulseBot() {
   // Get necessary state from our custom hooks
@@ -16,22 +15,29 @@ export function usePulseBot() {
   const { 
     messages, 
     setMessages, 
-    loading, 
-    setLoading, 
-    botAvatarState, 
-    setBotAvatarState, 
-    messagesEndRef, 
-    scrollToBottom, 
-    clearHistory 
-  } = useMessageManagement(sessionInfo.id);
+    addMessage,
+    updateLastMessage,
+    clearMessages: clearHistory
+  } = useChatState();
+  
+  // Additional state
+  const [loading, setLoading] = useState(false);
+  const [botAvatarState, setBotAvatarState] = useState<BotAvatarStateValue>('idle');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const { language, handleLanguageChange } = useLanguageManager();
-  const { open, toggleChat } = useChatUI();
+  const { open, search, toggleChat, handleSearch, clearSearch } = useChatUI();
   const { confetti, triggerConfetti } = useConfetti();
-  const { search, handleSearch, clearSearch } = useSearch();
   
   // Add a state to track timer for avatar state transitions
   const [stateTransitionTimer, setStateTransitionTimer] = useState<NodeJS.Timeout | null>(null);
+  
+  // Helper function to scroll to bottom
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   
   // Update bot avatar state with proper transitions
   const updateBotAvatarState = (newState: BotAvatarStateValue, duration?: number) => {
@@ -98,12 +104,11 @@ export function usePulseBot() {
   };
   
   // Create feedback handler
-  const handleFeedback = useFeedbackHandler(messages, setMessages, sessionInfo.id);
+  const handleFeedback = useFeedbackHandler(messages, setMessages);
   
   // Setup message sender
-  const { sendMessage, isSending } = useMessageSender(
-    sessionInfo.id,
-    (message: Message) => {
+  const { sendMessage, isLoading: isSending } = useMessageSender({
+    onMessageSent: (message: Message) => {
       // Fix for the TypeScript error - create a new array directly instead of using a callback
       const newMessages = [...messages, message];
       setMessages(newMessages);
@@ -122,9 +127,9 @@ export function usePulseBot() {
         triggerConfetti();
       }
     },
-    setLoading,
-    handleError
-  );
+    onLoading: setLoading,
+    onError: handleError
+  });
 
   // Custom handleSearch to pass messages 
   const handleMessageSearch = (query: string) => {

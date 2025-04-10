@@ -5,7 +5,7 @@ import { ChatContainer } from './components/ChatContainer';
 import { Confetti } from './Confetti';
 import { TypingIndicatorStyles } from './components/TypingIndicatorStyles';
 import { usePulseBot } from './usePulseBot';
-import { Message, MessageLanguage, BotAvatarState, BotAvatarStateValue } from './types';
+import { Message, MessageLanguage, BotAvatarStateValue } from './types';
 import { useToast } from '@/hooks/use-toast';
 import { TutorialProvider } from './tutorial/TutorialContext';
 import { TutorialOverlay } from './tutorial/TutorialOverlay';

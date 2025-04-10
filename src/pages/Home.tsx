@@ -2,7 +2,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import FeatureSection from '@/components/FeatureSection';
 import HowItWorks from '@/components/HowItWorks';
@@ -12,9 +11,7 @@ import CallToAction from '@/components/CallToAction';
 import FAQ from '@/components/FAQ';
 import JoinBeta from '@/components/JoinBeta';
 import MetaTags from '@/components/MetaTags';
-import StickyCta from '@/components/StickyCta';
 import DashboardPreview from '@/components/DashboardPreview';
-import Footer from '@/components/Footer';
 import { ArrowRight, BarChart2, Building2, Lock, Shield, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -42,7 +39,6 @@ const Home = () => {
         keywords="workplace trust, employee trust, trust metrics, AI for HR, workplace analytics"
       />
       
-      {/* Navbar is handled by the Root component */}
       <Hero />
       
       {/* Brand Pitch Section */}
@@ -126,8 +122,6 @@ const Home = () => {
       <CallToAction />
       <FAQ />
       <JoinBeta />
-      <StickyCta />
-      <Footer />
     </div>
   );
 };

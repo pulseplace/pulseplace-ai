@@ -30,6 +30,7 @@ export function usePulseBot() {
   // Bot avatar state management
   const { 
     loading,
+    setLoading,
     botAvatarState, 
     updateBotAvatarState 
   } = useAvatarState(messages);
@@ -68,7 +69,10 @@ export function usePulseBot() {
         triggerConfetti();
       }
     },
-    onLoading: (isLoading) => updateBotAvatarState(isLoading ? 'typing' : 'idle'),
+    onLoading: (isLoading) => {
+      setLoading(isLoading);
+      updateBotAvatarState(isLoading ? 'typing' : 'idle');
+    },
     onError: handleError
   });
 

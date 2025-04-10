@@ -35,7 +35,7 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-white w-full py-4 px-4 shadow-lg max-h-[80vh] overflow-y-auto absolute top-full left-0 right-0"
+            className="md:hidden bg-white w-full py-4 px-4 shadow-lg max-h-[80vh] overflow-y-auto absolute top-full left-0 right-0 z-50"
           >
             <div className="flex flex-col space-y-4">
               <div className="border-b pb-2 mb-2">

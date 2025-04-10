@@ -8,12 +8,13 @@ const mockAnalyticsData: PulseBotAnalytics = {
   uniqueUsers: 486,
   positiveRating: 94,
   averageResponseTime: 1.1,
-  topLanguages: ['English', 'Spanish', 'French', 'German'],
-  feedbackDistribution: {
-    positive: 412,
-    negative: 28,
-    neutral: 168
-  },
+  responseRate: 98,
+  topLanguages: [
+    { language: 'English', count: 946, percentage: 70.2 },
+    { language: 'Spanish', count: 154, percentage: 11.4 },
+    { language: 'French', count: 105, percentage: 7.8 },
+    { language: 'German', count: 61, percentage: 4.5 }
+  ],
   feedbackRatio: {
     positive: 412,
     negative: 28
@@ -27,11 +28,6 @@ const mockAnalyticsData: PulseBotAnalytics = {
     { query: "What makes PulsePlace different?", count: 42 },
     { query: "How do I export my certification?", count: 35 },
     { query: "What's the implementation time?", count: 31 }
-  ],
-  popularQueries: [
-    "How can PulsePlace help with employee retention?",
-    "What are the features of PulsePlace?",
-    "How does certification work?"
   ],
   mostDownvotedResponses: [
     { query: "How do I implement a culture survey?", response: "That's a complex topic that requires consideration of multiple factors.", count: 12 },
@@ -55,8 +51,7 @@ const mockAnalyticsData: PulseBotAnalytics = {
     { language: "German", count: 61, percentage: 4.5 },
     { language: "Portuguese", count: 48, percentage: 3.6 },
     { language: "Other", count: 34, percentage: 2.5 }
-  ],
-  logs: []
+  ]
 };
 
 export const fetchAnalytics = async (filters: AnalyticsFilters): Promise<PulseBotAnalytics> => {

@@ -10,6 +10,7 @@ export interface ConfettiConfig {
   drift: number;
   scalar: number;
   ticks: number;
+  colors?: string[];
 }
 
 export type ConfettiState = {
@@ -25,7 +26,8 @@ const defaultConfig: ConfettiConfig = {
   gravity: 1,
   drift: 0,
   scalar: 1,
-  ticks: 200
+  ticks: 200,
+  colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
 };
 
 // Different celebration animations

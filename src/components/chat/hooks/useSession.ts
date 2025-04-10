@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { SessionInfo } from '../types';
+import { SessionInfo, MessageLanguage } from '../types';
 
 export const useSession = () => {
   const [sessionInfo] = useState<SessionInfo>(() => {
@@ -10,6 +10,10 @@ export const useSession = () => {
     return {
       id: sessionId,
       startTime: new Date(),
+      language: 'en' as MessageLanguage,
+      messageCount: 0,
+      userMessageCount: 0,
+      botMessageCount: 0,
       userAgent: navigator.userAgent,
       createdAt: new Date()
     };

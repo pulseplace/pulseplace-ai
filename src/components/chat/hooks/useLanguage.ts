@@ -47,9 +47,13 @@ export const useLanguage = (
       de: 'German',
       it: 'Italian',
       pt: 'Portuguese',
+      ru: 'Russian',
       zh: 'Chinese',
       ja: 'Japanese',
-      ko: 'Korean'
+      ko: 'Korean',
+      ar: 'Arabic',
+      hi: 'Hindi',
+      other: 'Other'
     };
     return languages[code] || 'Unknown';
   };

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Message, MessageLanguage, BotAvatarStateValue, SessionInfo } from './types';
+import { Message, MessageLanguage, BotAvatarStateValue, SessionInfo, SearchState } from './types';
 import { useToast } from '@/hooks/use-toast';
 
 export const usePulseBot = () => {
@@ -8,8 +8,12 @@ export const usePulseBot = () => {
   const [loading, setLoading] = useState(false);
   const [botAvatarState, setBotAvatarState] = useState<BotAvatarStateValue>('neutral');
   const [language, setLanguage] = useState<MessageLanguage>('en');
-  const [search, setSearch] = useState('');
-  const [confetti, setConfetti] = useState({ isActive: false, config: {} });
+  const [search, setSearch] = useState<SearchState>({
+    query: '',
+    isSearching: false,
+    results: []
+  });
+  const [confetti, setConfetti] = useState({ isActive: false, config: { particleCount: 50, spread: 70, startVelocity: 30, decay: 0.95, gravity: 1, drift: 0, scalar: 1, ticks: 200 } });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
@@ -26,8 +30,8 @@ export const usePulseBot = () => {
     // Add welcome message when the component mounts
     const welcomeMessage: Message = {
       id: 'welcome',
-      sender: 'bot',
-      text: 'Hi there! I\'m PulseBot, your AI assistant for workplace culture. How can I help you today?',
+      role: 'assistant',
+      content: 'Hi there! I\'m PulseBot, your AI assistant for workplace culture. How can I help you today?',
       timestamp: new Date(),
       language: 'en',
     };
@@ -59,8 +63,8 @@ export const usePulseBot = () => {
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
-      sender: 'user',
-      text: text,
+      role: 'user',
+      content: text,
       timestamp: new Date(),
       language,
     };
@@ -81,8 +85,8 @@ export const usePulseBot = () => {
       // Simulate bot response
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        sender: 'bot',
-        text: generateBotResponse(text),
+        role: 'assistant',
+        content: generateBotResponse(text),
         timestamp: new Date(),
         language,
       };
@@ -103,19 +107,30 @@ export const usePulseBot = () => {
         setConfetti({ 
           isActive: true, 
           config: {
-            angle: 90,
+            particleCount: 70,
             spread: 360,
             startVelocity: 40,
-            elementCount: 70,
-            dragFriction: 0.12,
-            duration: 3000,
-            stagger: 3,
-            width: "10px",
-            height: "10px",
+            decay: 0.95,
+            gravity: 1, 
+            drift: 0,
+            scalar: 1,
+            ticks: 200,
             colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
           }
         });
-        setTimeout(() => setConfetti({ isActive: false, config: {} }), 3000);
+        setTimeout(() => setConfetti({ 
+          isActive: false, 
+          config: { 
+            particleCount: 50, 
+            spread: 70, 
+            startVelocity: 30, 
+            decay: 0.95, 
+            gravity: 1, 
+            drift: 0, 
+            scalar: 1, 
+            ticks: 200 
+          } 
+        }), 3000);
       }
     }, 1500);
   };
@@ -156,7 +171,13 @@ export const usePulseBot = () => {
   };
   
   const handleSearch = (query: string) => {
-    setSearch(query);
+    setSearch({
+      query,
+      isSearching: query.trim().length > 0,
+      results: messages.filter(msg => 
+        msg.content.toLowerCase().includes(query.toLowerCase())
+      )
+    });
     
     // Implement search logic here
     if (query.trim()) {
@@ -168,7 +189,11 @@ export const usePulseBot = () => {
   };
   
   const clearSearch = () => {
-    setSearch('');
+    setSearch({
+      query: '',
+      isSearching: false,
+      results: []
+    });
   };
   
   const clearHistory = () => {

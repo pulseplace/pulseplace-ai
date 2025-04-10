@@ -1,7 +1,9 @@
-
 import { useState, useRef, useEffect } from 'react';
-import { Message, MessageLanguage, BotAvatarStateValue, SessionInfo, SearchState } from './types';
+import { Message, MessageLanguage, BotAvatarStateValue, SessionInfo } from './types';
 import { useToast } from '@/hooks/use-toast';
+import { useConfetti } from './hooks/useConfetti';
+import { useSearch } from './hooks/useSearch';
+import { useSession } from './hooks/useSession';
 
 export const usePulseBot = () => {
   const [open, setOpen] = useState(false);
@@ -9,35 +11,13 @@ export const usePulseBot = () => {
   const [loading, setLoading] = useState(false);
   const [botAvatarState, setBotAvatarState] = useState<BotAvatarStateValue>('neutral');
   const [language, setLanguage] = useState<MessageLanguage>('en');
-  const [search, setSearch] = useState<SearchState>({
-    query: '',
-    isSearching: false,
-    results: []
-  });
-  const [confetti, setConfetti] = useState({ 
-    isActive: false, 
-    config: { 
-      particleCount: 50, 
-      spread: 70, 
-      startVelocity: 30, 
-      decay: 0.95, 
-      gravity: 1, 
-      drift: 0, 
-      scalar: 1, 
-      ticks: 200 
-    } 
-  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
-  // Session info
-  const [sessionInfo, setSessionInfo] = useState<SessionInfo>({
-    startTime: new Date(),
-    language: 'en',
-    messageCount: 0,
-    userMessageCount: 0,
-    botMessageCount: 0,
-  });
+  // Use our custom hooks
+  const { confetti, triggerConfetti } = useConfetti();
+  const { search, handleSearch, clearSearch } = useSearch(messages);
+  const { sessionInfo, setSessionInfo } = useSession();
   
   useEffect(() => {
     // Add welcome message when the component mounts
@@ -117,32 +97,11 @@ export const usePulseBot = () => {
       
       // Show confetti occasionally
       if (Math.random() > 0.8) {
-        setConfetti({ 
-          isActive: true, 
-          config: {
-            particleCount: 70,
-            spread: 360,
-            startVelocity: 40,
-            decay: 0.95,
-            gravity: 1, 
-            drift: 0,
-            scalar: 1,
-            ticks: 200
-          }
+        triggerConfetti({
+          particleCount: 70,
+          spread: 360,
+          startVelocity: 40
         });
-        setTimeout(() => setConfetti({ 
-          isActive: false, 
-          config: { 
-            particleCount: 50, 
-            spread: 70, 
-            startVelocity: 30, 
-            decay: 0.95, 
-            gravity: 1, 
-            drift: 0, 
-            scalar: 1, 
-            ticks: 200 
-          } 
-        }), 3000);
       }
     }, 1500);
   };
@@ -179,32 +138,6 @@ export const usePulseBot = () => {
     toast({
       title: "Language Changed",
       description: `PulseBot will now respond in ${getLanguageName(newLanguage)}.`,
-    });
-  };
-  
-  const handleSearch = (query: string) => {
-    setSearch({
-      query,
-      isSearching: query.trim().length > 0,
-      results: messages.filter(msg => 
-        msg.content.toLowerCase().includes(query.toLowerCase())
-      )
-    });
-    
-    // Implement search logic here
-    if (query.trim()) {
-      toast({
-        title: "Searching Messages",
-        description: `Searching for "${query}"...`,
-      });
-    }
-  };
-  
-  const clearSearch = () => {
-    setSearch({
-      query: '',
-      isSearching: false,
-      results: []
     });
   };
   

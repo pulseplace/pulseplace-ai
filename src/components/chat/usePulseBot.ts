@@ -1,3 +1,4 @@
+
 import { useSession } from './hooks/useSession';
 import { useChatState } from './hooks/useChatState';
 import { useLanguageManager, cleanupPulseBotState } from './hooks/useLanguageManager';
@@ -106,7 +107,7 @@ export function usePulseBot() {
   // Create feedback handler
   const handleFeedback = useFeedbackHandler(messages, setMessages);
   
-  // Setup message sender
+  // Setup message sender with correct arguments
   const { sendMessage, isLoading } = useMessageSender({
     onMessageSent: (message: Message) => {
       // Fix for the TypeScript error - create a new array directly instead of using a callback

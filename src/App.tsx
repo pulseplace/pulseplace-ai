@@ -166,11 +166,11 @@ const router = createBrowserRouter([
       },
       {
         path: "ai-engine",
-        element: <Suspense fallback={<Loading />}><AIEngine /></Suspense>,
+        element: <Suspense fallback={<Loading />}><AiEngine /></Suspense>,
       },
       {
         path: "roi-calculator",
-        element: <Suspense fallback={<Loading />}><ROICalculator /></Suspense>,
+        element: <Suspense fallback={<Loading />}><RoiCalculator /></Suspense>,
       },
       {
         path: "methodology",

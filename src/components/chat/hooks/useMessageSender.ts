@@ -13,7 +13,7 @@ export const useMessageSender = ({ onMessageSent, onLoading, onError }: MessageS
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
-  const sendMessage = async (content: string) => {
+  const sendMessage = async (content: string, language: string = 'en') => {
     if (!content.trim()) return;
     
     try {

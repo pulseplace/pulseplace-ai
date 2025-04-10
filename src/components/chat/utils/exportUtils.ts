@@ -59,3 +59,5 @@ export const exportUtils = {
     pdf.save(`${title.replace(/\s+/g, '-').toLowerCase()}.pdf`);
   }
 };
+
+export default exportUtils;

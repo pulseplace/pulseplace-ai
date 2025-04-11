@@ -62,8 +62,7 @@ export const TaskProgressIndicator: React.FC<TaskProgressProps> = ({
           <div className="space-y-2">
             <Progress 
               value={status === 'completed' ? 100 : progress} 
-              className="h-2"
-              indicatorClassName={progressColors[status]}
+              className={cn("h-2", progressColors[status])}
             />
             
             <div className="flex justify-between items-center text-xs text-gray-500">

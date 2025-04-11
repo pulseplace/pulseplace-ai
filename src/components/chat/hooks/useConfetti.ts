@@ -1,52 +1,37 @@
 
 import { useState, useCallback } from 'react';
+import { ConfettiConfig } from '../types';
 
-// Export the ConfettiConfig interface so it can be imported by other components
-export interface ConfettiConfig {
-  particleCount: number; 
-  spread: number; 
-  startVelocity?: number; 
-  decay?: number; 
-  gravity?: number; 
-  drift?: number; 
-  scalar?: number; 
-  origin?: {
-    x?: number;
-    y?: number;
-  };
-  ticks?: number; // Added ticks property
-}
+// Default confetti configuration
+const defaultConfetti: ConfettiConfig = {
+  particleCount: 50,
+  spread: 70,
+  origin: { y: 0.6 }
+};
 
 export const useConfetti = () => {
-  const defaultConfig: ConfettiConfig = {
-    particleCount: 50, 
-    spread: 70, 
-    startVelocity: 30, 
-    decay: 0.95, 
-    gravity: 1, 
-    drift: 0, 
-    scalar: 1, 
-    ticks: 200 // Configure this for animation duration
-  };
-
   const [confetti, setConfetti] = useState<{ isActive: boolean; config: ConfettiConfig }>({
     isActive: false,
-    config: defaultConfig
+    config: defaultConfetti
   });
 
-  const triggerConfetti = useCallback((customConfig?: Partial<ConfettiConfig>) => {
+  const triggerConfetti = useCallback((config?: Partial<ConfettiConfig>) => {
+    // Merge default config with provided config
+    const mergedConfig = {
+      ...defaultConfetti,
+      ...config
+    };
+
+    // Activate confetti
     setConfetti({
       isActive: true,
-      config: {
-        ...defaultConfig,
-        ...customConfig
-      }
+      config: mergedConfig
     });
 
-    // Reset after animation completes
+    // Auto-disable after 2 seconds
     setTimeout(() => {
       setConfetti(prev => ({ ...prev, isActive: false }));
-    }, 3000); // Animation lasts for 3 seconds
+    }, 2000);
   }, []);
 
   return {

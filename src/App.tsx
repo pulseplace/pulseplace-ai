@@ -12,6 +12,7 @@ import Root from './pages/Root';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
 import TaskSummary from './pages/TaskSummary';
 import TaskAudit from './pages/TaskAudit';
+import ChatbotWidget from './components/ChatbotWidget';
 
 // Import the new pages
 import PitchDeckRequest from './pages/PitchDeckRequest';
@@ -55,6 +56,9 @@ function App() {
           
           <Route path="*" element={<div>Page not found</div>} />
         </Routes>
+        
+        {/* Add the ChatbotWidget here so it appears on all pages */}
+        <ChatbotWidget />
       </DashboardProvider>
     </AuthProvider>
   );

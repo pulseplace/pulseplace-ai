@@ -30,7 +30,7 @@ export const useSearch = (messages: Message[]) => {
       results: filteredMessages
     });
   }, [messages]);
-  
+
   const clearSearch = useCallback(() => {
     setSearch({
       query: '',

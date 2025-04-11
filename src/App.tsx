@@ -18,6 +18,7 @@ import ChatbotWidget from './components/ChatbotWidget';
 import PitchDeckRequest from './pages/PitchDeckRequest';
 import PitchDeckView from './pages/PitchDeckView';
 import PitchDeckAdmin from './pages/dashboard/PitchDeckAdmin';
+import LinkValidation from './pages/dashboard/LinkValidation';
 
 // Dashboard layout
 import DashboardLayout from './layouts/DashboardLayout';
@@ -52,6 +53,9 @@ function App() {
             
             {/* Add new protected route for pitch deck admin */}
             <Route path="pitch-deck-admin" element={<PitchDeckAdmin />} />
+            
+            {/* Add new protected route for link validation dashboard */}
+            <Route path="link-validation" element={<LinkValidation />} />
           </Route>
           
           <Route path="*" element={<div>Page not found</div>} />

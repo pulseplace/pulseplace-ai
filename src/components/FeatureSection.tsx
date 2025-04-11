@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Activity, ChartBar, Award, Brain, Bot, LineChart, BookOpen } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";  
 import { Link } from 'react-router-dom';
 
-const features = [
+export const features = [
   {
     icon: <Activity className="h-10 w-10 text-pulse-500" />,
     title: "PulseScore™",

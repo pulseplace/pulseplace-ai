@@ -6,6 +6,12 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+// Define the props interface for the component
+interface BotAnalyticsSummaryProps {
+  analytics: any;
+  isLoading: boolean;
+}
+
 // Mock summaries for different tabs
 const mockSummaries = {
   general: `Your PulseBot has been performing well over the past 30 days with a 92% satisfaction rate. 
@@ -37,20 +43,20 @@ const mockSummaries = {
   Growth opportunity: Expand department-specific analytics capabilities to meet user demand.`
 };
 
-const BotAnalyticsSummary: React.FC = () => {
+const BotAnalyticsSummary: React.FC<BotAnalyticsSummaryProps> = ({ analytics, isLoading }) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'general' | 'problems' | 'dashboard'>('general');
   const [summary, setSummary] = useState<string>(mockSummaries.general);
-  const [isLoading, setIsLoading] = useState(false);
+  const [localIsLoading, setLocalIsLoading] = useState(isLoading);
   const [timeRange, setTimeRange] = useState(30); // Default 30 days
 
   const loadSummary = (tab: 'general' | 'problems' | 'dashboard') => {
-    setIsLoading(true);
+    setLocalIsLoading(true);
     
     // Simulate API call delay
     setTimeout(() => {
       setSummary(mockSummaries[tab]);
-      setIsLoading(false);
+      setLocalIsLoading(false);
     }, 1000);
   };
 
@@ -70,11 +76,11 @@ const BotAnalyticsSummary: React.FC = () => {
 
   const handleTimeRangeChange = (days: number) => {
     setTimeRange(days);
-    setIsLoading(true);
+    setLocalIsLoading(true);
     
     // Simulate time range change
     setTimeout(() => {
-      setIsLoading(false);
+      setLocalIsLoading(false);
       toast({
         title: "Time Range Updated",
         description: `Showing data for the last ${days} days.`,
@@ -90,7 +96,7 @@ const BotAnalyticsSummary: React.FC = () => {
           variant="outline" 
           size="sm" 
           onClick={handleRefresh} 
-          disabled={isLoading}
+          disabled={localIsLoading}
         >
           <RefreshCw className="h-3.5 w-3.5 mr-1" />
           Refresh
@@ -109,7 +115,7 @@ const BotAnalyticsSummary: React.FC = () => {
           </TabsList>
           
           <div className="bg-muted/30 p-4 rounded-md min-h-[250px]">
-            {isLoading ? (
+            {localIsLoading ? (
               <div className="animate-pulse space-y-2">
                 <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                 <div className="h-4 bg-gray-200 rounded w-full"></div>

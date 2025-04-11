@@ -1,0 +1,59 @@
+
+#root {
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Container styling */
+.container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Make sure content elements don't get cut off */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  min-height: 100%;
+  position: relative;
+}
+
+/* Prevent content jumping when scrollbar appears/disappears */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Dashboard transition for smoother UI */
+.dashboard-transition {
+  transition: all 0.3s ease-in-out;
+}

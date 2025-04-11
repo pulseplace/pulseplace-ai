@@ -1,0 +1,87 @@
+
+/* Responsive buttons for Safari on iPad */
+@media screen and (max-width: 1024px) {
+  .btn-container {
+    margin: 0 auto;
+    max-width: 95%;
+  }
+  
+  .bg-pulse-gradient {
+    margin-right: 10px;
+  }
+  
+  /* Ensure buttons are properly sized on Safari */
+  button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: auto;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Fix for buttons being cut off at edges */
+  .flex-wrap > * {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Fix for Safari */
+@supports (-webkit-touch-callout: none) {
+  /* Safari specific fixes */
+  .bg-pulse-gradient {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  button, .button, a[role="button"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Mobile UI element stacking */
+.z-index-hierarchy {
+  --z-base: 10;
+  --z-overlay: 20;
+  --z-dropdown: 30;
+  --z-sticky: 40;
+  --z-fixed: 50;
+  --z-modal: 60;
+  --z-popover: 70;
+  --z-tooltip: 80;
+}
+
+/* Mobile friendly adjustments */
+@media screen and (max-width: 768px) {
+  .fixed-bottom-elements {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 4rem; /* Add space for browser navigation bar */
+  }
+  
+  .mobile-safe-area {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+  
+  /* Adjust z-index for mobile components */
+  .feedback-button {
+    z-index: 40;
+  }
+  
+  .pulsebot-button {
+    z-index: 40;
+  }
+  
+  .sticky-cta {
+    z-index: 30;
+  }
+  
+  .chat-container {
+    z-index: 50;
+  }
+}

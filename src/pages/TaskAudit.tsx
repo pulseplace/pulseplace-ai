@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { TaskProgressIndicator } from '@/components/chat/components/TaskProgressIndicator';
+import TaskProgressIndicator from '@/components/chat/components/TaskProgressIndicator';
 import { TaskProgressList } from '@/components/chat/components/TaskProgressList';
 import { TaskDemoPanel } from '@/components/chat/components/TaskDemoPanel';
 import ProjectAuditDashboard from '@/components/task-admin/ProjectAuditDashboard';

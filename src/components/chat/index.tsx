@@ -2,6 +2,7 @@
 import React from 'react';
 import PulseBotChat from './PulseBotChat';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import TaskProgressIndicator from './components/TaskProgressIndicator';
 
 export default function ChatWithErrorBoundary() {
   return (
@@ -13,7 +14,7 @@ export default function ChatWithErrorBoundary() {
 
 // Export named components for reuse
 export { PulseBotChat };
-export { TaskProgressIndicator } from './components/TaskProgressIndicator';
+export { TaskProgressIndicator };
 export { ErrorBoundary } from './components/ErrorBoundary';
 export { useConfetti } from './hooks/useConfetti';
 export { useMessageHandler } from './hooks/useMessageHandler';

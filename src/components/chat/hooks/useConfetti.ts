@@ -1,41 +1,48 @@
 
-import { useState, useCallback } from 'react';
-import { ConfettiConfig } from '../types';
+import { useState } from 'react';
 
-// Default confetti configuration
-const defaultConfetti: ConfettiConfig = {
-  particleCount: 50,
-  spread: 70,
-  origin: { y: 0.6 }
-};
+export interface ConfettiConfig {
+  particleCount: number;
+  spread: number;
+  startVelocity?: number;
+  decay?: number;
+  gravity?: number;
+  drift?: number;
+  scalar?: number;
+  ticks?: number;
+}
 
 export const useConfetti = () => {
-  const [confetti, setConfetti] = useState<{ isActive: boolean; config: ConfettiConfig }>({
-    isActive: false,
-    config: defaultConfetti
+  const [isActive, setIsActive] = useState(false);
+  const [config, setConfig] = useState<ConfettiConfig>({
+    particleCount: 50,
+    spread: 70,
+    startVelocity: 30,
+    decay: 0.95,
+    gravity: 1,
+    drift: 0,
+    scalar: 1,
+    ticks: 200
   });
 
-  const triggerConfetti = useCallback((config?: Partial<ConfettiConfig>) => {
-    // Merge default config with provided config
-    const mergedConfig = {
-      ...defaultConfetti,
-      ...config
-    };
-
-    // Activate confetti
-    setConfetti({
-      isActive: true,
-      config: mergedConfig
-    });
-
-    // Auto-disable after 2 seconds
+  const triggerConfetti = (customConfig?: Partial<ConfettiConfig>) => {
+    setConfig(prev => ({
+      ...prev,
+      ...customConfig
+    }));
+    setIsActive(true);
+    
+    // Automatically turn off after duration
     setTimeout(() => {
-      setConfetti(prev => ({ ...prev, isActive: false }));
+      setIsActive(false);
     }, 2000);
-  }, []);
+  };
 
   return {
-    confetti,
+    confetti: {
+      isActive,
+      config
+    },
     triggerConfetti
   };
 };

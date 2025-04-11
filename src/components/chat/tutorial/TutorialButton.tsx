@@ -5,11 +5,11 @@ import { Sparkles } from 'lucide-react';
 import { useTutorial } from './TutorialContext';
 
 const TutorialButton: React.FC = () => {
-  const { showTutorial } = useTutorial();
+  const { enableTutorial } = useTutorial();
 
   return (
     <Button 
-      onClick={showTutorial} 
+      onClick={enableTutorial} 
       variant="ghost" 
       size="sm"
       className="flex items-center gap-1 text-gray-600 hover:text-pulse-600 transition-colors"

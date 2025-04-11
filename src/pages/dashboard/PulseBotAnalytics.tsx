@@ -52,7 +52,8 @@ const PulseBotAnalytics: React.FC = () => {
           </Button>
         </Card>
       ) : (
-        <BotAnalyticsSummary data={analyticsData} />
+        // Pass analyticsData as a property to BotAnalyticsSummary
+        <BotAnalyticsSummary data={analyticsData} key="analytics-summary" />
       )}
     </div>
   );

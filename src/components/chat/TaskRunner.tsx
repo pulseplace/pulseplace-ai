@@ -4,7 +4,7 @@ import { useTaskRunner } from './hooks/useTaskRunner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TaskProgressIndicator } from './components/TaskProgressIndicator';
+import TaskProgressIndicator from './components/TaskProgressIndicator';
 import { useTaskProgress } from './hooks/useTaskProgress';
 import { Clock, CheckCircle2, RefreshCw } from 'lucide-react';
 

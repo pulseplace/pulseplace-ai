@@ -11,7 +11,7 @@ export interface TaskProgressIndicatorProps {
   description: string;
 }
 
-const TaskProgressIndicator: React.FC<TaskProgressIndicatorProps> = ({
+export const TaskProgressIndicator: React.FC<TaskProgressIndicatorProps> = ({
   status,
   progress,
   title,

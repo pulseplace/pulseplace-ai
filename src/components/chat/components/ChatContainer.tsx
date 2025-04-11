@@ -25,6 +25,8 @@ interface ChatContainerProps {
   clearHistory: () => void;
   sendMessage: (message: string) => void;
   onExportChat?: () => void;
+  exportFormat?: 'json' | 'pdf';
+  onExportFormatChange?: (format: 'json' | 'pdf') => void;
 }
 
 export const ChatContainer: React.FC<ChatContainerProps> = ({
@@ -43,7 +45,9 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   clearSearch,
   clearHistory,
   sendMessage,
-  onExportChat
+  onExportChat,
+  exportFormat = 'json',
+  onExportFormatChange
 }) => {
   const isMobile = useIsMobile();
   
@@ -87,6 +91,8 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
         toggleChat={toggleChat}
         onClearHistory={clearHistory}
         onExportChat={onExportChat}
+        exportFormat={exportFormat}
+        onExportFormatChange={onExportFormatChange}
         isMobile={isMobile}
       />
 

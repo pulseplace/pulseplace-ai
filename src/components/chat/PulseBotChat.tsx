@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { FloatingChatButton } from './components/FloatingChatButton';
 import { ChatContainer } from './components/ChatContainer';
 import { Confetti } from './components/Confetti';
@@ -14,7 +14,9 @@ import { useSearch } from './hooks/useSearch';
 import { useSession } from './hooks/useSession';
 import { useMessageHandler } from './hooks/useMessageHandler';
 import { useLanguageManager } from './hooks/useLanguageManager';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function PulseBotChat() {
   // Use our custom hooks
@@ -25,6 +27,7 @@ export default function PulseBotChat() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null);
   
   // Message handling hook
   const { 
@@ -37,6 +40,9 @@ export default function PulseBotChat() {
   
   // Search hook
   const { search, handleSearch, clearSearch } = useSearch(messages);
+  
+  // Export format state
+  const [exportFormat, setExportFormat] = useState<'json' | 'pdf'>('json');
   
   // Define available languages
   const languages = [
@@ -65,31 +71,50 @@ export default function PulseBotChat() {
   // Toggle chat open/closed
   const toggleChat = () => {
     setOpen(!open);
+    // Reset error state when toggling
+    setError(null);
   };
   
   // Handle sending messages and update bot state
   const sendMessage = (text: string) => {
-    setBotAvatarState('thinking');
-    handleSendMessage(text, language);
+    // Reset error state
+    setError(null);
     
-    // Reset bot state after response
-    setTimeout(() => {
-      setBotAvatarState('neutral');
+    // Update bot state to indicate thinking
+    setBotAvatarState('thinking');
+    
+    try {
+      // Send message
+      handleSendMessage(text, language);
       
-      // Show confetti occasionally
-      if (Math.random() > 0.8) {
-        triggerConfetti({
-          particleCount: 70,
-          spread: 360,
-          startVelocity: 40
-        });
-      }
-    }, 1500);
+      // Reset bot state after response
+      setTimeout(() => {
+        setBotAvatarState('neutral');
+        
+        // Show confetti occasionally
+        if (Math.random() > 0.8) {
+          triggerConfetti({
+            particleCount: 70,
+            spread: 360,
+            startVelocity: 40
+          });
+        }
+      }, 1500);
+    } catch (err) {
+      // Handle error
+      console.error("Error sending message:", err);
+      setError("Failed to send message. Please try again.");
+      setBotAvatarState('confused');
+      
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
   
   // Export chat history
-  const [exportFormat, setExportFormat] = useState<'json' | 'pdf'>('json');
-  
   const handleExportChat = () => {
     if (messages.length <= 1) {
       toast({
@@ -114,6 +139,8 @@ export default function PulseBotChat() {
       });
     } catch (error) {
       console.error("Export error:", error);
+      setError(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
       toast({
         title: "Export Failed",
         description: "Could not export chat history. Please try again.",
@@ -122,8 +149,18 @@ export default function PulseBotChat() {
     }
   };
   
+  // Handle export format change
+  const handleExportFormatChange = (format: 'json' | 'pdf') => {
+    setExportFormat(format);
+    toast({
+      title: "Export Format Changed",
+      description: `Export format set to ${format.toUpperCase()}`,
+      variant: "default",
+    });
+  };
+  
   // Verify the language is valid, or default to English
-  React.useEffect(() => {
+  useEffect(() => {
     const isValidLanguage = languages.some(lang => lang.value === language);
     
     if (!isValidLanguage && language !== 'en') {
@@ -139,7 +176,7 @@ export default function PulseBotChat() {
   }, [language, handleLanguageChange, languages, toast]);
 
   // Automatically open chat when directly navigating to /pulsebot
-  React.useEffect(() => {
+  useEffect(() => {
     if (window.location.pathname.includes('/pulsebot') && !open) {
       toggleChat();
     }
@@ -175,7 +212,18 @@ export default function PulseBotChat() {
         clearHistory={clearHistory}
         sendMessage={sendMessage}
         onExportChat={handleExportChat}
+        exportFormat={exportFormat}
+        onExportFormatChange={handleExportFormatChange}
       />
+
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="destructive" className="fixed bottom-4 left-4 w-auto max-w-md z-50">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {/* Tutorial Overlay */}
       <TutorialOverlay />

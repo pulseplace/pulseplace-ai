@@ -3,6 +3,10 @@ import React from 'react';
 import MetaTags from '@/components/MetaTags';
 import ScrollDeck from '@/components/ScrollDeck';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Download } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 // Define sample slides - these would be replaced with your actual content
 const sampleSlides = [
@@ -74,6 +78,8 @@ const sampleSlides = [
 ];
 
 const InvestorDeck: React.FC = () => {
+  const { user } = useAuth();
+  
   return (
     <div className="container mx-auto py-8 px-4">
       <MetaTags 
@@ -98,6 +104,38 @@ const InvestorDeck: React.FC = () => {
             <ScrollDeck slides={sampleSlides} className="mb-8" />
           </CardContent>
         </Card>
+        
+        {user ? (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Full Investor Deck Access</CardTitle>
+              <CardDescription>
+                Request access to our complete investor pitch deck with detailed financials and roadmap
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-center mt-2">
+                <Link to="/pitch-deck-request">
+                  <Button variant="default">Request Access</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Full Investor Deck</CardTitle>
+              <CardDescription>Sign in to request access to our complete investor pitch deck</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-center mt-2">
+                <Link to="/auth">
+                  <Button variant="default">Sign In to Request Access</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         
         <div className="text-center">
           <p className="text-gray-500 text-sm mb-4">

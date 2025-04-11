@@ -1,190 +1,112 @@
-
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { 
-  BarChart3, 
-  Users, 
-  FileQuestion, 
-  Settings, 
-  Zap, 
-  MessageSquare, 
-  Award, 
-  Palette, 
-  Database, 
-  Cpu, 
-  FileCheck, 
-  Share, 
-  ListChecks 
+import {
+  BarChart3,
+  Building2,
+  Cog6Tooth,
+  FileText,
+  HelpCircle,
+  Home,
+  LucideIcon,
+  Settings,
+  Users,
 } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
+import { Menu } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
-interface DashboardSidebarProps {
-  isCollapsed?: boolean;
+interface NavItemProps {
+  to: string;
+  icon: LucideIcon;
+  children: React.ReactNode;
 }
 
-export function DashboardSidebar({
-  isCollapsed = false,
-}: DashboardSidebarProps) {
+const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, children }) => {
   const location = useLocation();
-  
-  const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(`${path}/`);
-  };
-  
-  const mainNavItems = [
-    {
-      title: "Dashboard",
-      href: "/dashboard",
-      icon: <BarChart3 className="h-5 w-5" />,
-    },
-    {
-      title: "Team",
-      href: "/assessments",
-      icon: <Users className="h-5 w-5" />,
-    },
-    {
-      title: "PulseBot Analytics",
-      href: "/pulsebot-analytics",
-      icon: <MessageSquare className="h-5 w-5" />,
-    },
-    {
-      title: "Certification",
-      href: "/dashboard/certification-engine",
-      icon: <Award className="h-5 w-5" />,
-    },
-    {
-      title: "Tasks",
-      href: "/task-admin",
-      icon: <ListChecks className="h-5 w-5" />,
-    },
-    {
-      title: "Automation",
-      href: "/dashboard/mailchimp-events",
-      icon: <Zap className="h-5 w-5" />,
-    },
-  ];
-  
-  const customizationNavItems = [
-    {
-      title: "Badge Customization",
-      href: "/dashboard/badge-customization",
-      icon: <Palette className="h-5 w-5" />,
-    },
-    {
-      title: "Share Certification",
-      href: "/dashboard/share-certification",
-      icon: <Share className="h-5 w-5" />,
-    },
-    {
-      title: "Export Certification",
-      href: "/dashboard/export-certification",
-      icon: <FileCheck className="h-5 w-5" />,
-    },
-  ];
-  
-  const adminNavItems = [
-    {
-      title: "QA Dashboard",
-      href: "/dashboard/qa",
-      icon: <FileQuestion className="h-5 w-5" />,
-    },
-    {
-      title: "Settings",
-      href: "/settings",
-      icon: <Settings className="h-5 w-5" />,
-    },
-  ];
+  const isActive = location.pathname === to;
 
   return (
-    <div className={cn(
-      "flex flex-col border-r bg-white/95 max-h-screen h-screen",
-      isCollapsed ? "w-[70px]" : "w-64"
-    )}>
-      <div className="flex h-16 items-center justify-center border-b px-4">
-        {isCollapsed ? (
-          <img src="/logo-icon.svg" alt="PulsePlace" className="h-8 w-8" />
-        ) : (
-          <img src="/logo.svg" alt="PulsePlace" className="h-8" />
-        )}
-      </div>
-      <div className="overflow-y-auto py-2 flex flex-col h-full justify-between">
-        <div className="space-y-2 px-3">
-          <div className="py-2">
-            {!isCollapsed && <h4 className="mb-1 px-2 text-xs font-semibold tracking-tight text-gray-500">Main</h4>}
-            <div className="space-y-1">
-              {mainNavItems.map((item) => (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  className={({ isActive }) => cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all",
-                    isActive ? "bg-pulse-50 text-pulse-700 font-medium" : "hover:bg-gray-100 text-gray-700",
-                    isCollapsed && "justify-center px-2"
-                  )}
-                >
-                  {item.icon}
-                  {!isCollapsed && <span>{item.title}</span>}
-                </NavLink>
-              ))}
-            </div>
-          </div>
-          
-          <div className="py-2">
-            {!isCollapsed && <h4 className="mb-1 px-2 text-xs font-semibold tracking-tight text-gray-500">Customization</h4>}
-            <div className="space-y-1">
-              {customizationNavItems.map((item) => (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  className={({ isActive }) => cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all",
-                    isActive ? "bg-pulse-50 text-pulse-700 font-medium" : "hover:bg-gray-100 text-gray-700",
-                    isCollapsed && "justify-center px-2"
-                  )}
-                >
-                  {item.icon}
-                  {!isCollapsed && <span>{item.title}</span>}
-                </NavLink>
-              ))}
-            </div>
-          </div>
-          
-          <div className="py-2">
-            {!isCollapsed && <h4 className="mb-1 px-2 text-xs font-semibold tracking-tight text-gray-500">Admin</h4>}
-            <div className="space-y-1">
-              {adminNavItems.map((item) => (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  className={({ isActive }) => cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all",
-                    isActive ? "bg-pulse-50 text-pulse-700 font-medium" : "hover:bg-gray-100 text-gray-700",
-                    isCollapsed && "justify-center px-2"
-                  )}
-                >
-                  {item.icon}
-                  {!isCollapsed && <span>{item.title}</span>}
-                </NavLink>
-              ))}
-            </div>
-          </div>
+    <NavLink
+      to={to}
+      className={`flex items-center space-x-2 rounded-md p-2 text-sm font-medium transition-colors hover:bg-secondary hover:text-white ${
+        isActive ? 'bg-secondary text-white' : 'text-gray-700'
+      }`}
+    >
+      <Icon className="h-5 w-5" />
+      <span>{children}</span>
+    </NavLink>
+  );
+};
+
+interface SidebarProps {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}
+
+const DashboardSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
+  const { profile } = useAuth();
+  const isAdmin = profile?.role === 'admin';
+  
+  return (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="sm" className="p-0 px-2 rounded-md hover:bg-secondary md:hidden">
+          <Menu className="h-5 w-5" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="border-r w-[300px] sm:w-[300px] p-0">
+        <div className="p-4 border-b">
+          <h1 className="text-2xl font-bold">PulsePlace.ai</h1>
         </div>
         
-        <div className="px-3 py-2 mt-auto">
-          <div className={cn(
-            "flex items-center gap-3 rounded-md bg-gray-50 px-3 py-2 text-sm text-gray-800",
-            isCollapsed && "justify-center px-2"
-          )}>
-            <Cpu className="h-5 w-5 text-gray-600" />
-            {!isCollapsed && (
-              <div>
-                <div className="font-medium">PulsePlace Pro</div>
-                <div className="text-xs text-gray-500">Beta Access</div>
-              </div>
+        <div className="py-4">
+          <nav className="space-y-1 px-2">
+            <NavItem to="/dashboard" icon={Home}>
+              Dashboard
+            </NavItem>
+            <NavItem to="/dashboard/organization" icon={Building2}>
+              Organization
+            </NavItem>
+            <NavItem to="/dashboard/team" icon={Users}>
+              Team Management
+            </NavItem>
+            <NavItem to="/dashboard/analytics" icon={BarChart3}>
+              Analytics
+            </NavItem>
+            
+            {/* Add the Pitch Deck Admin link for admin users */}
+            {isAdmin && (
+              <NavItem 
+                to="/dashboard/pitch-deck-admin" 
+                icon={<FileText className="h-5 w-5" />}
+              >
+                Pitch Deck Admin
+              </NavItem>
             )}
-          </div>
+            
+            <NavItem to="/dashboard/settings" icon={Settings}>
+              Settings
+            </NavItem>
+            <NavItem to="/dashboard/help" icon={HelpCircle}>
+              Help & Support
+            </NavItem>
+          </nav>
         </div>
-      </div>
-    </div>
+        
+        <div className="p-4">
+          <Button variant="outline" className="w-full">
+            <Cog6Tooth className="h-4 w-4 mr-2" />
+            Preferences
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
-}
+};
+
+export default DashboardSidebar;

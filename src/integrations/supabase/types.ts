@@ -108,6 +108,42 @@ export type Database = {
         }
         Relationships: []
       }
+      pitch_deck_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          company_name: string
+          created_at: string
+          id: string
+          reason: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_name: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_name?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           company: string | null

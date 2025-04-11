@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useCallback } from 'react';
 import { MessageLanguage } from '../types';
+import { useToast } from '@/hooks/use-toast';
 
 // Local storage key for language preference
 const LANGUAGE_STORAGE_KEY = 'pulsebot_language_preference';
@@ -8,6 +10,8 @@ const LANGUAGE_STORAGE_KEY = 'pulsebot_language_preference';
 const PULSEBOT_SETTINGS_KEY = 'pulsebot_settings';
 
 export const useLanguageManager = () => {
+  const { toast } = useToast();
+  
   // Initialize with stored preference or default to English
   const [language, setLanguage] = useState<MessageLanguage>(() => {
     if (typeof window !== 'undefined') {
@@ -35,8 +39,29 @@ export const useLanguageManager = () => {
     return ['en', 'es', 'fr', 'de', 'it', 'pt', 'zh', 'ja', 'ko'].includes(lang);
   }
 
+  // Get language name from code
+  const getLanguageName = useCallback((code: MessageLanguage): string => {
+    const languages: Record<MessageLanguage, string> = {
+      'en': 'English',
+      'es': 'Spanish',
+      'fr': 'French',
+      'de': 'German',
+      'it': 'Italian',
+      'pt': 'Portuguese',
+      'ru': 'Russian',
+      'zh': 'Chinese',
+      'ja': 'Japanese',
+      'ko': 'Korean',
+      'ar': 'Arabic',
+      'hi': 'Hindi',
+      'other': 'Other'
+    };
+    
+    return languages[code] || 'Unknown';
+  }, []);
+
   // Update language and save to storage
-  const handleLanguageChange = (newLanguage: MessageLanguage) => {
+  const handleLanguageChange = useCallback((newLanguage: MessageLanguage) => {
     setLanguage(newLanguage);
     
     // Save to both storage locations for backward compatibility
@@ -49,12 +74,21 @@ export const useLanguageManager = () => {
       localStorage.setItem(PULSEBOT_SETTINGS_KEY, JSON.stringify(settings));
       
       console.info('Language preference saved:', newLanguage);
+      
+      toast({
+        title: "Language Changed",
+        description: `PulseBot will now respond in ${getLanguageName(newLanguage)}.`,
+      });
     } catch (e) {
       console.warn('Failed to save language preference', e);
     }
-  };
+  }, [getLanguageName, toast]);
 
-  return { language, handleLanguageChange };
+  return { 
+    language, 
+    handleLanguageChange, 
+    getLanguageName 
+  };
 };
 
 // Function to clean up PulseBot state completely

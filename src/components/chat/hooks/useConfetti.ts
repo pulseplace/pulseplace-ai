@@ -1,6 +1,21 @@
 
 import { useState, useCallback } from 'react';
-import { ConfettiConfig } from '../types';
+
+// Export the ConfettiConfig interface so it can be imported by other components
+export interface ConfettiConfig {
+  particleCount: number; 
+  spread: number; 
+  startVelocity?: number; 
+  decay?: number; 
+  gravity?: number; 
+  drift?: number; 
+  scalar?: number; 
+  origin?: {
+    x?: number;
+    y?: number;
+  };
+  ticks?: number; // Added ticks property
+}
 
 export const useConfetti = () => {
   const defaultConfig: ConfettiConfig = {
@@ -11,7 +26,7 @@ export const useConfetti = () => {
     gravity: 1, 
     drift: 0, 
     scalar: 1, 
-    ticks: 200
+    ticks: 200 // Configure this for animation duration
   };
 
   const [confetti, setConfetti] = useState<{ isActive: boolean; config: ConfettiConfig }>({

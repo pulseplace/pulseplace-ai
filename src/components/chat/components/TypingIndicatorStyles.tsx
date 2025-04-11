@@ -3,7 +3,8 @@ import React from 'react';
 
 export const TypingIndicatorStyles: React.FC = () => {
   return (
-    <style jsx global>{`
+    <style>
+      {`
       @keyframes bounce {
         0%, 100% {
           transform: translateY(0);
@@ -24,6 +25,7 @@ export const TypingIndicatorStyles: React.FC = () => {
       .typing-indicator .dot:nth-child(3) {
         animation-delay: 0.4s;
       }
-    `}</style>
+      `}
+    </style>
   );
 };

@@ -1,19 +1,14 @@
 
 import React from 'react';
-import { ChatProvider, useChat } from '@/contexts/ChatbotContext';
+import { ChatProvider } from '@/contexts/ChatbotContext';
 import PulseBot from './chat/PulseBot';
-
-// Internal component that uses the chat context
-const ChatbotContent = () => {
-  return <PulseBot />;
-};
 
 // Main wrapper component that provides the chat context
 const ChatbotWidget = () => {
   return (
     <ChatProvider>
-      <div id="pulsebot-container">
-        <ChatbotContent />
+      <div id="pulsebot-container" className="fixed bottom-6 right-6 z-50">
+        <PulseBot />
       </div>
     </ChatProvider>
   );

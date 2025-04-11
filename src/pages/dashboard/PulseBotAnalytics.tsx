@@ -1,147 +1,58 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from '@/hooks/use-toast';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DatePickerWithRange, DateRangeFilter } from '@/components/ui/date-range-picker';
-import { PulseBotAnalytics as PulseBotAnalyticsType, PulseBotLog, AnalyticsFilters } from '@/components/chat/types';
-import { fetchAnalytics } from '@/components/chat/services/analytics-service';
-import PulseBotAnalyticsDashboard from '@/components/dashboard/PulseBotAnalyticsDashboard';
+import { Loader2 } from 'lucide-react';
+import MetaTags from '@/components/MetaTags';
+import { getAnalytics } from '@/components/chat/services/analytics-service';
+import BotAnalyticsSummary from '@/components/dashboard/analytics/pulsebot/BotAnalyticsSummary';
 
 const PulseBotAnalytics: React.FC = () => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(true);
-  const [analytics, setAnalytics] = useState<PulseBotAnalyticsType | null>(null);
-  const [activeTab, setActiveTab] = useState('overview');
-  
-  // Filter states - updated to use DateRangeFilter
-  const [dateRange, setDateRange] = useState<DateRangeFilter>({
-    from: new Date(new Date().setDate(new Date().getDate() - 30)),
-    to: new Date()
-  });
-  const [language, setLanguage] = useState('all');
-  const [feedbackType, setFeedbackType] = useState<'all' | 'positive' | 'negative'>('all');
-  
-  // Load analytics data
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    const loadAnalytics = async () => {
-      setIsLoading(true);
+    const fetchData = async () => {
       try {
-        const data = await fetchAnalytics({
-          dateFrom: dateRange.from,
-          dateTo: dateRange.to,
-          language: language !== 'all' ? language : undefined,
-          feedbackType: feedbackType !== 'all' ? feedbackType : undefined
-        });
-        
-        setAnalytics(data);
-      } catch (error) {
-        console.error('Error loading analytics:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to load analytics data. Please try again.',
-          variant: 'destructive'
-        });
+        setIsLoading(true);
+        setError(null);
+        const data = await getAnalytics();
+        setAnalyticsData(data);
+      } catch (err) {
+        console.error('Error fetching bot analytics:', err);
+        setError('Failed to load analytics data');
       } finally {
         setIsLoading(false);
       }
     };
-    
-    loadAnalytics();
-  }, [dateRange, language, feedbackType, toast]);
-  
-  // Handle filter changes
-  const handleRefresh = async () => {
-    setIsLoading(true);
-    try {
-      const data = await fetchAnalytics({
-        dateFrom: dateRange.from,
-        dateTo: dateRange.to,
-        language: language !== 'all' ? language : undefined,
-        feedbackType: feedbackType !== 'all' ? feedbackType : undefined
-      });
-      
-      setAnalytics(data);
-      toast({
-        title: 'Data Refreshed',
-        description: 'Analytics data has been updated with current filters.'
-      });
-    } catch (error) {
-      console.error('Error refreshing analytics:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to refresh analytics data. Please try again.',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
+
+    fetchData();
+  }, []);
+
   return (
-    <div className="p-6 bg-gray-50 flex-grow">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">PulseBot Analytics</h1>
-          <p className="text-gray-500">Monitor usage, quality, and impact in real-time</p>
-        </div>
-        <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-          <Select value={language} onValueChange={setLanguage}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Languages</SelectItem>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="es">Spanish</SelectItem>
-              <SelectItem value="fr">French</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Select value={feedbackType} onValueChange={(value: 'all' | 'positive' | 'negative') => setFeedbackType(value)}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Feedback Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Feedback</SelectItem>
-              <SelectItem value="positive">Positive Only</SelectItem>
-              <SelectItem value="negative">Negative Only</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <DatePickerWithRange 
-            date={dateRange}
-            setDate={setDateRange}
-          />
-          
-          <Button 
-            className="bg-pulse-gradient" 
-            onClick={handleRefresh}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Loading...' : 'Refresh Data'}
-          </Button>
-        </div>
-      </div>
+    <div className="container mx-auto p-6">
+      <MetaTags
+        title="PulseBot Analytics | PulsePlace.ai"
+        description="Analyze PulseBot interactions and performance metrics"
+      />
       
-      {analytics ? (
-        <PulseBotAnalyticsDashboard 
-          analytics={analytics} 
-          isLoading={isLoading} 
-        />
-      ) : (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex justify-center items-center h-64">
-              <p className="text-gray-500">
-                {isLoading ? 'Loading analytics data...' : 'No data available for the selected filters.'}
-              </p>
-            </div>
-          </CardContent>
+      <h1 className="text-3xl font-bold mb-6">PulseBot Analytics</h1>
+      
+      {isLoading ? (
+        <div className="flex items-center justify-center p-12">
+          <Loader2 className="h-8 w-8 animate-spin text-pulse-600 mr-2" />
+          <p>Loading analytics data...</p>
+        </div>
+      ) : error ? (
+        <Card className="p-6">
+          <p className="text-red-500 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
         </Card>
+      ) : (
+        <BotAnalyticsSummary data={analyticsData} />
       )}
     </div>
   );

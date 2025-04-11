@@ -3,8 +3,7 @@ import React from 'react';
 import MetaTags from '@/components/MetaTags';
 import TaskCompletionSummary from '@/components/task-admin/TaskCompletionSummary';
 import { Card, CardContent } from "@/components/ui/card";
-import { ProjectPhase } from '@/components/task-admin/ProjectAuditDashboard';
-import ProjectProgressChart from '@/components/task-admin/ProjectProgressChart';
+import ProjectProgressChart, { ProjectPhase } from '@/components/task-admin/ProjectProgressChart';
 import TrustTrendPrediction from '@/components/analytics/TrustTrendPrediction';
 
 const TaskSummary: React.FC = () => {

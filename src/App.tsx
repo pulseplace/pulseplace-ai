@@ -3,11 +3,15 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
+import Dashboard from './pages/dashboard/Dashboard';
 import { AuthProvider } from './contexts/AuthContext';
+import { DashboardProvider } from './contexts/DashboardContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import InvestorDeck from './pages/InvestorDeck';
 import Root from './pages/Root';
 import ProfileSettings from './pages/dashboard/ProfileSettings';
+import TaskSummary from './pages/TaskSummary';
+import TaskAudit from './pages/TaskAudit';
 
 // Import the new pages
 import PitchDeckRequest from './pages/PitchDeckRequest';
@@ -20,32 +24,38 @@ import DashboardLayout from './layouts/DashboardLayout';
 function App() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route element={<Root />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/investor-deck" element={<InvestorDeck />} />
+      <DashboardProvider>
+        <Routes>
+          <Route element={<Root />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/investor-deck" element={<InvestorDeck />} />
+            
+            {/* Add new routes for pitch deck */}
+            <Route path="/pitch-deck-request" element={<PitchDeckRequest />} />
+            <Route path="/pitch-deck-view" element={<PitchDeckView />} />
+            
+            {/* Task routes */}
+            <Route path="/task-summary" element={<TaskSummary />} />
+            <Route path="/task-admin" element={<TaskAudit />} />
+          </Route>
           
-          {/* Add new routes for pitch deck */}
-          <Route path="/pitch-deck-request" element={<PitchDeckRequest />} />
-          <Route path="/pitch-deck-view" element={<PitchDeckView />} />
-        </Route>
-        
-        {/* Protected routes */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }>
-          <Route index element={<ProfileSettings />} />
-          <Route path="profile-settings" element={<ProfileSettings />} />
+          {/* Protected routes */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<Dashboard />} />
+            <Route path="profile-settings" element={<ProfileSettings />} />
+            
+            {/* Add new protected route for pitch deck admin */}
+            <Route path="pitch-deck-admin" element={<PitchDeckAdmin />} />
+          </Route>
           
-          {/* Add new protected route for pitch deck admin */}
-          <Route path="pitch-deck-admin" element={<PitchDeckAdmin />} />
-        </Route>
-        
-        <Route path="*" element={<div>Page not found</div>} />
-      </Routes>
+          <Route path="*" element={<div>Page not found</div>} />
+        </Routes>
+      </DashboardProvider>
     </AuthProvider>
   );
 }

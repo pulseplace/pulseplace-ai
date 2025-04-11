@@ -1,386 +1,330 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import ProjectProgressChart from './ProjectProgressChart';
-import { Clipboard, FileCheck, RefreshCw, Plus, Check, Clock, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  Bell, CalendarRange, Clock, Plus, RefreshCw, 
+  FileText, Filter, ArrowUpDown, Search 
+} from 'lucide-react';
+import ProjectProgressChart, { ProjectPhase } from './ProjectProgressChart';
+import { Link } from 'react-router-dom';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
-// Define types
-export type ProjectPhase = {
-  id: string;
-  name: string;
-  progress: number;
-  status: 'not-started' | 'in-progress' | 'completed' | 'blocked';
-  startDate: string;
-  endDate: string;
-  tasks: ProjectTask[];
-};
+export type { ProjectPhase };
 
-export type TaskPriority = 'low' | 'medium' | 'high';
-
-export type ProjectTask = {
-  id: string;
-  title: string;
-  description: string;
-  status: 'not-started' | 'in-progress' | 'completed' | 'blocked';
-  assignee?: string;
-  priority: TaskPriority;
-  phaseId: string;
-  createdAt: string;
-  dueDate?: string;
-};
-
-const ProjectAuditDashboard: React.FC = () => {
-  // Sample data - in a real app, this would come from an API or database
-  const [phases, setPhases] = useState<ProjectPhase[]>([
+const ProjectAuditDashboard = () => {
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState('progress');
+  
+  const handleRefresh = () => {
+    toast({
+      title: "Dashboard Refreshed",
+      description: "Project data has been updated.",
+    });
+  };
+  
+  const handleAddTask = () => {
+    toast({
+      title: "Create Task",
+      description: "Task creation dialog would open here.",
+    });
+  };
+  
+  // Sample project phases for the chart
+  const phases: ProjectPhase[] = [
     {
       id: "phase-1",
-      name: "Foundation",
+      name: "Research",
       progress: 100,
       status: "completed",
       startDate: "2025-01-01",
-      endDate: "2025-02-15",
-      tasks: [
-        {
-          id: "task-1",
-          title: "Project Setup",
-          description: "Initialize repository and configure development environment",
-          status: "completed",
-          assignee: "Alex Chen",
-          priority: "high",
-          phaseId: "phase-1",
-          createdAt: "2025-01-01",
-          dueDate: "2025-01-07"
-        },
-        {
-          id: "task-2",
-          title: "Core Architecture",
-          description: "Design and implement core system architecture",
-          status: "completed",
-          assignee: "Taylor Kim",
-          priority: "high",
-          phaseId: "phase-1",
-          createdAt: "2025-01-08",
-          dueDate: "2025-02-01"
-        }
-      ]
+      endDate: "2025-01-31",
+      tasks: []
     },
     {
       id: "phase-2",
-      name: "Core Features",
-      progress: 65,
+      name: "Design",
+      progress: 85,
       status: "in-progress",
-      startDate: "2025-02-16",
-      endDate: "2025-04-15",
-      tasks: [
-        {
-          id: "task-3",
-          title: "User Authentication",
-          description: "Implement secure login and registration system",
-          status: "completed",
-          assignee: "Jordan Lee",
-          priority: "high",
-          phaseId: "phase-2",
-          createdAt: "2025-02-16",
-          dueDate: "2025-03-01"
-        },
-        {
-          id: "task-4",
-          title: "Dashboard UI",
-          description: "Create responsive dashboard interface with key metrics",
-          status: "in-progress",
-          assignee: "Casey Morgan",
-          priority: "medium",
-          phaseId: "phase-2",
-          createdAt: "2025-03-02",
-          dueDate: "2025-03-15"
-        },
-        {
-          id: "task-5",
-          title: "Data Integration",
-          description: "Connect to external data sources and implement ETL processes",
-          status: "blocked",
-          assignee: "Riley Zhang",
-          priority: "high",
-          phaseId: "phase-2",
-          createdAt: "2025-03-16",
-          dueDate: "2025-04-01"
-        }
-      ]
+      startDate: "2025-02-01",
+      endDate: "2025-02-28",
+      tasks: []
     },
     {
       id: "phase-3",
-      name: "Beta Launch",
+      name: "Development",
+      progress: 45,
+      status: "in-progress",
+      startDate: "2025-03-01",
+      endDate: "2025-05-31",
+      tasks: []
+    },
+    {
+      id: "phase-4",
+      name: "Testing",
       progress: 10,
       status: "in-progress",
-      startDate: "2025-04-16",
-      endDate: "2025-06-01",
-      tasks: [
-        {
-          id: "task-6",
-          title: "User Onboarding",
-          description: "Create streamlined onboarding flow for new users",
-          status: "in-progress",
-          assignee: "Sam Patel",
-          priority: "medium",
-          phaseId: "phase-3",
-          createdAt: "2025-04-16",
-          dueDate: "2025-05-01"
-        },
-        {
-          id: "task-7",
-          title: "Beta User Selection",
-          description: "Identify and invite initial beta testers",
-          status: "not-started",
-          assignee: "Jamie Wilson",
-          priority: "low",
-          phaseId: "phase-3",
-          createdAt: "2025-04-20",
-          dueDate: "2025-05-10"
-        }
-      ]
+      startDate: "2025-06-01",
+      endDate: "2025-06-30",
+      tasks: []
+    },
+    {
+      id: "phase-5",
+      name: "Deployment",
+      progress: 0,
+      status: "not-started",
+      startDate: "2025-07-01",
+      endDate: "2025-07-15",
+      tasks: []
     }
-  ]);
-
-  // Calculate overall project completion
-  const calculateOverallProgress = (): number => {
-    if (phases.length === 0) return 0;
-    
-    return Math.round(
-      phases.reduce((sum, phase) => sum + phase.progress, 0) / phases.length
-    );
-  };
-
-  // Get status indicator component
-  const getStatusIndicator = (status: 'not-started' | 'in-progress' | 'completed' | 'blocked') => {
-    switch (status) {
-      case 'completed':
-        return <Badge className="bg-green-500 hover:bg-green-600"><Check className="h-3 w-3 mr-1" /> Completed</Badge>;
-      case 'in-progress':
-        return <Badge className="bg-blue-500 hover:bg-blue-600"><Clock className="h-3 w-3 mr-1" /> In Progress</Badge>;
-      case 'blocked':
-        return <Badge className="bg-red-500 hover:bg-red-600"><AlertCircle className="h-3 w-3 mr-1" /> Blocked</Badge>;
-      default:
-        return <Badge className="bg-gray-500 hover:bg-gray-600"><AlertTriangle className="h-3 w-3 mr-1" /> Not Started</Badge>;
+  ];
+  
+  // Sample tasks for the tasks list
+  const tasks = [
+    {
+      id: "task-1",
+      title: "Update API documentation",
+      assignee: "Alex Kim",
+      priority: "high",
+      dueDate: "2025-04-15",
+      status: "in-progress"
+    },
+    {
+      id: "task-2",
+      title: "Fix authentication bug",
+      assignee: "Jordan Smith",
+      priority: "critical",
+      dueDate: "2025-04-12",
+      status: "in-progress"
+    },
+    {
+      id: "task-3",
+      title: "Create dashboard wireframes",
+      assignee: "Taylor Johnson",
+      priority: "medium",
+      dueDate: "2025-04-18",
+      status: "not-started"
+    },
+    {
+      id: "task-4",
+      title: "Implement dark mode",
+      assignee: "Casey Brown",
+      priority: "low",
+      dueDate: "2025-04-22",
+      status: "not-started"
+    },
+    {
+      id: "task-5",
+      title: "Conduct user testing",
+      assignee: "Riley Garcia",
+      priority: "medium",
+      dueDate: "2025-04-25",
+      status: "not-started"
     }
-  };
-
-  // Get priority badge
-  const getPriorityBadge = (priority: TaskPriority) => {
-    switch (priority) {
-      case 'high':
-        return <Badge variant="destructive">High</Badge>;
-      case 'medium':
-        return <Badge variant="secondary">Medium</Badge>;
-      case 'low':
-        return <Badge variant="outline">Low</Badge>;
-      default:
-        return <Badge variant="outline">Low</Badge>;
-    }
-  };
-
+  ];
+  
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center">
-              <Clipboard className="h-5 w-5 mr-2 text-blue-500" />
-              Overall Progress
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span>Beta Launch Readiness</span>
-                <span className="font-bold">{calculateOverallProgress()}%</span>
-              </div>
-              <Progress value={calculateOverallProgress()} className="h-3" />
-            </div>
-            <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
-              <div className="flex flex-col">
-                <span className="text-gray-500">Phases</span>
-                <span className="font-bold">{phases.length}</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-gray-500">Tasks</span>
-                <span className="font-bold">{phases.reduce((sum, phase) => sum + phase.tasks.length, 0)}</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-gray-500">Completed</span>
-                <span className="font-bold">{phases.reduce((sum, phase) => 
-                  sum + phase.tasks.filter(task => task.status === 'completed').length, 0)}</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-gray-500">Blocked</span>
-                <span className="font-bold text-red-500">{phases.reduce((sum, phase) => 
-                  sum + phase.tasks.filter(task => task.status === 'blocked').length, 0)}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="md:col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center justify-between">
-              <div className="flex items-center">
-                <FileCheck className="h-5 w-5 mr-2 text-green-500" />
-                Project Phases Progress
-              </div>
-              <Button variant="outline" size="sm" className="h-8">
-                <RefreshCw className="h-3.5 w-3.5 mr-1" />
-                Update
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="h-[200px]">
-            <ProjectProgressChart phases={phases} />
-          </CardContent>
-        </Card>
-      </div>
-      
-      <Tabs defaultValue="all-phases">
-        <div className="flex justify-between items-center mb-4">
-          <TabsList>
-            <TabsTrigger value="all-phases">All Phases</TabsTrigger>
-            <TabsTrigger value="current">Current Phase</TabsTrigger>
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-          </TabsList>
-          <Button size="sm">
+    <Card className="shadow-md">
+      <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <CardTitle>Project Task Audit</CardTitle>
+          <p className="text-sm text-gray-500 mt-1">
+            Monitor project progress and manage tasks
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-gray-500"
+            onClick={handleRefresh}
+          >
+            <RefreshCw className="h-4 w-4 mr-1" />
+            Refresh
+          </Button>
+          <Button 
+            variant="default" 
+            size="sm"
+            onClick={handleAddTask}
+          >
             <Plus className="h-4 w-4 mr-1" />
-            New Task
+            Add Task
           </Button>
         </div>
-        
-        <TabsContent value="all-phases" className="space-y-4">
-          {phases.map(phase => (
-            <Card key={phase.id}>
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-md">{phase.name}</CardTitle>
-                  {getStatusIndicator(phase.status)}
-                </div>
-                <div className="text-sm text-gray-500 flex justify-between items-center">
-                  <div>
-                    {new Date(phase.startDate).toLocaleDateString()} - {new Date(phase.endDate).toLocaleDateString()}
-                  </div>
-                  <div className="font-medium">{phase.progress}% complete</div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Progress value={phase.progress} className="h-2 mb-4" />
-                
-                <div className="space-y-3">
-                  {phase.tasks.map(task => (
-                    <div key={task.id} className="border rounded-md p-3 text-sm">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="font-medium">{task.title}</div>
-                        <div className="flex space-x-2">
-                          {getPriorityBadge(task.priority)}
-                          {getStatusIndicator(task.status)}
-                        </div>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid grid-cols-3 mb-6">
+            <TabsTrigger value="progress">Progress</TabsTrigger>
+            <TabsTrigger value="tasks">Tasks</TabsTrigger>
+            <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="progress" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <ProjectProgressChart phases={phases} />
+              
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Overall Progress</span>
+                      <span className="text-sm">48%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '48%' }}></div>
+                    </div>
+                    
+                    <div className="pt-4 space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Tasks Completed</span>
+                        <span>24/50</span>
                       </div>
-                      <p className="text-gray-500 text-sm mb-2">{task.description}</p>
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <div>Assignee: {task.assignee || 'Unassigned'}</div>
-                        {task.dueDate && <div>Due: {new Date(task.dueDate).toLocaleDateString()}</div>}
+                      <div className="flex justify-between text-sm">
+                        <span>Days Remaining</span>
+                        <span>45</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Critical Issues</span>
+                        <span className="text-red-500">3</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </TabsContent>
-        
-        <TabsContent value="current" className="space-y-4">
-          {phases.filter(phase => phase.status === 'in-progress').map(phase => (
-            <Card key={phase.id}>
-              {/* Same content as above for current phase */}
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-md">{phase.name}</CardTitle>
-                  {getStatusIndicator(phase.status)}
-                </div>
-                <div className="text-sm text-gray-500 flex justify-between items-center">
-                  <div>
-                    {new Date(phase.startDate).toLocaleDateString()} - {new Date(phase.endDate).toLocaleDateString()}
                   </div>
-                  <div className="font-medium">{phase.progress}% complete</div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="pt-4">
+              <Link to="/task-summary">
+                <Button variant="outline" className="w-full">View Detailed Summary</Button>
+              </Link>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="tasks">
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between gap-4">
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input placeholder="Search tasks..." className="pl-8 max-w-xs" />
                 </div>
-              </CardHeader>
-              <CardContent>
-                <Progress value={phase.progress} className="h-2 mb-4" />
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4 mr-1" />
+                    Filter
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <ArrowUpDown className="h-4 w-4 mr-1" />
+                    Sort
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="border rounded-md">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignee</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {tasks.map((task) => (
+                      <tr key={task.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{task.title}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.assignee}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <Badge className={
+                            task.priority === 'critical' ? 'bg-red-100 text-red-800' :
+                            task.priority === 'high' ? 'bg-orange-100 text-orange-800' :
+                            task.priority === 'medium' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'
+                          }>
+                            {task.priority}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <CalendarRange className="h-4 w-4 mr-1 text-gray-400" />
+                            {task.dueDate}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <Badge className={
+                            task.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            task.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'
+                          }>
+                            {task.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="timeline">
+            <div className="space-y-6">
+              <p className="text-gray-500">Project timeline view would be displayed here, showing task dependencies and critical path.</p>
+              
+              <div className="border rounded-md p-6 bg-gray-50">
+                <div className="flex items-center mb-4">
+                  <Clock className="h-5 w-5 text-gray-400 mr-2" />
+                  <h3 className="font-medium">Upcoming Deadlines</h3>
+                </div>
                 
                 <div className="space-y-3">
-                  {phase.tasks.map(task => (
-                    <div key={task.id} className="border rounded-md p-3 text-sm">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="font-medium">{task.title}</div>
-                        <div className="flex space-x-2">
-                          {getPriorityBadge(task.priority)}
-                          {getStatusIndicator(task.status)}
-                        </div>
-                      </div>
-                      <p className="text-gray-500 text-sm mb-2">{task.description}</p>
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <div>Assignee: {task.assignee || 'Unassigned'}</div>
-                        {task.dueDate && <div>Due: {new Date(task.dueDate).toLocaleDateString()}</div>}
-                      </div>
+                  <div className="flex justify-between items-center p-3 bg-white rounded-md border">
+                    <div>
+                      <p className="font-medium">API Documentation</p>
+                      <p className="text-sm text-gray-500">Assigned to Alex Kim</p>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </TabsContent>
-        
-        <TabsContent value="upcoming" className="space-y-4">
-          {phases.filter(phase => phase.status === 'not-started').map(phase => (
-            <Card key={phase.id}>
-              {/* Same content as above for upcoming phases */}
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-md">{phase.name}</CardTitle>
-                  {getStatusIndicator(phase.status)}
-                </div>
-                <div className="text-sm text-gray-500 flex justify-between items-center">
-                  <div>
-                    {new Date(phase.startDate).toLocaleDateString()} - {new Date(phase.endDate).toLocaleDateString()}
+                    <div className="flex items-center">
+                      <Bell className="h-4 w-4 text-red-500 mr-2" />
+                      <span className="text-sm text-red-500">Due in 4 days</span>
+                    </div>
                   </div>
-                  <div className="font-medium">{phase.progress}% complete</div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Progress value={phase.progress} className="h-2 mb-4" />
-                
-                <div className="space-y-3">
-                  {phase.tasks.map(task => (
-                    <div key={task.id} className="border rounded-md p-3 text-sm">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="font-medium">{task.title}</div>
-                        <div className="flex space-x-2">
-                          {getPriorityBadge(task.priority)}
-                          {getStatusIndicator(task.status)}
-                        </div>
-                      </div>
-                      <p className="text-gray-500 text-sm mb-2">{task.description}</p>
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <div>Assignee: {task.assignee || 'Unassigned'}</div>
-                        {task.dueDate && <div>Due: {new Date(task.dueDate).toLocaleDateString()}</div>}
-                      </div>
+                  
+                  <div className="flex justify-between items-center p-3 bg-white rounded-md border">
+                    <div>
+                      <p className="font-medium">Authentication Bug Fix</p>
+                      <p className="text-sm text-gray-500">Assigned to Jordan Smith</p>
                     </div>
-                  ))}
+                    <div className="flex items-center">
+                      <Bell className="h-4 w-4 text-red-500 mr-2" />
+                      <span className="text-sm text-red-500">Due in 1 day</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center p-3 bg-white rounded-md border">
+                    <div>
+                      <p className="font-medium">Dashboard Wireframes</p>
+                      <p className="text-sm text-gray-500">Assigned to Taylor Johnson</p>
+                    </div>
+                    <div className="flex items-center">
+                      <CalendarRange className="h-4 w-4 text-gray-400 mr-2" />
+                      <span className="text-sm text-gray-500">Due in 7 days</span>
+                    </div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </TabsContent>
-      </Tabs>
-    </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -1,7 +1,9 @@
+
 import React from 'react';
 import DashboardSidebar from './DashboardSidebar';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
+import DashboardOverview from './DashboardOverview';
 
 const DashboardUI = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
@@ -18,10 +20,10 @@ const DashboardUI = () => {
       </header>
       <div className="flex">
         <DashboardSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 w-full">
           <div className="container mx-auto">
             <h2 className="text-2xl font-semibold mb-6">Dashboard Overview</h2>
-            {/* Dashboard content goes here */}
+            <DashboardOverview />
           </div>
         </main>
       </div>

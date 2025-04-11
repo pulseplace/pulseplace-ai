@@ -2,15 +2,38 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-// Sample data for the chart
-const data = [
+// Define the types for the component props
+export interface ProjectPhase {
+  id: string;
+  name: string;
+  progress: number;
+  status: 'completed' | 'in-progress' | 'not-started';
+  startDate: string;
+  endDate: string;
+  tasks: any[];
+}
+
+interface ProjectProgressChartProps {
+  phases?: ProjectPhase[];
+}
+
+// Sample data for the chart if no phases are provided
+const defaultData = [
   { name: 'Project A', completed: 20, inProgress: 10, notStarted: 5 },
   { name: 'Project B', completed: 15, inProgress: 8, notStarted: 12 },
   { name: 'Project C', completed: 30, inProgress: 5, notStarted: 2 },
   { name: 'Project D', completed: 10, inProgress: 15, notStarted: 8 },
 ];
 
-const ProjectProgressChart: React.FC = () => {
+const ProjectProgressChart: React.FC<ProjectProgressChartProps> = ({ phases }) => {
+  // If phases are provided, transform them into the chart data format
+  const data = phases ? phases.map(phase => ({
+    name: phase.name,
+    completed: phase.status === 'completed' ? phase.progress : 0,
+    inProgress: phase.status === 'in-progress' ? phase.progress : 0,
+    notStarted: phase.status === 'not-started' ? 100 : (100 - phase.progress),
+  })) : defaultData;
+
   return (
     <div className="bg-white p-4 rounded-lg shadow mb-6">
       <h3 className="text-lg font-medium mb-4">Project Progress</h3>

@@ -88,7 +88,11 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
       <div className="flex items-center space-x-3">
         {/* Login/Dashboard button */}
         <Link to={user ? "/dashboard" : "/auth"}>
-          <Button variant="outline" className="flex items-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50">
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="flex items-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50 rounded-full transition-all"
+          >
             <LogIn className="h-4 w-4" />
             {user ? "Dashboard" : "Sign In"}
           </Button>
@@ -97,7 +101,11 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
         {/* Sign Up button - Only show if not logged in */}
         {!user && (
           <Link to="/auth?tab=signup">
-            <Button variant="outline" className="flex items-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50">
+            <Button 
+              variant="default"
+              size="sm" 
+              className="flex items-center gap-2 bg-pulse-600 text-white hover:bg-pulse-700 rounded-full shadow-sm transition-all"
+            >
               <UserPlus className="h-4 w-4" />
               Sign Up
             </Button>
@@ -106,7 +114,10 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
 
         {/* Demo button */}
         <Link to="/demo">
-          <Button className="bg-pulse-gradient hover:opacity-90 transition-all flex items-center gap-2">
+          <Button 
+            className="bg-pulse-gradient hover:opacity-90 transition-all flex items-center gap-2 rounded-full shadow-sm"
+            size="sm"
+          >
             <Calendar className="h-4 w-4" />
             Book a Demo
           </Button>

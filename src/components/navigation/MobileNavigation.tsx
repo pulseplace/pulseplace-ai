@@ -81,31 +81,41 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
                 </Link>
               ))}
 
-              {/* Login/Dashboard button */}
-              <Link to={user ? "/dashboard" : "/auth"} onClick={() => setIsMenuOpen(false)}>
-                <Button variant="outline" className="w-full flex items-center justify-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50">
-                  <LogIn className="h-4 w-4" />
-                  {user ? "Dashboard" : "Sign In"}
-                </Button>
-              </Link>
-
-              {/* Sign Up button - Only show if not logged in */}
-              {!user && (
-                <Link to="/auth?tab=signup" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="outline" className="w-full flex items-center justify-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50">
-                    <UserPlus className="h-4 w-4" />
-                    Sign Up
+              <div className="flex flex-col space-y-3 pt-2">
+                {/* Login/Dashboard button */}
+                <Link to={user ? "/dashboard" : "/auth"} onClick={() => setIsMenuOpen(false)}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full flex items-center justify-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50 rounded-full"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    {user ? "Dashboard" : "Sign In"}
                   </Button>
                 </Link>
-              )}
 
-              {/* Demo button */}
-              <Link to="/demo" onClick={() => setIsMenuOpen(false)}>
-                <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full flex items-center justify-center gap-2 mt-2">
-                  <Calendar className="h-4 w-4" />
-                  Book a Demo
-                </Button>
-              </Link>
+                {/* Sign Up button - Only show if not logged in */}
+                {!user && (
+                  <Link to="/auth?tab=signup" onClick={() => setIsMenuOpen(false)}>
+                    <Button 
+                      variant="default" 
+                      className="w-full flex items-center justify-center gap-2 bg-pulse-600 text-white hover:bg-pulse-700 rounded-full shadow-sm"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      Sign Up
+                    </Button>
+                  </Link>
+                )}
+
+                {/* Demo button */}
+                <Link to="/demo" onClick={() => setIsMenuOpen(false)}>
+                  <Button 
+                    className="bg-pulse-gradient hover:opacity-90 transition-all w-full flex items-center justify-center gap-2 rounded-full shadow-sm"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    Book a Demo
+                  </Button>
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}

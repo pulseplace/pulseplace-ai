@@ -1,14 +1,15 @@
+
 import React from 'react';
 import {
   BarChart3,
   Building2,
-  Cog6Tooth,
+  Settings,
   FileText,
   HelpCircle,
   Home,
   LucideIcon,
-  Settings,
   Users,
+  Cog,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -83,7 +84,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             {isAdmin && (
               <NavItem 
                 to="/dashboard/pitch-deck-admin" 
-                icon={<FileText className="h-5 w-5" />}
+                icon={FileText}
               >
                 Pitch Deck Admin
               </NavItem>
@@ -100,7 +101,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         
         <div className="p-4">
           <Button variant="outline" className="w-full">
-            <Cog6Tooth className="h-4 w-4 mr-2" />
+            <Cog className="h-4 w-4 mr-2" />
             Preferences
           </Button>
         </div>

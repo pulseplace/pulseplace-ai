@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Calendar } from 'lucide-react';
+import { Menu, X, Calendar, LogIn } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { navItems, featuresSubItems, isActive } from './NavigationConfig';
+import { useAuth } from "@/contexts/AuthContext";
 
 interface MobileNavigationProps {
   isMenuOpen: boolean;
@@ -15,6 +16,7 @@ interface MobileNavigationProps {
 
 const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigationProps) => {
   const [openAccordion, setOpenAccordion] = useState<string | null>("features");
+  const { user } = useAuth();
 
   return (
     <>
@@ -79,6 +81,15 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
                 </Link>
               ))}
 
+              {/* Login/Dashboard button */}
+              <Link to={user ? "/dashboard" : "/auth"} onClick={() => setIsMenuOpen(false)}>
+                <Button variant="outline" className="w-full flex items-center justify-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50">
+                  <LogIn className="h-4 w-4" />
+                  {user ? "Dashboard" : "Sign In"}
+                </Button>
+              </Link>
+
+              {/* Demo button */}
               <Link to="/demo" onClick={() => setIsMenuOpen(false)}>
                 <Button className="bg-pulse-gradient hover:opacity-90 transition-all w-full flex items-center justify-center gap-2 mt-2">
                   <Calendar className="h-4 w-4" />

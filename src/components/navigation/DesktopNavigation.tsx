@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Cpu } from 'lucide-react';
+import { Calendar, Cpu, LogIn } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -19,6 +20,8 @@ interface DesktopNavigationProps {
 }
 
 const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
+  const { user } = useAuth();
+  
   return (
     <div className="hidden md:flex items-center space-x-6">
       <NavigationMenu className="z-50">
@@ -81,13 +84,24 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
         </Link>
       ))}
 
-      {/* Call to action button */}
-      <Link to="/demo">
-        <Button className="bg-pulse-gradient hover:opacity-90 transition-all flex items-center gap-2">
-          <Calendar className="h-4 w-4" />
-          Book a Demo
-        </Button>
-      </Link>
+      {/* Call to action buttons */}
+      <div className="flex items-center space-x-3">
+        {/* Login/Dashboard button */}
+        <Link to={user ? "/dashboard" : "/auth"}>
+          <Button variant="outline" className="flex items-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50">
+            <LogIn className="h-4 w-4" />
+            {user ? "Dashboard" : "Sign In"}
+          </Button>
+        </Link>
+
+        {/* Demo button */}
+        <Link to="/demo">
+          <Button className="bg-pulse-gradient hover:opacity-90 transition-all flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Book a Demo
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 };

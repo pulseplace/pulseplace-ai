@@ -46,7 +46,6 @@ const ProjectProgressChart: React.FC<ProjectProgressChartProps> = ({ phases }) =
           }}
         />
         <Legend />
-        {/* Using color from the data point */}
         <Bar 
           dataKey="progress" 
           name="Completion Percentage"
@@ -54,8 +53,8 @@ const ProjectProgressChart: React.FC<ProjectProgressChartProps> = ({ phases }) =
           barSize={40}
           fill="#3b82f6"
           fillOpacity={0.9}
-          // Use the color property from each data point
-          fill={(data) => data.color}
+          // Use a function to return the color for each bar based on data
+          fill={(entry: any) => entry.color}
         />
       </BarChart>
     </ResponsiveContainer>

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { LinkCheck } from 'lucide-react';
+import { Link2 } from 'lucide-react';
 import { quickAudit } from '@/utils/auditAndTesting';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,7 +33,7 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
         className={`rounded-full ${className}`}
         title="Run quick link validation"
       >
-        <LinkCheck className="h-5 w-5" />
+        <Link2 className="h-5 w-5" />
       </Button>
     );
   }
@@ -58,7 +58,7 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
         size="sm" 
         onClick={handleClick}
       >
-        <LinkCheck className="mr-2 h-4 w-4" />
+        <Link2 className="mr-2 h-4 w-4" />
         Quick Link Audit
       </Button>
       <Button 

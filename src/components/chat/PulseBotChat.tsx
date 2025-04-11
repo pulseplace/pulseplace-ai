@@ -1,8 +1,8 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { FloatingChatButton } from './components/FloatingChatButton';
 import { ChatContainer } from './components/ChatContainer';
-import { Confetti } from './Confetti';
+import { Confetti } from './components/Confetti';
 import { TypingIndicatorStyles } from './components/TypingIndicatorStyles';
 import { MessageLanguage, BotAvatarStateValue } from './types';
 import { TutorialProvider } from './tutorial/TutorialContext';
@@ -13,14 +13,16 @@ import { useConfetti } from './hooks/useConfetti';
 import { useSearch } from './hooks/useSearch';
 import { useSession } from './hooks/useSession';
 import { useMessageHandler } from './hooks/useMessageHandler';
+import { useLanguageManager } from './hooks/useLanguageManager';
+import { useState, useEffect } from 'react';
 
 export default function PulseBotChat() {
   // Use our custom hooks
   const { sessionInfo, setSessionInfo } = useSession();
   const { confetti, triggerConfetti } = useConfetti();
+  const { language, handleLanguageChange, getLanguageName } = useLanguageManager();
   const [botAvatarState, setBotAvatarState] = useState<BotAvatarStateValue>('neutral');
   const [open, setOpen] = useState(false);
-  const [language, setLanguage] = useState<MessageLanguage>('en');
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -85,22 +87,6 @@ export default function PulseBotChat() {
     }, 1500);
   };
   
-  // Handle language changes
-  const handleLanguageChange = (newLanguage: MessageLanguage) => {
-    setLanguage(newLanguage);
-    
-    // Update session info
-    setSessionInfo(prev => ({
-      ...prev,
-      language: newLanguage
-    }));
-    
-    toast({
-      title: "Language Changed",
-      description: `PulseBot will now respond in ${getLanguageName(newLanguage)}.`,
-    });
-  };
-  
   // Export chat history
   const [exportFormat, setExportFormat] = useState<'json' | 'pdf'>('json');
   
@@ -150,14 +136,14 @@ export default function PulseBotChat() {
         variant: "default",
       });
     }
-  }, [language]);
+  }, [language, handleLanguageChange, languages, toast]);
 
   // Automatically open chat when directly navigating to /pulsebot
   React.useEffect(() => {
     if (window.location.pathname.includes('/pulsebot') && !open) {
       toggleChat();
     }
-  }, [window.location.pathname, open]);
+  }, [open]);
 
   return (
     <TutorialProvider>
@@ -198,25 +184,4 @@ export default function PulseBotChat() {
       <TypingIndicatorStyles />
     </TutorialProvider>
   );
-}
-
-// Helper function to get language name from code
-function getLanguageName(code: MessageLanguage): string {
-  const languages: Record<MessageLanguage, string> = {
-    'en': 'English',
-    'es': 'Spanish',
-    'fr': 'French',
-    'de': 'German',
-    'it': 'Italian',
-    'pt': 'Portuguese',
-    'ru': 'Russian',
-    'zh': 'Chinese',
-    'ja': 'Japanese',
-    'ko': 'Korean',
-    'ar': 'Arabic',
-    'hi': 'Hindi',
-    'other': 'Other'
-  };
-  
-  return languages[code] || 'Unknown';
 }

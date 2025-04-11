@@ -69,7 +69,7 @@ const sampleSlides = [
       </div>
     ),
     imageUrl: '/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png'
-  },
+  }
   // Additional slides can be added here
 ];
 

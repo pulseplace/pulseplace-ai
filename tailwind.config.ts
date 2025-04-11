@@ -26,6 +26,7 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        "background-dark": "#1A1A2E", // Added this line for dark background
         primary: {
           DEFAULT: "#8B5CF6",
           50: "#F5F3FF",

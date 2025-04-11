@@ -59,7 +59,7 @@ const PromoteToAdmin: React.FC = () => {
           </p>
           <Button
             onClick={promoteToAdmin}
-            className="w-full"
+            className="w-full bg-pulse-gradient"
             disabled={isPromoting}
           >
             {isPromoting ? (

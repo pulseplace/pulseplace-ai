@@ -180,5 +180,58 @@ export const emailService = {
         error: error instanceof Error ? error.message : 'Unknown error occurred' 
       };
     }
+  },
+  
+  /**
+   * Sends a pitch deck access approval email
+   */
+  sendPitchDeckApprovalEmail: async (userData: { email: string, firstName: string }): Promise<EmailResponse> => {
+    try {
+      const baseUrl = window.location.origin;
+      const approvalHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #4338ca; text-align: center;">PulsePlace.ai Pitch Deck Access</h1>
+          
+          <p style="font-size: 16px;">Hi ${userData.firstName || 'there'},</p>
+          
+          <p style="font-size: 16px;">Thanks for your interest in PulsePlace.ai.</p>
+          
+          <p style="font-size: 16px;">We're excited to share our latest Investor Pitch Deck (v1) with you.</p>
+          
+          <div style="margin: 30px 0; text-align: center;">
+            <a href="${baseUrl}/pitch-deck-view" style="background-color: #4338ca; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+              Access Pitch Deck
+            </a>
+          </div>
+          
+          <p style="font-size: 16px; padding: 15px; background-color: #f3f4f6; border-radius: 4px;">
+            <strong>Please Note:</strong><br>
+            This document is confidential and intended only for your review. It is not to be shared, distributed, or published publicly.
+          </p>
+          
+          <p style="font-size: 16px;">We look forward to hearing your thoughts.</p>
+          
+          <p style="font-size: 16px;">
+            Warm regards,<br>
+            Vishal & the PulsePlace.ai team<br>
+            <a href="mailto:hello@pulseplace.ai" style="color: #4338ca;">hello@pulseplace.ai</a>
+          </p>
+        </div>
+      `;
+      
+      return await emailService.sendEmail({
+        to: userData.email,
+        subject: "You're approved to access the PulsePlace.ai Pitch Deck",
+        html: approvalHtml,
+        fromName: "PulsePlace.ai",
+        fromEmail: "notifications@pulseplace.ai"
+      });
+    } catch (error) {
+      console.error('Pitch deck approval email error:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      };
+    }
   }
 };

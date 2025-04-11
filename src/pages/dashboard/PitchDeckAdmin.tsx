@@ -88,11 +88,68 @@ const PitchDeckAdmin: React.FC = () => {
 
       if (error) throw error;
 
+      // If approved, send email confirmation
+      if (newStatus === 'approved') {
+        const request = requests.find(req => req.id === requestId);
+        if (request && request.profiles?.email) {
+          await sendApprovalEmail(request);
+        }
+      }
+
       toast.success(`Request ${newStatus} successfully`);
       fetchRequests();
     } catch (error: any) {
       console.error('Error updating request status:', error);
       toast.error(error.message || 'Failed to update request status');
+    }
+  };
+
+  const sendApprovalEmail = async (request: any) => {
+    try {
+      const { error } = await supabase.functions.invoke('resend-email', {
+        body: {
+          to: request.profiles.email,
+          subject: "You're approved to access the PulsePlace.ai Pitch Deck",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h1 style="color: #4338ca; text-align: center;">PulsePlace.ai Pitch Deck Access</h1>
+              
+              <p style="font-size: 16px;">Hi ${request.profiles.first_name || 'there'},</p>
+              
+              <p style="font-size: 16px;">Thanks for your interest in PulsePlace.ai.</p>
+              
+              <p style="font-size: 16px;">We're excited to share our latest Investor Pitch Deck (v1) with you.</p>
+              
+              <div style="margin: 30px 0; text-align: center;">
+                <a href="${window.location.origin}/pitch-deck-view" style="background-color: #4338ca; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+                  Access Pitch Deck
+                </a>
+              </div>
+              
+              <p style="font-size: 16px; padding: 15px; background-color: #f3f4f6; border-radius: 4px;">
+                <strong>Please Note:</strong><br>
+                This document is confidential and intended only for your review. It is not to be shared, distributed, or published publicly.
+              </p>
+              
+              <p style="font-size: 16px;">We look forward to hearing your thoughts.</p>
+              
+              <p style="font-size: 16px;">
+                Warm regards,<br>
+                Vishal & the PulsePlace.ai team<br>
+                <a href="mailto:hello@pulseplace.ai" style="color: #4338ca;">hello@pulseplace.ai</a>
+              </p>
+            </div>
+          `,
+          fromName: "PulsePlace.ai",
+          fromEmail: "notifications@pulseplace.ai"
+        }
+      });
+
+      if (error) throw error;
+      console.log('Approval email sent successfully');
+    } catch (error: any) {
+      console.error('Error sending approval email:', error);
+      toast.error('Approval status updated, but failed to send email notification');
     }
   };
 
@@ -117,7 +174,7 @@ const PitchDeckAdmin: React.FC = () => {
         throw new Error('Only PDF files are allowed');
       }
 
-      const fileName = `pitch_deck_${Date.now()}.pdf`;
+      const fileName = `pitch_deck_v1_${Date.now()}.pdf`;
       
       const { error } = await supabase
         .storage

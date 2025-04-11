@@ -51,10 +51,8 @@ const ProjectProgressChart: React.FC<ProjectProgressChartProps> = ({ phases }) =
           name="Completion Percentage"
           radius={[4, 4, 0, 0]}
           barSize={40}
-          fill="#3b82f6"
           fillOpacity={0.9}
-          // Use a function to return the color for each bar based on data
-          fill={(entry: any) => entry.color}
+          fill={(entry) => entry.color}
         />
       </BarChart>
     </ResponsiveContainer>

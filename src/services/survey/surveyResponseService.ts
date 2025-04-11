@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { teamAdminService, ProcessedSurveyResponse } from '../teamAdminService';
+import { certificationEmailService } from '../certificationEmailService';
 import { SurveyResponse } from './types';
 
 export const surveyResponseService = {
@@ -58,8 +59,13 @@ export const surveyResponseService = {
             if (departmentStats.averageScore >= 80 && departmentStats.participationRate >= 50) {
               console.log(`Department ${userData.department} qualifies for certification with score ${departmentStats.averageScore}`);
               
-              // Generate certification (this will also send the email)
-              const certResult = await teamAdminService.generateCertification(userData.department);
+              // Generate certification and send email using our new service
+              const certResult = await certificationEmailService.triggerCertificationEmail(
+                userData.department,
+                departmentStats.averageScore,
+                departmentStats.participationRate
+              );
+              
               console.log(`Certification result:`, certResult);
             } else {
               console.log(`Department ${userData.department} does not yet qualify for certification. Score: ${departmentStats.averageScore}, Participation: ${departmentStats.participationRate}%`);

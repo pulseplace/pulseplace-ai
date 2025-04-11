@@ -5,6 +5,7 @@ import TaskCompletionSummary from '@/components/task-admin/TaskCompletionSummary
 import { Card, CardContent } from "@/components/ui/card";
 import { ProjectPhase } from '@/components/task-admin/ProjectAuditDashboard';
 import ProjectProgressChart from '@/components/task-admin/ProjectProgressChart';
+import TrustTrendPrediction from '@/components/analytics/TrustTrendPrediction';
 
 const TaskSummary: React.FC = () => {
   // Sample project phases data for the chart
@@ -47,6 +48,34 @@ const TaskSummary: React.FC = () => {
     }
   ];
 
+  // Sample trust trend data for prediction widget
+  const trustTrends = [
+    {
+      departmentName: "Engineering",
+      currentScore: 75,
+      previousScore: 85,
+      changePercentage: -11.8,
+      predictedRisk: "high" as const,
+      riskAreas: ["Team retention", "Leadership trust", "Project delivery"]
+    },
+    {
+      departmentName: "Marketing",
+      currentScore: 82,
+      previousScore: 79,
+      changePercentage: 3.8,
+      predictedRisk: "low" as const,
+      riskAreas: ["Cross-team collaboration"]
+    },
+    {
+      departmentName: "Customer Support",
+      currentScore: 68,
+      previousScore: 72,
+      changePercentage: -5.6,
+      predictedRisk: "medium" as const,
+      riskAreas: ["Work-life balance", "Resource allocation"]
+    }
+  ];
+
   return (
     <div className="container mx-auto py-8 px-4">
       <MetaTags 
@@ -64,7 +93,7 @@ const TaskSummary: React.FC = () => {
         
         <TaskCompletionSummary />
         
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardContent className="pt-6">
               <h2 className="text-xl font-semibold mb-4">Project Phase Progress</h2>
@@ -73,6 +102,8 @@ const TaskSummary: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+          
+          <TrustTrendPrediction trends={trustTrends} />
         </div>
       </div>
     </div>

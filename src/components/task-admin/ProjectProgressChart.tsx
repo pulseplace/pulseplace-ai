@@ -1,78 +1,42 @@
 
-import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { ProjectPhase } from './ProjectAuditDashboard';
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-interface ProjectProgressChartProps {
-  phases: ProjectPhase[];
-}
+// Sample data for the chart
+const data = [
+  { name: 'Project A', completed: 20, inProgress: 10, notStarted: 5 },
+  { name: 'Project B', completed: 15, inProgress: 8, notStarted: 12 },
+  { name: 'Project C', completed: 30, inProgress: 5, notStarted: 2 },
+  { name: 'Project D', completed: 10, inProgress: 15, notStarted: 8 },
+];
 
-const ProjectProgressChart: React.FC<ProjectProgressChartProps> = ({ phases }) => {
-  const [animatedData, setAnimatedData] = useState<any[]>([]);
-
-  // Simulate progressive loading of chart data
-  useEffect(() => {
-    // Reset data when phases change
-    setAnimatedData([]);
-    
-    // Gradually load each phase with animation
-    phases.forEach((phase, index) => {
-      setTimeout(() => {
-        setAnimatedData(prev => [
-          ...prev,
-          {
-            name: phase.name,
-            progress: phase.progress,
-            color: phase.status === 'completed' 
-              ? '#10b981' // green-500
-              : phase.status === 'in-progress' 
-                ? '#3b82f6' // blue-500
-                : phase.status === 'blocked' 
-                  ? '#ef4444' // red-500
-                  : '#6b7280' // gray-500
-          }
-        ]);
-      }, 300 * index); // Stagger the animation
-    });
-  }, [phases]);
-
+const ProjectProgressChart: React.FC = () => {
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart
-        data={animatedData}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis unit="%" domain={[0, 100]} />
-        <Tooltip 
-          formatter={(value) => [`${value}%`, 'Progress']}
-          labelStyle={{ color: '#111827' }}
-          contentStyle={{ 
-            backgroundColor: 'white', 
-            border: '1px solid #e5e7eb',
-            borderRadius: '0.375rem',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-          }}
-        />
-        <Legend />
-        <Bar 
-          dataKey="progress" 
-          name="Completion Percentage"
-          radius={[4, 4, 0, 0]}
-          barSize={40}
-          fillOpacity={0.9}
-          fill={(entry) => entry.color}
-          animationDuration={1000}
-          animationBegin={0}
-        />
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="bg-white p-4 rounded-lg shadow mb-6">
+      <h3 className="text-lg font-medium mb-4">Project Progress</h3>
+      <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="completed" stackId="a" fill="#4ade80" name="Completed" />
+            <Bar dataKey="inProgress" stackId="a" fill="#facc15" name="In Progress" />
+            <Bar dataKey="notStarted" stackId="a" fill="#f87171" name="Not Started" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 };
 

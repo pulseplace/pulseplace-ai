@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +30,11 @@ const signupSchema = z.object({
 });
 
 const Auth = () => {
-  const [activeTab, setActiveTab] = useState("login");
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam === 'signup' ? 'signup' : 'login');
+  
   const { signIn, signUp, user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +46,17 @@ const Auth = () => {
       navigate('/dashboard');
     }
   }, [user, navigate]);
+
+  // Update URL when tab changes
+  useEffect(() => {
+    const newUrl = new URL(window.location.href);
+    if (activeTab === 'login') {
+      newUrl.searchParams.delete('tab');
+    } else {
+      newUrl.searchParams.set('tab', activeTab);
+    }
+    window.history.replaceState({}, '', newUrl.toString());
+  }, [activeTab]);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -107,7 +122,7 @@ const Auth = () => {
               Welcome to PulsePlace.ai
             </h1>
             <p className="mt-2 text-gray-600">
-              Access your dashboard and PulseScore™
+              {activeTab === 'login' ? 'Sign in to access your dashboard' : 'Create an account to get started'}
             </p>
           </div>
 

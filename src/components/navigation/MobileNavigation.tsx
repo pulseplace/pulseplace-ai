@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Calendar, LogIn } from 'lucide-react';
+import { Menu, X, Calendar, LogIn, UserPlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -88,6 +88,16 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
                   {user ? "Dashboard" : "Sign In"}
                 </Button>
               </Link>
+
+              {/* Sign Up button - Only show if not logged in */}
+              {!user && (
+                <Link to="/auth?tab=signup" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="outline" className="w-full flex items-center justify-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50">
+                    <UserPlus className="h-4 w-4" />
+                    Sign Up
+                  </Button>
+                </Link>
+              )}
 
               {/* Demo button */}
               <Link to="/demo" onClick={() => setIsMenuOpen(false)}>

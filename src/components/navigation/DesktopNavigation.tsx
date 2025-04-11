@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Cpu, LogIn } from 'lucide-react';
+import { Calendar, Cpu, LogIn, UserPlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -93,6 +93,16 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
             {user ? "Dashboard" : "Sign In"}
           </Button>
         </Link>
+
+        {/* Sign Up button - Only show if not logged in */}
+        {!user && (
+          <Link to="/auth?tab=signup">
+            <Button variant="outline" className="flex items-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50">
+              <UserPlus className="h-4 w-4" />
+              Sign Up
+            </Button>
+          </Link>
+        )}
 
         {/* Demo button */}
         <Link to="/demo">

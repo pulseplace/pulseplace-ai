@@ -14,22 +14,34 @@ import { Trash2 } from "lucide-react";
 
 export interface ClearHistoryDialogProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: (open: boolean) => void;
   onClearHistory: () => void;
 }
 
 export const ClearHistoryDialog: React.FC<ClearHistoryDialogProps> = ({
   open,
   onOpenChange,
+  onClose,
   onClearHistory,
 }) => {
   const handleClear = () => {
     onClearHistory();
-    onOpenChange(false);
+    if (onOpenChange) onOpenChange(false);
+    if (onClose) onClose(false);
+  };
+
+  // Use onOpenChange if provided, otherwise create a handler using onClose
+  const handleOpenChange = (openState: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(openState);
+    } else if (onClose) {
+      onClose(openState);
+    }
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Clear Chat History</AlertDialogTitle>

@@ -49,7 +49,9 @@ const ProjectProgressChart: React.FC<ProjectProgressChartProps> = ({ phases }) =
           dataKey="progress" 
           radius={[4, 4, 0, 0]}
           barSize={40}
-          fill={(props) => chartData[props.index]?.color || '#3b82f6'}
+          fill="#3b82f6"
+          // Use proper fill with direct color values instead of a function
+          fillOpacity={0.9}
         />
       </BarChart>
     </ResponsiveContainer>

@@ -1,148 +1,74 @@
 
 import React from 'react';
-import MetaTags from '@/components/MetaTags';
-import ScrollDeck from '@/components/ScrollDeck';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { ArrowRight, Download, FileText, Lock } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import MetaTags from "@/components/MetaTags";
 
-// Define sample slides - these would be replaced with your actual content
-const sampleSlides = [
-  {
-    id: '1',
-    title: 'PulsePlace.ai: Revolutionizing Workplace Culture',
-    content: (
-      <div>
-        <p className="text-lg mb-4">
-          Helping companies build and certify high-trust workplace cultures through AI-powered insights.
-        </p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li>Automated pulse surveys with deep sentiment analysis</li>
-          <li>Certification process for high-performing cultures</li>
-          <li>Predictive insights to prevent culture issues</li>
-        </ul>
-      </div>
-    ),
-    imageUrl: '/lovable-uploads/4f3c79fd-71b5-4a9d-9b51-8a7712a973f1.png'
-  },
-  {
-    id: '2',
-    title: 'The Problem We're Solving',
-    content: (
-      <div>
-        <p className="mb-4">
-          Companies struggle to measure, improve, and showcase their workplace culture:
-        </p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li>70% of employees report feeling disengaged at work</li>
-          <li>$550B annual cost to US economy from employee disengagement</li>
-          <li>Traditional surveys are infrequent and lack actionable insights</li>
-          <li>No standardized way to certify and showcase culture excellence</li>
-        </ul>
-      </div>
-    )
-  },
-  {
-    id: '3',
-    title: 'Our Solution',
-    content: (
-      <div>
-        <p className="mb-4">
-          PulsePlace.ai offers an end-to-end platform for measuring, improving, and certifying workplace culture:
-        </p>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="border p-3 rounded-md">
-            <h4 className="font-bold mb-2">Measure</h4>
-            <p className="text-sm">Automated pulse surveys with AI analysis</p>
-          </div>
-          <div className="border p-3 rounded-md">
-            <h4 className="font-bold mb-2">Understand</h4>
-            <p className="text-sm">Real-time dashboards with predictive insights</p>
-          </div>
-          <div className="border p-3 rounded-md">
-            <h4 className="font-bold mb-2">Improve</h4>
-            <p className="text-sm">AI-guided action plans for leadership</p>
-          </div>
-          <div className="border p-3 rounded-md">
-            <h4 className="font-bold mb-2">Certify</h4>
-            <p className="text-sm">Recognized badging for high-trust workplaces</p>
-          </div>
-        </div>
-      </div>
-    ),
-    imageUrl: '/lovable-uploads/ee0c2973-edcf-4589-a4c9-d4c8ca66dee8.png'
-  }
-  // Additional slides can be added here
-];
-
-const InvestorDeck: React.FC = () => {
+const InvestorDeck = () => {
   const { user } = useAuth();
-  
+
   return (
-    <div className="container mx-auto py-8 px-4">
-      <MetaTags 
-        title="Investor Deck | PulsePlace.ai" 
-        description="PulsePlace.ai investor presentation - revolutionizing workplace culture."
+    <div className="container mx-auto px-4 py-16 max-w-6xl">
+      <MetaTags
+        title="Investor Deck | PulsePlace.ai"
+        description="Download our investor deck to learn more about our AI-powered workplace trust platform."
       />
       
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Investor Presentation</h1>
-          <p className="text-gray-600 mb-6">
-            Learn how PulsePlace.ai is revolutionizing workplace culture measurement and certification.
-          </p>
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">Investor Deck</h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          Learn more about our vision, market opportunity, and product roadmap
+        </p>
+      </div>
+      
+      <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 md:p-12 shadow-sm border border-gray-100 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 className="text-3xl font-bold mb-4">PulsePlace.ai Pitch Deck</h2>
+            <p className="text-gray-700 mb-6">
+              Get an in-depth look at our mission to quantify and improve workplace trust with AI-powered analytics and certification.
+            </p>
+            
+            {user ? (
+              <Link to="/pitch-deck-request">
+                <Button size="lg" className="bg-pulse-600 hover:bg-pulse-700">
+                  <FileText className="mr-2 h-5 w-5" />
+                  Request Access
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button size="lg" className="bg-pulse-600 hover:bg-pulse-700">
+                  <Lock className="mr-2 h-5 w-5" />
+                  Sign in to Request Access
+                </Button>
+              </Link>
+            )}
+          </div>
+          
+          <div className="flex justify-center">
+            <div className="bg-white p-4 rounded-lg shadow-lg transform rotate-3 transition-transform hover:rotate-0">
+              <img 
+                src="/lovable-uploads/802f6b9e-42e3-4397-ba07-c035bd53a988.png" 
+                alt="Pitch Deck Preview" 
+                className="w-full h-auto max-w-md rounded border border-gray-200"
+              />
+            </div>
+          </div>
         </div>
-        
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>PulsePlace.ai Investment Opportunity</CardTitle>
-            <CardDescription>Scroll through our pitch deck to learn more</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ScrollDeck slides={sampleSlides} className="mb-8" />
-          </CardContent>
-        </Card>
-        
-        {user ? (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Full Investor Deck Access</CardTitle>
-              <CardDescription>
-                Request access to our complete investor pitch deck with detailed financials and roadmap
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-center mt-2">
-                <Link to="/pitch-deck-request">
-                  <Button variant="default">Request Access</Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Full Investor Deck</CardTitle>
-              <CardDescription>Sign in to request access to our complete investor pitch deck</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-center mt-2">
-                <Link to="/auth">
-                  <Button variant="default">Sign In to Request Access</Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        
-        <div className="text-center">
-          <p className="text-gray-500 text-sm mb-4">
-            Note: This is a preliminary investor deck. For more detailed information or 
-            to schedule a meeting, please contact our team.
-          </p>
-        </div>
+      </div>
+      
+      <div className="text-center">
+        <p className="text-gray-600 mb-6">
+          Are you an investor interested in learning more about PulsePlace.ai?
+        </p>
+        <Link to="/contact">
+          <Button variant="outline" size="lg">
+            Contact Our Team <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
       </div>
     </div>
   );

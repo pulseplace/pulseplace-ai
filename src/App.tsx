@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Auth from './pages/Auth';
@@ -10,6 +11,7 @@ import PulseSurveyList from './pages/dashboard/PulseSurveyList';
 import PulseSurveyCreate from './pages/dashboard/PulseSurveyCreate';
 import PulseSurveyEdit from './pages/dashboard/PulseSurveyEdit';
 import InvestorDeck from './pages/InvestorDeck';
+import Root from './pages/Root';
 
 // Import the new pages
 import PitchDeckRequest from './pages/PitchDeckRequest';
@@ -20,13 +22,15 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/investor-deck" element={<InvestorDeck />} />
-        
-        {/* Add new routes for pitch deck */}
-        <Route path="/pitch-deck-request" element={<PitchDeckRequest />} />
-        <Route path="/pitch-deck-view" element={<PitchDeckView />} />
+        <Route element={<Root />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/investor-deck" element={<InvestorDeck />} />
+          
+          {/* Add new routes for pitch deck */}
+          <Route path="/pitch-deck-request" element={<PitchDeckRequest />} />
+          <Route path="/pitch-deck-view" element={<PitchDeckView />} />
+        </Route>
         
         {/* Protected routes */}
         <Route path="/dashboard" element={

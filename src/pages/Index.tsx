@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -11,7 +10,6 @@ import Testimonials from '@/components/Testimonials';
 import FAQ from '@/components/FAQ';
 import CallToAction from '@/components/CallToAction';
 import JoinBeta from '@/components/JoinBeta';
-import Footer from '@/components/Footer';
 import InteractiveDemo from '@/components/InteractiveDemo';
 import { Users, Building, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -124,7 +122,6 @@ const TeamPilotSection = () => (
 const Index = () => {
   return (
     <div className="min-h-screen">
-      <Navbar />
       <Hero />
       <WhyPulsePlace />
       <FeatureSection />
@@ -137,7 +134,6 @@ const Index = () => {
       <FAQ />
       <CallToAction />
       <JoinBeta />
-      <Footer />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Cpu, LogIn, UserPlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import { navItems, featuresSubItems, isActive } from './NavigationConfig';
+import AuthDialog from '@/components/auth/AuthDialog';
 
 interface DesktopNavigationProps {
   location: { pathname: string };
@@ -21,6 +22,7 @@ interface DesktopNavigationProps {
 
 const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
   const { user } = useAuth();
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   
   return (
     <div className="hidden md:flex items-center space-x-6">
@@ -87,29 +89,27 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
       {/* Call to action buttons */}
       <div className="flex items-center space-x-3">
         {/* Login/Dashboard button */}
-        <Link to={user ? "/dashboard" : "/auth"}>
+        {user ? (
+          <Link to="/dashboard">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex items-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50 rounded-full transition-all"
+            >
+              <LogIn className="h-4 w-4" />
+              Dashboard
+            </Button>
+          </Link>
+        ) : (
           <Button 
             variant="outline" 
             size="sm"
             className="flex items-center gap-2 border-pulse-600 text-pulse-600 hover:bg-pulse-50 rounded-full transition-all"
+            onClick={() => setIsAuthDialogOpen(true)}
           >
             <LogIn className="h-4 w-4" />
-            {user ? "Dashboard" : "Sign In"}
+            Login
           </Button>
-        </Link>
-
-        {/* Sign Up button - Only show if not logged in */}
-        {!user && (
-          <Link to="/auth?tab=signup">
-            <Button 
-              variant="default"
-              size="sm" 
-              className="flex items-center gap-2 bg-pulse-600 text-white hover:bg-pulse-700 rounded-full shadow-sm transition-all"
-            >
-              <UserPlus className="h-4 w-4" />
-              Sign Up
-            </Button>
-          </Link>
         )}
 
         {/* Demo button */}
@@ -123,6 +123,12 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
           </Button>
         </Link>
       </div>
+      
+      {/* Auth Dialog */}
+      <AuthDialog 
+        isOpen={isAuthDialogOpen} 
+        onOpenChange={setIsAuthDialogOpen}
+      />
     </div>
   );
 };

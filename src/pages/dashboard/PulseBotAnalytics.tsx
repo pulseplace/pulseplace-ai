@@ -52,7 +52,11 @@ const PulseBotAnalytics: React.FC = () => {
           </Button>
         </Card>
       ) : (
-        <BotAnalyticsSummary analytics={analyticsData} isLoading={isLoading} />
+        // Fix: Ensure we pass the correct props to BotAnalyticsSummary
+        <BotAnalyticsSummary 
+          analytics={analyticsData} 
+          isLoading={isLoading} 
+        />
       )}
     </div>
   );

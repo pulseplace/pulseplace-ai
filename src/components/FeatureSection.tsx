@@ -10,14 +10,14 @@ const features = [
     icon: <Activity className="h-10 w-10 text-pulse-500" />,
     title: "PulseScore™",
     description: "Real-time workplace culture rating powered by sentiment + retention analytics.",
-    link: "/dashboard-preview",
+    link: "/features#surveys",
     buttonText: "View Dashboard"
   },
   {
     icon: <ChartBar className="h-10 w-10 text-teal-500" />,
     title: "Culture Compass™",
     description: "Benchmark your organization against your industry in areas like growth, flexibility, and inclusion.",
-    link: "/roi-calculator",
+    link: "/features#ai-analytics",
     buttonText: "Calculate ROI"
   },
   {
@@ -31,7 +31,7 @@ const features = [
     icon: <Brain className="h-10 w-10 text-teal-600" />,
     title: "AI Insights Engine",
     description: "Get personalized action plans from our culture model trained on thousands of data points.",
-    link: "/ai-engine",
+    link: "/features#ai-analytics",
     buttonText: "View Insights"
   },
   {
@@ -45,14 +45,14 @@ const features = [
     icon: <LineChart className="h-10 w-10 text-teal-500" />,
     title: "Real-Time Dashboards",
     description: "Interactive visualizations showing your organization's culture metrics in real-time.",
-    link: "/dashboard-preview",
+    link: "/features#dashboard",
     buttonText: "See Dashboards"
   },
   {
     icon: <BookOpen className="h-10 w-10 text-pulse-600" />,
     title: "Custom Reports",
     description: "Generate detailed reports and share them with stakeholders or potential employees.",
-    link: "/features#reports",
+    link: "/features#surveys",
     buttonText: "Explore Reports"
   }
 ];
@@ -92,12 +92,12 @@ const FeatureSection = () => {
         </div>
         
         <div className="text-center mt-16">
-          <Link to="/pricing">
+          <Link to="/features">
             <Button variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 mr-4">
-              View Pricing Plans
+              View All Features
             </Button>
           </Link>
-          <Link to="/methodology">
+          <Link to="/certification">
             <Button variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50">
               Learn About Our Methodology
             </Button>

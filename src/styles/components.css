@@ -16,7 +16,7 @@
 
 /* Microcopy style */
 .microcopy {
-  @apply text-sm text-text-muted tracking-wider;
+  @apply text-sm text-muted-foreground tracking-wider;
 }
 
 /* Soulful layout spacing */

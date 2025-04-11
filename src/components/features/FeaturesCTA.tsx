@@ -1,11 +1,16 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Calendar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
 
 const FeaturesCTA = () => {
+  const handleDemoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.open("https://calendly.com/pulseplace/demo", "_blank");
+  };
+
   return (
     <section className="py-20 bg-gradient-to-b from-pulse-50 to-white">
       <div className="container mx-auto px-4">
@@ -29,11 +34,16 @@ const FeaturesCTA = () => {
                 Join Beta Program <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/book-demo">
+            <a 
+              href="https://calendly.com/pulseplace/demo" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={handleDemoClick}
+            >
               <Button size="lg" variant="outline">
-                Book a Demo
+                Book a Demo <Calendar className="ml-2 h-4 w-4" />
               </Button>
-            </Link>
+            </a>
           </div>
           
           <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">

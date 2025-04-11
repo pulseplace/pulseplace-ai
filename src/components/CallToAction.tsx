@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ArrowRight, Users, Mail } from 'lucide-react';
+import { MessageCircle, ArrowRight, Users, Mail, Calendar } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -113,6 +112,11 @@ const CallToAction = () => {
     }
   };
 
+  const handleDemoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.open("https://calendly.com/pulseplace/demo", "_blank");
+  };
+
   return (
     <section className="py-16 md:py-24 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -128,14 +132,19 @@ const CallToAction = () => {
               </Button>
             </Link>
             
-            <Link to="/demo">
+            <a 
+              href="https://calendly.com/pulseplace/demo" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={handleDemoClick}
+            >
               <Button 
                 variant="outline" 
                 className="border-pulse-300 text-pulse-700 hover:bg-pulse-50 h-12 px-6 text-base w-full sm:w-auto"
               >
-                Try Team Demo <Users className="ml-2 h-4 w-4" />
+                Book a Demo <Calendar className="ml-2 h-4 w-4" />
               </Button>
-            </Link>
+            </a>
             
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>

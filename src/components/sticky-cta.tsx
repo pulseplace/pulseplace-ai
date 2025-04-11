@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Calendar } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const StickyCta = () => {
@@ -30,6 +29,11 @@ const StickyCta = () => {
     setIsDismissed(true);
     localStorage.setItem('sticky-cta-dismissed', 'true');
   };
+  
+  const handleDemoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.open("https://calendly.com/pulseplace/demo", "_blank");
+  };
 
   if (isDismissed) return null;
 
@@ -48,7 +52,12 @@ const StickyCta = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <Link to="/demo">
+            <a 
+              href="https://calendly.com/pulseplace/demo" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={handleDemoClick}
+            >
               <Button 
                 size="sm" 
                 className="bg-pulse-gradient hover:opacity-90"
@@ -56,7 +65,7 @@ const StickyCta = () => {
                 <Calendar className="mr-2 h-4 w-4" />
                 Book a Demo
               </Button>
-            </Link>
+            </a>
             
             <button 
               className="text-gray-500 hover:text-gray-700"

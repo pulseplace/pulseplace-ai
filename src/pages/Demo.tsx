@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -17,6 +16,8 @@ import {
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import MetaTags from '@/components/MetaTags';
+
+const CALENDLY_URL = "https://calendly.com/pulseplace/demo";
 
 const Demo = () => {
   const [formData, setFormData] = useState({
@@ -58,7 +59,14 @@ const Demo = () => {
         company: '',
         message: '',
       });
+      
+      // Redirect to Calendly after form submission
+      window.open(CALENDLY_URL, '_blank');
     }, 1500);
+  };
+  
+  const handleDirectCalendlyRedirect = () => {
+    window.open(CALENDLY_URL, '_blank');
   };
   
   return (
@@ -81,6 +89,17 @@ const Demo = () => {
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               See how PulsePlace.ai can help you measure, analyze, and improve workplace trust.
             </p>
+            
+            <div className="mt-6">
+              <Button 
+                size="lg" 
+                className="bg-pulse-gradient hover:opacity-90"
+                onClick={handleDirectCalendlyRedirect}
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                Schedule Directly via Calendly
+              </Button>
+            </div>
           </motion.div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -249,6 +268,15 @@ const Demo = () => {
                 demo@pulseplace.ai
               </a>
             </p>
+            
+            <Button 
+              variant="link" 
+              className="mt-4 text-pulse-600"
+              onClick={handleDirectCalendlyRedirect}
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              Book directly via Calendly
+            </Button>
           </div>
         </div>
       </div>

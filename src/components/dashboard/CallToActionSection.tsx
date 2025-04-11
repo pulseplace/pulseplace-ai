@@ -1,17 +1,13 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const CallToActionSection = () => {
   const { toast } = useToast();
   
   const handleRequestDemo = () => {
-    toast({
-      title: "Demo Request Sent",
-      description: "Our team will contact you shortly to schedule a full demo",
-    });
+    window.open("https://calendly.com/pulseplace/demo", "_blank");
   };
   
   const handleViewPricing = () => {
@@ -76,16 +72,21 @@ const CallToActionSection = () => {
           </div>
         </div>
         <div className="flex flex-wrap gap-4 justify-center">
-          <Link to="/pricing">
-            <Button size="lg" className="bg-pulse-gradient hover:opacity-90" onClick={handleViewPricing}>
+          <a href="/pricing" onClick={handleViewPricing}>
+            <Button size="lg" className="bg-pulse-gradient hover:opacity-90">
               View Pricing Plans
             </Button>
-          </Link>
-          <Link to="/join-beta">
-            <Button size="lg" variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50" onClick={handleRequestDemo}>
-              Request a Demo
+          </a>
+          <a 
+            href="https://calendly.com/pulseplace/demo" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            onClick={handleRequestDemo}
+          >
+            <Button size="lg" variant="outline" className="border-pulse-300 text-pulse-700 hover:bg-pulse-50">
+              Book a Demo
             </Button>
-          </Link>
+          </a>
         </div>
       </div>
     </section>

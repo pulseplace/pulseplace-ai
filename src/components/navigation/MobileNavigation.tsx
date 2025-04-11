@@ -20,6 +20,12 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const { user } = useAuth();
 
+  const handleDemoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    window.open("https://calendly.com/pulseplace/demo", "_blank");
+  };
+
   return (
     <>
       {/* Mobile Navigation Toggle */}
@@ -110,14 +116,19 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
                 )}
 
                 {/* Demo button */}
-                <Link to="/demo" onClick={() => setIsMenuOpen(false)}>
+                <a 
+                  href="https://calendly.com/pulseplace/demo" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  onClick={handleDemoClick}
+                >
                   <Button 
                     className="bg-pulse-gradient hover:opacity-90 transition-all w-full flex items-center justify-center gap-2 rounded-full shadow-sm"
                   >
                     <Calendar className="h-4 w-4" />
                     Book a Demo
                   </Button>
-                </Link>
+                </a>
               </div>
             </div>
           </motion.div>

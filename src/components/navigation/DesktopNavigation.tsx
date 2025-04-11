@@ -24,6 +24,11 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
   const { user } = useAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   
+  const handleDemoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.open("https://calendly.com/pulseplace/demo", "_blank");
+  };
+  
   return (
     <div className="hidden md:flex items-center space-x-6">
       <NavigationMenu className="z-50">
@@ -113,7 +118,12 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
         )}
 
         {/* Demo button */}
-        <Link to="/demo">
+        <a 
+          href="https://calendly.com/pulseplace/demo" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          onClick={handleDemoClick}
+        >
           <Button 
             className="bg-pulse-gradient hover:opacity-90 transition-all flex items-center gap-2 rounded-full shadow-sm"
             size="sm"
@@ -121,7 +131,7 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
             <Calendar className="h-4 w-4" />
             Book a Demo
           </Button>
-        </Link>
+        </a>
       </div>
       
       {/* Auth Dialog */}

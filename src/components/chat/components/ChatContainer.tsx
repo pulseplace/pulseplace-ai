@@ -4,6 +4,7 @@ import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
 import { ChatSearchBar } from './ChatSearchBar';
 import { ChatFooter } from './ChatFooter';
+import { TaskTracker } from './TaskTracker';
 import { BotAvatarState, MessageLanguage, Message, SearchState } from '../types';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -95,6 +96,13 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
         onExportFormatChange={onExportFormatChange}
         isMobile={isMobile}
       />
+
+      {/* Task Tracker (only show on desktop) */}
+      {!isMobile && (
+        <div className="px-4 py-2">
+          <TaskTracker mode="inline" />
+        </div>
+      )}
 
       {/* Search Bar - Don't show on very small screens to save space */}
       {(!isMobile || window.innerWidth >= 360) && (

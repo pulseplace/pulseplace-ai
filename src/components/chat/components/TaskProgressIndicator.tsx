@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { Check, Clock, AlertTriangle, Loader } from 'lucide-react';
+import { CheckCircle2, Clock, AlertTriangle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface TaskProgressProps {
@@ -22,8 +22,8 @@ export const TaskProgressIndicator: React.FC<TaskProgressProps> = ({
   // Status icon mapping
   const statusIcons = {
     'pending': <Clock className="h-5 w-5 text-gray-400" />,
-    'in-progress': <Loader className="h-5 w-5 text-blue-500 animate-spin" />,
-    'completed': <Check className="h-5 w-5 text-green-500" />,
+    'in-progress': <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />,
+    'completed': <CheckCircle2 className="h-5 w-5 text-green-500" />,
     'failed': <AlertTriangle className="h-5 w-5 text-red-500" />,
   };
   
@@ -36,7 +36,7 @@ export const TaskProgressIndicator: React.FC<TaskProgressProps> = ({
   };
   
   const progressColors = {
-    'pending': 'bg-gray-400',
+    'pending': '',
     'in-progress': 'bg-blue-500',
     'completed': 'bg-green-500',
     'failed': 'bg-red-500',
@@ -62,7 +62,8 @@ export const TaskProgressIndicator: React.FC<TaskProgressProps> = ({
           <div className="space-y-2">
             <Progress 
               value={status === 'completed' ? 100 : progress} 
-              className={cn("h-2", progressColors[status])}
+              className="h-2"
+              indicatorClassName={progressColors[status]}
             />
             
             <div className="flex justify-between items-center text-xs text-gray-500">

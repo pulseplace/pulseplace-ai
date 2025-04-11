@@ -4,10 +4,16 @@ import { useTaskRunner } from './hooks/useTaskRunner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { TaskProgressIndicator } from './components/TaskProgressIndicator';
+import { useTaskProgress } from './hooks/useTaskProgress';
+import { Clock, CheckCircle2, RefreshCw } from 'lucide-react';
 
 const TaskRunner: React.FC = () => {
   const { currentTask, isRunning, lastError, completedTasks, runTaskLoop } = useTaskRunner(true);
+  const { activeTasks, recentlyCompletedTasks, refreshTasks } = useTaskProgress({
+    autoRefresh: true,
+    refreshInterval: 3000
+  });
 
   useEffect(() => {
     console.log('Task runner initialized');
@@ -25,25 +31,39 @@ const TaskRunner: React.FC = () => {
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
+        {/* Show either the current task from useTaskRunner or the active tasks from useTaskProgress */}
         {currentTask ? (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Current Task:</h3>
-            <div className="bg-muted p-3 rounded-md">
-              <p className="font-medium">{currentTask.task_title}</p>
-              {currentTask.task_description && (
-                <p className="text-sm text-muted-foreground mt-1">{currentTask.task_description}</p>
-              )}
-            </div>
-            <Progress value={45} className="h-2" />
+            <TaskProgressIndicator
+              status="in-progress"
+              progress={45}
+              title={currentTask.task_title}
+              description={currentTask.task_description || undefined}
+            />
+          </div>
+        ) : activeTasks.length > 0 ? (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Active Tasks:</h3>
+            {activeTasks.map(task => (
+              <TaskProgressIndicator
+                key={task.id}
+                status={task.status}
+                progress={task.progress}
+                title={task.title}
+                description={task.description}
+              />
+            ))}
           </div>
         ) : (
           <div className="text-center py-4">
-            <p className="text-muted-foreground">
-              {completedTasks.length > 0 
-                ? "All pending tasks completed" 
-                : "No active tasks"}
-            </p>
+            <div className="flex flex-col items-center justify-center">
+              <CheckCircle2 className="h-12 w-12 text-green-500 mb-2" />
+              <p className="text-muted-foreground">
+                All pending tasks completed
+              </p>
+            </div>
           </div>
         )}
 
@@ -53,10 +73,21 @@ const TaskRunner: React.FC = () => {
           </div>
         )}
 
+        {/* Recently completed tasks section */}
         <div className="mt-6">
-          <h3 className="text-lg font-medium mb-2">Completed Tasks: {completedTasks.length}</h3>
+          <h3 className="text-lg font-medium mb-2">
+            Completed Tasks: {recentlyCompletedTasks.length || completedTasks.length}
+          </h3>
           <div className="space-y-2 max-h-40 overflow-y-auto">
-            {completedTasks.map((task) => (
+            {/* Use recentlyCompletedTasks from useTaskProgress, fallback to completedTasks from useTaskRunner */}
+            {recentlyCompletedTasks.length > 0 ? (
+              recentlyCompletedTasks.map((task) => (
+                <div key={task.id} className="flex items-center text-sm">
+                  <Badge variant="outline" className="mr-2">Done</Badge>
+                  <span>{task.title}</span>
+                </div>
+              ))
+            ) : completedTasks.map((task) => (
               <div key={task.id} className="flex items-center text-sm">
                 <Badge variant="outline" className="mr-2">Done</Badge>
                 <span>{task.task_title}</span>
@@ -67,9 +98,13 @@ const TaskRunner: React.FC = () => {
 
         <Button 
           className="w-full mt-6" 
-          onClick={() => runTaskLoop()} 
+          onClick={() => {
+            runTaskLoop();
+            refreshTasks();
+          }} 
           disabled={isRunning}
         >
+          <RefreshCw className="h-4 w-4 mr-2" />
           Run Task Check
         </Button>
       </CardContent>

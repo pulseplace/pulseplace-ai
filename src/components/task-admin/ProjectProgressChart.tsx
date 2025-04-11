@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { ProjectPhase } from './ProjectAuditDashboard';
 
 interface ProjectProgressChartProps {
@@ -45,13 +45,17 @@ const ProjectProgressChart: React.FC<ProjectProgressChartProps> = ({ phases }) =
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
           }}
         />
+        <Legend />
+        {/* Using color from the data point */}
         <Bar 
           dataKey="progress" 
+          name="Completion Percentage"
           radius={[4, 4, 0, 0]}
           barSize={40}
           fill="#3b82f6"
-          // Use proper fill with direct color values instead of a function
           fillOpacity={0.9}
+          // Use the color property from each data point
+          fill={(data) => data.color}
         />
       </BarChart>
     </ResponsiveContainer>

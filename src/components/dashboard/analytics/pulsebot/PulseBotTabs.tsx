@@ -97,7 +97,10 @@ const PulseBotTabs: React.FC<PulseBotTabsProps> = ({ analytics, isLoading }) => 
       
       {/* AI Insights Tab */}
       <TabsContent value="insights">
-        <BotAnalyticsSummary />
+        <BotAnalyticsSummary 
+          analytics={analytics} 
+          isLoading={isLoading} 
+        />
       </TabsContent>
     </Tabs>
   );

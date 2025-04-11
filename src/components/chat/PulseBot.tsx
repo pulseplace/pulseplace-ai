@@ -2,7 +2,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatbotContext';
 import { Button } from '@/components/ui/button';
-import { X, MessageCircle, Bot, HelpCircle } from 'lucide-react';
+import { X, Bot } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { cn } from '@/lib/utils';
@@ -37,9 +37,9 @@ const PulseBot: React.FC = () => {
           aria-label={isChatOpen ? "Close chat" : "Open chat"}
         >
           {isChatOpen ? (
-            <X className="h-6 w-6" />
+            <X className="h-6 w-6 text-white" />
           ) : (
-            <HelpCircle className="h-6 w-6" />
+            <Bot className="h-6 w-6 text-white" />
           )}
         </Button>
       </div>

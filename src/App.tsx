@@ -30,6 +30,7 @@ import JoinBeta from './pages/JoinBeta';
 import DashboardPreview from './pages/DashboardPreview';
 import HowItWorks from './pages/HowItWorks';
 import Insights from './pages/Insights';
+import ProjectHandover from './pages/ProjectHandover';
 
 // Routes for Features section
 import Surveys from './pages/features/Surveys';
@@ -79,6 +80,7 @@ function App() {
             {/* Task routes */}
             <Route path="/task-summary" element={<TaskSummary />} />
             <Route path="/task-admin" element={<TaskAudit />} />
+            <Route path="/project-handover" element={<ProjectHandover />} />
           </Route>
           
           {/* Protected routes */}

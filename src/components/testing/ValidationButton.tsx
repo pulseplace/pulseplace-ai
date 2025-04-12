@@ -8,16 +8,21 @@ import { useNavigate } from 'react-router-dom';
 type ValidationButtonProps = {
   variant?: 'icon' | 'text' | 'full';
   className?: string;
+  onComplete?: (results: any) => void;
 };
 
 const ValidationButton: React.FC<ValidationButtonProps> = ({ 
   variant = 'icon',
-  className = ''
+  className = '',
+  onComplete
 }) => {
   const navigate = useNavigate();
   
-  const handleClick = () => {
-    runLinkValidation();
+  const handleClick = async () => {
+    const results = await runLinkValidation();
+    if (onComplete) {
+      onComplete(results);
+    }
   };
   
   const handleViewDashboard = () => {

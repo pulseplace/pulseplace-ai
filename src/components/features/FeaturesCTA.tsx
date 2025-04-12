@@ -6,11 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
 
 const FeaturesCTA = () => {
-  const handleDemoClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    window.open("https://calendly.com/pulseplace-demo/30min", "_blank");
-  };
-
   return (
     <section className="py-20 bg-gradient-to-b from-pulse-50 to-white">
       <div className="container mx-auto px-4">
@@ -34,9 +29,7 @@ const FeaturesCTA = () => {
                 Join Beta Program <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Link 
-              to="/book-demo"
-            >
+            <Link to="/book-demo">
               <Button size="lg" variant="outline">
                 Book a Demo <Calendar className="ml-2 h-4 w-4" />
               </Button>

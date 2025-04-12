@@ -47,7 +47,7 @@ const CoreFeaturesTab: React.FC = () => {
             description="Validate and showcase your workplace culture." 
           />
           <div className="mt-4 text-center">
-            <Link to="/certification">
+            <Link to="/features/certification">
               <Button variant="outline" size="sm">Learn More</Button>
             </Link>
           </div>
@@ -87,7 +87,7 @@ const CoreFeaturesTab: React.FC = () => {
             description="Generate detailed reports for stakeholders." 
           />
           <div className="mt-4 text-center">
-            <Link to="/features/surveys">
+            <Link to="/features/ai-analytics">
               <Button variant="outline" size="sm">Learn More</Button>
             </Link>
           </div>

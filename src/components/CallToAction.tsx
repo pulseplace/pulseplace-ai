@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { MessageCircle, ArrowRight, Users, Mail, Calendar } from 'lucide-react';
@@ -114,7 +115,7 @@ const CallToAction = () => {
 
   const handleDemoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    window.open("https://calendly.com/pulseplace/demo", "_blank");
+    window.open("https://calendly.com/pulseplace-demo/30min", "_blank");
   };
 
   return (
@@ -133,7 +134,7 @@ const CallToAction = () => {
             </Link>
             
             <a 
-              href="https://calendly.com/pulseplace/demo" 
+              href="https://calendly.com/pulseplace-demo/30min" 
               target="_blank" 
               rel="noopener noreferrer"
               onClick={handleDemoClick}

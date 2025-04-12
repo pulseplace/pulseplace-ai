@@ -32,7 +32,7 @@ const StickyCta = () => {
   
   const handleDemoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    window.open("https://calendly.com/pulseplace/demo", "_blank");
+    window.open("https://calendly.com/pulseplace-demo/30min", "_blank");
   };
 
   if (isDismissed) return null;
@@ -53,7 +53,7 @@ const StickyCta = () => {
           
           <div className="flex items-center gap-4">
             <a 
-              href="https://calendly.com/pulseplace/demo" 
+              href="https://calendly.com/pulseplace-demo/30min" 
               target="_blank" 
               rel="noopener noreferrer"
               onClick={handleDemoClick}

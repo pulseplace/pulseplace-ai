@@ -126,7 +126,7 @@ const BookDemo = () => {
             >
               <div 
                 className="calendly-inline-widget" 
-                data-url="https://calendly.com/vishal-pulseplace/30min" 
+                data-url="https://calendly.com/pulseplace-demo/30min" 
                 style={{ minWidth: "320px", height: "700px" }}
               ></div>
             </motion.div>

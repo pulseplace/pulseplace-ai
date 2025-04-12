@@ -17,7 +17,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import MetaTags from '@/components/MetaTags';
 
-const CALENDLY_URL = "https://calendly.com/pulseplace/demo";
+const CALENDLY_URL = "https://calendly.com/pulseplace-demo/30min";
 
 const Demo = () => {
   const [formData, setFormData] = useState({

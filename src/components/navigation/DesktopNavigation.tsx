@@ -26,7 +26,7 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
   
   const handleDemoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    window.open("https://calendly.com/pulseplace/demo", "_blank");
+    window.open("https://calendly.com/pulseplace-demo/30min", "_blank");
   };
   
   return (
@@ -119,7 +119,7 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
 
         {/* Demo button */}
         <a 
-          href="https://calendly.com/pulseplace/demo" 
+          href="https://calendly.com/pulseplace-demo/30min" 
           target="_blank" 
           rel="noopener noreferrer"
           onClick={handleDemoClick}

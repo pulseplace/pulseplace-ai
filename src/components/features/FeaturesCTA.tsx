@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Calendar } from 'lucide-react';
@@ -8,7 +7,7 @@ import { Link } from 'react-router-dom';
 const FeaturesCTA = () => {
   const handleDemoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    window.open("https://calendly.com/pulseplace/demo", "_blank");
+    window.open("https://calendly.com/pulseplace-demo/30min", "_blank");
   };
 
   return (
@@ -35,7 +34,7 @@ const FeaturesCTA = () => {
               </Button>
             </Link>
             <a 
-              href="https://calendly.com/pulseplace/demo" 
+              href="https://calendly.com/pulseplace-demo/30min" 
               target="_blank" 
               rel="noopener noreferrer"
               onClick={handleDemoClick}

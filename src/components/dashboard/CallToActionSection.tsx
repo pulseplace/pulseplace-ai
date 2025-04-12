@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -7,7 +6,7 @@ const CallToActionSection = () => {
   const { toast } = useToast();
   
   const handleRequestDemo = () => {
-    window.open("https://calendly.com/pulseplace/demo", "_blank");
+    window.open("https://calendly.com/pulseplace-demo/30min", "_blank");
   };
   
   const handleViewPricing = () => {
@@ -78,7 +77,7 @@ const CallToActionSection = () => {
             </Button>
           </a>
           <a 
-            href="https://calendly.com/pulseplace/demo" 
+            href="https://calendly.com/pulseplace-demo/30min" 
             target="_blank" 
             rel="noopener noreferrer"
             onClick={handleRequestDemo}

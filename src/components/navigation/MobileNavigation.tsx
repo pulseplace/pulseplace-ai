@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Calendar, LogIn, UserPlus } from 'lucide-react';
@@ -23,7 +22,7 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
   const handleDemoClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsMenuOpen(false);
-    window.open("https://calendly.com/pulseplace/demo", "_blank");
+    window.open("https://calendly.com/pulseplace-demo/30min", "_blank");
   };
 
   return (
@@ -117,7 +116,7 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
 
                 {/* Demo button */}
                 <a 
-                  href="https://calendly.com/pulseplace/demo" 
+                  href="https://calendly.com/pulseplace-demo/30min" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   onClick={handleDemoClick}

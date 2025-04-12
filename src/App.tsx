@@ -19,6 +19,8 @@ import PitchDeckRequest from './pages/PitchDeckRequest';
 import PitchDeckView from './pages/PitchDeckView';
 import PitchDeckAdmin from './pages/dashboard/PitchDeckAdmin';
 import LinkValidation from './pages/dashboard/LinkValidation';
+import BookDemo from './pages/BookDemo';
+import Demo from './pages/Demo';
 
 // Dashboard layout
 import DashboardLayout from './layouts/DashboardLayout';
@@ -36,6 +38,10 @@ function App() {
             {/* Add new routes for pitch deck */}
             <Route path="/pitch-deck-request" element={<PitchDeckRequest />} />
             <Route path="/pitch-deck-view" element={<PitchDeckView />} />
+            
+            {/* Demo routes */}
+            <Route path="/book-demo" element={<BookDemo />} />
+            <Route path="/demo" element={<Demo />} />
             
             {/* Task routes */}
             <Route path="/task-summary" element={<TaskSummary />} />

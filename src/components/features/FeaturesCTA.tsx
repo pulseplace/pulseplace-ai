@@ -34,16 +34,13 @@ const FeaturesCTA = () => {
                 Join Beta Program <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <a 
-              href="https://calendly.com/pulseplace-demo/30min" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              onClick={handleDemoClick}
+            <Link 
+              to="/book-demo"
             >
               <Button size="lg" variant="outline">
                 Book a Demo <Calendar className="ml-2 h-4 w-4" />
               </Button>
-            </a>
+            </Link>
           </div>
           
           <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">

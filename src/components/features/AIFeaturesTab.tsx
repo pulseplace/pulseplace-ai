@@ -21,7 +21,7 @@ const AIFeaturesTab: React.FC = () => {
             isNew={true}
           />
           <div className="mt-4 text-center">
-            <Link to="/features#ai-analytics">
+            <Link to="/features/ai-analytics">
               <Button variant="outline" size="sm">Learn More</Button>
             </Link>
           </div>
@@ -47,7 +47,7 @@ const AIFeaturesTab: React.FC = () => {
             description="Natural language processing that captures the true feeling behind feedback." 
           />
           <div className="mt-4 text-center">
-            <Link to="/features#ai-analytics">
+            <Link to="/features/ai-analytics">
               <Button variant="outline" size="sm">Learn More</Button>
             </Link>
           </div>
@@ -61,7 +61,7 @@ const AIFeaturesTab: React.FC = () => {
             isNew={true}
           />
           <div className="mt-4 text-center">
-            <Link to="/features#ai-analytics">
+            <Link to="/features/ai-analytics">
               <Button variant="outline" size="sm">Learn More</Button>
             </Link>
           </div>

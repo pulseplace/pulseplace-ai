@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link2 } from 'lucide-react';
-import { quickAudit } from '@/utils/auditAndTesting';
+import { runLinkValidation } from '@/utils/linkValidation';
 import { useNavigate } from 'react-router-dom';
 
 type ValidationButtonProps = {
@@ -17,7 +17,7 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
   const navigate = useNavigate();
   
   const handleClick = () => {
-    quickAudit();
+    runLinkValidation();
   };
   
   const handleViewDashboard = () => {

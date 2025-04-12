@@ -13,6 +13,7 @@ import ProfileSettings from './pages/dashboard/ProfileSettings';
 import TaskSummary from './pages/TaskSummary';
 import TaskAudit from './pages/TaskAudit';
 import ChatbotWidget from './components/ChatbotWidget';
+import NotFound from './pages/NotFound';
 
 // Import the new pages
 import PitchDeckRequest from './pages/PitchDeckRequest';
@@ -29,6 +30,13 @@ import JoinBeta from './pages/JoinBeta';
 import DashboardPreview from './pages/DashboardPreview';
 import HowItWorks from './pages/HowItWorks';
 import Insights from './pages/Insights';
+
+// Routes for Features section
+import Surveys from './pages/features/Surveys';
+import AiAnalytics from './pages/features/AiAnalytics';
+import PulseCertification from './pages/features/PulseCertification';
+import AiEngine from './pages/features/AiEngine';
+import Integrations from './pages/features/Integrations';
 
 // Dashboard layout
 import DashboardLayout from './layouts/DashboardLayout';
@@ -52,6 +60,13 @@ function App() {
             <Route path="/pulsebot" element={<PulseBot />} />
             <Route path="/join-beta" element={<JoinBeta />} />
             <Route path="/dashboard-preview" element={<DashboardPreview />} />
+            
+            {/* Feature detail pages */}
+            <Route path="/features/surveys" element={<Surveys />} />
+            <Route path="/features/ai-analytics" element={<AiAnalytics />} />
+            <Route path="/features/certification" element={<PulseCertification />} />
+            <Route path="/features/ai-engine" element={<AiEngine />} />
+            <Route path="/features/integrations" element={<Integrations />} />
             
             {/* Add new routes for pitch deck */}
             <Route path="/pitch-deck-request" element={<PitchDeckRequest />} />
@@ -82,7 +97,8 @@ function App() {
             <Route path="link-validation" element={<LinkValidation />} />
           </Route>
           
-          <Route path="*" element={<div>Page not found</div>} />
+          {/* Catch-all route for 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
         
         {/* Add the ChatbotWidget here so it appears on all pages */}

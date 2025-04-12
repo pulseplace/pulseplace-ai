@@ -20,7 +20,7 @@ const CoreFeaturesTab: React.FC = () => {
             description="Continuous micro-surveys to gather real-time feedback." 
           />
           <div className="mt-4 text-center">
-            <Link to="/features#surveys">
+            <Link to="/features/surveys">
               <Button variant="outline" size="sm">Learn More</Button>
             </Link>
           </div>
@@ -34,7 +34,7 @@ const CoreFeaturesTab: React.FC = () => {
             isNew={true}
           />
           <div className="mt-4 text-center">
-            <Link to="/features#ai-analytics">
+            <Link to="/features/ai-analytics">
               <Button variant="outline" size="sm">Learn More</Button>
             </Link>
           </div>
@@ -87,7 +87,7 @@ const CoreFeaturesTab: React.FC = () => {
             description="Generate detailed reports for stakeholders." 
           />
           <div className="mt-4 text-center">
-            <Link to="/features#surveys">
+            <Link to="/features/surveys">
               <Button variant="outline" size="sm">Learn More</Button>
             </Link>
           </div>

@@ -28,7 +28,13 @@ export const validateInternalLink = (path: string): boolean => {
     '/dashboard',
     '/dashboard/profile-settings',
     '/dashboard/pitch-deck-admin',
+    '/dashboard/link-validation',
     '/features',
+    '/features/surveys',
+    '/features/ai-analytics',
+    '/features/certification',
+    '/features/ai-engine',
+    '/features/integrations',
     '/how-it-works',
     '/certification',
     '/insights',
@@ -36,6 +42,8 @@ export const validateInternalLink = (path: string): boolean => {
     '/join-beta',
     '/dashboard-preview',
     '/pulsebot',
+    '/book-demo',
+    '/demo',
     '/roi-calculator',
   ];
 

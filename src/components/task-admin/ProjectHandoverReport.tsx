@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -12,7 +11,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, Calendar } from 'lucide-react';
+import { Download, FileText, Calendar, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
 export interface TaskCategory {
@@ -137,35 +136,35 @@ const defaultCriticalTasks: CriticalTask[] = [
     priority: "high",
     status: "not-started",
     assignedTo: "QA Team",
-    dueDate: "Apr 20, 2025"
+    dueDate: "Apr 17, 2025"
   },
   {
     name: "Update pricing tier information",
     priority: "medium",
     status: "not-started",
     assignedTo: "Marketing",
-    dueDate: "Apr 22, 2025"
+    dueDate: "Apr 19, 2025"
   },
   {
     name: "Complete onboarding flow optimizations",
     priority: "medium",
     status: "in-progress",
     assignedTo: "UX Team",
-    dueDate: "Apr 25, 2025"
+    dueDate: "Apr 20, 2025"
   },
   {
     name: "Configure production environment",
     priority: "high",
     status: "not-started",
     assignedTo: "DevOps",
-    dueDate: "Apr 28, 2025"
+    dueDate: "Apr 20, 2025"
   },
   {
     name: "Conduct final security audit",
     priority: "high",
     status: "not-started",
     assignedTo: "Security Team",
-    dueDate: "Apr 30, 2025"
+    dueDate: "Apr 19, 2025"
   }
 ];
 
@@ -247,14 +246,13 @@ const defaultRiskFactors = [
 const ProjectHandoverReport: React.FC<ProjectHandoverReportProps> = ({
   projectName = "PulsePlace.ai",
   currentPhase = "Beta Launch Preparation",
-  targetLaunchDate = "May 1, 2025",
+  targetLaunchDate = "April 21, 2025",
   taskCategories = defaultTaskCategories,
   criticalTasks = defaultCriticalTasks,
   teamMembers = defaultTeamMembers,
   projectStats = defaultProjectStats,
   riskFactors = defaultRiskFactors
 }) => {
-  // Calculate overall project completion
   const overallCompletion = Math.round(
     taskCategories.reduce((sum, category) => sum + category.completion, 0) / taskCategories.length
   );
@@ -262,23 +260,20 @@ const ProjectHandoverReport: React.FC<ProjectHandoverReportProps> = ({
   const handleExportPDF = () => {
     const doc = new jsPDF();
     
-    // Title
     doc.setFontSize(20);
     doc.text(`${projectName} - Project Handover Report`, 20, 20);
     
-    // Project info section
     doc.setFontSize(12);
     doc.text(`Current Phase: ${currentPhase}`, 20, 30);
     doc.text(`Target Launch Date: ${targetLaunchDate}`, 20, 37);
     doc.text(`Overall Completion: ${overallCompletion}%`, 20, 44);
     
-    // Task Categories Summary
     doc.setFontSize(16);
     doc.text("Task Categories", 20, 60);
     
     let yPos = 70;
     taskCategories.forEach((category, index) => {
-      if (yPos > 270) { // Add new page if near bottom
+      if (yPos > 270) {
         doc.addPage();
         yPos = 20;
       }
@@ -288,7 +283,6 @@ const ProjectHandoverReport: React.FC<ProjectHandoverReportProps> = ({
       yPos += 7;
     });
     
-    // Critical Tasks
     yPos += 10;
     if (yPos > 270) {
       doc.addPage();
@@ -311,7 +305,6 @@ const ProjectHandoverReport: React.FC<ProjectHandoverReportProps> = ({
       yPos += 15;
     });
     
-    // Risk Factors
     yPos += 10;
     if (yPos > 270) {
       doc.addPage();
@@ -333,7 +326,6 @@ const ProjectHandoverReport: React.FC<ProjectHandoverReportProps> = ({
       yPos += 7;
     });
     
-    // Add footer
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
@@ -593,40 +585,124 @@ const ProjectHandoverReport: React.FC<ProjectHandoverReportProps> = ({
       
       <Card>
         <CardHeader>
-          <CardTitle>Next Steps & Recommendations</CardTitle>
+          <CardTitle>Action Plan for Beta Launch (April 21, 2025)</CardTitle>
+          <Badge className="ml-2 bg-orange-100 text-orange-800 border-orange-200">High Priority</Badge>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <h4 className="font-medium mb-2">Short-Term Priorities (Next 7 Days)</h4>
-              <ul className="list-disc list-inside space-y-1 text-gray-800">
-                <li>Complete all high-priority critical path tasks due before April 20</li>
-                <li>Finalize link validation across the entire site and fix any broken navigation</li>
-                <li>Complete the AI analytics dashboard implementation for the investor demo</li>
-                <li>Begin comprehensive cross-browser testing and device compatibility checks</li>
-                <li>Prepare investor pitch deck with updated financial projections</li>
+              <h4 className="font-medium mb-3 flex items-center">
+                <AlertTriangle className="h-4 w-4 mr-2 text-orange-600" />
+                Immediate Actions (Next 3 Days)
+              </h4>
+              <ul className="list-none space-y-2">
+                {criticalTasks
+                  .filter(task => task.priority === "high" && new Date(task.dueDate) <= new Date('2025-04-15'))
+                  .map((task, idx) => (
+                    <li key={idx} className="flex items-center p-2 rounded-md bg-orange-50 border border-orange-100">
+                      <div className="mr-3">
+                        {task.status === 'complete' ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <AlertTriangle className="h-5 w-5 text-orange-500" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">{task.name}</p>
+                        <p className="text-sm text-gray-600">Assigned to: {task.assignedTo} • Due: {task.dueDate}</p>
+                      </div>
+                      <div>
+                        {getStatusBadge(task.status)}
+                      </div>
+                    </li>
+                  ))}
               </ul>
             </div>
             
             <div>
-              <h4 className="font-medium mb-2">Medium-Term Goals (Before Launch)</h4>
-              <ul className="list-disc list-inside space-y-1 text-gray-800">
-                <li>Complete all pending testing and QA tasks</li>
-                <li>Finalize the onboarding flow and user experience improvements</li>
-                <li>Configure and test the production environment</li>
-                <li>Conduct final security audit and address any vulnerabilities</li>
-                <li>Complete beta tester recruitment and prepare test protocols</li>
+              <h4 className="font-medium mb-3 flex items-center">
+                <Calendar className="h-4 w-4 mr-2 text-blue-600" />
+                Pre-Launch Actions (April 16-20)
+              </h4>
+              <ul className="list-none space-y-2">
+                {criticalTasks
+                  .filter(task => 
+                    task.priority === "high" && 
+                    new Date(task.dueDate) > new Date('2025-04-15') &&
+                    new Date(task.dueDate) <= new Date('2025-04-20')
+                  )
+                  .map((task, idx) => (
+                    <li key={idx} className="flex items-center p-2 rounded-md bg-blue-50 border border-blue-100">
+                      <div className="mr-3">
+                        {task.status === 'complete' ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <Calendar className="h-5 w-5 text-blue-500" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">{task.name}</p>
+                        <p className="text-sm text-gray-600">Assigned to: {task.assignedTo} • Due: {task.dueDate}</p>
+                      </div>
+                      <div>
+                        {getStatusBadge(task.status)}
+                      </div>
+                    </li>
+                  ))}
               </ul>
             </div>
             
             <div>
-              <h4 className="font-medium mb-2">Post-Launch Planning</h4>
-              <ul className="list-disc list-inside space-y-1 text-gray-800">
-                <li>Establish monitoring and feedback collection mechanisms</li>
-                <li>Define success metrics and KPIs for the beta phase</li>
-                <li>Create a structured plan for incorporating beta tester feedback</li>
-                <li>Develop timeline for transitioning from beta to public release</li>
-              </ul>
+              <h4 className="font-medium mb-3">Risk Mitigation Strategy</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {riskFactors.map((risk, index) => (
+                  <div key={index} className={`p-3 rounded-md border ${
+                    risk.impact === 'high' ? 'bg-red-50 border-red-100' : 
+                    risk.impact === 'medium' ? 'bg-yellow-50 border-yellow-100' : 
+                    'bg-blue-50 border-blue-100'
+                  }`}>
+                    <div className="flex justify-between items-start mb-1">
+                      <h5 className="font-medium">{risk.name}</h5>
+                      <div className="flex space-x-1">
+                        <span className="text-xs">Impact:</span>
+                        {getRiskBadge(risk.impact)}
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-700 mb-2">Likelihood: {risk.likelihood}</p>
+                    <div className="text-xs font-medium uppercase text-gray-500 mb-1">Mitigation Plan:</div>
+                    <p className="text-sm">{risk.mitigation}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-medium mb-2">Launch Day Checklist (April 21)</h4>
+              <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                <ul className="list-disc list-inside space-y-2 text-gray-800">
+                  <li>Final end-to-end testing of core user flows</li>
+                  <li>Verify all analytics tracking is working correctly</li>
+                  <li>Confirm email notifications and integrations are functional</li>
+                  <li>Deploy to production environment (morning of April 21)</li>
+                  <li>Conduct smoke testing in production environment</li>
+                  <li>Send beta launch emails to confirmed participants</li>
+                  <li>Monitor system health and performance metrics</li>
+                  <li>Have support team standby for initial user onboarding</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-medium mb-2">Post-Launch Monitoring (April 21-28)</h4>
+              <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                <ul className="list-disc list-inside space-y-2 text-gray-800">
+                  <li>Daily review of system performance and error logs</li>
+                  <li>User feedback collection and prioritization</li>
+                  <li>Daily bug triage and critical issue resolution</li>
+                  <li>User engagement monitoring and dropout analysis</li>
+                  <li>Weekly team retrospective to assess launch success</li>
+                </ul>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -638,7 +714,7 @@ const ProjectHandoverReport: React.FC<ProjectHandoverReportProps> = ({
           className="flex items-center gap-2"
         >
           <Download className="h-4 w-4" />
-          Download Complete Report
+          Download Action Plan
         </Button>
       </div>
     </div>

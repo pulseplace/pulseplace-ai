@@ -3,7 +3,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LucideIcon } from 'lucide-react';
 
 // Helper function to get feature points based on feature type
 export const getRandomFeaturePoint = (featureType: string, index: number) => {

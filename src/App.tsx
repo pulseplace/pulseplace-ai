@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Auth from './pages/Auth';
 import Home from './pages/Home';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -21,6 +21,14 @@ import PitchDeckAdmin from './pages/dashboard/PitchDeckAdmin';
 import LinkValidation from './pages/dashboard/LinkValidation';
 import BookDemo from './pages/BookDemo';
 import Demo from './pages/Demo';
+import Features from './pages/Features';
+import Certification from './pages/Certification';
+import Contact from './pages/Contact';
+import PulseBot from './pages/PulseBot';
+import JoinBeta from './pages/JoinBeta';
+import DashboardPreview from './pages/DashboardPreview';
+import HowItWorks from './pages/HowItWorks';
+import Insights from './pages/Insights';
 
 // Dashboard layout
 import DashboardLayout from './layouts/DashboardLayout';
@@ -34,6 +42,16 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/investor-deck" element={<InvestorDeck />} />
+            
+            {/* Features and main routes */}
+            <Route path="/features" element={<Features />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route path="/certification" element={<Certification />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/pulsebot" element={<PulseBot />} />
+            <Route path="/join-beta" element={<JoinBeta />} />
+            <Route path="/dashboard-preview" element={<DashboardPreview />} />
             
             {/* Add new routes for pitch deck */}
             <Route path="/pitch-deck-request" element={<PitchDeckRequest />} />

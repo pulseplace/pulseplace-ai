@@ -2,6 +2,8 @@
 import React from 'react';
 import { Brain, Zap, Cpu, Sparkles, Star } from 'lucide-react';
 import FeatureCard from './FeatureCard';
+import { Link } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
 
 const AIFeaturesTab: React.FC = () => {
   return (
@@ -11,31 +13,59 @@ const AIFeaturesTab: React.FC = () => {
       </p>
       
       <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-        <FeatureCard 
-          icon={<Brain className="h-8 w-8" />}
-          title="LLM Powered Insights" 
-          description="Deep learning models that understand the nuances of workplace culture." 
-          isNew={true}
-        />
+        <div>
+          <FeatureCard 
+            icon={<Brain className="h-8 w-8" />}
+            title="LLM Powered Insights" 
+            description="Deep learning models that understand the nuances of workplace culture." 
+            isNew={true}
+          />
+          <div className="mt-4 text-center">
+            <Link to="/features#ai-analytics">
+              <Button variant="outline" size="sm">Learn More</Button>
+            </Link>
+          </div>
+        </div>
         
-        <FeatureCard 
-          icon={<Zap className="h-8 w-8" />}
-          title="Trust Scoring" 
-          description="Proprietary algorithms that quantify workplace trust with precision." 
-        />
+        <div>
+          <FeatureCard 
+            icon={<Zap className="h-8 w-8" />}
+            title="Trust Scoring" 
+            description="Proprietary algorithms that quantify workplace trust with precision." 
+          />
+          <div className="mt-4 text-center">
+            <Link to="/certification">
+              <Button variant="outline" size="sm">See How It Works</Button>
+            </Link>
+          </div>
+        </div>
         
-        <FeatureCard 
-          icon={<Cpu className="h-8 w-8" />}
-          title="Sentiment Analysis" 
-          description="Natural language processing that captures the true feeling behind feedback." 
-        />
+        <div>
+          <FeatureCard 
+            icon={<Cpu className="h-8 w-8" />}
+            title="Sentiment Analysis" 
+            description="Natural language processing that captures the true feeling behind feedback." 
+          />
+          <div className="mt-4 text-center">
+            <Link to="/features#ai-analytics">
+              <Button variant="outline" size="sm">Learn More</Button>
+            </Link>
+          </div>
+        </div>
         
-        <FeatureCard 
-          icon={<Sparkles className="h-8 w-8" />}
-          title="Predictive Analytics" 
-          description="AI models that forecast culture trends before they impact performance." 
-          isNew={true}
-        />
+        <div>
+          <FeatureCard 
+            icon={<Sparkles className="h-8 w-8" />}
+            title="Predictive Analytics" 
+            description="AI models that forecast culture trends before they impact performance." 
+            isNew={true}
+          />
+          <div className="mt-4 text-center">
+            <Link to="/features#ai-analytics">
+              <Button variant="outline" size="sm">Learn More</Button>
+            </Link>
+          </div>
+        </div>
       </div>
       
       <div className="mt-12 bg-gradient-to-r from-pulse-50 to-teal-50 p-8 rounded-xl">
@@ -75,6 +105,12 @@ const AIFeaturesTab: React.FC = () => {
             </p>
           </div>
         </div>
+      </div>
+      
+      <div className="text-center mt-8">
+        <Link to="/demo">
+          <Button className="bg-pulse-gradient hover:opacity-90">Schedule AI Demo</Button>
+        </Link>
       </div>
     </div>
   );

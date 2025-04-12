@@ -2,6 +2,7 @@
 import React from 'react';
 import MetaTags from '@/components/MetaTags';
 import ProjectHandoverReport from '@/components/task-admin/ProjectHandoverReport';
+import { Card, CardContent } from '@/components/ui/card';
 
 const ProjectHandover: React.FC = () => {
   return (
@@ -11,7 +12,11 @@ const ProjectHandover: React.FC = () => {
         description="Comprehensive project status and handover report for the PulsePlace.ai beta launch."
       />
       
-      <ProjectHandoverReport />
+      <Card className="mt-4">
+        <CardContent className="pt-6">
+          <ProjectHandoverReport />
+        </CardContent>
+      </Card>
     </div>
   );
 };

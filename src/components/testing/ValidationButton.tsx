@@ -19,6 +19,7 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
   const navigate = useNavigate();
   
   const handleClick = async () => {
+    console.log('Running link validation');
     const results = await runLinkValidation();
     if (onComplete) {
       onComplete(results);
@@ -27,6 +28,10 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
   
   const handleViewDashboard = () => {
     navigate('/dashboard/link-validation');
+  };
+  
+  const handleViewHandoverReport = () => {
+    navigate('/project-handover');
   };
   
   if (variant === 'icon') {
@@ -72,6 +77,13 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
         onClick={handleViewDashboard}
       >
         View Dashboard
+      </Button>
+      <Button 
+        variant="default"
+        size="sm" 
+        onClick={handleViewHandoverReport}
+      >
+        Project Handover
       </Button>
     </div>
   );

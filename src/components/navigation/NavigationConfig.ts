@@ -13,17 +13,12 @@ export interface SubNavItem extends NavItem {
 
 // Primary navigation items
 export const navItems: NavItem[] = [
-  { label: 'Features', path: '/features' },
   { label: 'How It Works', path: '/how-it-works' },
   { label: 'Certification', path: '/certification' },
   { label: 'Insights', path: '/insights' },
   { label: 'PulseBot', path: '/pulsebot' },
   { label: 'AI Dashboard', path: '/ai-dashboard' },
   { label: 'Dashboard', path: '/dashboard' },
-  { label: 'Task Audit', path: '/task-audit' },
-  { label: 'Task Summary', path: '/task-summary' },
-  { label: 'Project Handover', path: '/project-handover' },
-  { label: 'Contact', path: '/contact' },
 ];
 
 // Features submenu items
@@ -33,7 +28,6 @@ export const featuresSubItems: SubNavItem[] = [
   { label: 'PulseBot', description: 'AI assistant for engagement', path: '/pulsebot' },
   { label: 'Dashboard', description: 'Real-time culture metrics', path: '/dashboard' },
   { label: 'LLM Insights', description: 'AI-powered language analytics', path: '/dashboard/llm-insights' },
-  { label: 'AI Dashboard', description: 'Comprehensive AI workspace', path: '/ai-dashboard' },
   { label: 'Task Management', description: 'Track project tasks and progress', path: '/task-audit' },
   { label: 'Project Reports', description: 'View handover and summary reports', path: '/project-handover' },
   { label: 'ROI Calculator', description: 'See the business impact', path: '/roi-calculator' },

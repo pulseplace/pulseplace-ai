@@ -15,7 +15,64 @@ export const processPulseBotQuery = (query: string, contextData: any) => {
   
   const lowerQuery = query.toLowerCase();
   
-  if (lowerQuery.includes('top') && lowerQuery.includes('department')) {
+  // Quick prompt handlers for demo
+  if (lowerQuery.includes('summarize team alpha') || lowerQuery.includes('team alpha summary')) {
+    response = `Team Alpha Culture Summary (April 13, 2025):
+
+Your team continues to show high alignment and positive sentiment around leadership and collaboration. 74% of employees reported greater clarity in roles, with many referencing "transparent decision-making" in their responses.
+
+However, some concern persists around workload balance and recognition. Feedback like "deadlines are always tight" suggests a need for better pacing or clearer prioritization.
+
+We recommend a short check-in session to revisit scope alignment. This team is well-positioned to improve from a good to great culture baseline.`;
+    
+    suggestedFollowups = [
+      "Show risk for Team Gamma",
+      "Why is Team Beta eligible for certification?",
+      "What actions would improve Team Alpha's workload balance?"
+    ];
+  }
+  else if (lowerQuery.includes('show risk for team gamma') || lowerQuery.includes('team gamma risk')) {
+    response = `Team Gamma Risk Assessment (April 13, 2025):
+
+Risk Type: Burnout & Manager Disconnect
+Severity: High
+Key Indicators:
+- Engagement dropped 28% in the last 30 days
+- Sentiment declined from 70% positive to 48%
+- Manager feedback scores down 31%
+
+Primary causes appear to be increased workload following the recent product launch and perceived lack of leadership support. Three team members specifically mentioned feeling "disconnected from leadership decisions."
+
+Recommended Action: Schedule 1:1 check-ins with all team members within 72 hours and consider leadership coaching for the team manager.`;
+    
+    suggestedFollowups = [
+      "Summarize Team Alpha",
+      "Why is Team Beta eligible for certification?",
+      "What leadership coaching would help Team Gamma?"
+    ];
+  }
+  else if (lowerQuery.includes('why is team beta') || lowerQuery.includes('team beta certification')) {
+    response = `Team Beta Certification Eligibility (April 13, 2025):
+
+Team Beta has achieved a PulseScore of 82/100, qualifying for Culture Certified™ status.
+
+Key qualifying factors:
+- Exceeds benchmarks in 3 critical areas: Inclusion (88%), Peer Trust (91%), and Feedback Culture (85%)
+- Maintains consistent high scores for 3 consecutive quarters
+- 93% survey participation rate (exceeds 75% threshold)
+- Strong leadership alignment scores (87%)
+
+While there are improvement areas in Workload Balance and Career Clarity, these don't prevent certification as they remain above minimum thresholds.
+
+This team demonstrates exceptional psychological safety and communication patterns that serve as internal best practices.`;
+    
+    suggestedFollowups = [
+      "Summarize Team Alpha",
+      "Show risk for Team Gamma",
+      "What would improve Team Beta's career clarity scores?"
+    ];
+  }
+  else if (lowerQuery.includes('top') && lowerQuery.includes('department')) {
     response = `Based on recent survey data, your top performing departments are:
 1. HR (85 points)
 2. Engineering (82 points)
@@ -103,14 +160,17 @@ I can help with:
 - Comparing metrics to industry benchmarks
 - Assessing turnover risk factors
 
-What specific aspect of your culture data would you like to explore?`;
+For this demo, try these quick prompts:
+- "Summarize Team Alpha"
+- "Show risk for Team Gamma" 
+- "Why is Team Beta eligible for certification?"`;
     
     suggestedFollowups = [
+      "Summarize Team Alpha",
+      "Show risk for Team Gamma",
+      "Why is Team Beta eligible for certification?",
       "What are our top performing departments?",
-      "What themes are emerging from feedback?",
-      "Where should we focus improvement efforts?",
-      "How does our work-life balance compare to benchmarks?",
-      "What's causing turnover risk in Customer Support?"
+      "What themes are emerging from feedback?"
     ];
   }
   

@@ -59,7 +59,8 @@ export const sampleInsights = [
     team: "Team Alpha",
     insight_type: "Culture Summary" as "Culture Summary",
     ai_generated: true,
-    content: "Culture Insights – Team Alpha (April 2025)\nYour team continues to show high alignment and positive sentiment around leadership and collaboration. 74% of employees reported a greater sense of clarity in roles, and many referenced \"transparent decision-making\" in their responses.\n\nHowever, some concern persists around workload balance and recognition. Feedback like \"deadlines are always tight\" suggests a need for better pacing or clearer prioritization.\n\nWe recommend a short check-in session to revisit scope alignment. Overall, this team is well positioned to improve from a good to great culture baseline."
+    content: "Culture Insights – Team Alpha (April 2025)\nYour team continues to show high alignment and positive sentiment around leadership and collaboration. 74% of employees reported a greater sense of clarity in roles, and many referenced \"transparent decision-making\" in their responses.\n\nHowever, some concern persists around workload balance and recognition. Feedback like \"deadlines are always tight\" suggests a need for better pacing or clearer prioritization.\n\nWe recommend a short check-in session to revisit scope alignment. Overall, this team is well positioned to improve from a good to great culture baseline.",
+    updated_at: new Date(2025, 3, 12, 14, 30) // April 12, 2025, 2:30 PM
   },
   {
     team: "Team Beta",
@@ -67,7 +68,8 @@ export const sampleInsights = [
     ai_generated: true,
     pulse_score: 82,
     certification_eligible: true,
-    summary: "Strengths: Inclusion (88%), Peer Trust (91%), Feedback Culture (85%)\nImprovement Areas: Workload Balance, Career Clarity\nParticipation Rate: 93%\nCertify: YES\nAI Rationale: Your team exceeds 3 of 5 certification benchmarks and shows strong consistency in psychological safety and peer recognition. Certification is recommended."
+    summary: "Strengths: Inclusion (88%), Peer Trust (91%), Feedback Culture (85%)\nImprovement Areas: Workload Balance, Career Clarity\nParticipation Rate: 93%\nCertify: YES\nAI Rationale: Your team exceeds 3 of 5 certification benchmarks and shows strong consistency in psychological safety and peer recognition. Certification is recommended.",
+    updated_at: new Date(2025, 3, 10, 9, 15) // April 10, 2025, 9:15 AM
   },
   {
     team: "Team Gamma",
@@ -76,7 +78,8 @@ export const sampleInsights = [
     risk_type: "Burnout & Manager Disconnect",
     engagement_drop_percent: 28,
     sentiment_drop: "70% to 48%",
-    recommendation: "Initiate a 1:1 check-in campaign, and review current sprint allocation. Consider leadership coaching for the team lead to rebuild trust."
+    recommendation: "Initiate a 1:1 check-in campaign, and review current sprint allocation. Consider leadership coaching for the team lead to rebuild trust.",
+    updated_at: new Date(2025, 3, 13, 8, 45) // April 13, 2025, 8:45 AM
   }
 ];
 

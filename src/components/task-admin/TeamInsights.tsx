@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Check, Info } from 'lucide-react';
+import { AlertTriangle, Check, Info, TrendingDown, TrendingUp } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
+import { format } from 'date-fns';
 
 // Define the types for team insights
 interface TeamInsight {
@@ -17,6 +18,7 @@ interface TeamInsight {
   engagement_drop_percent?: number;
   sentiment_drop?: string;
   recommendation?: string;
+  updated_at?: string | Date; // New timestamp field
 }
 
 interface TeamInsightsProps {
@@ -43,6 +45,12 @@ const TeamInsights: React.FC<TeamInsightsProps> = ({ insights }) => {
             </CardHeader>
             <CardContent>
               {renderInsightContent(insight)}
+              
+              {/* Last updated timestamp */}
+              <div className="mt-4 pt-3 border-t border-gray-100 text-xs text-gray-500 flex items-center justify-between">
+                <span>Last updated: {formatTimestamp(insight.updated_at)}</span>
+                {getSentimentIndicator(insight)}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -77,6 +85,49 @@ const getInsightTypeIcon = (insightType: string) => {
     default:
       return null;
   }
+};
+
+// Helper function to format the timestamp
+const formatTimestamp = (timestamp?: string | Date): string => {
+  if (!timestamp) {
+    return 'Just now';
+  }
+  
+  try {
+    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+    return format(date, 'MMM d, yyyy • h:mm a');
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return 'Date unavailable';
+  }
+};
+
+// Helper function to get sentiment indicator based on insight type
+const getSentimentIndicator = (insight: TeamInsight) => {
+  if (insight.insight_type === 'PulseScore Certification' && insight.pulse_score) {
+    return (
+      <Badge 
+        className={`flex items-center gap-1 ${insight.pulse_score > 75 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
+      >
+        {insight.pulse_score > 75 ? 
+          <TrendingUp className="h-3 w-3" /> : 
+          <TrendingDown className="h-3 w-3" />
+        }
+        <span>{insight.pulse_score}</span>
+      </Badge>
+    );
+  }
+  
+  if (insight.insight_type === 'Risk Alert' && insight.engagement_drop_percent) {
+    return (
+      <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
+        <TrendingDown className="h-3 w-3" />
+        <span>{insight.engagement_drop_percent}%</span>
+      </Badge>
+    );
+  }
+  
+  return null;
 };
 
 // Helper function to render the content based on insight type

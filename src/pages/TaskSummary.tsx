@@ -105,7 +105,7 @@ const TaskSummary: React.FC = () => {
     // Add Team Sigma (approaching certification)
     {
       team: "Team Sigma",
-      insight_type: "PulseScore Certification",
+      insight_type: "PulseScore Certification" as const,
       ai_generated: true,
       pulse_score: 78,
       certification_eligible: false,
@@ -115,7 +115,7 @@ const TaskSummary: React.FC = () => {
     // Add Team Sigma culture summary
     {
       team: "Team Sigma",
-      insight_type: "Culture Summary",
+      insight_type: "Culture Summary" as const,
       ai_generated: true,
       content: "Team Sigma demonstrates strong innovation metrics with 92% positive sentiment around creativity and 87% for cross-functional collaboration. Their learning culture (84% positive) is also notable. However, work-life balance (64%) and communication clarity (69%) need attention. The team's energy and enthusiasm are high, but there are early signs of potential burnout.",
       updated_at: new Date(Date.now() - 3600000 * 36) // 1.5 days ago
@@ -123,7 +123,7 @@ const TaskSummary: React.FC = () => {
     // Add Team Zeta (gold certification level)
     {
       team: "Team Zeta",
-      insight_type: "PulseScore Certification",
+      insight_type: "PulseScore Certification" as const,
       ai_generated: true,
       pulse_score: 94,
       certification_eligible: true,

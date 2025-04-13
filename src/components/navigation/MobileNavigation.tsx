@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Calendar, LogIn, UserPlus } from 'lucide-react';
+import { Menu, X, Calendar, LogIn, Home, UserPlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -74,17 +74,18 @@ const MobileNavigation = ({ isMenuOpen, setIsMenuOpen, location }: MobileNavigat
                 </AccordionItem>
               </Accordion>
               
-              {navItems.slice(1).map((item, index) => (
+              {navItems.map((item, index) => (
                 <Link 
                   key={index}
                   to={item.path}
-                  className={`transition-colors py-2 ${
+                  className={`transition-colors py-2 flex items-center gap-2 ${
                     isActive(location, item.path) 
                       ? 'text-pulse-600 hover:text-pulse-700' 
                       : 'text-gray-700 hover:text-pulse-600'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
+                  {item.label === 'Home' && <Home className="h-4 w-4" />}
                   {item.label}
                 </Link>
               ))}

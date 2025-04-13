@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Cpu, LogIn, UserPlus } from 'lucide-react';
+import { Calendar, Cpu, Home, LogIn, UserPlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -81,12 +81,13 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
         <Link 
           key={index}
           to={item.path}
-          className={`transition-colors ${
+          className={`transition-colors flex items-center gap-1 ${
             isActive(location, item.path) 
               ? 'text-pulse-600 hover:text-pulse-700' 
               : 'text-gray-700 hover:text-pulse-600'
           }`}
         >
+          {item.label === 'Home' && <Home className="h-4 w-4" />}
           {item.label}
         </Link>
       ))}

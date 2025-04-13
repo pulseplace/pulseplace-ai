@@ -13,6 +13,7 @@ export interface SubNavItem extends NavItem {
 
 // Primary navigation items
 export const navItems: NavItem[] = [
+  { label: 'Home', path: '/' },
   { label: 'How It Works', path: '/how-it-works' },
   { label: 'Certification', path: '/certification' },
   { label: 'Insights', path: '/insights' },

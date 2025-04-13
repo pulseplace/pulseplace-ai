@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
-// Define the types for team insights
-interface TeamInsight {
+// Define the types for team insights with literal types for insight_type
+export interface TeamInsight {
   team: string;
   insight_type: 'Culture Summary' | 'PulseScore Certification' | 'Risk Alert';
   ai_generated: boolean;

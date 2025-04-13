@@ -3,9 +3,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, Send, User, Lightbulb, BarChart2, AlertTriangle, CheckCircle2, TrendingUp, Sparkles } from 'lucide-react';
+import { Bot, Send } from 'lucide-react';
 import { processPulseBotQuery } from '@/utils/ai/pulseBot';
 import { toast } from 'sonner';
+import QuickPrompts from './pulsebot/QuickPrompts';
+import ProgressBar from './pulsebot/ProgressBar';
+import ChatMessage, { Message } from './pulsebot/ChatMessage';
 
 // Sample context data for the bot
 const sampleContextData = {
@@ -28,13 +31,6 @@ const sampleContextData = {
     participantCount: 348
   }
 };
-
-interface Message {
-  id: string;
-  type: 'user' | 'bot';
-  text: string;
-  suggestedFollowups?: string[];
-}
 
 const PulseBot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -146,15 +142,6 @@ const PulseBot: React.FC = () => {
     }, 100);
   };
   
-  // Demo quick prompts for the showcase
-  const quickPrompts = [
-    { text: "Summarize Team Alpha", icon: <BarChart2 className="h-4 w-4 text-blue-600" /> },
-    { text: "Show risk for Team Gamma", icon: <AlertTriangle className="h-4 w-4 text-amber-600" /> },
-    { text: "Why is Team Beta eligible for certification?", icon: <CheckCircle2 className="h-4 w-4 text-green-600" /> },
-    { text: "Summarize Team Sigma", icon: <TrendingUp className="h-4 w-4 text-indigo-600" /> },
-    { text: "Summarize Team Zeta", icon: <Sparkles className="h-4 w-4 text-purple-600" /> }
-  ];
-  
   return (
     <Card className="flex flex-col h-[600px]">
       <CardHeader className="pb-2">
@@ -165,87 +152,18 @@ const PulseBot: React.FC = () => {
       </CardHeader>
       <CardContent className="flex-1 flex flex-col pb-4">
         {/* Demo Quick Prompts Section */}
-        <div className="mb-4 bg-blue-50 rounded-lg p-3 border border-blue-100">
-          <div className="flex items-center gap-1 text-xs text-blue-700 mb-2">
-            <Lightbulb className="h-3.5 w-3.5" />
-            <span className="font-medium">Demo Quick Prompts:</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {quickPrompts.map((prompt, index) => (
-              <button
-                key={index}
-                className="text-xs bg-white border border-blue-200 rounded-full px-3 py-1.5 hover:bg-blue-50 flex items-center gap-1"
-                onClick={() => handleQuickPrompt(prompt.text)}
-              >
-                {prompt.icon}
-                <span>{prompt.text}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+        <QuickPrompts onPromptClick={handleQuickPrompt} />
       
         {/* AI Processing Progress Bar */}
-        {aiProgressVisible && (
-          <div className="mb-4">
-            <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-              <span>AI Insight Engine</span>
-              <span>{aiProgress}%</span>
-            </div>
-            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-pulse-600 rounded-full transition-all duration-200 ease-in-out"
-                style={{ width: `${aiProgress}%` }}
-              ></div>
-            </div>
-          </div>
-        )}
+        <ProgressBar progress={aiProgress} isVisible={aiProgressVisible} />
       
         <div className="flex-1 overflow-y-auto mb-4 pr-2">
           {messages.map(message => (
-            <div
-              key={message.id}
-              className={`mb-4 ${message.type === 'user' ? 'flex justify-end' : ''}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-lg p-3 ${
-                  message.type === 'user'
-                    ? 'bg-pulse-100 text-pulse-800'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                <div className="flex items-start gap-2">
-                  {message.type === 'bot' && (
-                    <Bot className="h-5 w-5 mt-0.5 text-pulse-600" />
-                  )}
-                  <div className="flex-1">
-                    <p className="text-sm">{message.text}</p>
-                    
-                    {message.suggestedFollowups && message.suggestedFollowups.length > 0 && (
-                      <div className="mt-3">
-                        <div className="flex items-center gap-1 text-xs text-gray-500 mb-1">
-                          <Lightbulb className="h-3 w-3" />
-                          <span>Suggested questions:</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {message.suggestedFollowups.map((question, index) => (
-                            <button
-                              key={index}
-                              className="text-xs bg-white border border-gray-200 rounded-full px-2 py-1 hover:bg-gray-50"
-                              onClick={() => handleSuggestedQuestion(question)}
-                            >
-                              {question}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  {message.type === 'user' && (
-                    <User className="h-5 w-5 mt-0.5 text-pulse-600" />
-                  )}
-                </div>
-              </div>
-            </div>
+            <ChatMessage 
+              key={message.id} 
+              message={message} 
+              onSuggestedQuestionClick={handleSuggestedQuestion} 
+            />
           ))}
           {isProcessing && (
             <div className="mb-4">

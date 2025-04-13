@@ -13,6 +13,8 @@ import TaskAudit from './pages/TaskAudit';
 import TaskSummary from './pages/TaskSummary';
 import ProjectHandover from './pages/ProjectHandover';
 import DashboardHome from './pages/dashboard/Home';
+import Home from './pages/Home';
+import Features from './pages/Features';
 
 function App() {
   return (
@@ -20,7 +22,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Root />}>
           {/* Public routes */}
-          <Route index element={<Dashboard />} />
+          <Route index element={<Home />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          
+          {/* Features page */}
+          <Route path="features" element={<Features />} />
           
           {/* AI Features */}
           <Route path="pulsebot" element={<PulseBotPage />} />
@@ -39,7 +45,6 @@ function App() {
           {/* Add any other routes that were previously available */}
           <Route path="certification" element={<Dashboard />} /> {/* Placeholder until we restore the real component */}
           <Route path="how-it-works" element={<Dashboard />} /> {/* Placeholder until we restore the real component */}
-          <Route path="features" element={<Dashboard />} /> {/* Placeholder until we restore the real component */}
           <Route path="contact" element={<Dashboard />} /> {/* Placeholder until we restore the real component */}
           
           {/* Not Found route */}

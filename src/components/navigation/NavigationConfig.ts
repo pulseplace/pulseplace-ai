@@ -19,7 +19,6 @@ export const navItems: NavItem[] = [
   { label: 'Insights', path: '/insights' },
   { label: 'PulseBot', path: '/pulsebot' },
   { label: 'AI Dashboard', path: '/ai-dashboard' },
-  { label: 'LLM Insights', path: '/dashboard/llm-insights' },
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'Task Audit', path: '/task-audit' },
   { label: 'Task Summary', path: '/task-summary' },

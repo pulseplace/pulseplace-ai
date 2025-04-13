@@ -59,17 +59,6 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
                     </NavigationMenuLink>
                   </li>
                 ))}
-                <li className="col-span-2">
-                  <div className="mt-2 bg-pulse-50 p-3 rounded-md">
-                    <div className="flex items-center space-x-2 text-pulse-600 mb-1">
-                      <Cpu className="h-4 w-4" />
-                      <span className="text-sm font-medium">AI-Powered Technology</span>
-                    </div>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Our platform uses advanced AI and LLM technology to provide deep insights into workplace culture.
-                    </p>
-                  </div>
-                </li>
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
@@ -77,7 +66,7 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
       </NavigationMenu>
       
       {/* Primary navigation items */}
-      {navItems.slice(1).map((item, index) => (
+      {navItems.map((item, index) => (
         <Link 
           key={index}
           to={item.path}

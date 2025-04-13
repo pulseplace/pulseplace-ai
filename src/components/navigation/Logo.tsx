@@ -5,9 +5,12 @@ import { Link } from 'react-router-dom';
 const Logo = () => {
   return (
     <Link to="/" className="flex items-center">
-      <span className="text-2xl font-bold bg-gradient-to-r from-pulse-400 to-teal-400 bg-clip-text text-transparent">
-        PulsePlace.ai
-      </span>
+      <div className="font-bold text-xl text-gray-900">
+        <span className="bg-gradient-to-r from-pulse-600 to-teal-500 bg-clip-text text-transparent">
+          PulsePlace
+        </span>
+        <span className="text-gray-700">.ai</span>
+      </div>
     </Link>
   );
 };

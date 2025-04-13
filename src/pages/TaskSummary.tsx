@@ -35,7 +35,7 @@ const TaskSummary: React.FC = () => {
       id: "phase-1",
       name: "Foundation",
       progress: 100,
-      status: "completed",
+      status: "completed" as const,
       startDate: "2025-01-01",
       endDate: "2025-02-15",
       tasks: []
@@ -44,7 +44,7 @@ const TaskSummary: React.FC = () => {
       id: "phase-2",
       name: "Core Features",
       progress: 65,
-      status: "in-progress",
+      status: "in-progress" as const,
       startDate: "2025-02-16",
       endDate: "2025-04-15",
       tasks: []
@@ -53,7 +53,7 @@ const TaskSummary: React.FC = () => {
       id: "phase-3",
       name: "Beta Launch",
       progress: 10,
-      status: "in-progress",
+      status: "in-progress" as const,
       startDate: "2025-04-16",
       endDate: "2025-06-01",
       tasks: []
@@ -62,7 +62,7 @@ const TaskSummary: React.FC = () => {
       id: "phase-4",
       name: "Public Release",
       progress: 0,
-      status: "not-started",
+      status: "not-started" as const,
       startDate: "2025-06-02",
       endDate: "2025-07-15",
       tasks: []

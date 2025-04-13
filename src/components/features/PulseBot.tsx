@@ -3,8 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, Send, User, Lightbulb } from 'lucide-react';
-import { processPulseBotQuery } from '@/utils/aiAnalytics';
+import { Bot, Send, User, Lightbulb, BarChart2, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { processPulseBotQuery } from '@/utils/ai/pulseBot';
+import { toast } from 'sonner';
 
 // Sample context data for the bot
 const sampleContextData = {
@@ -42,14 +43,18 @@ const PulseBot: React.FC = () => {
       type: 'bot',
       text: "👋 Hi there! I'm PulseBot, your culture analytics assistant. I can help you understand your workplace pulse data, identify trends, and suggest actions to improve your culture. What would you like to know?",
       suggestedFollowups: [
+        "Summarize Team Alpha",
+        "Show risk for Team Gamma",
+        "Why is Team Beta eligible for certification?",
         "What are our top performing departments?",
-        "What key themes are emerging from feedback?",
-        "How can we improve our overall culture score?"
+        "What key themes are emerging from feedback?"
       ]
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [aiProgress, setAiProgress] = useState(0);
+  const [aiProgressVisible, setAiProgressVisible] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const scrollToBottom = () => {
@@ -59,6 +64,31 @@ const PulseBot: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  
+  // Simulate AI Progress for demo
+  useEffect(() => {
+    if (isProcessing) {
+      setAiProgressVisible(true);
+      const interval = setInterval(() => {
+        setAiProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            return 100;
+          }
+          return prev + 5;
+        });
+      }, 100);
+      
+      return () => {
+        clearInterval(interval);
+        // Hide progress bar after processing completes with a delay
+        setTimeout(() => {
+          setAiProgressVisible(false);
+          setAiProgress(0);
+        }, 500);
+      };
+    }
+  }, [isProcessing]);
   
   const handleSendMessage = () => {
     if (inputValue.trim() === '') return;
@@ -87,7 +117,7 @@ const PulseBot: React.FC = () => {
       
       setMessages(prev => [...prev, botMessage]);
       setIsProcessing(false);
-    }, 1000);
+    }, 1500);
   };
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -106,6 +136,21 @@ const PulseBot: React.FC = () => {
       textarea.focus();
     }
   };
+
+  const handleQuickPrompt = (promptText: string) => {
+    setInputValue(promptText);
+    // Auto-send the message after a brief delay
+    setTimeout(() => {
+      handleSendMessage();
+    }, 100);
+  };
+  
+  // Demo quick prompts for the showcase
+  const quickPrompts = [
+    { text: "Summarize Team Alpha", icon: <BarChart2 className="h-4 w-4 text-blue-600" /> },
+    { text: "Show risk for Team Gamma", icon: <AlertTriangle className="h-4 w-4 text-amber-600" /> },
+    { text: "Why is Team Beta eligible for certification?", icon: <CheckCircle2 className="h-4 w-4 text-green-600" /> }
+  ];
   
   return (
     <Card className="flex flex-col h-[600px]">
@@ -116,6 +161,42 @@ const PulseBot: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col pb-4">
+        {/* Demo Quick Prompts Section */}
+        <div className="mb-4 bg-blue-50 rounded-lg p-3 border border-blue-100">
+          <div className="flex items-center gap-1 text-xs text-blue-700 mb-2">
+            <Lightbulb className="h-3.5 w-3.5" />
+            <span className="font-medium">Demo Quick Prompts:</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {quickPrompts.map((prompt, index) => (
+              <button
+                key={index}
+                className="text-xs bg-white border border-blue-200 rounded-full px-3 py-1.5 hover:bg-blue-50 flex items-center gap-1"
+                onClick={() => handleQuickPrompt(prompt.text)}
+              >
+                {prompt.icon}
+                <span>{prompt.text}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      
+        {/* AI Processing Progress Bar */}
+        {aiProgressVisible && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+              <span>AI Insight Engine</span>
+              <span>{aiProgress}%</span>
+            </div>
+            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-pulse-600 rounded-full transition-all duration-200 ease-in-out"
+                style={{ width: `${aiProgress}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
+      
         <div className="flex-1 overflow-y-auto mb-4 pr-2">
           {messages.map(message => (
             <div

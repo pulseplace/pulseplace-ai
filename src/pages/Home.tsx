@@ -7,6 +7,7 @@ import { ArrowRight, BarChart2, Building2, Lock, Shield, Users } from 'lucide-re
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/MetaTags';
 import Hero from '@/components/Hero';
+import FeatureHighlightBox from '@/components/FeatureHighlightBox';
 import FeatureSection from '@/components/FeatureSection';
 import HowItWorks from '@/components/HowItWorks';
 import WhyPulsePlace from '@/components/WhyPulsePlace';
@@ -40,6 +41,9 @@ const Home = () => {
       />
       
       <Hero />
+      
+      {/* Add Feature Highlight Box right after the Hero */}
+      <FeatureHighlightBox />
       
       {/* Brand Pitch Section */}
       <section className="py-16 bg-white" id="mission">

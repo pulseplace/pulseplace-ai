@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Download, FileText, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import MetaTags from "@/components/MetaTags";
+import InvestorFeatureHighlight from "@/components/InvestorFeatureHighlight";
 
 const InvestorDeck = () => {
   const { user } = useAuth();
@@ -59,6 +60,9 @@ const InvestorDeck = () => {
           </div>
         </div>
       </div>
+      
+      {/* Add the Feature Highlight Box here */}
+      <InvestorFeatureHighlight />
       
       <div className="text-center">
         <p className="text-gray-600 mb-6">

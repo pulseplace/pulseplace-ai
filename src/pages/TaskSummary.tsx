@@ -3,21 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import MetaTags from '@/components/MetaTags';
 import TaskCompletionSummary from '@/components/task-admin/TaskCompletionSummary';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ProjectProgressChart, { ProjectPhase } from '@/components/task-admin/ProjectProgressChart';
-import TrustTrendPrediction from '@/components/analytics/TrustTrendPrediction';
 import { DashboardProvider } from '@/contexts/DashboardContext';
-import TeamInsights from '@/components/task-admin/team-insights/TeamInsights';
-import { TeamInsight } from '@/components/task-admin/team-insights/types';
 import { sampleInsights } from '@/utils/ai/insightPrompts';
-import { Badge } from "@/components/ui/badge";
-import AIIntegrationTimeline from '@/components/task-admin/AIIntegrationTimeline';
-import RealTimeTriggers from '@/components/task-admin/RealTimeTriggers';
-import AIIntegrationStatus from '@/components/task-admin/AIIntegrationStatus';
-import SyncMonitor from '@/components/task-admin/SyncMonitor';
-import InsightCard from '@/components/task-admin/InsightCard';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TeamInsight } from '@/components/task-admin/team-insights/types';
+import { TabsContent } from "@/components/ui/tabs";
 import BetaLaunchPlan from '@/components/task-admin/BetaLaunchPlan';
+
+// Import the newly created components
+import TaskSummaryHeader from '@/components/task-admin/dashboard/TaskSummaryHeader';
+import ProjectPhaseSection from '@/components/task-admin/dashboard/ProjectPhaseSection';
+import AnalyticsSection from '@/components/task-admin/dashboard/AnalyticsSection';
+import TeamInsightsSection from '@/components/task-admin/dashboard/TeamInsightsSection';
 
 const TaskSummary: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -34,7 +30,7 @@ const TaskSummary: React.FC = () => {
   }, [searchParams]);
 
   // Sample project phases data for the chart
-  const phases: ProjectPhase[] = [
+  const phases = [
     {
       id: "phase-1",
       name: "Foundation",
@@ -183,71 +179,27 @@ const TaskSummary: React.FC = () => {
         />
         
         <div className="space-y-8">
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <h1 className="text-3xl font-bold">Task Summary</h1>
-              <Badge className="bg-green-100 text-green-800">AI Integration: 100% Ready</Badge>
-            </div>
-            <p className="text-gray-600 mb-6">
-              Review task completion percentages and priority-based statistics for your project.
-            </p>
-          </div>
+          <TaskSummaryHeader activeTab={activeTab} setActiveTab={setActiveTab} />
           
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6">
-              <TabsTrigger value="summary">Project Summary</TabsTrigger>
-              <TabsTrigger value="beta-plan">Beta Launch Plan</TabsTrigger>
-            </TabsList>
+          <TabsContent value="summary" className="space-y-8">
+            <TaskCompletionSummary />
             
-            <TabsContent value="summary" className="space-y-8">
-              <TaskCompletionSummary />
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="md:col-span-2">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                      <CardTitle className="text-xl font-semibold">Project Phase Progress</CardTitle>
-                      <SyncMonitor lastUpdated={lastUpdated} onRefresh={handleRefresh} />
-                    </CardHeader>
-                    <CardContent className="pt-4">
-                      <div className="h-[300px]">
-                        <ProjectProgressChart phases={phases} />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-                
-                <div className="space-y-6">
-                  <InsightCard 
-                    title="AI Integration Timeline"
-                    type="info"
-                    content={<AIIntegrationTimeline timeline={aiIntegrationTimeline} />}
-                  />
-                  
-                  <InsightCard 
-                    title="Real-Time Triggers"
-                    type="success"
-                    content={<RealTimeTriggers />}
-                    sparklineData={sampleSparklineData}
-                    badgeText="Active"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <TrustTrendPrediction trends={trustTrends} />
-                <AIIntegrationStatus />
-              </div>
-              
-              <div className="mt-8">
-                <TeamInsights insights={teamInsights} />
-              </div>
-            </TabsContent>
+            <ProjectPhaseSection 
+              phases={phases}
+              lastUpdated={lastUpdated}
+              onRefresh={handleRefresh}
+              aiIntegrationTimeline={aiIntegrationTimeline}
+              sampleSparklineData={sampleSparklineData}
+            />
             
-            <TabsContent value="beta-plan">
-              <BetaLaunchPlan />
-            </TabsContent>
-          </Tabs>
+            <AnalyticsSection trustTrends={trustTrends} />
+            
+            <TeamInsightsSection teamInsights={teamInsights} />
+          </TabsContent>
+          
+          <TabsContent value="beta-plan">
+            <BetaLaunchPlan />
+          </TabsContent>
         </div>
       </div>
     </DashboardProvider>

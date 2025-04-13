@@ -9,6 +9,10 @@ import AiDashboard from './pages/dashboard/AiDashboard';
 import LLMInsights from './pages/dashboard/LLMInsights';
 import Root from './pages/Root';
 import Insights from './pages/Insights';
+import TaskAudit from './pages/TaskAudit';
+import TaskSummary from './pages/TaskSummary';
+import ProjectHandover from './pages/ProjectHandover';
+import DashboardHome from './pages/dashboard/Home';
 
 function App() {
   return (
@@ -23,6 +27,14 @@ function App() {
           <Route path="ai-dashboard" element={<AiDashboard />} />
           <Route path="dashboard/llm-insights" element={<LLMInsights />} />
           <Route path="insights" element={<Insights />} />
+          
+          {/* Task Management & Project Pages */}
+          <Route path="task-audit" element={<TaskAudit />} />
+          <Route path="task-summary" element={<TaskSummary />} />
+          <Route path="project-handover" element={<ProjectHandover />} />
+          
+          {/* Dashboard routes */}
+          <Route path="dashboard" element={<DashboardHome />} />
           
           {/* Add any other routes that were previously available */}
           <Route path="certification" element={<Dashboard />} /> {/* Placeholder until we restore the real component */}

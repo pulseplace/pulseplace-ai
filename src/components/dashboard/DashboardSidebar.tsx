@@ -10,6 +10,12 @@ import {
   LucideIcon,
   Users,
   Cog,
+  ClipboardList,
+  PieChart,
+  Bot,
+  Brain,
+  MessageSquare,
+  FileBarChart,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -78,6 +84,41 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             </NavItem>
             <NavItem to="/dashboard/analytics" icon={BarChart3}>
               Analytics
+            </NavItem>
+            
+            {/* AI Features */}
+            <div className="pt-4 pb-2">
+              <p className="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                AI Features
+              </p>
+            </div>
+            <NavItem to="/pulsebot" icon={Bot}>
+              PulseBot
+            </NavItem>
+            <NavItem to="/ai-dashboard" icon={Brain}>
+              AI Dashboard
+            </NavItem>
+            <NavItem to="/dashboard/llm-insights" icon={MessageSquare}>
+              LLM Insights
+            </NavItem>
+            <NavItem to="/insights" icon={PieChart}>
+              Culture Insights
+            </NavItem>
+            
+            {/* Project Management */}
+            <div className="pt-4 pb-2">
+              <p className="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Project Management
+              </p>
+            </div>
+            <NavItem to="/task-audit" icon={ClipboardList}>
+              Task Audit
+            </NavItem>
+            <NavItem to="/task-summary" icon={FileBarChart}>
+              Task Summary
+            </NavItem>
+            <NavItem to="/project-handover" icon={FileText}>
+              Project Handover
             </NavItem>
             
             {/* Add the Pitch Deck Admin link for admin users */}

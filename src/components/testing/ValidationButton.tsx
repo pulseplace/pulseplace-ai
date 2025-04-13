@@ -43,7 +43,7 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
   };
   
   const handleViewAIProgress = () => {
-    navigate('/features/ai-engine');
+    navigate('/features/ai-engine');  // Updated to point to the new AI Engine page
   };
   
   if (variant === 'icon') {

@@ -10,6 +10,7 @@ import ValidationButton from '@/components/testing/ValidationButton';
 import { LinkValidationResult } from '@/utils/linkValidation';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
+import AIFeaturesNavigation from '@/components/features/AIFeaturesNavigation';
 
 const Features = () => {
   const [validationResults, setValidationResults] = useState<LinkValidationResult[] | null>(null);
@@ -45,6 +46,9 @@ const Features = () => {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Discover how PulsePlace.ai's innovative features can help you measure, improve, and showcase your workplace culture.
             </p>
+            
+            {/* Quick AI features navigation */}
+            <AIFeaturesNavigation />
             
             {/* Debug section - only visible after validation runs */}
             {showDebug && validationResults && (

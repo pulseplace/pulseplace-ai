@@ -14,7 +14,7 @@ const Hero = () => {
           <HeroVisualization />
         </div>
         
-        {/* Stats */}
+        {/* Stats with fallback handling */}
         <HeroStats />
       </div>
     </div>

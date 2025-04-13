@@ -1,4 +1,3 @@
-
 import React from 'react';
 import MetaTags from '@/components/MetaTags';
 import TaskCompletionSummary from '@/components/task-admin/TaskCompletionSummary';
@@ -6,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import ProjectProgressChart, { ProjectPhase } from '@/components/task-admin/ProjectProgressChart';
 import TrustTrendPrediction from '@/components/analytics/TrustTrendPrediction';
 import { DashboardProvider } from '@/contexts/DashboardContext';
+import TeamInsights from '@/components/task-admin/TeamInsights';
 
 const TaskSummary: React.FC = () => {
   // Sample project phases data for the chart
@@ -76,6 +76,33 @@ const TaskSummary: React.FC = () => {
     }
   ];
 
+  // Sample team insights data
+  const teamInsights = [
+    {
+      "team": "Team Alpha",
+      "insight_type": "Culture Summary",
+      "ai_generated": true,
+      "content": "Culture Insights – Team Alpha (April 2025)\nYour team continues to show high alignment and positive sentiment around leadership and collaboration. 74% of employees reported a greater sense of clarity in roles, and many referenced 'transparent decision-making'.\n\nHowever, concerns remain around workload balance and recognition. Feedback like 'deadlines are always tight' suggests a need for better prioritization.\n\nRecommendation: Short check-in sessions to revisit scope alignment. Team is well-positioned to level up."
+    },
+    {
+      "team": "Team Beta",
+      "insight_type": "PulseScore Certification",
+      "ai_generated": true,
+      "pulse_score": 82,
+      "certification_eligible": true,
+      "summary": "Strengths: Inclusion (88%), Peer Trust (91%), Feedback Culture (85%)\nAreas to improve: Workload Balance, Career Clarity\nParticipation Rate: 93%\nAI Rationale: Exceeds 3/5 benchmarks, high psychological safety. Recommend certification."
+    },
+    {
+      "team": "Team Gamma",
+      "insight_type": "Risk Alert",
+      "ai_generated": true,
+      "risk_type": "Burnout & Manager Disconnect",
+      "engagement_drop_percent": 28,
+      "sentiment_drop": "70% to 48%",
+      "recommendation": "Initiate 1:1 check-ins and review sprint allocation. Leadership coaching suggested for the team lead."
+    }
+  ];
+
   return (
     <DashboardProvider>
       <div className="container mx-auto py-8 px-4">
@@ -105,6 +132,10 @@ const TaskSummary: React.FC = () => {
             </Card>
             
             <TrustTrendPrediction trends={trustTrends} />
+          </div>
+          
+          <div className="mt-8">
+            <TeamInsights insights={teamInsights} />
           </div>
         </div>
       </div>

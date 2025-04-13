@@ -1,112 +1,76 @@
 
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-import Auth from './pages/Auth';
+import { Routes, Route } from 'react-router-dom';
+import Layout from './components/layout/Layout';
+import { Toaster } from './components/ui/toaster';
+import { HelmetProvider } from 'react-helmet-async';
+
+// Pages imports
 import Home from './pages/Home';
-import Dashboard from './pages/dashboard/Dashboard';
-import { AuthProvider } from './contexts/AuthContext';
-import { DashboardProvider } from './contexts/DashboardContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import InvestorDeck from './pages/InvestorDeck';
-import Root from './pages/Root';
-import ProfileSettings from './pages/dashboard/ProfileSettings';
-import TaskSummary from './pages/TaskSummary';
-import TaskAudit from './pages/TaskAudit';
-import ChatbotWidget from './components/ChatbotWidget';
-import NotFound from './pages/NotFound';
-
-// Import the new pages
-import PitchDeckRequest from './pages/PitchDeckRequest';
-import PitchDeckView from './pages/PitchDeckView';
-import PitchDeckAdmin from './pages/dashboard/PitchDeckAdmin';
-import LinkValidation from './pages/dashboard/LinkValidation';
-import BookDemo from './pages/BookDemo';
-import Demo from './pages/Demo';
 import Features from './pages/Features';
-import Certification from './pages/Certification';
+import Pricing from './pages/Pricing';
+import About from './pages/About';
 import Contact from './pages/Contact';
-import PulseBot from './pages/PulseBot';
-import JoinBeta from './pages/JoinBeta';
-import DashboardPreview from './pages/DashboardPreview';
-import HowItWorks from './pages/HowItWorks';
-import Insights from './pages/Insights';
-import ProjectHandover from './pages/ProjectHandover';
-
-// Routes for Features section
-import Surveys from './pages/features/Surveys';
-import AiAnalytics from './pages/features/AiAnalytics';
-import PulseCertification from './pages/features/PulseCertification';
+import Dashboard from './pages/Dashboard';
+import TaskSummary from './pages/TaskSummary';
+import SignIn from './pages/auth/SignIn';
+import ResetPassword from './pages/auth/ResetPassword';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import Register from './pages/auth/Register';
+import NotFound from './pages/NotFound';
+import Team from './pages/Team';
+import Privacy from './pages/legal/Privacy';
+import Terms from './pages/legal/Terms';
+import EmailVerification from './pages/auth/EmailVerification';
+import VerifySuccess from './pages/auth/VerifySuccess';
 import AiEngine from './pages/features/AiEngine';
-import Integrations from './pages/features/Integrations';
-
-// Dashboard layout
-import DashboardLayout from './layouts/DashboardLayout';
+import ProjectHandover from './pages/ProjectHandover';
+import LLMInsights from './pages/dashboard/LLMInsights';
+import PulseBotPage from './pages/PulseBot';
 
 function App() {
   return (
-    <AuthProvider>
-      <DashboardProvider>
-        <Routes>
-          <Route element={<Root />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/investor-deck" element={<InvestorDeck />} />
-            
-            {/* Features and main routes */}
-            <Route path="/features" element={<Features />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/certification" element={<Certification />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/pulsebot" element={<PulseBot />} />
-            <Route path="/join-beta" element={<JoinBeta />} />
-            <Route path="/dashboard-preview" element={<DashboardPreview />} />
-            
-            {/* Feature detail pages */}
-            <Route path="/features/surveys" element={<Surveys />} />
-            <Route path="/features/ai-analytics" element={<AiAnalytics />} />
-            <Route path="/features/certification" element={<PulseCertification />} />
-            <Route path="/features/ai-engine" element={<AiEngine />} />
-            <Route path="/features/integrations" element={<Integrations />} />
-            
-            {/* Add new routes for pitch deck */}
-            <Route path="/pitch-deck-request" element={<PitchDeckRequest />} />
-            <Route path="/pitch-deck-view" element={<PitchDeckView />} />
-            
-            {/* Demo routes */}
-            <Route path="/book-demo" element={<BookDemo />} />
-            <Route path="/demo" element={<Demo />} />
-            
-            {/* Task routes */}
-            <Route path="/task-summary" element={<TaskSummary />} />
-            <Route path="/task-admin" element={<TaskAudit />} />
-            <Route path="/project-handover" element={<ProjectHandover />} />
-          </Route>
+    <HelmetProvider>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          {/* Public routes */}
+          <Route index element={<Home />} />
+          <Route path="features" element={<Features />} />
+          <Route path="features/ai-engine" element={<AiEngine />} />
+          <Route path="pricing" element={<Pricing />} />
+          <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="team" element={<Team />} />
           
-          {/* Protected routes */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<Dashboard />} />
-            <Route path="profile-settings" element={<ProfileSettings />} />
-            
-            {/* Add new protected route for pitch deck admin */}
-            <Route path="pitch-deck-admin" element={<PitchDeckAdmin />} />
-            
-            {/* Add new protected route for link validation dashboard */}
-            <Route path="link-validation" element={<LinkValidation />} />
-          </Route>
+          {/* Admin/Project tasks routes */}
+          <Route path="task-summary" element={<TaskSummary />} />
+          <Route path="project-handover" element={<ProjectHandover />} />
           
-          {/* Catch-all route for 404 */}
+          {/* Dashboard routes */}
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard/llm-insights" element={<LLMInsights />} />
+          
+          {/* AI Features */}
+          <Route path="pulsebot" element={<PulseBotPage />} />
+          
+          {/* Authentication routes */}
+          <Route path="login" element={<SignIn />} />
+          <Route path="register" element={<Register />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="verify-email" element={<EmailVerification />} />
+          <Route path="verify-success" element={<VerifySuccess />} />
+          
+          {/* Legal routes */}
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="terms" element={<Terms />} />
+          
+          {/* Not Found route */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
-        
-        {/* Add the ChatbotWidget here so it appears on all pages */}
-        <ChatbotWidget />
-      </DashboardProvider>
-    </AuthProvider>
+        </Route>
+      </Routes>
+      
+      <Toaster />
+    </HelmetProvider>
   );
 }
 

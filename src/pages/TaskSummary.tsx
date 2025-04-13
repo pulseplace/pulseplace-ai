@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import MetaTags from '@/components/MetaTags';
 import TaskCompletionSummary from '@/components/task-admin/TaskCompletionSummary';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,10 +20,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BetaLaunchPlan from '@/components/task-admin/BetaLaunchPlan';
 
 const TaskSummary: React.FC = () => {
+  const [searchParams] = useSearchParams();
   // State for tracking when insights were last updated
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [activeTab, setActiveTab] = useState<string>("summary");
   
+  // Set the active tab based on the URL query parameter (if present)
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && (tabParam === 'summary' || tabParam === 'beta-plan')) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
   // Sample project phases data for the chart
   const phases: ProjectPhase[] = [
     {

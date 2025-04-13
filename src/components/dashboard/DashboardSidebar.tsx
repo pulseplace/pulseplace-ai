@@ -17,6 +17,7 @@ import {
   MessageSquare,
   FileBarChart,
   Link2,
+  CalendarClock,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -117,6 +118,9 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             </NavItem>
             <NavItem to="/task-summary" icon={FileBarChart}>
               Task Summary
+            </NavItem>
+            <NavItem to="/task-summary?tab=beta-plan" icon={CalendarClock}>
+              Beta Launch Plan
             </NavItem>
             <NavItem to="/project-handover" icon={FileText}>
               Project Handover

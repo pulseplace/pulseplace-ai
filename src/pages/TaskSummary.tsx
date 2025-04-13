@@ -15,10 +15,13 @@ import RealTimeTriggers from '@/components/task-admin/RealTimeTriggers';
 import AIIntegrationStatus from '@/components/task-admin/AIIntegrationStatus';
 import SyncMonitor from '@/components/task-admin/SyncMonitor';
 import InsightCard from '@/components/task-admin/InsightCard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import BetaLaunchPlan from '@/components/task-admin/BetaLaunchPlan';
 
 const TaskSummary: React.FC = () => {
   // State for tracking when insights were last updated
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [activeTab, setActiveTab] = useState<string>("summary");
   
   // Sample project phases data for the chart
   const phases: ProjectPhase[] = [
@@ -180,48 +183,61 @@ const TaskSummary: React.FC = () => {
             </p>
           </div>
           
-          <TaskCompletionSummary />
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-xl font-semibold">Project Phase Progress</CardTitle>
-                  <SyncMonitor lastUpdated={lastUpdated} onRefresh={handleRefresh} />
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <div className="h-[300px]">
-                    <ProjectProgressChart phases={phases} />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-6">
+              <TabsTrigger value="summary">Project Summary</TabsTrigger>
+              <TabsTrigger value="beta-plan">Beta Launch Plan</TabsTrigger>
+            </TabsList>
             
-            <div className="space-y-6">
-              <InsightCard 
-                title="AI Integration Timeline"
-                type="info"
-                content={<AIIntegrationTimeline timeline={aiIntegrationTimeline} />}
-              />
+            <TabsContent value="summary" className="space-y-8">
+              <TaskCompletionSummary />
               
-              <InsightCard 
-                title="Real-Time Triggers"
-                type="success"
-                content={<RealTimeTriggers />}
-                sparklineData={sampleSparklineData}
-                badgeText="Active"
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <TrustTrendPrediction trends={trustTrends} />
-            <AIIntegrationStatus />
-          </div>
-          
-          <div className="mt-8">
-            <TeamInsights insights={teamInsights} />
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2">
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                      <CardTitle className="text-xl font-semibold">Project Phase Progress</CardTitle>
+                      <SyncMonitor lastUpdated={lastUpdated} onRefresh={handleRefresh} />
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      <div className="h-[300px]">
+                        <ProjectProgressChart phases={phases} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                <div className="space-y-6">
+                  <InsightCard 
+                    title="AI Integration Timeline"
+                    type="info"
+                    content={<AIIntegrationTimeline timeline={aiIntegrationTimeline} />}
+                  />
+                  
+                  <InsightCard 
+                    title="Real-Time Triggers"
+                    type="success"
+                    content={<RealTimeTriggers />}
+                    sparklineData={sampleSparklineData}
+                    badgeText="Active"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <TrustTrendPrediction trends={trustTrends} />
+                <AIIntegrationStatus />
+              </div>
+              
+              <div className="mt-8">
+                <TeamInsights insights={teamInsights} />
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="beta-plan">
+              <BetaLaunchPlan />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </DashboardProvider>

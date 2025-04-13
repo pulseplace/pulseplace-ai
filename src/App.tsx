@@ -16,7 +16,7 @@ import ProjectHandover from './pages/ProjectHandover';
 import DashboardHome from './pages/dashboard/Home';
 import Home from './pages/Home';
 import Features from './pages/Features';
-import AiEngine from './pages/features/AiEngine';
+import AIEngine from './pages/features/AIEngine'; // Fixed casing to match the actual file
 import QASprint from './pages/dashboard/QASprint';
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
           
           {/* Features pages */}
           <Route path="features" element={<Features />} />
-          <Route path="features/ai-engine" element={<AiEngine />} />
+          <Route path="features/ai-engine" element={<AIEngine />} />
           
           {/* AI Features */}
           <Route path="pulsebot" element={<PulseBotPage />} />

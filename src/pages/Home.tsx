@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, BarChart2, Building2, Lock, Shield, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MetaTags from '@/components/MetaTags';
-import Hero from '@/components/Hero';
+import Hero from '@/components/hero';
 import FeatureHighlightBox from '@/components/FeatureHighlightBox';
 import FeatureSection from '@/components/FeatureSection';
 import HowItWorks from '@/components/HowItWorks';

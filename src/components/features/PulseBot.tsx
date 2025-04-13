@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, Send, User, Lightbulb, BarChart2, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Bot, Send, User, Lightbulb, BarChart2, AlertTriangle, CheckCircle2, TrendingUp, Sparkles } from 'lucide-react';
 import { processPulseBotQuery } from '@/utils/ai/pulseBot';
 import { toast } from 'sonner';
 
@@ -46,8 +46,9 @@ const PulseBot: React.FC = () => {
         "Summarize Team Alpha",
         "Show risk for Team Gamma",
         "Why is Team Beta eligible for certification?",
-        "What are our top performing departments?",
-        "What key themes are emerging from feedback?"
+        "Summarize Team Sigma",
+        "Summarize Team Zeta",
+        "What are our top performing departments?"
       ]
     }
   ]);
@@ -149,7 +150,9 @@ const PulseBot: React.FC = () => {
   const quickPrompts = [
     { text: "Summarize Team Alpha", icon: <BarChart2 className="h-4 w-4 text-blue-600" /> },
     { text: "Show risk for Team Gamma", icon: <AlertTriangle className="h-4 w-4 text-amber-600" /> },
-    { text: "Why is Team Beta eligible for certification?", icon: <CheckCircle2 className="h-4 w-4 text-green-600" /> }
+    { text: "Why is Team Beta eligible for certification?", icon: <CheckCircle2 className="h-4 w-4 text-green-600" /> },
+    { text: "Summarize Team Sigma", icon: <TrendingUp className="h-4 w-4 text-indigo-600" /> },
+    { text: "Summarize Team Zeta", icon: <Sparkles className="h-4 w-4 text-purple-600" /> }
   ];
   
   return (

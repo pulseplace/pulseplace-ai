@@ -80,17 +80,63 @@ const TaskSummary: React.FC = () => {
       changePercentage: -5.6,
       predictedRisk: "medium" as const,
       riskAreas: ["Work-life balance", "Resource allocation"]
+    },
+    {
+      departmentName: "Team Sigma",
+      currentScore: 78,
+      previousScore: 74,
+      changePercentage: 5.4,
+      predictedRisk: "low" as const,
+      riskAreas: ["Work-life balance"]
+    },
+    {
+      departmentName: "Team Zeta",
+      currentScore: 94,
+      previousScore: 91,
+      changePercentage: 3.2,
+      predictedRisk: "low" as const,
+      riskAreas: []
     }
   ];
 
-  // Using sample insights from our utility file (already with timestamps)
-  const teamInsights = sampleInsights;
+  // Using sample insights with added new teams
+  const teamInsights = [
+    ...sampleInsights,
+    // Add Team Sigma (approaching certification)
+    {
+      team: "Team Sigma",
+      insight_type: "PulseScore Certification",
+      ai_generated: true,
+      pulse_score: 78,
+      certification_eligible: false,
+      summary: "Team Sigma shows promising cultural indicators with a growing PulseScore approaching the certification threshold. Key strengths include innovation, cross-functional collaboration, and learning culture. While not yet eligible for certification, the team is trending positively.",
+      updated_at: new Date(Date.now() - 3600000 * 24) // 1 day ago
+    },
+    // Add Team Sigma culture summary
+    {
+      team: "Team Sigma",
+      insight_type: "Culture Summary",
+      ai_generated: true,
+      content: "Team Sigma demonstrates strong innovation metrics with 92% positive sentiment around creativity and 87% for cross-functional collaboration. Their learning culture (84% positive) is also notable. However, work-life balance (64%) and communication clarity (69%) need attention. The team's energy and enthusiasm are high, but there are early signs of potential burnout.",
+      updated_at: new Date(Date.now() - 3600000 * 36) // 1.5 days ago
+    },
+    // Add Team Zeta (gold certification level)
+    {
+      team: "Team Zeta",
+      insight_type: "PulseScore Certification",
+      ai_generated: true,
+      pulse_score: 94,
+      certification_eligible: true,
+      summary: "Team Zeta has achieved our highest PulseScore with exceptional ratings across all categories, earning Gold Certification status. This team demonstrates exemplary psychological safety, leadership trust, and team cohesion, serving as an internal benchmark for cultural excellence.",
+      updated_at: new Date() // Just now
+    }
+  ];
   
   // Demo content - AI integration timeline
   const aiIntegrationTimeline = [
     { milestone: "Base LLM Integration", status: "completed", date: "Mar 28" },
     { milestone: "Sentiment Pipeline", status: "completed", date: "Apr 5" },
-    { milestone: "Real-time Insights", status: "in-progress", date: "Apr 15" },
+    { milestone: "Real-time Insights", status: "completed", date: "Apr 13" },
     { milestone: "Final Deployment", status: "upcoming", date: "Apr 21" }
   ];
   
@@ -138,7 +184,7 @@ const TaskSummary: React.FC = () => {
           <div>
             <div className="flex justify-between items-center mb-2">
               <h1 className="text-3xl font-bold">Task Summary</h1>
-              <Badge className="bg-green-100 text-green-800">AI Integration: 90% Ready</Badge>
+              <Badge className="bg-green-100 text-green-800">AI Integration: 100% Ready</Badge>
             </div>
             <p className="text-gray-600 mb-6">
               Review task completion percentages and priority-based statistics for your project.
@@ -206,23 +252,23 @@ const TaskSummary: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Sentiment Analysis Pipeline</span>
                     <div className="w-32 h-2 bg-gray-200 rounded overflow-hidden">
-                      <div className="h-full bg-blue-500" style={{ width: '88%' }}></div>
+                      <div className="h-full bg-blue-500" style={{ width: '100%' }}></div>
                     </div>
-                    <span className="text-sm font-medium">88%</span>
+                    <span className="text-sm font-medium">100%</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">PulseBot Implementation</span>
                     <div className="w-32 h-2 bg-gray-200 rounded overflow-hidden">
-                      <div className="h-full bg-blue-500" style={{ width: '92%' }}></div>
+                      <div className="h-full bg-blue-500" style={{ width: '100%' }}></div>
                     </div>
-                    <span className="text-sm font-medium">92%</span>
+                    <span className="text-sm font-medium">100%</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Real-time Insights Engine</span>
                     <div className="w-32 h-2 bg-gray-200 rounded overflow-hidden">
-                      <div className="h-full bg-blue-500" style={{ width: '82%' }}></div>
+                      <div className="h-full bg-blue-500" style={{ width: '100%' }}></div>
                     </div>
-                    <span className="text-sm font-medium">82%</span>
+                    <span className="text-sm font-medium">100%</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Culture Compass Implementation</span>

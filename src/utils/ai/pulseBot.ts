@@ -72,6 +72,60 @@ This team demonstrates exceptional psychological safety and communication patter
       "What would improve Team Beta's career clarity scores?"
     ];
   }
+  // NEW TEAM: SIGMA
+  else if (lowerQuery.includes('team sigma') || lowerQuery.includes('summarize team sigma')) {
+    response = `Team Sigma Culture Summary (April 13, 2025):
+
+Team Sigma shows promising cultural indicators with a growing PulseScore of 78/100, approaching certification threshold.
+
+Key strengths:
+- Innovation & creativity (92% positive sentiment)
+- Cross-functional collaboration (87% positive)
+- Learning culture (84% positive)
+
+Areas for development:
+- Work-life balance (64% positive)
+- Communication clarity (69% positive)
+- Recognition practices (71% positive)
+
+Team members report high energy and enthusiasm for their work, but signs of potential burnout are emerging. Implementing structured "innovation time" while addressing workload concerns could help this team reach certification level within the next quarter.`;
+    
+    suggestedFollowups = [
+      "What's causing work-life balance issues in Team Sigma?",
+      "How can Team Sigma improve their communication clarity?",
+      "Compare Team Sigma to Team Beta",
+      "What recognition practices work best for innovation teams?"
+    ];
+  }
+  // NEW TEAM: ZETA
+  else if (lowerQuery.includes('team zeta') || lowerQuery.includes('summarize team zeta')) {
+    response = `Team Zeta Culture Summary (April 13, 2025):
+
+Team Zeta is our highest performing team with an exceptional PulseScore of 94/100, earning Gold Certification status.
+
+Key strengths:
+- Psychological safety (96% positive)
+- Leadership trust (95% positive)
+- Team cohesion (93% positive)
+- Career development (91% positive)
+- Work-life balance (90% positive)
+
+Success factors:
+- Regular "no-meeting Wednesdays" policy
+- Transparent decision-making processes
+- Bi-weekly retrospectives with actionable outcomes
+- Growth-focused 1:1 coaching sessions
+- Clear role definitions with autonomy
+
+Team Zeta serves as our internal benchmark for cultural excellence and demonstrates practices worth scaling across the organization.`;
+    
+    suggestedFollowups = [
+      "What practices from Team Zeta should we implement company-wide?",
+      "How does Team Zeta maintain work-life balance?",
+      "What leadership style is used in Team Zeta?",
+      "Can you analyze Team Zeta's retrospective format?"
+    ];
+  }
   else if (lowerQuery.includes('top') && lowerQuery.includes('department')) {
     response = `Based on recent survey data, your top performing departments are:
 1. HR (85 points)
@@ -115,6 +169,93 @@ Would you like specific action items for any of these areas?`;
       "How can we improve recognition programs?",
       "Which department has the biggest communication challenges?"
     ];
+  }
+  // NEW COMPARATIVE ANALYSIS
+  else if (lowerQuery.includes('compare team')) {
+    // Handle different team comparisons
+    if (lowerQuery.includes('sigma') && lowerQuery.includes('beta')) {
+      response = `Comparative Analysis: Team Sigma vs Team Beta (April 13, 2025)
+
+PulseScore: Team Beta (82/100) vs Team Sigma (78/100)
+
+Strengths comparison:
+✓ Team Beta excels in: Inclusion, Peer Trust, Feedback Culture
+✓ Team Sigma excels in: Innovation, Cross-functional collaboration, Learning culture
+
+Opportunity areas:
+! Team Beta: Work-life balance (70%), Career clarity (72%)
+! Team Sigma: Work-life balance (64%), Communication clarity (69%)
+
+Key insight: While Team Beta qualifies for certification with higher overall scores, Team Sigma shows exceptional strengths in innovation metrics that could be leveraged across the organization. Both teams would benefit from addressing work-life balance concerns.`;
+      
+      suggestedFollowups = [
+        "What can Team Beta learn from Team Sigma?",
+        "What can Team Sigma learn from Team Beta?",
+        "Show risk areas for both teams",
+        "Which team has better retention metrics?"
+      ];
+    }
+    else if (lowerQuery.includes('zeta') && (lowerQuery.includes('sigma') || lowerQuery.includes('beta') || lowerQuery.includes('gamma') || lowerQuery.includes('alpha'))) {
+      response = `Comparative Analysis with Team Zeta (Gold Standard)
+
+Team Zeta (94/100) outperforms all other teams across key metrics:
+
+Leadership Trust:
+- Zeta: 95% positive
+- Beta: 87% positive
+- Sigma: 76% positive
+- Alpha: 74% positive
+- Gamma: 58% positive
+
+Psychological Safety:
+- Zeta: 96% positive
+- Beta: 88% positive
+- Alpha: 77% positive
+- Sigma: 75% positive
+- Gamma: 62% positive
+
+Work-life Balance:
+- Zeta: 90% positive
+- Alpha: 72% positive
+- Beta: 70% positive
+- Sigma: 64% positive
+- Gamma: 56% positive
+
+Key differentiators for Team Zeta:
+1. Structured communication protocols
+2. Proactive conflict resolution
+3. Feedback-rich environment
+4. Clear role definitions with autonomy
+5. Intentional celebration of wins`;
+      
+      suggestedFollowups = [
+        "Why is Team Zeta's leadership trust so high?",
+        "How did Team Zeta establish psychological safety?",
+        "What specific communication protocols does Team Zeta use?",
+        "Can these practices be implemented in Team Gamma?"
+      ];
+    }
+    else {
+      response = `I can provide comparative analyses between any teams in our organization.
+
+Available teams for comparison:
+- Team Alpha
+- Team Beta (Certification Eligible)
+- Team Gamma (Risk Alert)
+- Team Sigma (Approaching Certification)
+- Team Zeta (Gold Certification)
+
+For example, try asking:
+- "Compare Team Sigma and Team Beta"
+- "Compare Team Zeta with other teams"
+- "What's the difference between Team Alpha and Team Gamma?"`;
+      
+      suggestedFollowups = [
+        "Compare Team Sigma and Team Beta",
+        "Compare Team Zeta with other teams",
+        "What's the difference between Team Alpha and Team Gamma?"
+      ];
+    }
   }
   else if (lowerQuery.includes('work-life') || lowerQuery.includes('balance')) {
     response = `Your work-life balance metrics compared to industry benchmarks:
@@ -163,14 +304,18 @@ I can help with:
 For this demo, try these quick prompts:
 - "Summarize Team Alpha"
 - "Show risk for Team Gamma" 
-- "Why is Team Beta eligible for certification?"`;
+- "Why is Team Beta eligible for certification?"
+- "Summarize Team Sigma" (new!)
+- "Summarize Team Zeta" (new!)
+- "Compare Team Sigma and Team Beta" (new!)`;
     
     suggestedFollowups = [
       "Summarize Team Alpha",
       "Show risk for Team Gamma",
       "Why is Team Beta eligible for certification?",
-      "What are our top performing departments?",
-      "What themes are emerging from feedback?"
+      "Summarize Team Sigma",
+      "Summarize Team Zeta",
+      "Compare Team Sigma and Team Beta"
     ];
   }
   

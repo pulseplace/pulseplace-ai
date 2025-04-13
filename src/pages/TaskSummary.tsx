@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MetaTags from '@/components/MetaTags';
 import TaskCompletionSummary from '@/components/task-admin/TaskCompletionSummary';
@@ -6,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProjectProgressChart, { ProjectPhase } from '@/components/task-admin/ProjectProgressChart';
 import TrustTrendPrediction from '@/components/analytics/TrustTrendPrediction';
 import { DashboardProvider } from '@/contexts/DashboardContext';
-import TeamInsights, { TeamInsight } from '@/components/task-admin/TeamInsights';
+import TeamInsights from '@/components/task-admin/team-insights/TeamInsights';
+import { TeamInsight } from '@/components/task-admin/team-insights/types';
 import { sampleInsights } from '@/utils/ai/insightPrompts';
 import { Badge } from "@/components/ui/badge";
 import AIIntegrationTimeline from '@/components/task-admin/AIIntegrationTimeline';
@@ -107,7 +107,7 @@ const TaskSummary: React.FC = () => {
     // Add Team Sigma (approaching certification)
     {
       team: "Team Sigma",
-      insight_type: "PulseScore Certification" as const,
+      insight_type: "PulseScore Certification",
       ai_generated: true,
       pulse_score: 78,
       certification_eligible: false,
@@ -117,7 +117,7 @@ const TaskSummary: React.FC = () => {
     // Add Team Sigma culture summary
     {
       team: "Team Sigma",
-      insight_type: "Culture Summary" as const,
+      insight_type: "Culture Summary",
       ai_generated: true,
       content: "Team Sigma demonstrates strong innovation metrics with 92% positive sentiment around creativity and 87% for cross-functional collaboration. Their learning culture (84% positive) is also notable. However, work-life balance (64%) and communication clarity (69%) need attention. The team's energy and enthusiasm are high, but there are early signs of potential burnout.",
       updated_at: new Date(Date.now() - 3600000 * 36) // 1.5 days ago
@@ -125,14 +125,14 @@ const TaskSummary: React.FC = () => {
     // Add Team Zeta (gold certification level)
     {
       team: "Team Zeta",
-      insight_type: "PulseScore Certification" as const,
+      insight_type: "PulseScore Certification",
       ai_generated: true,
       pulse_score: 94,
       certification_eligible: true,
       summary: "Team Zeta has achieved our highest PulseScore with exceptional ratings across all categories, earning Gold Certification status. This team demonstrates exemplary psychological safety, leadership trust, and team cohesion, serving as an internal benchmark for cultural excellence.",
       updated_at: new Date() // Just now
     }
-  ];
+  ] as TeamInsight[];
   
   // Demo content - AI integration timeline
   const aiIntegrationTimeline = [

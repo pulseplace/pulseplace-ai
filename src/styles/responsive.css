@@ -84,4 +84,34 @@
   .chat-container {
     z-index: 50;
   }
+  
+  /* Toast positioning for mobile */
+  .Toaster__container {
+    bottom: env(safe-area-inset-bottom, 16px) !important;
+    left: 16px !important;
+    right: 16px !important;
+    max-width: calc(100% - 32px) !important;
+  }
+  
+  /* Timestamp legibility improvements for mobile */
+  .timestamp-text {
+    font-size: 10px !important;
+    opacity: 0.9 !important;
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    padding: 2px 4px !important;
+    border-radius: 3px !important;
+  }
+  
+  /* Improve tap targets for mobile */
+  .mobile-friendly-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Ensure responsive tables */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }

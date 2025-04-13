@@ -17,6 +17,7 @@ import DashboardHome from './pages/dashboard/Home';
 import Home from './pages/Home';
 import Features from './pages/Features';
 import AiEngine from './pages/features/AiEngine';
+import QASprint from './pages/dashboard/QASprint';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           {/* Dashboard routes */}
           <Route path="dashboard" element={<DashboardHome />} />
           <Route path="dashboard/link-validation" element={<LinkValidation />} />
+          <Route path="dashboard/qa-sprint" element={<QASprint />} />
           
           {/* Add any other routes that were previously available */}
           <Route path="certification" element={<Dashboard />} /> {/* Placeholder until we restore the real component */}

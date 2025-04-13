@@ -17,6 +17,7 @@ import { useLanguageManager } from './hooks/useLanguageManager';
 import { useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { QuickTips } from './components/QuickTips';
 
 export default function PulseBotChat() {
   // Use our custom hooks
@@ -215,6 +216,9 @@ export default function PulseBotChat() {
         exportFormat={exportFormat}
         onExportFormatChange={handleExportFormatChange}
       />
+
+      {/* Quick Tips Component */}
+      {open && <QuickTips onSelectPrompt={sendMessage} />}
 
       {/* Error Alert */}
       {error && (

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Link2 } from 'lucide-react';
+import { Link2, Cpu } from 'lucide-react';
 import { runLinkValidation } from '@/utils/linkValidation';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,6 +32,10 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
   
   const handleViewHandoverReport = () => {
     navigate('/project-handover');
+  };
+  
+  const handleViewAIProgress = () => {
+    navigate('/features/ai-engine');
   };
   
   if (variant === 'icon') {
@@ -84,6 +88,15 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
         onClick={handleViewHandoverReport}
       >
         Project Handover
+      </Button>
+      <Button 
+        variant="outline"
+        size="sm" 
+        onClick={handleViewAIProgress}
+        className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+      >
+        <Cpu className="mr-2 h-4 w-4" />
+        AI Integration Status
       </Button>
     </div>
   );

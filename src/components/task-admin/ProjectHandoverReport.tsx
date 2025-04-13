@@ -11,7 +11,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, Calendar, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Download, FileText, Calendar, CheckCircle2, AlertTriangle, Clock, AlertCircle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
 export interface TaskCategory {
@@ -165,6 +165,13 @@ const defaultCriticalTasks: CriticalTask[] = [
     status: "not-started",
     assignedTo: "Security Team",
     dueDate: "Apr 19, 2025"
+  },
+  {
+    name: "Complete AI engine integration",
+    priority: "high",
+    status: "in-progress",
+    assignedTo: "AI Team",
+    dueDate: "Apr 17, 2025"
   }
 ];
 
@@ -240,6 +247,12 @@ const defaultRiskFactors = [
     impact: "high" as const,
     likelihood: "medium" as const,
     mitigation: "Load testing planned prior to launch"
+  },
+  {
+    name: "AI Model Accuracy",
+    impact: "high" as const,
+    likelihood: "medium" as const,
+    mitigation: "Implementing additional validation and fine-tuning"
   }
 ];
 
@@ -453,6 +466,88 @@ const ProjectHandoverReport: React.FC<ProjectHandoverReportProps> = ({
                 <p className="text-sm text-gray-600 mt-2">{category.notes}</p>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>AI Integration - Detailed Plan</CardTitle>
+          <Badge className="ml-2 bg-blue-100 text-blue-800 border-blue-200">Key Initiative</Badge>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <p className="text-gray-700">
+              The AI engine integration is a critical component for the beta launch. 
+              Currently at 85% completion, the following tasks must be completed before the launch date:
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="border rounded-md p-4 bg-gray-50">
+                <h4 className="font-medium mb-2">In Progress (Due by April 17)</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-start">
+                    <div className="mt-0.5 mr-2 p-1 rounded-full bg-yellow-100 text-yellow-800">
+                      <AlertTriangle className="h-3 w-3" />
+                    </div>
+                    <span className="text-sm">Real-time insights engine optimization</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="mt-0.5 mr-2 p-1 rounded-full bg-yellow-100 text-yellow-800">
+                      <AlertTriangle className="h-3 w-3" />
+                    </div>
+                    <span className="text-sm">Sentiment analysis fine-tuning</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="mt-0.5 mr-2 p-1 rounded-full bg-yellow-100 text-yellow-800">
+                      <AlertTriangle className="h-3 w-3" />
+                    </div>
+                    <span className="text-sm">Theme identification accuracy improvements</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="border rounded-md p-4 bg-gray-50">
+                <h4 className="font-medium mb-2">Final Testing (April 18-20)</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-start">
+                    <div className="mt-0.5 mr-2 p-1 rounded-full bg-blue-100 text-blue-800">
+                      <Clock className="h-3 w-3" />
+                    </div>
+                    <span className="text-sm">Full end-to-end AI pipeline testing</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="mt-0.5 mr-2 p-1 rounded-full bg-blue-100 text-blue-800">
+                      <Clock className="h-3 w-3" />
+                    </div>
+                    <span className="text-sm">Performance benchmarking under load</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="mt-0.5 mr-2 p-1 rounded-full bg-blue-100 text-blue-800">
+                      <Clock className="h-3 w-3" />
+                    </div>
+                    <span className="text-sm">Model validation across test datasets</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 p-4 rounded-md border border-blue-100 mt-4">
+              <h4 className="font-medium mb-2 flex items-center">
+                <AlertCircle className="h-4 w-4 mr-2 text-blue-700" />
+                Risk Mitigation for AI Integration
+              </h4>
+              <p className="text-sm mb-3">
+                The complexity of the AI engine integration presents the highest risk to the launch timeline.
+                The following mitigation strategies are in place:
+              </p>
+              <ul className="space-y-1 text-sm list-disc pl-5 text-gray-700">
+                <li>Dedicated AI team with extended hours until launch</li>
+                <li>Fallback simplified model ready if advanced features encounter issues</li>
+                <li>Daily integration testing to catch issues early</li>
+                <li>External AI consultant engaged for final review and optimization</li>
+              </ul>
+            </div>
           </div>
         </CardContent>
       </Card>

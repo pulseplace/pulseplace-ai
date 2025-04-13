@@ -7,12 +7,13 @@ import PulseBotPage from './pages/PulseBot';
 import NotFound from './pages/NotFound';
 import AiDashboard from './pages/dashboard/AiDashboard';
 import LLMInsights from './pages/dashboard/LLMInsights';
+import Root from './pages/Root';
 
 function App() {
   return (
     <HelmetProvider>
       <Routes>
-        <Route path="/">
+        <Route path="/" element={<Root />}>
           {/* Public routes */}
           <Route index element={<Dashboard />} />
           

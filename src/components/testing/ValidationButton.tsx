@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link2, Cpu } from 'lucide-react';
 import { runLinkValidation } from '@/utils/linkValidation';
 import { useNavigate } from 'react-router-dom';
+import { toast } from '@/components/ui/use-toast';
 
 type ValidationButtonProps = {
   variant?: 'icon' | 'text' | 'full';
@@ -24,6 +25,13 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
     if (onComplete) {
       onComplete(results);
     }
+    
+    // Show a toast to inform user
+    toast({
+      title: "Link Validation Complete",
+      description: `Checked ${results.length} links across the site.`,
+      duration: 3000
+    });
   };
   
   const handleViewDashboard = () => {
@@ -66,7 +74,7 @@ const ValidationButton: React.FC<ValidationButtonProps> = ({
   }
   
   return (
-    <div className={`flex gap-2 ${className}`}>
+    <div className={`flex flex-wrap gap-2 ${className}`}>
       <Button 
         variant="outline" 
         size="sm" 

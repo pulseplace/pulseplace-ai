@@ -16,6 +16,7 @@ import {
   Brain,
   MessageSquare,
   FileBarChart,
+  Link2,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -119,6 +120,16 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             </NavItem>
             <NavItem to="/project-handover" icon={FileText}>
               Project Handover
+            </NavItem>
+            
+            {/* Development Tools */}
+            <div className="pt-4 pb-2">
+              <p className="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Development Tools
+              </p>
+            </div>
+            <NavItem to="/dashboard/link-validation" icon={Link2}>
+              Link Validator
             </NavItem>
             
             {/* Add the Pitch Deck Admin link for admin users */}

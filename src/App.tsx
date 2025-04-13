@@ -7,6 +7,7 @@ import PulseBotPage from './pages/PulseBot';
 import NotFound from './pages/NotFound';
 import AiDashboard from './pages/dashboard/AiDashboard';
 import LLMInsights from './pages/dashboard/LLMInsights';
+import LinkValidation from './pages/dashboard/LinkValidation';
 import Root from './pages/Root';
 import Insights from './pages/Insights';
 import TaskAudit from './pages/TaskAudit';
@@ -41,6 +42,7 @@ function App() {
           
           {/* Dashboard routes */}
           <Route path="dashboard" element={<DashboardHome />} />
+          <Route path="dashboard/link-validation" element={<LinkValidation />} />
           
           {/* Add any other routes that were previously available */}
           <Route path="certification" element={<Dashboard />} /> {/* Placeholder until we restore the real component */}

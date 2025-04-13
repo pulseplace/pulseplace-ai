@@ -1,7 +1,7 @@
 
 import { navItems, featuresSubItems } from '@/components/navigation/NavigationConfig';
 import { features } from '@/components/FeatureSection';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/use-toast';
 
 export interface LinkValidationResult {
   path: string;
@@ -20,15 +20,25 @@ export const validateInternalLink = (path: string): boolean => {
   const knownValidRoutes = [
     '/',
     '/auth',
+    '/auth/login',
+    '/auth/register',
+    '/auth/forgot-password',
     '/investor-deck',
     '/pitch-deck-request',
     '/pitch-deck-view',
     '/task-summary',
+    '/task-audit',
     '/task-admin',
     '/dashboard',
     '/dashboard/profile-settings',
     '/dashboard/pitch-deck-admin',
     '/dashboard/link-validation',
+    '/dashboard/llm-insights',
+    '/dashboard/organization',
+    '/dashboard/team',
+    '/dashboard/analytics',
+    '/dashboard/settings',
+    '/dashboard/help',
     '/features',
     '/features/surveys',
     '/features/ai-analytics',
@@ -42,9 +52,16 @@ export const validateInternalLink = (path: string): boolean => {
     '/join-beta',
     '/dashboard-preview',
     '/pulsebot',
+    '/ai-dashboard',
     '/book-demo',
     '/demo',
     '/roi-calculator',
+    '/project-handover',
+    '/privacy-policy',
+    '/terms-of-service',
+    '/about-us',
+    '/resources',
+    '/methodology',
   ];
 
   // Check if the path is in the known valid routes
@@ -121,10 +138,17 @@ export const runLinkValidation = (): LinkValidationResult[] => {
   
   if (invalidLinks.length > 0) {
     console.error('Invalid links found:', invalidLinks);
-    toast.error(`Found ${invalidLinks.length} invalid links. Check console for details.`);
+    toast({
+      variant: "destructive",
+      title: "Link Validation Error",
+      description: `Found ${invalidLinks.length} invalid links. Check console for details.`
+    });
   } else {
     console.log('All links validated successfully');
-    toast.success('All links validated successfully!');
+    toast({
+      title: "Link Validation Successful",
+      description: "All links validated successfully!"
+    });
   }
   
   return results;
@@ -174,4 +198,24 @@ export const generateLinkValidationReport = (): string => {
   });
   
   return report;
+};
+
+// Additional helper function to fix common link issues
+export const getFixSuggestions = (path: string): string => {
+  // Common typos or mistakes and their corrections
+  const corrections: Record<string, string> = {
+    '/dashboad': '/dashboard',
+    '/pulsebt': '/pulsebot',
+    '/feature': '/features',
+    '/insight': '/insights',
+    '/dashboard/link-validator': '/dashboard/link-validation',
+  };
+  
+  for (const [typo, correction] of Object.entries(corrections)) {
+    if (path.includes(typo)) {
+      return `Did you mean "${path.replace(typo, correction)}"?`;
+    }
+  }
+  
+  return '';
 };

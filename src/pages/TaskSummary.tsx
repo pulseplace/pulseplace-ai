@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import MetaTags from '@/components/MetaTags';
 import TaskCompletionSummary from '@/components/task-admin/TaskCompletionSummary';
@@ -12,10 +13,12 @@ import { Badge } from "@/components/ui/badge";
 import AIIntegrationTimeline from '@/components/task-admin/AIIntegrationTimeline';
 import RealTimeTriggers from '@/components/task-admin/RealTimeTriggers';
 import AIIntegrationStatus from '@/components/task-admin/AIIntegrationStatus';
+import SyncMonitor from '@/components/task-admin/SyncMonitor';
+import InsightCard from '@/components/task-admin/InsightCard';
 
 const TaskSummary: React.FC = () => {
   // State for tracking when insights were last updated
-  const [lastUpdated] = useState<Date>(new Date());
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   
   // Sample project phases data for the chart
   const phases: ProjectPhase[] = [
@@ -142,6 +145,22 @@ const TaskSummary: React.FC = () => {
     { milestone: "Final Deployment", status: "upcoming" as const, date: "Apr 21" }
   ];
 
+  // Handle data refresh
+  const handleRefresh = () => {
+    setLastUpdated(new Date());
+  };
+
+  // Sample sparkline data for team performance
+  const sampleSparklineData = [
+    { value: 70, timestamp: '2025-03-01' },
+    { value: 65, timestamp: '2025-03-08' },
+    { value: 68, timestamp: '2025-03-15' },
+    { value: 72, timestamp: '2025-03-22' },
+    { value: 78, timestamp: '2025-03-29' },
+    { value: 82, timestamp: '2025-04-05' },
+    { value: 85, timestamp: '2025-04-12' },
+  ];
+
   return (
     <DashboardProvider>
       <div className="container mx-auto py-8 px-4">
@@ -166,8 +185,11 @@ const TaskSummary: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
               <Card>
-                <CardContent className="pt-6">
-                  <h2 className="text-xl font-semibold mb-4">Project Phase Progress</h2>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-xl font-semibold">Project Phase Progress</CardTitle>
+                  <SyncMonitor lastUpdated={lastUpdated} onRefresh={handleRefresh} />
+                </CardHeader>
+                <CardContent className="pt-4">
                   <div className="h-[300px]">
                     <ProjectProgressChart phases={phases} />
                   </div>
@@ -176,8 +198,19 @@ const TaskSummary: React.FC = () => {
             </div>
             
             <div className="space-y-6">
-              <AIIntegrationTimeline timeline={aiIntegrationTimeline} />
-              <RealTimeTriggers />
+              <InsightCard 
+                title="AI Integration Timeline"
+                type="info"
+                content={<AIIntegrationTimeline timeline={aiIntegrationTimeline} />}
+              />
+              
+              <InsightCard 
+                title="Real-Time Triggers"
+                type="success"
+                content={<RealTimeTriggers />}
+                sparklineData={sampleSparklineData}
+                badgeText="Active"
+              />
             </div>
           </div>
           

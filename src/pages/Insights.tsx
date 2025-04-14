@@ -4,6 +4,7 @@ import MetaTags from '@/components/MetaTags';
 import { Card, CardContent } from "@/components/ui/card";
 import AdvancedAnalytics from '@/components/dashboard/AdvancedAnalytics';
 import { DashboardProvider } from '@/contexts/DashboardContext';
+import InsightsExportButton from '@/components/dashboard/InsightsExportButton';
 
 const Insights: React.FC = () => {
   return (
@@ -15,11 +16,18 @@ const Insights: React.FC = () => {
         />
         
         <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Culture Insights</h1>
-            <p className="text-gray-600 mb-6">
-              Discover trends, patterns and actionable insights from your workplace culture data.
-            </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Culture Insights</h1>
+              <p className="text-gray-600">
+                Discover trends, patterns and actionable insights from your workplace culture data.
+              </p>
+            </div>
+            
+            <InsightsExportButton 
+              exportTitle="Culture Insights"
+              variant="outline"
+            />
           </div>
           
           <AdvancedAnalytics />

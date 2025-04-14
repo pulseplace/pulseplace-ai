@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import { FloatingChatButton } from './components/FloatingChatButton';
 import { ChatContainer } from './components/ChatContainer';
@@ -20,7 +19,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { QuickTips } from './components/QuickTips';
 
 export default function PulseBotChat() {
-  // Use our custom hooks
   const { sessionInfo, setSessionInfo } = useSession();
   const { confetti, triggerConfetti } = useConfetti();
   const { language, handleLanguageChange, getLanguageName } = useLanguageManager();
@@ -30,7 +28,6 @@ export default function PulseBotChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   
-  // Message handling hook
   const { 
     messages, 
     loading, 
@@ -39,13 +36,10 @@ export default function PulseBotChat() {
     clearHistory 
   } = useMessageHandler(sessionInfo, setSessionInfo);
   
-  // Search hook
   const { search, handleSearch, clearSearch } = useSearch(messages);
   
-  // Export format state
   const [exportFormat, setExportFormat] = useState<'json' | 'pdf'>('json');
   
-  // Define available languages
   const languages = [
     { value: 'en' as MessageLanguage, label: 'English' },
     { value: 'es' as MessageLanguage, label: 'Spanish' },
@@ -58,41 +52,29 @@ export default function PulseBotChat() {
     { value: 'ko' as MessageLanguage, label: 'Korean' },
   ];
   
-  // Get the appropriate state for the FloatingChatButton
   const getBotStateForButton = (): BotAvatarStateValue => {
     if (typeof botAvatarState === 'string') {
       return botAvatarState as BotAvatarStateValue;
     } else if (botAvatarState && typeof botAvatarState === 'object') {
-      // Safer check that doesn't rely on specific property
-      return 'idle'; // Default to idle if the object structure is not as expected
+      return 'idle';
     }
     return 'idle';
   };
   
-  // Toggle chat open/closed
   const toggleChat = () => {
     setOpen(!open);
-    // Reset error state when toggling
     setError(null);
   };
   
-  // Handle sending messages and update bot state
   const sendMessage = (text: string) => {
-    // Reset error state
     setError(null);
-    
-    // Update bot state to indicate thinking
     setBotAvatarState('thinking');
     
     try {
-      // Send message
       handleSendMessage(text, language);
-      
-      // Reset bot state after response
       setTimeout(() => {
         setBotAvatarState('neutral');
         
-        // Show confetti occasionally
         if (Math.random() > 0.8) {
           triggerConfetti({
             particleCount: 70,
@@ -102,7 +84,6 @@ export default function PulseBotChat() {
         }
       }, 1500);
     } catch (err) {
-      // Handle error
       console.error("Error sending message:", err);
       setError("Failed to send message. Please try again.");
       setBotAvatarState('confused');
@@ -115,7 +96,6 @@ export default function PulseBotChat() {
     }
   };
   
-  // Export chat history
   const handleExportChat = () => {
     if (messages.length <= 1) {
       toast({
@@ -150,7 +130,6 @@ export default function PulseBotChat() {
     }
   };
   
-  // Handle export format change
   const handleExportFormatChange = (format: 'json' | 'pdf') => {
     setExportFormat(format);
     toast({
@@ -160,7 +139,6 @@ export default function PulseBotChat() {
     });
   };
   
-  // Verify the language is valid, or default to English
   useEffect(() => {
     const isValidLanguage = languages.some(lang => lang.value === language);
     
@@ -176,7 +154,6 @@ export default function PulseBotChat() {
     }
   }, [language, handleLanguageChange, languages, toast]);
 
-  // Automatically open chat when directly navigating to /pulsebot
   useEffect(() => {
     if (window.location.pathname.includes('/pulsebot') && !open) {
       toggleChat();
@@ -185,17 +162,14 @@ export default function PulseBotChat() {
 
   return (
     <TutorialProvider>
-      {/* Confetti Animation */}
       <Confetti isActive={confetti.isActive} config={confetti.config} />
       
-      {/* Floating chat button with tooltip */}
       <FloatingChatButton 
         open={open} 
         toggleChat={toggleChat} 
         botState={getBotStateForButton()}
       />
 
-      {/* Chat dialog */}
       <ChatContainer
         open={open}
         loading={loading}
@@ -217,10 +191,8 @@ export default function PulseBotChat() {
         onExportFormatChange={handleExportFormatChange}
       />
 
-      {/* Quick Tips Component */}
       {open && <QuickTips onSelectPrompt={sendMessage} />}
 
-      {/* Error Alert */}
       {error && (
         <Alert variant="destructive" className="fixed bottom-4 left-4 w-auto max-w-md z-50">
           <AlertCircle className="h-4 w-4" />
@@ -229,10 +201,8 @@ export default function PulseBotChat() {
         </Alert>
       )}
 
-      {/* Tutorial Overlay */}
       <TutorialOverlay />
 
-      {/* Typing indicator styles */}
       <TypingIndicatorStyles />
     </TutorialProvider>
   );

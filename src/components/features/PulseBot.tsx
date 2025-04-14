@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,6 @@ import QuickPrompts from './pulsebot/QuickPrompts';
 import ProgressBar from './pulsebot/ProgressBar';
 import ChatMessage, { Message } from './pulsebot/ChatMessage';
 
-// Sample context data for the bot
 const sampleContextData = {
   recentScores: [
     { department: 'Engineering', score: 82 },
@@ -62,7 +60,6 @@ const PulseBot: React.FC = () => {
     scrollToBottom();
   }, [messages]);
   
-  // Simulate AI Progress for demo
   useEffect(() => {
     if (isProcessing) {
       setAiProgressVisible(true);
@@ -78,7 +75,6 @@ const PulseBot: React.FC = () => {
       
       return () => {
         clearInterval(interval);
-        // Hide progress bar after processing completes with a delay
         setTimeout(() => {
           setAiProgressVisible(false);
           setAiProgress(0);
@@ -90,7 +86,6 @@ const PulseBot: React.FC = () => {
   const handleSendMessage = () => {
     if (inputValue.trim() === '') return;
     
-    // Add user message
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       type: 'user',
@@ -101,7 +96,6 @@ const PulseBot: React.FC = () => {
     setInputValue('');
     setIsProcessing(true);
     
-    // Process the query and generate a response
     setTimeout(() => {
       const botResponse = processPulseBotQuery(userMessage.text, sampleContextData);
       
@@ -127,7 +121,6 @@ const PulseBot: React.FC = () => {
   const handleSuggestedQuestion = (question: string) => {
     setInputValue(question);
     
-    // Focus the textarea
     const textarea = document.getElementById('message-input');
     if (textarea) {
       textarea.focus();
@@ -136,7 +129,6 @@ const PulseBot: React.FC = () => {
 
   const handleQuickPrompt = (promptText: string) => {
     setInputValue(promptText);
-    // Auto-send the message after a brief delay
     setTimeout(() => {
       handleSendMessage();
     }, 100);
@@ -151,10 +143,8 @@ const PulseBot: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col pb-4">
-        {/* Demo Quick Prompts Section */}
         <QuickPrompts onPromptClick={handleQuickPrompt} />
       
-        {/* AI Processing Progress Bar */}
         <ProgressBar progress={aiProgress} isVisible={aiProgressVisible} />
       
         <div className="flex-1 overflow-y-auto mb-4 pr-2">

@@ -4,12 +4,12 @@ import { X, HelpCircle, MessageSquare, Bot, Command } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const samplePrompts = [
+  "Summarize Team Zeta",
+  "Why is Sigma eligible for certification?",
+  "Show risk for Team Gamma",
   "What trust metrics do you track?",
   "How can I improve team collaboration?",
-  "Generate a quick report on employee retention",
-  "What's a good survey response rate?",
-  "Show me insights from our latest data",
-  "How does the certification process work?"
+  "Generate a quick report on employee retention"
 ];
 
 interface QuickTipsProps {

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import MetaTags from '@/components/MetaTags';
@@ -6,7 +5,7 @@ import TaskCompletionSummary from '@/components/task-admin/TaskCompletionSummary
 import { DashboardProvider } from '@/contexts/DashboardContext';
 import { sampleInsights } from '@/utils/ai/insightPrompts';
 import { TeamInsight } from '@/components/task-admin/team-insights/types';
-import { TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import BetaLaunchPlan from '@/components/task-admin/BetaLaunchPlan';
 import DemoDayCountdown from '@/components/sprint/DemoDayCountdown';
 
@@ -177,35 +176,37 @@ const TaskSummary: React.FC = () => {
         />
         
         <div className="space-y-8">
-          <TaskSummaryHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-          
-          <TabsContent value="summary" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-1">
-                <DemoDayCountdown />
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TaskSummaryHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            
+            <TabsContent value="summary" className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-1">
+                  <DemoDayCountdown />
+                </div>
+                
+                <div className="lg:col-span-2">
+                  <TaskCompletionSummary />
+                </div>
               </div>
               
-              <div className="lg:col-span-2">
-                <TaskCompletionSummary />
-              </div>
-            </div>
+              <ProjectPhaseSection 
+                phases={phases}
+                lastUpdated={lastUpdated}
+                onRefresh={handleRefresh}
+                aiIntegrationTimeline={aiIntegrationTimeline}
+                sampleSparklineData={sampleSparklineData}
+              />
+              
+              <AnalyticsSection trustTrends={trustTrends} />
+              
+              <TeamInsightsSection teamInsights={teamInsights} />
+            </TabsContent>
             
-            <ProjectPhaseSection 
-              phases={phases}
-              lastUpdated={lastUpdated}
-              onRefresh={handleRefresh}
-              aiIntegrationTimeline={aiIntegrationTimeline}
-              sampleSparklineData={sampleSparklineData}
-            />
-            
-            <AnalyticsSection trustTrends={trustTrends} />
-            
-            <TeamInsightsSection teamInsights={teamInsights} />
-          </TabsContent>
-          
-          <TabsContent value="beta-plan">
-            <BetaLaunchPlan />
-          </TabsContent>
+            <TabsContent value="beta-plan">
+              <BetaLaunchPlan />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </DashboardProvider>

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface TaskSummaryHeaderProps {
   activeTab: string;
@@ -19,12 +19,10 @@ const TaskSummaryHeader: React.FC<TaskSummaryHeaderProps> = ({ activeTab, setAct
         Review task completion percentages and priority-based statistics for your project.
       </p>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6">
-          <TabsTrigger value="summary">Project Summary</TabsTrigger>
-          <TabsTrigger value="beta-plan">Beta Launch Plan</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <TabsList className="mb-6">
+        <TabsTrigger value="summary">Project Summary</TabsTrigger>
+        <TabsTrigger value="beta-plan">Beta Launch Plan</TabsTrigger>
+      </TabsList>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import MetaTags from '@/components/MetaTags';
@@ -8,8 +7,9 @@ import { sampleInsights } from '@/utils/ai/insightPrompts';
 import { TeamInsight } from '@/components/task-admin/team-insights/types';
 import { TabsContent } from "@/components/ui/tabs";
 import BetaLaunchPlan from '@/components/task-admin/BetaLaunchPlan';
+import DemoDayCountdown from '@/components/sprint/DemoDayCountdown';
 
-// Import the newly created components
+// Import the components
 import TaskSummaryHeader from '@/components/task-admin/dashboard/TaskSummaryHeader';
 import ProjectPhaseSection from '@/components/task-admin/dashboard/ProjectPhaseSection';
 import AnalyticsSection from '@/components/task-admin/dashboard/AnalyticsSection';
@@ -116,7 +116,6 @@ const TaskSummary: React.FC = () => {
   // Using sample insights with added new teams
   const teamInsights: TeamInsight[] = [
     ...sampleInsights,
-    // Add Team Sigma (approaching certification)
     {
       team: "Team Sigma",
       insight_type: "PulseScore Certification",
@@ -124,17 +123,15 @@ const TaskSummary: React.FC = () => {
       pulse_score: 78,
       certification_eligible: false,
       summary: "Team Sigma shows promising cultural indicators with a growing PulseScore approaching the certification threshold. Key strengths include innovation, cross-functional collaboration, and learning culture. While not yet eligible for certification, the team is trending positively.",
-      updated_at: new Date(Date.now() - 3600000 * 24) // 1 day ago
+      updated_at: new Date(Date.now() - 3600000 * 24)
     },
-    // Add Team Sigma culture summary
     {
       team: "Team Sigma",
       insight_type: "Culture Summary",
       ai_generated: true,
       content: "Team Sigma demonstrates strong innovation metrics with 92% positive sentiment around creativity and 87% for cross-functional collaboration. Their learning culture (84% positive) is also notable. However, work-life balance (64%) and communication clarity (69%) need attention. The team's energy and enthusiasm are high, but there are early signs of potential burnout.",
-      updated_at: new Date(Date.now() - 3600000 * 36) // 1.5 days ago
+      updated_at: new Date(Date.now() - 3600000 * 36)
     },
-    // Add Team Zeta (gold certification level)
     {
       team: "Team Zeta",
       insight_type: "PulseScore Certification",
@@ -142,7 +139,7 @@ const TaskSummary: React.FC = () => {
       pulse_score: 94,
       certification_eligible: true,
       summary: "Team Zeta has achieved our highest PulseScore with exceptional ratings across all categories, earning Gold Certification status. This team demonstrates exemplary psychological safety, leadership trust, and team cohesion, serving as an internal benchmark for cultural excellence.",
-      updated_at: new Date() // Just now
+      updated_at: new Date()
     }
   ] as TeamInsight[];
   
@@ -182,6 +179,8 @@ const TaskSummary: React.FC = () => {
           <TaskSummaryHeader activeTab={activeTab} setActiveTab={setActiveTab} />
           
           <TabsContent value="summary" className="space-y-8">
+            <DemoDayCountdown />
+            
             <TaskCompletionSummary />
             
             <ProjectPhaseSection 

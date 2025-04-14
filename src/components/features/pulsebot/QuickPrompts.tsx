@@ -1,43 +1,45 @@
 
 import React from 'react';
-import { Lightbulb, BarChart2, AlertTriangle, CheckCircle2, TrendingUp, Sparkles } from 'lucide-react';
-
-interface QuickPrompt {
-  text: string;
-  icon: React.ReactNode;
-}
+import { PulseBotTooltip } from '@/components/chat/components/PulseBotTooltip';
+import { Card, CardContent } from "@/components/ui/card";
+import { ChevronRight, Star } from 'lucide-react';
 
 interface QuickPromptsProps {
-  onPromptClick: (text: string) => void;
+  onPromptClick: (promptText: string) => void;
 }
 
 const QuickPrompts: React.FC<QuickPromptsProps> = ({ onPromptClick }) => {
-  const quickPrompts: QuickPrompt[] = [
-    { text: "Summarize Team Alpha", icon: <BarChart2 className="h-4 w-4 text-blue-600" /> },
-    { text: "Show risk for Team Gamma", icon: <AlertTriangle className="h-4 w-4 text-amber-600" /> },
-    { text: "Why is Team Beta eligible for certification?", icon: <CheckCircle2 className="h-4 w-4 text-green-600" /> },
-    { text: "Summarize Team Sigma", icon: <TrendingUp className="h-4 w-4 text-indigo-600" /> },
-    { text: "Summarize Team Zeta", icon: <Sparkles className="h-4 w-4 text-purple-600" /> }
+  const popularPrompts = [
+    "Summarize Team Sigma",
+    "What are our top performing departments?",
+    "Show risk for Team Gamma"
   ];
-
+  
   return (
-    <div className="mb-4 bg-blue-50 rounded-lg p-3 border border-blue-100">
-      <div className="flex items-center gap-1 text-xs text-blue-700 mb-2">
-        <Lightbulb className="h-3.5 w-3.5" />
-        <span className="font-medium">Demo Quick Prompts:</span>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {quickPrompts.map((prompt, index) => (
-          <button
-            key={index}
-            className="text-xs bg-white border border-blue-200 rounded-full px-3 py-1.5 hover:bg-blue-50 flex items-center gap-1"
-            onClick={() => onPromptClick(prompt.text)}
-          >
-            {prompt.icon}
-            <span>{prompt.text}</span>
-          </button>
-        ))}
-      </div>
+    <div className="relative mb-3">
+      <PulseBotTooltip onSelectPrompt={onPromptClick} />
+      
+      <Card className="mb-4 bg-gradient-to-r from-pulse-50 to-white border-pulse-100">
+        <CardContent className="pt-4">
+          <div className="flex items-center mb-2">
+            <Star className="h-4 w-4 text-amber-500 mr-2" />
+            <span className="text-sm font-medium">Popular Questions</span>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-1">
+            {popularPrompts.map((prompt, index) => (
+              <button
+                key={index}
+                className="flex items-center justify-between text-sm text-left p-2 rounded hover:bg-gray-50 transition-colors"
+                onClick={() => onPromptClick(prompt)}
+              >
+                <span>{prompt}</span>
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

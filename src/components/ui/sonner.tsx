@@ -21,7 +21,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
         },
+        // Mobile-friendly positioning
+        position: window.innerWidth < 640 ? "bottom-center" : "bottom-right",
       }}
+      // Adjust spacing for mobile devices
+      expand={window.innerWidth >= 640}
+      // Ensure enough space from bottom on mobile
+      offset={window.innerWidth < 640 ? 16 : 32}
       {...props}
     />
   )

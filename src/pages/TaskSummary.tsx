@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import MetaTags from '@/components/MetaTags';
@@ -179,9 +180,15 @@ const TaskSummary: React.FC = () => {
           <TaskSummaryHeader activeTab={activeTab} setActiveTab={setActiveTab} />
           
           <TabsContent value="summary" className="space-y-8">
-            <DemoDayCountdown />
-            
-            <TaskCompletionSummary />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-1">
+                <DemoDayCountdown />
+              </div>
+              
+              <div className="lg:col-span-2">
+                <TaskCompletionSummary />
+              </div>
+            </div>
             
             <ProjectPhaseSection 
               phases={phases}

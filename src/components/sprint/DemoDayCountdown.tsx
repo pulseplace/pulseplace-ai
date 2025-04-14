@@ -6,7 +6,20 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Clock, Calendar, CheckCircle2, AlertCircle, Clock3, ArrowUp } from 'lucide-react';
+import { 
+  Clock, 
+  Calendar, 
+  CheckCircle2, 
+  AlertCircle, 
+  ArrowUp, 
+  BarChart2,
+  Smartphone,
+  MessageSquare,
+  FileDown,
+  CheckCircle,
+  ArrowRight,
+  ExternalLink
+} from 'lucide-react';
 
 interface DemoTask {
   id: string;
@@ -16,7 +29,8 @@ interface DemoTask {
   category: string;
 }
 
-const DEMO_DATE = new Date('2025-04-21T09:00:00'); // April 21, 2025, 9:00 AM
+// Updated to April 28, 2025, 10:00 AM IST
+const DEMO_DATE = new Date('2025-04-28T04:30:00Z'); // 10:00 AM IST in UTC
 
 const DemoDayCountdown: React.FC = () => {
   const { toast } = useToast();
@@ -26,6 +40,8 @@ const DemoDayCountdown: React.FC = () => {
     minutes: number;
     seconds: number;
   }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   
   const [tasks, setTasks] = useState<DemoTask[]>([
     {
@@ -57,6 +73,24 @@ const DemoDayCountdown: React.FC = () => {
       category: 'Feature'
     }
   ]);
+  
+  // Project phases progress data
+  const phasesProgress = [
+    { phase: "Foundation Phase", progress: 100, status: "completed" },
+    { phase: "Core Features", progress: 65, status: "in-progress" },
+    { phase: "Beta Readiness (UX + AI)", progress: 90, status: "in-progress" },
+    { phase: "QA Sprint", progress: 75, status: "in-progress" }
+  ];
+  
+  // Milestone data
+  const milestones = [
+    { date: "April 15", title: "Core Features Release", status: "completed" },
+    { date: "April 15", title: "AI Insights Lock", status: "completed" },
+    { date: "April 28", title: "Beta Onboarding Begins", status: "upcoming" },
+    { date: "May 15", title: "Beta Expansion Phase", status: "planned" },
+    { date: "June 1", title: "Pre-Launch Campaign", status: "planned" },
+    { date: "July 15", title: "Public Launch", status: "planned" }
+  ];
 
   // Calculate time remaining
   useEffect(() => {
@@ -96,7 +130,7 @@ const DemoDayCountdown: React.FC = () => {
           toast({
             title: newCompleted ? "Task completed" : "Task reopened",
             description: task.description.substring(0, 40) + "...",
-            variant: newCompleted ? "default" : "outline"
+            variant: newCompleted ? "default" : "destructive"
           });
           
           return { ...task, completed: newCompleted };
@@ -104,31 +138,50 @@ const DemoDayCountdown: React.FC = () => {
         return task;
       })
     );
+    setLastUpdated(new Date());
   };
 
   // Calculate completion percentage
   const completedTasks = tasks.filter(task => task.completed).length;
   const completionPercentage = (completedTasks / tasks.length) * 100;
   
+  // Calculate overall readiness (weighted average of all phases)
+  const overallReadiness = Math.round(
+    (phasesProgress[0].progress * 0.2) + 
+    (phasesProgress[1].progress * 0.3) + 
+    (phasesProgress[2].progress * 0.3) + 
+    (phasesProgress[3].progress * 0.2)
+  );
+  
   // Group tasks by priority
   const highPriorityTasks = tasks.filter(task => task.priority === 'High' && !task.completed);
   const mediumPriorityTasks = tasks.filter(task => task.priority === 'Medium' && !task.completed);
   const completedTasksList = tasks.filter(task => task.completed);
+
+  // Format last updated time
+  const formatLastUpdated = (date: Date) => {
+    return date.toLocaleString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit'
+    });
+  };
 
   return (
     <Card className="shadow-lg border-t-4 border-t-purple-500">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl font-bold">
-            Demo Day Countdown
+            Beta Demo Day Countdown
           </CardTitle>
           <Badge 
-            variant={completedTasks === tasks.length ? "success" : "outline"}
+            variant={completedTasks === tasks.length ? "default" : "outline"}
             className={`${completedTasks === tasks.length ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}`}
           >
             {completedTasks === tasks.length ? 
               <CheckCircle2 className="h-3 w-3 mr-1" /> : 
-              <Clock3 className="h-3 w-3 mr-1 animate-pulse" />
+              <Clock className="h-3 w-3 mr-1 animate-pulse" />
             }
             {completedTasks === tasks.length ? 
               'Ready for demo!' : 
@@ -159,22 +212,57 @@ const DemoDayCountdown: React.FC = () => {
           </div>
         </div>
 
-        {/* Progress bar */}
+        {/* Overall Progress */}
         <div className="space-y-1">
           <div className="flex justify-between text-xs">
-            <span>Overall progress</span>
-            <span className="font-medium">{completionPercentage.toFixed(0)}%</span>
+            <span>Overall readiness</span>
+            <span className="font-medium">{overallReadiness}%</span>
           </div>
-          <Progress value={completionPercentage} className="h-2" />
+          <Progress value={overallReadiness} className="h-2" />
         </div>
         
-        {/* High priority tasks */}
-        {highPriorityTasks.length > 0 && (
+        {/* Project phases progress */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium">Project Phase Progress</h3>
           <div className="space-y-2">
-            <h3 className="text-sm font-medium flex items-center">
-              <ArrowUp className="h-3 w-3 mr-1 text-red-500" />
-              High Priority Tasks
-            </h3>
+            {phasesProgress.map((phase, index) => (
+              <div key={index} className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="flex items-center">
+                    {phase.status === "completed" ? (
+                      <CheckCircle className="h-3 w-3 mr-1 text-green-600" />
+                    ) : (
+                      <Clock className="h-3 w-3 mr-1 text-amber-600" />
+                    )}
+                    {phase.phase}
+                  </span>
+                  <span className="font-medium">{phase.progress}%</span>
+                </div>
+                <Progress 
+                  value={phase.progress} 
+                  className="h-1.5" 
+                  indicatorClassName={
+                    phase.status === "completed" 
+                      ? "bg-green-500" 
+                      : phase.progress >= 80 
+                        ? "bg-amber-500" 
+                        : "bg-blue-500"
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Today's Focus */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium flex items-center">
+            <ArrowUp className="h-3 w-3 mr-1 text-red-500" />
+            Today's Focus
+          </h3>
+          
+          {/* High priority tasks */}
+          {highPriorityTasks.length > 0 && (
             <ul className="space-y-2">
               {highPriorityTasks.map(task => (
                 <li key={task.id} className="flex items-start gap-2 p-2 bg-red-50 rounded-md">
@@ -200,13 +288,10 @@ const DemoDayCountdown: React.FC = () => {
                 </li>
               ))}
             </ul>
-          </div>
-        )}
-        
-        {/* Medium priority tasks */}
-        {mediumPriorityTasks.length > 0 && (
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Medium Priority Tasks</h3>
+          )}
+          
+          {/* Medium priority tasks */}
+          {mediumPriorityTasks.length > 0 && (
             <ul className="space-y-2">
               {mediumPriorityTasks.map(task => (
                 <li key={task.id} className="flex items-start gap-2 p-2 bg-amber-50 rounded-md">
@@ -232,12 +317,10 @@ const DemoDayCountdown: React.FC = () => {
                 </li>
               ))}
             </ul>
-          </div>
-        )}
-        
-        {/* Completed tasks */}
-        {completedTasksList.length > 0 && (
-          <div className="space-y-2">
+          )}
+          
+          {/* Completed tasks */}
+          {completedTasksList.length > 0 && (
             <details>
               <summary className="text-sm font-medium cursor-pointer">
                 Completed Tasks ({completedTasksList.length})
@@ -271,28 +354,111 @@ const DemoDayCountdown: React.FC = () => {
                 ))}
               </ul>
             </details>
+          )}
+        </div>
+        
+        {/* Milestone Tracker */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium">Milestone Tracker</h3>
+          <div className="border rounded-md overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-xs font-medium text-gray-500">
+                <tr>
+                  <th className="px-4 py-2 text-left">Milestone</th>
+                  <th className="px-4 py-2 text-left">Date</th>
+                  <th className="px-4 py-2 text-left">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {milestones.map((milestone, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="px-4 py-2">{milestone.title}</td>
+                    <td className="px-4 py-2">{milestone.date}</td>
+                    <td className="px-4 py-2">
+                      {milestone.status === "completed" ? (
+                        <span className="flex items-center text-green-600">
+                          <CheckCircle2 className="h-4 w-4 mr-1" />
+                          Completed
+                        </span>
+                      ) : milestone.status === "upcoming" ? (
+                        <span className="flex items-center text-blue-600">
+                          <ArrowRight className="h-4 w-4 mr-1" />
+                          Upcoming
+                        </span>
+                      ) : (
+                        <span className="flex items-center text-gray-600">
+                          <Clock className="h-4 w-4 mr-1" />
+                          Planned
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
+        </div>
+        
+        {/* Quick Access Buttons */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium">Quick Access</h3>
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 text-xs justify-start"
+              onClick={() => {
+                window.location.href = "/dashboard/qa-sprint";
+              }}
+            >
+              <BarChart2 className="h-3.5 w-3.5 mr-1.5" />
+              QA Sprint Tracker
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 text-xs justify-start"
+              onClick={() => {
+                window.location.href = "/pulsebot";
+              }}
+            >
+              <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+              PulseBot Demo Mode
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 text-xs justify-start"
+              onClick={() => {
+                toast({
+                  title: "Cross-Browser QA",
+                  description: "Opening browser testing interface..."
+                });
+              }}
+            >
+              <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+              Cross-Browser QA
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 text-xs justify-start"
+              onClick={() => {
+                toast({
+                  title: "Demo State Reset",
+                  description: "Resetting demo environment to initial state..."
+                });
+              }}
+            >
+              <ArrowRight className="h-3.5 w-3.5 mr-1.5" />
+              Reset Demo State
+            </Button>
+          </div>
+        </div>
 
-        {/* Reminder for demo date */}
-        <div className="flex items-center justify-between text-sm text-gray-500 pt-2 border-t">
-          <div className="flex items-center">
-            <Calendar className="h-4 w-4 mr-1" />
-            <span>Demo Day: April 21, 2025 (9:00 AM)</span>
-          </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-purple-600 hover:text-purple-800 hover:bg-purple-50 text-xs"
-            onClick={() => {
-              toast({
-                title: "Calendar event added",
-                description: "Demo Day event has been added to your calendar"
-              });
-            }}
-          >
-            Add to calendar
-          </Button>
+        {/* Last updated timestamp */}
+        <div className="flex justify-end text-xs text-gray-500 pt-2 border-t mt-4">
+          Last updated: {formatLastUpdated(lastUpdated)}
         </div>
       </CardContent>
     </Card>

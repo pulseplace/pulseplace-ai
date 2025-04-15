@@ -1,89 +1,147 @@
-
 import React, { useState } from 'react';
-import { Download, FileDown, Check, Loader2 } from 'lucide-react';
-import { Button, ButtonProps } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Download, FileText, FileSpreadsheet, ChevronDown } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 
-interface ExportButtonProps extends Omit<ButtonProps, 'onClick'> {
+type ExportFormat = 'csv' | 'pdf' | 'excel' | 'json';
+
+interface ExportButtonProps {
   filename?: string;
-  formats?: Array<'pdf' | 'csv' | 'excel' | 'json'>;
-  onExport?: (format: string) => Promise<void>;
+  formats?: ExportFormat[];
+  data?: any;
+  onExport?: (format: ExportFormat) => void;
+  disabled?: boolean;
+  variant?: 'default' | 'outline' | 'secondary';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  className?: string;
+  buttonText?: string;
+  showIcon?: boolean;
 }
 
 const ExportButton: React.FC<ExportButtonProps> = ({
-  filename = 'dashboard-export',
-  formats = ['pdf', 'csv', 'excel', 'json'],
+  filename = 'export',
+  formats = ['csv', 'pdf'],
+  data,
   onExport,
-  ...props
+  disabled = false,
+  variant = 'outline',
+  size = 'sm',
+  className = '',
+  buttonText,
+  showIcon = true
 }) => {
+  const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
-  const [exportFormat, setExportFormat] = useState<string | null>(null);
-
-  const handleExport = async (format: string) => {
+  
+  const handleExport = async (format: ExportFormat) => {
     try {
       setIsExporting(true);
-      setExportFormat(format);
       
+      // If custom export handler is provided, use it
       if (onExport) {
         await onExport(format);
       } else {
-        // Default export simulation
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Default export behavior - show toast and simulate download
+        toast({
+          title: `Exporting as ${format.toUpperCase()}`,
+          description: `Your file will download shortly: ${filename}.${format}`
+        });
+        
+        // Simulate delay for the export process
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
       
-      toast.success(`Export complete`, {
-        description: `Your ${format.toUpperCase()} file has been downloaded successfully.`
+      toast({
+        title: "Export Successful",
+        description: `Your data has been exported as ${filename}.${format}`
       });
     } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Export failed', {
-        description: 'There was a problem generating your export. Please try again.'
+      console.error("Export error:", error);
+      toast({
+        title: "Export Failed",
+        description: "There was a problem exporting your data. Please try again.",
+        variant: "destructive"
       });
     } finally {
       setIsExporting(false);
-      setExportFormat(null);
     }
   };
-
-  // Format label mapping
-  const formatLabels: Record<string, string> = {
-    pdf: 'PDF Document',
-    csv: 'CSV Spreadsheet',
-    excel: 'Excel Spreadsheet',
-    json: 'JSON Data'
-  };
-
-  // Format icon mapping
-  const getFormatIcon = (format: string) => {
-    if (isExporting && exportFormat === format) {
-      return <Loader2 className="h-4 w-4 mr-2 animate-spin" />;
+  
+  const getFormatIcon = (format: ExportFormat) => {
+    switch (format) {
+      case 'csv':
+      case 'excel':
+        return <FileSpreadsheet className="h-4 w-4 mr-2" />;
+      case 'pdf':
+        return <FileText className="h-4 w-4 mr-2" />;
+      case 'json':
+        return <FileText className="h-4 w-4 mr-2" />;
+      default:
+        return <Download className="h-4 w-4 mr-2" />;
     }
-    return <FileDown className="h-4 w-4 mr-2" />;
   };
-
+  
+  const getFormatLabel = (format: ExportFormat) => {
+    switch (format) {
+      case 'csv':
+        return 'CSV';
+      case 'pdf':
+        return 'PDF';
+      case 'excel':
+        return 'Excel';
+      case 'json':
+        return 'JSON';
+      default:
+        return format.toUpperCase();
+    }
+  };
+  
+  // If there's only one format, use a simple button
+  if (formats.length === 1) {
+    return (
+      <Button
+        variant={variant}
+        size={size}
+        onClick={() => handleExport(formats[0])}
+        disabled={disabled || isExporting}
+        className={className}
+      >
+        {showIcon && (getFormatIcon(formats[0]))}
+        {buttonText || `Export ${getFormatLabel(formats[0])}`}
+      </Button>
+    );
+  }
+  
+  // Otherwise, use a dropdown menu
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" {...props}>
-          <Download className="h-4 w-4 mr-2" />
-          Export
+        <Button
+          variant={variant}
+          size={size}
+          disabled={disabled || isExporting}
+          className={className}
+        >
+          {showIcon && <Download className="h-4 w-4 mr-2" />}
+          {buttonText || "Export"}
+          <ChevronDown className="h-3 w-3 ml-1" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {formats.map((format) => (
-          <DropdownMenuItem
-            key={format}
-            disabled={isExporting}
+          <DropdownMenuItem 
+            key={format} 
             onClick={() => handleExport(format)}
+            className="cursor-pointer"
           >
             {getFormatIcon(format)}
-            <span>{formatLabels[format] || format.toUpperCase()}</span>
+            Export as {getFormatLabel(format)}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

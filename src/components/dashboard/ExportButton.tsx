@@ -10,8 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Download, FileText, FileSpreadsheet, ChevronDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
-// Explicitly define the export formats as a const type
+// Explicitly define the export formats as a const array
 const EXPORT_FORMATS = ['csv', 'pdf', 'excel', 'json'] as const;
+// Define the ExportFormat type using the typeof operator
 type ExportFormat = typeof EXPORT_FORMATS[number];
 
 interface ExportButtonProps {

@@ -28,6 +28,6 @@ export const getFormatLabel = (format: ExportFormat) => {
     case 'json':
       return 'JSON';
     default:
-      return format.toUpperCase();
+      return format.toUpperCase() as string;
   }
 };

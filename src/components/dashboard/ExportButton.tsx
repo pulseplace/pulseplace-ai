@@ -1,32 +1,9 @@
 
 import React, { useState } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Download, FileText, FileSpreadsheet, ChevronDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-
-// Define export formats as a const array with specific string literals
-const EXPORT_FORMATS = ['csv', 'pdf', 'excel', 'json'] as const;
-// Create a union type from the array elements for better type checking
-type ExportFormat = typeof EXPORT_FORMATS[number];
-
-interface ExportButtonProps {
-  filename?: string;
-  formats?: ExportFormat[];
-  data?: any;
-  onExport?: (format: ExportFormat) => void;
-  disabled?: boolean;
-  variant?: 'default' | 'outline' | 'secondary';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
-  className?: string;
-  buttonText?: string;
-  showIcon?: boolean;
-}
+import { SingleFormatButton } from './export/SingleFormatButton';
+import { MultiFormatDropdown } from './export/MultiFormatDropdown';
+import { ExportButtonProps, ExportFormat } from './export/types';
 
 const ExportButton: React.FC<ExportButtonProps> = ({
   filename = 'export',
@@ -47,17 +24,14 @@ const ExportButton: React.FC<ExportButtonProps> = ({
     try {
       setIsExporting(true);
       
-      // If custom export handler is provided, use it
       if (onExport) {
         await onExport(format);
       } else {
-        // Default export behavior - show toast and simulate download
         toast({
           title: `Exporting as ${format.toUpperCase()}`,
           description: `Your file will download shortly: ${filename}.${format}`
         });
         
-        // Simulate delay for the export process
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
       
@@ -77,80 +51,32 @@ const ExportButton: React.FC<ExportButtonProps> = ({
     }
   };
   
-  const getFormatIcon = (format: ExportFormat) => {
-    switch (format) {
-      case 'csv':
-      case 'excel':
-        return <FileSpreadsheet className="h-4 w-4 mr-2" />;
-      case 'pdf':
-        return <FileText className="h-4 w-4 mr-2" />;
-      case 'json':
-        return <FileText className="h-4 w-4 mr-2" />;
-      default:
-        return <Download className="h-4 w-4 mr-2" />;
-    }
-  };
-  
-  const getFormatLabel = (format: ExportFormat) => {
-    switch (format) {
-      case 'csv':
-        return 'CSV';
-      case 'pdf':
-        return 'PDF';
-      case 'excel':
-        return 'Excel';
-      case 'json':
-        return 'JSON';
-      default:
-        // Use type assertion to tell TypeScript this is a string
-        return (format as string).toUpperCase();
-    }
-  };
-  
-  // If there's only one format, use a simple button
   if (formats.length === 1) {
     return (
-      <Button
+      <SingleFormatButton
+        format={formats[0]}
+        onExport={() => handleExport(formats[0])}
+        disabled={disabled || isExporting}
         variant={variant}
         size={size}
-        onClick={() => handleExport(formats[0])}
-        disabled={disabled || isExporting}
         className={className}
-      >
-        {showIcon && (getFormatIcon(formats[0]))}
-        {buttonText || `Export ${getFormatLabel(formats[0])}`}
-      </Button>
+        buttonText={buttonText}
+        showIcon={showIcon}
+      />
     );
   }
   
-  // Otherwise, use a dropdown menu
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant={variant}
-          size={size}
-          disabled={disabled || isExporting}
-          className={className}
-        >
-          {showIcon && <Download className="h-4 w-4 mr-2" />}
-          {buttonText || "Export"}
-          <ChevronDown className="h-3 w-3 ml-1" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {formats.map((format) => (
-          <DropdownMenuItem 
-            key={format} 
-            onClick={() => handleExport(format)}
-            className="cursor-pointer"
-          >
-            {getFormatIcon(format)}
-            Export as {getFormatLabel(format)}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <MultiFormatDropdown
+      formats={formats}
+      onExport={handleExport}
+      disabled={disabled || isExporting}
+      variant={variant}
+      size={size}
+      className={className}
+      buttonText={buttonText}
+      showIcon={showIcon}
+    />
   );
 };
 

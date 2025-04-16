@@ -28,6 +28,8 @@ export const getFormatLabel = (format: ExportFormat) => {
     case 'json':
       return 'JSON';
     default:
-      return format.toUpperCase() as string;
+      // Add explicit type assertion or handle default case differently
+      // By casting to string we ensure TypeScript knows format is a string
+      return String(format).toUpperCase();
   }
 };

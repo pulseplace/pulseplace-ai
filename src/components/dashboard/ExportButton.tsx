@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   DropdownMenu,
@@ -9,10 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Download, FileText, FileSpreadsheet, ChevronDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
-// Explicitly define the export formats as a const array with a more explicit type
+// Define export formats as a const array with specific string literals
 const EXPORT_FORMATS = ['csv', 'pdf', 'excel', 'json'] as const;
-// Define the ExportFormat type using a union type for better type inference
-type ExportFormat = 'csv' | 'pdf' | 'excel' | 'json';
+// Create a union type from the array elements for better type checking
+type ExportFormat = typeof EXPORT_FORMATS[number];
 
 interface ExportButtonProps {
   filename?: string;
@@ -101,7 +102,8 @@ const ExportButton: React.FC<ExportButtonProps> = ({
       case 'json':
         return 'JSON';
       default:
-        return format.toUpperCase();
+        // Use type assertion to tell TypeScript this is a string
+        return (format as string).toUpperCase();
     }
   };
   

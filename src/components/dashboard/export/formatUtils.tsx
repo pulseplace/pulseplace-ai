@@ -18,6 +18,7 @@ export const getFormatIcon = (format: ExportFormat) => {
 };
 
 export const getFormatLabel = (format: ExportFormat) => {
+  console.log('Processing format:', format, typeof format);
   switch (format) {
     case 'csv':
       return 'CSV';
@@ -28,8 +29,11 @@ export const getFormatLabel = (format: ExportFormat) => {
     case 'json':
       return 'JSON';
     default:
-      // Add explicit type assertion or handle default case differently
-      // By casting to string we ensure TypeScript knows format is a string
+      // Ensure we explicitly handle any unexpected values
+      if (typeof format !== 'string') {
+        console.warn('Unexpected format type:', format);
+        return 'Unknown';
+      }
       return String(format).toUpperCase();
   }
 };

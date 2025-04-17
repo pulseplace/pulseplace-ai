@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
 
@@ -11,6 +10,7 @@ import QATestingDashboard from '@/pages/dashboard/QATestingDashboard';
 import Insights from '@/pages/Insights';
 import PulseBot from '@/pages/PulseBot';
 import PulseBotAnalytics from '@/pages/PulseBotAnalytics';
+import DemoPrep from '@/pages/DemoPrep';
 
 export const ROUTES = {
   HOME: '/',
@@ -37,7 +37,7 @@ export const ROUTES = {
   }
 };
 
-export const routes: RouteObject[] = [
+const routes: RouteObject[] = [
   {
     path: ROUTES.HOME,
     element: <Dashboard />
@@ -78,12 +78,10 @@ export const routes: RouteObject[] = [
     path: ROUTES.PULSEBOT_ANALYTICS,
     element: <PulseBotAnalytics />
   },
-  // Teams route - this would be expanded with actual team components
   {
     path: ROUTES.TEAMS.TEAM(':id'),
     element: <Insights />
   },
-  // These are placeholders and would be implemented with actual components
   {
     path: ROUTES.QA_BROWSER,
     element: <QATestingDashboard />
@@ -91,6 +89,13 @@ export const routes: RouteObject[] = [
   {
     path: ROUTES.DEMO.RESET,
     element: <QATestingDashboard />
+  },
+  {
+    path: '/demo-prep',
+    element: <DemoPrep />,
+    meta: {
+      title: 'Demo Preparation'
+    }
   }
 ];
 

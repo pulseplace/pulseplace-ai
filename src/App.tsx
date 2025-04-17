@@ -4,13 +4,18 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
 import DemoReadyLayout from '@/components/layout/DemoReadyLayout';
 import routes from '@/config/routes';
+import Root from '@/pages/Root';
 
-const router = createBrowserRouter(
-  routes.map(route => ({
-    ...route,
-    element: <DemoReadyLayout>{route.element}</DemoReadyLayout>
-  }))
-);
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Root />,
+    children: routes.map(route => ({
+      ...route,
+      element: <DemoReadyLayout>{route.element}</DemoReadyLayout>
+    }))
+  }
+]);
 
 function App() {
   useEffect(() => {

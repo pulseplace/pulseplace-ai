@@ -12,6 +12,7 @@ import Insights from '@/pages/Insights';
 import PulseBot from '@/pages/PulseBot';
 import PulseBotAnalytics from '@/pages/PulseBotAnalytics';
 import DemoPrep from '@/pages/DemoPrep';
+import Home from '@/pages/Home';
 
 export const ROUTES = {
   HOME: '/',
@@ -42,7 +43,7 @@ export const ROUTES = {
 const routes: RouteObject[] = [
   {
     path: ROUTES.HOME,
-    element: <Dashboard />
+    element: <Home />
   },
   {
     path: ROUTES.DASHBOARD.INDEX,

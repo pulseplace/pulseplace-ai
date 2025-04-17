@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Download, PresentationScreen, FileDown } from 'lucide-react';
+import { Download, Presentation, FileDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
 interface SlideMetadata {
@@ -60,7 +60,7 @@ const DemoSlideViewer: React.FC = () => {
             Export PDF
           </Button>
           <Button variant="outline" size="sm" onClick={() => handleExport('png')}>
-            <PresentationScreen className="h-4 w-4 mr-2" />
+            <Presentation className="h-4 w-4 mr-2" />
             Export PNG
           </Button>
         </div>

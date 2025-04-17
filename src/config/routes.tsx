@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
 
@@ -33,7 +34,8 @@ export const ROUTES = {
   PULSEBOT_ANALYTICS: '/pulsebot-analytics',
   QA_BROWSER: '/qa-browser',
   DEMO: {
-    RESET: '/demo/reset'
+    RESET: '/demo/reset',
+    PREP: '/demo-prep'
   }
 };
 
@@ -91,11 +93,8 @@ const routes: RouteObject[] = [
     element: <QATestingDashboard />
   },
   {
-    path: '/demo-prep',
-    element: <DemoPrep />,
-    meta: {
-      title: 'Demo Preparation'
-    }
+    path: ROUTES.DEMO.PREP,
+    element: <DemoPrep />
   }
 ];
 

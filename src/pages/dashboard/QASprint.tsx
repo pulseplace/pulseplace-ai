@@ -54,7 +54,7 @@ const QASprint = () => {
                 
                 <h2 className="text-lg font-medium mt-6 mb-4">Demo Day Goals</h2>
                 <p className="mb-4">
-                  Our April 28th Beta Demo Day marks the start of onboarding our first beta users. 
+                  Our April 21st Beta Demo Day marks the start of onboarding our first beta users. 
                   All core functionality must be working flawlessly, with proper error handling 
                   and responsive design.
                 </p>

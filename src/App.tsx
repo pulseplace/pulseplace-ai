@@ -6,12 +6,13 @@ import DemoReadyLayout from '@/components/layout/DemoReadyLayout';
 import routes from '@/config/routes';
 import Root from '@/pages/Root';
 
+// Create router with proper configuration
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Root />,
     children: routes.map(route => ({
-      ...route,
+      path: route.path === '/' ? '' : route.path, // Fix root path mapping
       element: <DemoReadyLayout>{route.element}</DemoReadyLayout>
     }))
   }

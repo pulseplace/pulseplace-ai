@@ -47,7 +47,7 @@ const routes: RouteObject[] = [
   },
   {
     path: ROUTES.DASHBOARD.INDEX,
-    element: <DashboardHome />
+    element: <Dashboard />
   },
   {
     path: ROUTES.DASHBOARD.HOME,

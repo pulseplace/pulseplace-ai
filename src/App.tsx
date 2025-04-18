@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import DemoReadyLayout from '@/components/layout/DemoReadyLayout';
 import routes from '@/config/routes';
 import Root from '@/pages/Root';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Create router with proper configuration
 const router = createBrowserRouter([

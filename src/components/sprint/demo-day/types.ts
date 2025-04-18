@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 export interface QATask {
   id: string;
   category: string;
@@ -21,12 +23,9 @@ export interface PhaseProgress {
   status: 'completed' | 'in-progress' | 'planned';
 }
 
-export interface DemoTask {
-  id: string;
-  description: string;
-  priority: string;
-  completed: boolean;
-  category: string;
+export interface DemoTask extends QATask {
+  // DemoTask now extends QATask to ensure compatibility
+  // We can add additional properties specific to DemoTask here if needed
 }
 
 export interface Milestone {

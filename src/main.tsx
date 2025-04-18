@@ -15,9 +15,7 @@ if (!rootElement) throw new Error('Failed to find the root element');
 createRoot(rootElement).render(
   <ThemeProvider>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <App />
     </QueryClientProvider>
   </ThemeProvider>
 );

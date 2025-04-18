@@ -9,6 +9,7 @@ import TaskList from './demo-day/TaskList';
 import MilestoneTracker from './demo-day/MilestoneTracker';
 import QuickAccessButtons from './demo-day/QuickAccessButtons';
 import { useDemoDay } from './demo-day/useDemoDay';
+import { QATask } from './demo-day/types';
 
 const DemoDayCountdown: React.FC = () => {
   const {
@@ -22,6 +23,11 @@ const DemoDayCountdown: React.FC = () => {
     toggleTaskCompletion,
     formatLastUpdated
   } = useDemoDay();
+
+  // Calculate completion percentage
+  const completionPercentage = tasks.length > 0 
+    ? Math.round((completedTasks / tasks.length) * 100) 
+    : 0;
 
   return (
     <Card className="shadow-lg border-t-4 border-t-purple-500">
@@ -48,7 +54,10 @@ const DemoDayCountdown: React.FC = () => {
 
       <CardContent className="space-y-4">
         {/* Countdown timer */}
-        <CountdownTimer timeRemaining={timeRemaining} />
+        <CountdownTimer 
+          timeRemaining={timeRemaining} 
+          completionPercentage={completionPercentage} 
+        />
 
         {/* Overall Progress */}
         <ProgressSection 
@@ -63,7 +72,10 @@ const DemoDayCountdown: React.FC = () => {
             Today's Focus
           </h3>
           
-          <TaskList tasks={tasks} onToggleTask={toggleTaskCompletion} />
+          <TaskList 
+            tasks={tasks as QATask[]} 
+            onToggleTask={toggleTaskCompletion} 
+          />
         </div>
         
         {/* Milestone Tracker */}

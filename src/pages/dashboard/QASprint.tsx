@@ -2,6 +2,7 @@
 import React from 'react';
 import QASprintChecklist from '@/components/sprint/QASprintChecklist';
 import DemoDayCountdown from '@/components/sprint/DemoDayCountdown';
+import TeamExportsManager from '@/components/demo/TeamExportsManager';
 import { Helmet } from 'react-helmet-async';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -21,6 +22,9 @@ const QASprint = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
           <DemoDayCountdown />
+          <div className="mt-6">
+            <TeamExportsManager />
+          </div>
         </div>
         
         <div className="lg:col-span-2 space-y-6">

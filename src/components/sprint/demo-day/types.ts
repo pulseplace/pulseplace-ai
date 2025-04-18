@@ -1,22 +1,11 @@
 
-export interface DemoTask {
+export interface QATask {
   id: string;
-  description: string;
-  priority: 'High' | 'Medium';
-  completed: boolean;
   category: string;
-}
-
-export interface PhaseProgress {
-  phase: string;
-  progress: number;
-  status: "completed" | "in-progress" | "planned";
-}
-
-export interface Milestone {
-  date: string;
-  title: string;
-  status: "completed" | "upcoming" | "planned";
+  description: string;
+  priority: 'High' | 'Medium' | 'Low' | 'Post-Demo';
+  status: 'Completed' | 'In Progress' | 'Not Started' | 'Planned';
+  icon: React.ReactNode;
 }
 
 export interface TimeRemaining {
@@ -24,4 +13,9 @@ export interface TimeRemaining {
   hours: number;
   minutes: number;
   seconds: number;
+}
+
+export interface PhaseProgress {
+  phase: string;
+  progress: number;
 }

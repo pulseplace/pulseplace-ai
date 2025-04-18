@@ -1,117 +1,107 @@
 
 import React from 'react';
-import { Checkbox } from "@/components/ui/checkbox";
+import { QATask } from './types';
 import { Badge } from "@/components/ui/badge";
-import { DemoTask } from './types';
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface TaskListProps {
-  tasks: DemoTask[];
-  onToggleTask: (taskId: string) => void;
+  tasks: QATask[];
+  onUpdateTask: (taskId: string, newStatus: QATask['status']) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, onToggleTask }) => {
-  // Group tasks by priority
-  const highPriorityTasks = tasks.filter(task => task.priority === 'High' && !task.completed);
-  const mediumPriorityTasks = tasks.filter(task => task.priority === 'Medium' && !task.completed);
-  const completedTasksList = tasks.filter(task => task.completed);
+const TaskList: React.FC<TaskListProps> = ({ tasks, onUpdateTask }) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Completed': return 'bg-green-100 text-green-800';
+      case 'In Progress': return 'bg-blue-100 text-blue-800';
+      case 'Not Started': return 'bg-gray-100 text-gray-800';
+      case 'Planned': return 'bg-amber-100 text-amber-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'High': return 'bg-red-100 text-red-800';
+      case 'Medium': return 'bg-amber-100 text-amber-800';
+      case 'Low': return 'bg-green-100 text-green-800';
+      case 'Post-Demo': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
-    <div className="space-y-2">
-      {/* High priority tasks */}
-      {highPriorityTasks.length > 0 && (
-        <ul className="space-y-2">
-          {highPriorityTasks.map(task => (
-            <li key={task.id} className="flex items-start gap-2 p-2 bg-red-50 rounded-md">
-              <Checkbox 
-                id={`task-${task.id}`}
-                checked={task.completed}
-                onCheckedChange={() => onToggleTask(task.id)}
-                className="mt-1"
-              />
-              <div>
-                <label 
-                  htmlFor={`task-${task.id}`}
-                  className="text-sm font-medium cursor-pointer"
-                >
-                  {task.description}
-                </label>
-                <div className="flex items-center mt-1">
-                  <Badge variant="outline" className="text-xs bg-white">
-                    {task.category}
-                  </Badge>
+    <table className="w-full border-collapse">
+      <thead>
+        <tr className="bg-muted/50">
+          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Task Category</th>
+          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Task Description</th>
+          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Priority</th>
+          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Status</th>
+          <th className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {tasks.map((task) => (
+          <tr key={task.id} className="border-b border-gray-100 hover:bg-muted/30">
+            <td className="px-4 py-3 align-top">
+              <div className="flex items-center space-x-2">
+                <div className="p-1.5 rounded-md bg-muted">
+                  {task.icon}
                 </div>
+                <span>{task.category}</span>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
-      
-      {/* Medium priority tasks */}
-      {mediumPriorityTasks.length > 0 && (
-        <ul className="space-y-2">
-          {mediumPriorityTasks.map(task => (
-            <li key={task.id} className="flex items-start gap-2 p-2 bg-amber-50 rounded-md">
-              <Checkbox 
-                id={`task-${task.id}`}
-                checked={task.completed}
-                onCheckedChange={() => onToggleTask(task.id)}
-                className="mt-1"
-              />
-              <div>
-                <label 
-                  htmlFor={`task-${task.id}`}
-                  className="text-sm font-medium cursor-pointer"
-                >
-                  {task.description}
-                </label>
-                <div className="flex items-center mt-1">
-                  <Badge variant="outline" className="text-xs bg-white">
-                    {task.category}
-                  </Badge>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-      
-      {/* Completed tasks */}
-      {completedTasksList.length > 0 && (
-        <details>
-          <summary className="text-sm font-medium cursor-pointer">
-            Completed Tasks ({completedTasksList.length})
-          </summary>
-          <ul className="space-y-2 mt-2">
-            {completedTasksList.map(task => (
-              <li key={task.id} className="flex items-start gap-2 p-2 bg-gray-50 rounded-md opacity-70">
-                <Checkbox 
-                  id={`task-${task.id}`}
-                  checked={task.completed}
-                  onCheckedChange={() => onToggleTask(task.id)}
-                  className="mt-1"
-                />
-                <div>
-                  <label 
-                    htmlFor={`task-${task.id}`}
-                    className="text-sm line-through cursor-pointer"
+            </td>
+            <td className="px-4 py-3">{task.description}</td>
+            <td className="px-4 py-3">
+              <Badge variant="secondary" className={getPriorityColor(task.priority)}>
+                {task.priority}
+              </Badge>
+            </td>
+            <td className="px-4 py-3">
+              <span className={`flex items-center space-x-1 px-2 py-1 rounded-md text-xs ${getStatusColor(task.status)}`}>
+                <span>{task.status}</span>
+              </span>
+            </td>
+            <td className="px-4 py-3">
+              <div className="flex space-x-1">
+                {task.status !== 'Completed' && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 text-xs"
+                    onClick={() => onUpdateTask(task.id, 'Completed')}
                   >
-                    {task.description}
-                  </label>
-                  <div className="flex items-center mt-1">
-                    <Badge variant="outline" className="text-xs bg-white">
-                      {task.category}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs bg-white ml-1">
-                      {task.priority}
-                    </Badge>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
-    </div>
+                    Complete
+                  </Button>
+                )}
+                {task.status === 'Not Started' && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 text-xs"
+                    onClick={() => onUpdateTask(task.id, 'In Progress')}
+                  >
+                    Start
+                  </Button>
+                )}
+                {task.status === 'Completed' && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 text-xs"
+                    onClick={() => onUpdateTask(task.id, 'In Progress')}
+                  >
+                    Reopen
+                  </Button>
+                )}
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
 

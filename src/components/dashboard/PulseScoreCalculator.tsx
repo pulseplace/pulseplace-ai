@@ -1,15 +1,19 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { 
-  calculatePulseScore, 
-  getSampleSurveyQuestions, 
+  calculateThemeScores,
+  calculateCategoryScores,
+  calculateOverallScore,
+  getSampleSurveyQuestions,
   getTierDisplay 
 } from '@/utils/scoring';
-import { SurveyQuestion, SurveyResponse, PulseScoreData } from '@/types/scoring.types';
+import { SurveyQuestion, SurveyResponse, PulseScoreData, PulseScoreTier } from '@/types/scoring.types';
 import { Activity, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { TIER_THRESHOLDS } from '@/utils/scoring/config';
 
 const PulseScoreCalculator = () => {
   const [questions] = useState<SurveyQuestion[]>(getSampleSurveyQuestions());
@@ -27,8 +31,42 @@ const PulseScoreCalculator = () => {
   useEffect(() => {
     if (responses.length === 0) return;
     
-    const scoreData = calculatePulseScore(questions, responses);
-    setPulseScore(scoreData);
+    // Generate pulse score data
+    const themeScores = calculateThemeScores(questions, responses);
+    const categoryScores = calculateCategoryScores(themeScores);
+    const overallScore = calculateOverallScore(categoryScores);
+    
+    // Determine tier based on score
+    let tier: PulseScoreTier = 'intervention_advised';
+    if (overallScore >= TIER_THRESHOLDS.pulse_certified) {
+      tier = 'pulse_certified';
+    } else if (overallScore >= TIER_THRESHOLDS.emerging_culture) {
+      tier = 'emerging_culture';
+    } else if (overallScore >= TIER_THRESHOLDS.at_risk) {
+      tier = 'at_risk';
+    }
+    
+    // Mock insights and recommendations
+    const insights = [
+      'Team showing strong alignment with company mission.',
+      'Leadership trust scores are above average.',
+      'Psychological safety has room for improvement.'
+    ];
+    
+    const recommendedActions = [
+      'Focus on communication transparency.',
+      'Conduct regular feedback sessions.',
+      'Develop leadership training program.'
+    ];
+    
+    setPulseScore({
+      overallScore,
+      categoryScores,
+      themeScores,
+      tier,
+      insights,
+      recommendedActions
+    });
   }, [responses, questions]);
   
   const handleResponseChange = (questionId: string, value: number | string) => {

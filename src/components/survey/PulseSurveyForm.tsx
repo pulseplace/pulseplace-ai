@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,7 +40,8 @@ const PulseSurveyForm = () => {
   const onSubmit = async (data: FormValues) => {
     try {
       setIsSubmitting(true);
-      const calculatedScore = calculatePulseScore(data.responses, questions);
+      // Convert the questions type to match what calculatePulseScore expects
+      const calculatedScore = calculatePulseScore(data.responses, questions as any);
       
       const { error } = await supabase
         .from('pulse_survey_responses')

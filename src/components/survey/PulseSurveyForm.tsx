@@ -20,13 +20,15 @@ const surveySchema = z.object({
   marketingOptIn: z.boolean().default(false)
 });
 
+type FormValues = z.infer<typeof surveySchema>;
+
 const PulseSurveyForm = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showResults, setShowResults] = React.useState(false);
   const [score, setScore] = React.useState<number | null>(null);
-  const { questions, isLoading } = useSurveyQuestions();
+  const { data: questions = [], isLoading } = useSurveyQuestions();
 
-  const form = useForm({
+  const form = useForm<FormValues>({
     resolver: zodResolver(surveySchema),
     defaultValues: {
       responses: {},
@@ -35,7 +37,7 @@ const PulseSurveyForm = () => {
     }
   });
 
-  const onSubmit = async (data: z.infer<typeof surveySchema>) => {
+  const onSubmit = async (data: FormValues) => {
     try {
       setIsSubmitting(true);
       const calculatedScore = calculatePulseScore(data.responses, questions);

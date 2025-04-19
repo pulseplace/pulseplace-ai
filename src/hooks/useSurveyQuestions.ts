@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-interface SurveyQuestion {
+export interface SurveyQuestion {
   id: string;
   text: string;
   type: 'likert' | 'text' | 'emoji';

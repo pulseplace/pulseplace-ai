@@ -14,7 +14,6 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ROUTES } from '@/config/routes';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +30,26 @@ import {
   DialogTitle 
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+
+// Define ROUTES object locally since we no longer export it from config/routes.tsx
+const ROUTES = {
+  HOME: '/',
+  DASHBOARD: {
+    INDEX: '/',
+    QA_SPRINT: '/dashboard/qa-sprint',
+    QA_TESTING: '/dashboard/qa-testing',
+    DASHBOARD_QA: '/dashboard/dashboard-qa'
+  },
+  INSIGHTS: {
+    INDEX: '/insights'
+  },
+  TEAMS: {
+    INDEX: '/teams',
+    TEAM: (id: string) => `/teams/${id}`
+  },
+  PULSEBOT: '/pulsebot',
+  BOOK_DEMO: '/book-demo'
+};
 
 interface DemoReadyLayoutProps {
   children: React.ReactNode;

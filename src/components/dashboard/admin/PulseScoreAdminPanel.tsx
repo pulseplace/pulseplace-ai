@@ -13,7 +13,7 @@ import {
   BarChart,
   Medal,
   Lightbulb,
-  HandsClapping,
+  ThumbsUp,  // Changed from HandsClapping to ThumbsUp
   Users,
   Shield,
   Briefcase,
@@ -46,7 +46,7 @@ const PulseScoreAdminPanel: React.FC = () => {
       name: 'Engagement',
       description: 'Overall employee engagement and commitment',
       weight: 15,
-      icon: <HandsClapping className="h-4 w-4" />
+      icon: <ThumbsUp className="h-4 w-4" />  // Changed from HandsClapping to ThumbsUp
     },
     {
       id: 'trust',

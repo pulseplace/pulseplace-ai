@@ -1,4 +1,3 @@
-
 export const ROUTES = {
   HOME: '/',
   DASHBOARD: {
@@ -21,5 +20,6 @@ export const ROUTES = {
     MANAGE: '/dashboard/certification-engine'
   },
   PULSEBOT: '/pulsebot',
-  BOOK_DEMO: '/book-demo'
+  BOOK_DEMO: '/book-demo',
+  PULSE_SCORE_LITE: '/pulse-score-lite'
 };

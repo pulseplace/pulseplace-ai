@@ -186,6 +186,60 @@ export type Database = {
         }
         Relationships: []
       }
+      pulse_survey_questions: {
+        Row: {
+          created_at: string | null
+          id: string
+          text: string
+          theme: string
+          type: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          text: string
+          theme: string
+          type: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          text?: string
+          theme?: string
+          type?: string
+          weight?: number
+        }
+        Relationships: []
+      }
+      pulse_survey_responses: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          marketing_opt_in: boolean | null
+          responses: Json
+          score: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          marketing_opt_in?: boolean | null
+          responses: Json
+          score?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          marketing_opt_in?: boolean | null
+          responses?: Json
+          score?: number | null
+        }
+        Relationships: []
+      }
       pulsebot_feedback: {
         Row: {
           feedback_type: string | null

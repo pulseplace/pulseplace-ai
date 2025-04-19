@@ -11,6 +11,7 @@ import AiDashboard from '@/pages/dashboard/AiDashboard';
 import LLMInsights from '@/pages/dashboard/LLMInsights';
 import BookDemo from '@/pages/BookDemo';
 import TayanaStudy from '@/pages/case-studies/TayanaStudy';
+import PulseScoreLite from '@/pages/PulseScoreLite';
 
 const routes: RouteObject[] = [
   {
@@ -56,6 +57,10 @@ const routes: RouteObject[] = [
   {
     path: '/case-studies/tayana',
     element: <TayanaStudy />
+  },
+  {
+    path: '/pulse-score-lite',
+    element: <PulseScoreLite />
   }
 ];
 

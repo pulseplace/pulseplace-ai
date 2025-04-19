@@ -1,4 +1,5 @@
 
+import { RouteObject } from 'react-router-dom';
 import Dashboard from '@/pages/Dashboard';
 import TaskSummary from '@/pages/TaskSummary';
 import Insights from '@/pages/Insights';
@@ -6,7 +7,7 @@ import PulseBot from '@/pages/PulseBot';
 import PulseScoreAdmin from '@/pages/dashboard/PulseScoreAdmin';
 import CertificationEngine from '@/pages/dashboard/CertificationEngine';
 
-const routes = [
+const routes: RouteObject[] = [
   {
     path: '/',
     element: <Dashboard />,

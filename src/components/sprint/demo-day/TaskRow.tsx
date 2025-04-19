@@ -1,8 +1,14 @@
 
 import React from 'react';
-import { QATask } from './types';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { 
+  Check, 
+  PlayCircle, 
+  AlertCircle, 
+  Clock 
+} from 'lucide-react';
+import { QATask } from './types';
 import { getStatusColor, getPriorityColor } from './utils/statusColors';
 
 interface TaskRowProps {
@@ -11,60 +17,62 @@ interface TaskRowProps {
 }
 
 const TaskRow: React.FC<TaskRowProps> = ({ task, onUpdateTask }) => {
+  // Determine the next status when clicked
+  const getNextStatus = (currentStatus: QATask['status']): QATask['status'] => {
+    switch (currentStatus) {
+      case 'Not Started': return 'In Progress';
+      case 'In Progress': return 'Completed';
+      case 'Completed': return 'Not Started'; // Cycle back to beginning
+      case 'Planned': return 'Not Started';
+      default: return 'Not Started';
+    }
+  };
+  
+  const handleStatusUpdate = () => {
+    onUpdateTask(task.id, getNextStatus(task.status));
+  };
+  
+  const getStatusIcon = (status: QATask['status']) => {
+    switch (status) {
+      case 'Completed': return <Check className="h-4 w-4" />;
+      case 'In Progress': return <PlayCircle className="h-4 w-4" />;
+      case 'Not Started': return <AlertCircle className="h-4 w-4" />;
+      case 'Planned': return <Clock className="h-4 w-4" />;
+      default: return null;
+    }
+  };
+  
   return (
-    <tr className="border-b border-gray-100 hover:bg-muted/30">
-      <td className="px-4 py-3 align-top">
-        <div className="flex items-center space-x-2">
-          <div className="p-1.5 rounded-md bg-muted">
-            {task.icon}
-          </div>
+    <tr className="border-b hover:bg-muted/50 transition-colors">
+      <td className="px-4 py-2 text-sm">
+        <div className="flex items-center gap-2">
+          {task.icon}
           <span>{task.category}</span>
         </div>
       </td>
-      <td className="px-4 py-3">{task.description}</td>
-      <td className="px-4 py-3">
-        <Badge variant="secondary" className={getPriorityColor(task.priority)}>
+      <td className="px-4 py-2 text-sm">{task.description}</td>
+      <td className="px-4 py-2 text-sm">
+        <Badge className={getPriorityColor(task.priority)}>
           {task.priority}
         </Badge>
       </td>
-      <td className="px-4 py-3">
-        <span className={`flex items-center space-x-1 px-2 py-1 rounded-md text-xs ${getStatusColor(task.status)}`}>
-          <span>{task.status}</span>
-        </span>
+      <td className="px-4 py-2 text-sm">
+        <Badge className={getStatusColor(task.status)}>
+          <span className="flex items-center gap-1">
+            {getStatusIcon(task.status)}
+            {task.status}
+          </span>
+        </Badge>
       </td>
-      <td className="px-4 py-3">
-        <div className="flex space-x-1">
-          {task.status !== 'Completed' && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-7 text-xs"
-              onClick={() => onUpdateTask(task.id, 'Completed')}
-            >
-              Complete
-            </Button>
-          )}
-          {task.status === 'Not Started' && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-7 text-xs"
-              onClick={() => onUpdateTask(task.id, 'In Progress')}
-            >
-              Start
-            </Button>
-          )}
-          {task.status === 'Completed' && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-7 text-xs"
-              onClick={() => onUpdateTask(task.id, 'In Progress')}
-            >
-              Reopen
-            </Button>
-          )}
-        </div>
+      <td className="px-4 py-2 text-sm">
+        <Button 
+          size="sm" 
+          variant="outline" 
+          onClick={handleStatusUpdate}
+          className="h-8 px-2"
+        >
+          Update
+        </Button>
       </td>
     </tr>
   );

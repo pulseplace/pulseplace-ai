@@ -73,8 +73,8 @@ const DemoDayCountdown: React.FC = () => {
           </h3>
           
           <TaskList 
-            tasks={tasks as QATask[]} 
-            onToggleTask={toggleTaskCompletion} 
+            tasks={tasks} 
+            onUpdateTask={toggleTaskCompletion} 
           />
         </div>
         

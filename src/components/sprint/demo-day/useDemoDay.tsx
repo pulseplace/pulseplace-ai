@@ -1,58 +1,158 @@
 
 import { useState, useEffect } from 'react';
-import { DemoTask, TimeRemaining } from './types';
-import { useToast } from "@/hooks/use-toast";
-
-// Updated to April 28, 2025, 10:00 AM IST
-const DEMO_DATE = new Date('2025-04-28T04:30:00Z'); // 10:00 AM IST in UTC
+import { QATask, TimeRemaining, PhaseProgress, Milestone } from './types';
+import { 
+  ClipboardCheck, 
+  Code, 
+  LayoutDashboard, 
+  Presentation, 
+  MessageSquare,
+  Database,
+  Shield,
+  LineChart
+} from 'lucide-react';
 
 export const useDemoDay = () => {
-  const { toast } = useToast();
-  const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>({ 
-    days: 0, hours: 0, minutes: 0, seconds: 0 
+  // Demo day date: April 21, 2025
+  const demoDayDate = new Date('2025-04-21T14:00:00');
+  
+  // Current data
+  const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
   });
   
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  
-  const [tasks, setTasks] = useState<DemoTask[]>([
+  // Sample tasks
+  const [tasks, setTasks] = useState<QATask[]>([
     {
       id: '1',
-      description: 'QA cross-browser testing for HeroStats, PulseBot, and insight cards',
+      category: 'QA',
+      description: 'Test Authentication Flow',
       priority: 'High',
-      completed: false,
-      category: 'Testing'
+      status: 'Completed',
+      icon: <ClipboardCheck className="h-4 w-4 text-green-500" />
     },
     {
       id: '2',
-      description: 'Mobile view optimization: toast placement, timestamp legibility, layout test',
+      category: 'Backend',
+      description: 'Optimize Database Queries',
       priority: 'High',
-      completed: false,
-      category: 'Mobile'
+      status: 'In Progress',
+      icon: <Database className="h-4 w-4 text-blue-500" />
     },
     {
       id: '3',
-      description: 'Add PulseBot tooltip/quick tips (e.g. suggested prompts for demo)',
+      category: 'Frontend',
+      description: 'Fix Responsive Design Issues',
       priority: 'Medium',
-      completed: false,
-      category: 'UX'
+      status: 'Not Started',
+      icon: <LayoutDashboard className="h-4 w-4 text-purple-500" />
     },
     {
       id: '4',
-      description: 'Implement export button for insights (mock PDF or CSV ok for demo)',
-      priority: 'Medium',
-      completed: false,
-      category: 'Feature'
+      category: 'Security',
+      description: 'Implement API Rate Limiting',
+      priority: 'Post-Demo',
+      status: 'Planned',
+      icon: <Shield className="h-4 w-4 text-gray-500" />
     }
   ]);
-
-  // Calculate time remaining
+  
+  // Progress by phase
+  const phasesProgress: PhaseProgress[] = [
+    {
+      phase: 'Backend Development',
+      progress: 85,
+      status: 'in-progress'
+    },
+    {
+      phase: 'Frontend Polish',
+      progress: 70,
+      status: 'in-progress'
+    },
+    {
+      phase: 'Security Audit',
+      progress: 60,
+      status: 'in-progress'
+    },
+    {
+      phase: 'Documentation',
+      progress: 40,
+      status: 'in-progress'
+    }
+  ];
+  
+  // Key milestones
+  const milestones: Milestone[] = [
+    {
+      date: 'April 15',
+      title: 'Feature Freeze',
+      status: 'completed'
+    },
+    {
+      date: 'April 17',
+      title: 'Internal Demo',
+      status: 'upcoming'
+    },
+    {
+      date: 'April 19',
+      title: 'QA Sign-off',
+      status: 'planned'
+    },
+    {
+      date: 'April 21',
+      title: 'Stakeholder Demo',
+      status: 'planned'
+    }
+  ];
+  
+  // Last updated timestamp
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  
+  // Calculate overall readiness (based on task completion)
+  const completedTasks = tasks.filter(task => task.status === 'Completed').length;
+  const overallReadiness = Math.round((completedTasks / tasks.length) * 100);
+  
+  // Function to toggle task completion status
+  const toggleTaskCompletion = (taskId: string) => {
+    setTasks(prev => prev.map(task => {
+      if (task.id === taskId) {
+        return {
+          ...task,
+          status: task.status === 'Completed' ? 'Not Started' : 'Completed'
+        };
+      }
+      return task;
+    }));
+    
+    // Update lastUpdated timestamp
+    setLastUpdated(new Date());
+  };
+  
+  // Format the last updated time
+  const formatLastUpdated = (date: Date) => {
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'just now';
+    if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes === 1 ? '' : 's'} ago`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours} hour${diffInHours === 1 ? '' : 's'} ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays} day${diffInDays === 1 ? '' : 's'} ago`;
+  };
+  
+  // Update countdown timer
   useEffect(() => {
     const calculateTimeRemaining = () => {
       const now = new Date();
-      const difference = DEMO_DATE.getTime() - now.getTime();
+      const difference = demoDayDate.getTime() - now.getTime();
       
       if (difference <= 0) {
-        // Demo day has arrived!
         setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
       }
@@ -65,75 +165,15 @@ export const useDemoDay = () => {
       setTimeRemaining({ days, hours, minutes, seconds });
     };
     
+    // Calculate immediately
     calculateTimeRemaining();
-    const timer = setInterval(calculateTimeRemaining, 1000);
     
-    return () => {
-      clearInterval(timer);
-    };
+    // Update every second
+    const interval = setInterval(calculateTimeRemaining, 1000);
+    
+    return () => clearInterval(interval);
   }, []);
-
-  // Toggle task completion
-  const toggleTaskCompletion = (taskId: string) => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => {
-        if (task.id === taskId) {
-          const newCompleted = !task.completed;
-          
-          toast({
-            title: newCompleted ? "Task completed" : "Task reopened",
-            description: task.description.substring(0, 40) + "...",
-            variant: newCompleted ? "default" : "destructive"
-          });
-          
-          return { ...task, completed: newCompleted };
-        }
-        return task;
-      })
-    );
-    setLastUpdated(new Date());
-  };
-
-  // Project phases progress data
-  const phasesProgress = [
-    { phase: "Foundation Phase", progress: 100, status: "completed" as const },
-    { phase: "Core Features", progress: 65, status: "in-progress" as const },
-    { phase: "Beta Readiness (UX + AI)", progress: 90, status: "in-progress" as const },
-    { phase: "QA Sprint", progress: 75, status: "in-progress" as const }
-  ];
   
-  // Milestone data
-  const milestones = [
-    { date: "April 15", title: "Core Features Release", status: "completed" as const },
-    { date: "April 15", title: "AI Insights Lock", status: "completed" as const },
-    { date: "April 28", title: "Beta Onboarding Begins", status: "upcoming" as const },
-    { date: "May 15", title: "Beta Expansion Phase", status: "planned" as const },
-    { date: "June 1", title: "Pre-Launch Campaign", status: "planned" as const },
-    { date: "July 15", title: "Public Launch", status: "planned" as const }
-  ];
-
-  // Calculate completion percentage
-  const completedTasks = tasks.filter(task => task.completed).length;
-  const completionPercentage = (completedTasks / tasks.length) * 100;
-  
-  // Calculate overall readiness (weighted average of all phases)
-  const overallReadiness = Math.round(
-    (phasesProgress[0].progress * 0.2) + 
-    (phasesProgress[1].progress * 0.3) + 
-    (phasesProgress[2].progress * 0.3) + 
-    (phasesProgress[3].progress * 0.2)
-  );
-
-  // Format last updated time
-  const formatLastUpdated = (date: Date) => {
-    return date.toLocaleString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      hour: '2-digit', 
-      minute: '2-digit'
-    });
-  };
-
   return {
     timeRemaining,
     tasks,
@@ -141,7 +181,6 @@ export const useDemoDay = () => {
     milestones,
     lastUpdated,
     completedTasks,
-    completionPercentage,
     overallReadiness,
     toggleTaskCompletion,
     formatLastUpdated

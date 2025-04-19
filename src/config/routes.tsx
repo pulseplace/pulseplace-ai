@@ -1,101 +1,52 @@
 
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
-
-// Page imports
 import Dashboard from '@/pages/Dashboard';
-import DashboardHome from '@/pages/dashboard/Home';
-import QASprint from '@/pages/dashboard/QASprint';
-import DashboardQA from '@/pages/dashboard/DashboardQA';
-import QATestingDashboard from '@/pages/dashboard/QATestingDashboard';
+import TaskSummary from '@/pages/TaskSummary';
 import Insights from '@/pages/Insights';
 import PulseBot from '@/pages/PulseBot';
-import PulseBotAnalytics from '@/pages/PulseBotAnalytics';
-import DemoPrep from '@/pages/DemoPrep';
-import Home from '@/pages/Home';
-
-export const ROUTES = {
-  HOME: '/',
-  DASHBOARD: {
-    INDEX: '/dashboard',
-    HOME: '/dashboard/home',
-    QA_SPRINT: '/dashboard/qa-sprint',
-    QA_TESTING: '/dashboard/qa-testing',
-    DASHBOARD_QA: '/dashboard/dashboard-qa'
-  },
-  INSIGHTS: {
-    INDEX: '/insights',
-    PULSEBOT: '/insights/pulsebot'
-  },
-  TEAMS: {
-    INDEX: '/teams',
-    TEAM: (id: string) => `/teams/${id}`
-  },
-  PULSEBOT: '/pulsebot',
-  PULSEBOT_ANALYTICS: '/pulsebot-analytics',
-  QA_BROWSER: '/qa-browser',
-  DEMO: {
-    RESET: '/demo/reset',
-    PREP: '/demo-prep'
-  }
-};
+import PulseScoreAdmin from '@/pages/dashboard/PulseScoreAdmin';
+import CertificationEngine from '@/pages/dashboard/CertificationEngine';
+import AiDashboard from '@/pages/dashboard/AiDashboard';
+import LLMInsights from '@/pages/dashboard/LLMInsights';
+import BookDemo from '@/pages/BookDemo';
 
 const routes: RouteObject[] = [
   {
-    path: ROUTES.HOME,
-    element: <Home />
-  },
-  {
-    path: ROUTES.DASHBOARD.INDEX,
+    path: '/',
     element: <Dashboard />
   },
   {
-    path: ROUTES.DASHBOARD.HOME,
-    element: <DashboardHome />
+    path: '/task-summary',
+    element: <TaskSummary />
   },
   {
-    path: ROUTES.DASHBOARD.QA_SPRINT,
-    element: <QASprint />
-  },
-  {
-    path: ROUTES.DASHBOARD.QA_TESTING,
-    element: <QATestingDashboard />
-  },
-  {
-    path: ROUTES.DASHBOARD.DASHBOARD_QA,
-    element: <DashboardQA />
-  },
-  {
-    path: ROUTES.INSIGHTS.INDEX,
+    path: '/insights',
     element: <Insights />
   },
   {
-    path: ROUTES.INSIGHTS.PULSEBOT,
-    element: <PulseBotAnalytics />
-  },
-  {
-    path: ROUTES.PULSEBOT,
+    path: '/pulsebot',
     element: <PulseBot />
   },
   {
-    path: ROUTES.PULSEBOT_ANALYTICS,
-    element: <PulseBotAnalytics />
+    path: '/dashboard/pulse-score-admin',
+    element: <PulseScoreAdmin />
   },
   {
-    path: ROUTES.TEAMS.TEAM(':id'),
-    element: <Insights />
+    path: '/dashboard/certification-engine',
+    element: <CertificationEngine />
   },
   {
-    path: ROUTES.QA_BROWSER,
-    element: <QATestingDashboard />
+    path: '/ai-dashboard',
+    element: <AiDashboard />
   },
   {
-    path: ROUTES.DEMO.RESET,
-    element: <QATestingDashboard />
+    path: '/dashboard/llm-insights',
+    element: <LLMInsights />
   },
   {
-    path: ROUTES.DEMO.PREP,
-    element: <DemoPrep />
+    path: '/book-demo',
+    element: <BookDemo />
   }
 ];
 

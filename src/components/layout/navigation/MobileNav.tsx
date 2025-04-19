@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Bot, Clock } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Bot, Clock, ListTodo, Bug, Workflow } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '../routes';
 
@@ -40,6 +40,39 @@ const MobileNav = () => {
             >
               <Bot className="h-3.5 w-3.5 mr-1" />
               PulseBot
+            </Button>
+          </Link>
+          
+          <Link to="/task-tracker">
+            <Button 
+              variant="ghost"
+              size="sm"
+              className="text-xs h-8 px-2.5"
+            >
+              <ListTodo className="h-3.5 w-3.5 mr-1" />
+              Tasks
+            </Button>
+          </Link>
+
+          <Link to="/debug-log">
+            <Button 
+              variant="ghost"
+              size="sm"
+              className="text-xs h-8 px-2.5"
+            >
+              <Bug className="h-3.5 w-3.5 mr-1" />
+              Debug
+            </Button>
+          </Link>
+
+          <Link to="/build-flow">
+            <Button 
+              variant="ghost"
+              size="sm"
+              className="text-xs h-8 px-2.5"
+            >
+              <Workflow className="h-3.5 w-3.5 mr-1" />
+              Flow
             </Button>
           </Link>
           

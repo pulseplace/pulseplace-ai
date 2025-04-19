@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
 import Dashboard from '@/pages/Dashboard';
@@ -12,6 +13,10 @@ import LLMInsights from '@/pages/dashboard/LLMInsights';
 import BookDemo from '@/pages/BookDemo';
 import TayanaStudy from '@/pages/case-studies/TayanaStudy';
 import PulseScoreLite from '@/pages/PulseScoreLite';
+// New task tracker imports
+import TaskTracker from '@/pages/task-tracker/TaskTracker';
+import DebugLog from '@/pages/task-tracker/DebugLog';
+import BuildFlow from '@/pages/task-tracker/BuildFlow';
 
 const routes: RouteObject[] = [
   {
@@ -61,6 +66,19 @@ const routes: RouteObject[] = [
   {
     path: '/pulse-score-lite',
     element: <PulseScoreLite />
+  },
+  // New routes for task tracker
+  {
+    path: '/task-tracker',
+    element: <TaskTracker />
+  },
+  {
+    path: '/debug-log',
+    element: <DebugLog />
+  },
+  {
+    path: '/build-flow',
+    element: <BuildFlow />
   }
 ];
 

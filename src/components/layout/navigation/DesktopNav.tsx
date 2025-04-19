@@ -7,7 +7,10 @@ import {
   Bot, 
   Users,
   Clock,
-  ChevronDown 
+  ChevronDown,
+  ListTodo,
+  Bug,
+  Workflow
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -53,6 +56,31 @@ const DesktopNav = () => {
           PulseBot
         </Button>
       </Link>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button 
+            variant="ghost"
+            size="sm" 
+            className="text-sm"
+          >
+            <ListTodo className="h-4 w-4 mr-1.5" />
+            Task System
+            <ChevronDown className="h-3.5 w-3.5 ml-1.5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <Link to="/task-tracker">Task Tracker</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/debug-log">Debug Log</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/build-flow">Build Flow</Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

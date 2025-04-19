@@ -21,16 +21,16 @@ const PromptsContent = () => {
     let promptText = '';
     
     if (promptType === 'feedback') {
-      promptText = getFeedbackSynthesisPrompt({
-        "sampleResponse1": "I love the collaborative culture here, but sometimes feel meetings could be more efficient.",
-        "sampleResponse2": "The leadership team is transparent but we could use more clarity on career paths."
-      });
-    } else if (promptType === 'open-ended') {
-      promptText = getOpenEndedFeedbackPrompt([
-        "I appreciate how my team supports each other",
-        "Leaders could be more transparent about company changes",
-        "There aren't enough opportunities for growth"
+      // Fix: Use an array of responses instead of an object
+      promptText = getFeedbackSynthesisPrompt([
+        { value: "I love the collaborative culture here, but sometimes feel meetings could be more efficient." },
+        { value: "The leadership team is transparent but we could use more clarity on career paths." }
       ]);
+    } else if (promptType === 'open-ended') {
+      // Fix: Pass a single string instead of an array
+      promptText = getOpenEndedFeedbackPrompt(
+        "I appreciate how my team supports each other. Leaders could be more transparent about company changes. There aren't enough opportunities for growth."
+      );
     } else if (promptType === 'sentiment') {
       promptText = "Analyze the sentiment and key themes in this workplace survey response:\n\n\"{TEXT_RESPONSE}\"\n\nProvide the following:\n1. A sentiment score from 0 (extremely negative) to 100 (extremely positive)\n2. The primary emotion expressed (e.g., satisfaction, frustration, hope)\n3. Key themes mentioned (e.g., work-life balance, management, compensation)\n4. Any action items implied in the feedback\n\nFormat the response as JSON.";
     } else if (promptType === 'executive') {

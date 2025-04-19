@@ -25,7 +25,6 @@ export const formatThemeName = (theme: string): string => {
     .join(' ');
 };
 
-// Add missing utility functions
 export const getTierDisplay = (tier: PulseScoreTier) => {
   switch (tier) {
     case 'pulse_certified':
@@ -96,8 +95,8 @@ export const getSampleSurveyQuestions = (): SurveyQuestion[] => {
   ];
 };
 
-// Add other missing utility functions for email templates
-export const getFeedbackSynthesisPrompt = (responses: any[]): string => {
+// Updated function to clarify it accepts an array of responses
+export const getFeedbackSynthesisPrompt = (responses: Array<{value: string}>): string => {
   return `Analyze the following employee feedback responses and provide key themes, sentiment analysis, and actionable insights:
 ${JSON.stringify(responses, null, 2)}
 
@@ -108,6 +107,7 @@ Focus on:
 4. Actionable recommendations for leadership`;
 };
 
+// Updated function to clarify it accepts a single string of feedback
 export const getOpenEndedFeedbackPrompt = (feedbackText: string): string => {
   return `Analyze the following open-ended employee feedback and provide sentiment analysis, key themes, and actionable insights:
 "${feedbackText}"

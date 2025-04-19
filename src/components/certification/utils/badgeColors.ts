@@ -10,66 +10,47 @@ interface BadgeColors {
 }
 
 export const getBadgeColors = (style: BadgeStyle, variant: BadgeVariant): BadgeColors => {
-  // Base colors
-  let colors: BadgeColors = {
+  // Base colors for default variant
+  const defaultColors: BadgeColors = {
     bg: 'url(#badge-gradient)',
     stroke: '#32D27E', // Trust Mint (success color)
     textPrimary: '#1A1A2E', // Soulful Midnight (primary color)
     textSecondary: '#8A8A8A', // Grey Mist (text-muted)
-    logoFill: '#3F8CFF' // Pulse Blue
+    logoFill: '#32D27E', // Trust Mint (success color)
   };
   
-  const isMinimal = style === 'minimal';
-  const isColorful = style === 'colorful';
-  
-  // Apply style variations
-  if (isMinimal) {
-    colors = {
-      bg: '#FFFFFF',
-      stroke: '#1A1A2E', // Soulful Midnight
-      textPrimary: '#1A1A2E', // Soulful Midnight
-      textSecondary: '#8A8A8A', // Grey Mist
-      logoFill: '#1A1A2E' // Soulful Midnight
+  // LinkedIn variant colors
+  if (variant === 'linkedin') {
+    return {
+      bg: 'url(#linkedin-gradient)',
+      stroke: '#0A66C2',
+      textPrimary: '#0A66C2',
+      textSecondary: '#4B5563',
+      logoFill: '#0A66C2',
     };
   }
   
-  if (isColorful) {
-    colors = {
-      bg: '#3F8CFF', // Pulse Blue
-      stroke: '#FFFFFF',
-      textPrimary: '#FFFFFF',
-      textSecondary: '#E6F0FF', // Light version of pulse blue
-      logoFill: '#FFFFFF'
+  // Twitter variant colors
+  if (variant === 'twitter') {
+    return {
+      bg: 'url(#twitter-gradient)',
+      stroke: '#1DA1F2',
+      textPrimary: '#1DA1F2',
+      textSecondary: '#4B5563',
+      logoFill: '#1DA1F2',
     };
   }
   
-  // Apply variant-specific overrides
-  switch (variant) {
-    case 'linkedin':
-      return {
-        ...colors,
-        bg: isMinimal ? '#FFFFFF' : isColorful ? '#0A66C2' : 'url(#linkedin-gradient)',
-        stroke: isMinimal ? '#0A66C2' : '#FFFFFF',
-        textPrimary: isMinimal ? '#0A66C2' : '#FFFFFF',
-        logoFill: isMinimal ? '#0A66C2' : '#FFFFFF'
-      };
-    case 'twitter':
-      return {
-        ...colors,
-        bg: isMinimal ? '#FFFFFF' : isColorful ? '#1DA1F2' : 'url(#twitter-gradient)',
-        stroke: isMinimal ? '#1DA1F2' : '#FFFFFF',
-        textPrimary: isMinimal ? '#1DA1F2' : '#FFFFFF',
-        logoFill: isMinimal ? '#1DA1F2' : '#FFFFFF'
-      };
-    case 'notion':
-      return {
-        ...colors,
-        bg: isMinimal ? '#FFFFFF' : isColorful ? '#000000' : 'url(#notion-gradient)',
-        stroke: isMinimal ? '#000000' : '#FFFFFF',
-        textPrimary: isMinimal ? '#000000' : '#FFFFFF',
-        logoFill: isMinimal ? '#000000' : '#FFFFFF'
-      };
-    default:
-      return colors;
+  // Notion variant colors
+  if (variant === 'notion') {
+    return {
+      bg: 'url(#notion-gradient)',
+      stroke: '#000000',
+      textPrimary: '#000000',
+      textSecondary: '#4B5563',
+      logoFill: '#000000',
+    };
   }
+  
+  return defaultColors;
 };

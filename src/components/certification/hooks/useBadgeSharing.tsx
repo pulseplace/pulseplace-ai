@@ -1,49 +1,57 @@
 
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { BadgeStyle } from '@/types/badge.types';
+import { BadgeStyle, BadgeVariant } from '@/types/badge.types';
 
 export const useBadgeSharing = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('html');
   const [badgeStyle, setBadgeStyle] = useState<BadgeStyle>('standard');
+  const [badgeVariant, setBadgeVariant] = useState<BadgeVariant>('default');
   const [customCta, setCustomCta] = useState("We're Pulse Certified!");
-  const [hasCopied, setHasCopied] = useState<Record<string, boolean>>({
-    html: false,
-    linkedin: false, 
-    twitter: false,
-    notion: false
-  });
+  const [hasCopied, setHasCopied] = useState(false);
   
-  // Handle copy button click
+  // Handle copy text (for embed code, etc.)
   const handleCopy = (type: string, text: string) => {
-    navigator.clipboard.writeText(text);
-    setHasCopied(prev => ({ ...prev, [type]: true }));
-    
-    toast({
-      title: "Copied Successfully",
-      description: `${type.charAt(0).toUpperCase() + type.slice(1)} content copied to clipboard`,
-    });
-    
-    setTimeout(() => {
-      setHasCopied(prev => ({ ...prev, [type]: false }));
-    }, 2000);
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        setHasCopied(true);
+        
+        toast({
+          title: `${type.charAt(0).toUpperCase() + type.slice(1)} Copied`,
+          description: `The ${type} has been copied to your clipboard`,
+        });
+        
+        setTimeout(() => {
+          setHasCopied(false);
+        }, 2000);
+      })
+      .catch(err => {
+        toast({
+          title: "Copy Failed",
+          description: `Could not copy ${type} to clipboard: ${err.message}`,
+          variant: "destructive",
+        });
+      });
   };
   
-  // Handle badge download
+  // Handle download badge
   const handleDownloadBadge = () => {
-    // In a real implementation, you would convert the SVG to an image and download it
     toast({
       title: "Badge Downloaded",
       description: "Your certification badge has been downloaded",
     });
+    
+    // In a real implementation, this would handle the actual download
   };
-
+  
   return {
     activeTab,
     setActiveTab,
     badgeStyle,
     setBadgeStyle,
+    badgeVariant,
+    setBadgeVariant,
     customCta,
     setCustomCta,
     hasCopied,

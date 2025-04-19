@@ -14,6 +14,12 @@ export const ROUTES = {
     INDEX: '/teams',
     TEAM: (id: string) => `/teams/${id}`
   },
+  CERTIFICATION: {
+    INDEX: '/certification',
+    SHARE: '/certification/share',
+    VERIFY: '/certification/verify',
+    MANAGE: '/dashboard/certification-engine'
+  },
   PULSEBOT: '/pulsebot',
   BOOK_DEMO: '/book-demo'
 };

@@ -7,6 +7,7 @@ import Insights from '@/pages/Insights';
 import PulseBot from '@/pages/PulseBot';
 import PulseScoreAdmin from '@/pages/dashboard/PulseScoreAdmin';
 import CertificationEngine from '@/pages/dashboard/CertificationEngine';
+import ShareCertification from '@/pages/certification/ShareCertification';
 import AiDashboard from '@/pages/dashboard/AiDashboard';
 import LLMInsights from '@/pages/dashboard/LLMInsights';
 import BookDemo from '@/pages/BookDemo';
@@ -35,6 +36,10 @@ const routes: RouteObject[] = [
   {
     path: '/dashboard/certification-engine',
     element: <CertificationEngine />
+  },
+  {
+    path: '/certification/share',
+    element: <ShareCertification />
   },
   {
     path: '/ai-dashboard',

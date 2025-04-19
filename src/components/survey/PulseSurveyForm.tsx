@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSurveyQuestions } from '@/hooks/useSurveyQuestions';
-import { calculatePulseScore } from '@/utils/survey-scoring';
+import { calculatePulseScore } from '@/utils/scoring';
 
 const surveySchema = z.object({
   responses: z.record(z.string(), z.union([z.string(), z.number()])),

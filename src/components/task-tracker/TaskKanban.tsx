@@ -1,158 +1,147 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
-import { useTaskManager } from '@/contexts/TaskContext';
-import { Task, TaskStatus } from '@/types/task.types';
-import { ThumbsUp, ThumbsDown, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTasks } from '@/contexts/TaskContext';
+import { TaskStatus, Task } from '@/types/task.types';
+import { AlertCircle, Clock, Calendar, CheckCircle2 } from 'lucide-react';
+import { format } from 'date-fns';
 
-const TASK_STATUSES: TaskStatus[] = ['Not Started', 'In Progress', 'Stuck', 'Done'];
+const TaskKanban = () => {
+  const { tasks, updateTask } = useTasks();
 
-const getStatusColor = (status: TaskStatus) => {
-  switch (status) {
-    case 'Not Started':
-      return 'bg-gray-100 text-gray-800 border-gray-200';
-    case 'In Progress':
-      return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'Stuck':
-      return 'bg-red-100 text-red-800 border-red-200';
-    case 'Done':
-      return 'bg-green-100 text-green-800 border-green-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
-
-const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case 'High':
-      return 'bg-red-100 text-red-800 border-red-200';
-    case 'Medium':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    case 'Low':
-      return 'bg-green-100 text-green-800 border-green-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
-
-interface TaskKanbanProps {
-  onEditTask: (task: Task) => void;
-}
-
-export default function TaskKanban({ onEditTask }: TaskKanbanProps) {
-  const { tasks, updateTask, voteTask, updateTaskTime } = useTaskManager();
-
-  const tasksByStatus = TASK_STATUSES.reduce<Record<TaskStatus, Task[]>>((acc, status) => {
-    acc[status] = tasks.filter(task => task.status === status);
-    return acc;
-  }, {
-    'Not Started': [],
-    'In Progress': [],
-    'Stuck': [],
-    'Done': []
-  });
-
-  const handleDragStart = (e: React.DragEvent, taskId: string) => {
-    e.dataTransfer.setData('taskId', taskId);
+  const columns: TaskStatus[] = ['Not Started', 'In Progress', 'Stuck', 'Done'];
+  
+  const getTasksByStatus = (status: TaskStatus) => {
+    return tasks.filter(task => task.status === status);
   };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
+  
+  const handleTaskStatusChange = (task: Task, newStatus: TaskStatus) => {
+    updateTask(task.id, { status: newStatus });
   };
-
-  const handleDrop = (e: React.DragEvent, targetStatus: TaskStatus) => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData('taskId');
-    if (taskId) {
-      updateTask(taskId, { status: targetStatus });
+  
+  // Get the next status in the workflow
+  const getNextStatus = (currentStatus: TaskStatus): TaskStatus => {
+    const statusIndex = columns.indexOf(currentStatus);
+    // If not the last status, move to next, otherwise stay on current
+    return statusIndex < columns.length - 1 ? columns[statusIndex + 1] : currentStatus;
+  };
+  
+  // Get the previous status in the workflow
+  const getPreviousStatus = (currentStatus: TaskStatus): TaskStatus => {
+    const statusIndex = columns.indexOf(currentStatus);
+    // If not the first status, move to previous, otherwise stay on current
+    return statusIndex > 0 ? columns[statusIndex - 1] : currentStatus;
+  };
+  
+  // Get color for priority badges
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'High':
+        return 'text-red-500';
+      case 'Medium':
+        return 'text-amber-500';
+      case 'Low':
+        return 'text-green-500';
+      default:
+        return '';
     }
   };
-
-  const handleTimeUpdate = (taskId: string) => {
-    const timeSpent = prompt('Enter time spent in minutes:');
-    if (timeSpent && !isNaN(Number(timeSpent))) {
-      updateTaskTime(taskId, Number(timeSpent));
+  
+  const getPriorityIcon = (priority: string) => {
+    switch(priority) {
+      case 'High':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      case 'Medium':
+        return <AlertCircle className="h-4 w-4 text-amber-500" />;
+      case 'Low':
+        return <AlertCircle className="h-4 w-4 text-green-500" />;
+      default:
+        return null;
     }
   };
-
+  
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {TASK_STATUSES.map(status => (
-        <div key={status} className="flex flex-col space-y-2">
-          <div 
-            className={`p-2 rounded-md mb-2 text-center font-medium ${getStatusColor(status)}`}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, status)}
-          >
-            {status} ({tasksByStatus[status].length})
-          </div>
-          <div 
-            className="space-y-2 min-h-[200px] p-2 rounded-md bg-gray-50"
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, status)}
-          >
-            {tasksByStatus[status].map(task => (
-              <Card 
-                key={task.id} 
-                className="cursor-pointer hover:shadow-md transition-shadow"
-                draggable
-                onDragStart={(e) => handleDragStart(e, task.id)}
-                onClick={() => onEditTask(task)}
-              >
-                <CardHeader className="p-3 pb-0">
-                  <CardTitle className="text-sm font-medium">{task.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 pt-2">
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                    <Badge className={`${getPriorityColor(task.priority)} border text-xs`}>
-                      {task.priority}
-                    </Badge>
-                    <div className="flex items-center space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleTimeUpdate(task.id)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <Clock className="h-3 w-3" />
-                        {task.timeSpent && (
-                          <span className="ml-1 text-xs">{task.timeSpent}m</span>
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => voteTask(task.id, true)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <ThumbsUp className="h-3 w-3" />
-                        <span className="ml-1 text-xs">{task.feedback?.upvotes || 0}</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => voteTask(task.id, false)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <ThumbsDown className="h-3 w-3" />
-                        <span className="ml-1 text-xs">{task.feedback?.downvotes || 0}</span>
-                      </Button>
-                    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {columns.map((status) => (
+        <div key={status} className="flex flex-col h-full">
+          <h3 className="font-medium text-sm mb-2 px-1">{status}</h3>
+          <div className="bg-gray-50 p-3 rounded-lg flex-grow min-h-[500px]">
+            {getTasksByStatus(status).map((task) => (
+              <Card key={task.id} className="mb-3 shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="p-3">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-sm">{task.name}</h4>
+                    {getPriorityIcon(task.priority)}
                   </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <span>{task.owner}</span>
-                    {task.deadline && (
+                  <p className="text-xs text-gray-600 mb-3">
+                    {task.notes}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                    <Badge variant="outline" className="text-xs bg-gray-50">
+                      {task.module}
+                    </Badge>
+                    <span className="flex items-center">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {task.timeSpent || 0} min
+                    </span>
+                  </div>
+                  
+                  {task.deadline && (
+                    <div className="flex items-center justify-end text-xs text-gray-500">
+                      <Calendar className="h-3 w-3 mr-1" />
                       <span>{format(new Date(task.deadline), 'MMM d')}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-2 mt-3">
+                    {status !== columns[0] && (
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="text-xs py-0 h-7 flex-1"
+                        onClick={() => handleTaskStatusChange(task, getPreviousStatus(status))}
+                      >
+                        ← Move Back
+                      </Button>
+                    )}
+                    {status !== columns[columns.length - 1] && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-xs py-0 h-7 flex-1"
+                        onClick={() => handleTaskStatusChange(task, getNextStatus(status))}
+                      >
+                        Move Forward →
+                      </Button>
+                    )}
+                    {status !== 'Done' && (
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="text-xs py-0 h-7 w-7 p-0"
+                        onClick={() => handleTaskStatusChange(task, 'Done')}
+                      >
+                        <CheckCircle2 className="h-4 w-4" />
+                      </Button>
                     )}
                   </div>
+                  
                 </CardContent>
               </Card>
             ))}
+            
+            {getTasksByStatus(status).length === 0 && (
+              <div className="text-center py-4 text-sm text-gray-400">
+                No tasks in this column
+              </div>
+            )}
           </div>
         </div>
       ))}
     </div>
   );
-}
+};
+
+export default TaskKanban;

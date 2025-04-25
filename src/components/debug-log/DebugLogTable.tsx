@@ -1,233 +1,195 @@
 
-import React, { useState } from 'react';
-import { 
-  Table, 
-  TableHeader, 
-  TableRow, 
-  TableHead, 
-  TableBody, 
-  TableCell 
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
+import React, { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useDebugLogs } from '@/contexts/TaskContext';
+import { format } from "date-fns";
+import { ExternalLink, Check, AlertCircle } from 'lucide-react';
+import { DebugLog, DebugLogSeverity, DebugLogStatus } from '@/types/task.types';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ChevronDown,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  ExternalLink
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { 
-  DebugLog, 
-  DebugLogSeverity, 
-  DebugLogStatus 
-} from '@/types/task.types';
-import { useTaskManager } from '@/contexts/TaskContext';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Pencil2Icon } from '@radix-ui/react-icons';
 
-const getSeverityColor = (severity: DebugLogSeverity) => {
+// Helper functions for styling
+const getSeverityBadgeVariant = (severity: DebugLogSeverity) => {
   switch (severity) {
-    case 'Critical':
-      return 'bg-red-100 text-red-800 border-red-200';
-    case 'Major':
-      return 'bg-orange-100 text-orange-800 border-orange-200';
-    case 'Minor':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+    case 'Critical': return 'destructive';
+    case 'Major': return 'default';
+    case 'Minor': return 'secondary';
+    default: return 'outline';
   }
 };
 
-const getStatusColor = (status: DebugLogStatus) => {
+const getStatusBadgeVariant = (status: DebugLogStatus) => {
   switch (status) {
-    case 'Open':
-      return 'bg-red-100 text-red-800 border-red-200';
-    case 'In Progress':
-      return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'Fixed':
-      return 'bg-green-100 text-green-800 border-green-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+    case 'Fixed': return 'success';
+    case 'In Progress': return 'warning';
+    case 'Open': return 'default';
+    default: return 'outline';
   }
 };
 
-interface DebugLogTableProps {
-  showCriticalOnly?: boolean;
-  showRecentlyClosed?: boolean;
-  daysForRecent?: number;
-  onEditLog: (log: DebugLog) => void;
-}
+function StatusBadge({ status }: { status: DebugLogStatus }) {
+  const variants = {
+    'Fixed': { variant: 'outline', className: 'border-green-200 bg-green-100 text-green-700 hover:bg-green-100 hover:text-green-700' },
+    'In Progress': { variant: 'outline', className: 'border-yellow-200 bg-yellow-100 text-yellow-700 hover:bg-yellow-100 hover:text-yellow-700' },
+    'Open': { variant: 'outline', className: 'border-red-200 bg-red-100 text-red-700 hover:bg-red-100 hover:text-red-700' },
+  } as const;
 
-export default function DebugLogTable({ 
-  showCriticalOnly = false, 
-  showRecentlyClosed = false,
-  daysForRecent = 7,
-  onEditLog 
-}: DebugLogTableProps) {
-  const { debugLogs, deleteDebugLog, getCriticalOpenLogs, getRecentlyFixedLogs } = useTaskManager();
-  const [sortField, setSortField] = useState<keyof DebugLog>('dateLogged');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-
-  // Filter logs based on props
-  let filteredLogs = debugLogs;
-  if (showCriticalOnly) {
-    filteredLogs = getCriticalOpenLogs();
-  } else if (showRecentlyClosed) {
-    filteredLogs = getRecentlyFixedLogs(daysForRecent);
-  }
-
-  const handleSort = (field: keyof DebugLog) => {
-    if (sortField === field) {
-      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
-
-  // Sort logs
-  const sortedLogs = [...filteredLogs].sort((a, b) => {
-    // Handle date sorting special case
-    if (sortField === 'dateLogged') {
-      const dateA = new Date(a.dateLogged).getTime();
-      const dateB = new Date(b.dateLogged).getTime();
-      return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-    }
-    
-    // Generic string/date sort
-    if (a[sortField] < b[sortField]) {
-      return sortDirection === 'asc' ? -1 : 1;
-    }
-    if (a[sortField] > b[sortField]) {
-      return sortDirection === 'asc' ? 1 : -1;
-    }
-    return 0;
-  });
-
+  const { variant, className } = variants[status] || { variant: 'outline', className: '' };
+  
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('dateLogged')}
-            >
-              Date Logged
-              {sortField === 'dateLogged' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('component')}
-            >
-              Component/Module
-              {sortField === 'component' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead>
-              Error Description
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('severity')}
-            >
-              Severity
-              {sortField === 'severity' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('status')}
-            >
-              Status
-              {sortField === 'status' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead>
-              Fix Link
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('loggedBy')}
-            >
-              Logged By
-              {sortField === 'loggedBy' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sortedLogs.map((log) => (
-            <TableRow key={log.id}>
-              <TableCell>
-                {format(new Date(log.dateLogged), 'MMM d, yyyy h:mm a')}
-              </TableCell>
-              <TableCell>{log.component}</TableCell>
-              <TableCell className="max-w-[300px] truncate">
-                {log.description}
-              </TableCell>
-              <TableCell>
-                <Badge className={`${getSeverityColor(log.severity)} border`}>
-                  {log.severity}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge className={`${getStatusColor(log.status)} border`}>
-                  {log.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {log.fixLink ? (
-                  <a 
-                    href={log.fixLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 inline-flex items-center"
-                  >
-                    Link <ExternalLink className="ml-1 h-3 w-3" />
-                  </a>
-                ) : (
-                  <span className="text-gray-400">-</span>
-                )}
-              </TableCell>
-              <TableCell>{log.loggedBy}</TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEditLog(log)}>
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => deleteDebugLog(log.id)} className="text-red-600">
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <Badge variant="outline" className={className}>
+      {status === 'Fixed' && <Check className="h-3 w-3 mr-1" />}
+      {status === 'In Progress' && <Pencil2Icon className="h-3 w-3 mr-1" />}
+      {status === 'Open' && <AlertCircle className="h-3 w-3 mr-1" />}
+      {status}
+    </Badge>
   );
 }
+
+const DebugLogTable = () => {
+  const { debugLogs, updateDebugLog } = useDebugLogs();
+  const [filteredLogs, setFilteredLogs] = useState<DebugLog[]>(debugLogs);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [severityFilter, setSeverityFilter] = useState<string>("all");
+
+  useEffect(() => {
+    let logs = [...debugLogs];
+
+    // Apply status filter
+    if (statusFilter !== "all") {
+      logs = logs.filter(log => log.status === statusFilter);
+    }
+
+    // Apply severity filter
+    if (severityFilter !== "all") {
+      logs = logs.filter(log => log.severity === severityFilter);
+    }
+
+    // Sort by date (most recent first)
+    logs.sort((a, b) => {
+      return new Date(b.dateLogged).getTime() - new Date(a.dateLogged).getTime();
+    });
+
+    setFilteredLogs(logs);
+  }, [debugLogs, statusFilter, severityFilter]);
+
+  const handleStatusChange = (logId: string, newStatus: DebugLogStatus) => {
+    updateDebugLog(logId, { status: newStatus });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold mb-1">Debug Logs</h2>
+          <p className="text-gray-500 text-sm">
+            Track and manage issues across the application
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="Open">Open</SelectItem>
+              <SelectItem value="In Progress">In Progress</SelectItem>
+              <SelectItem value="Fixed">Fixed</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={severityFilter} onValueChange={setSeverityFilter}>
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="Severity" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Severity</SelectItem>
+              <SelectItem value="Critical">Critical</SelectItem>
+              <SelectItem value="Major">Major</SelectItem>
+              <SelectItem value="Minor">Minor</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[120px]">Date</TableHead>
+              <TableHead className="w-[150px]">Component</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead className="w-[100px]">Severity</TableHead>
+              <TableHead className="w-[120px]">Status</TableHead>
+              <TableHead className="w-[100px]">By</TableHead>
+              <TableHead className="w-[80px]">Fix</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredLogs.length > 0 ? (
+              filteredLogs.map((log) => (
+                <TableRow key={log.id}>
+                  <TableCell className="font-mono text-xs">
+                    {format(new Date(log.dateLogged), "yyyy-MM-dd")}
+                  </TableCell>
+                  <TableCell>{log.component}</TableCell>
+                  <TableCell className="font-medium">{log.description}</TableCell>
+                  <TableCell>
+                    <Badge variant={getSeverityBadgeVariant(log.severity)}>
+                      {log.severity}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Select 
+                      value={log.status} 
+                      onValueChange={(value) => handleStatusChange(log.id, value as DebugLogStatus)}
+                    >
+                      <SelectTrigger className="h-8 w-full">
+                        <StatusBadge status={log.status} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Open">Open</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
+                        <SelectItem value="Fixed">Fixed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell className="text-sm">{log.loggedBy}</TableCell>
+                  <TableCell>
+                    {log.fixLink && (
+                      <a 
+                        href={log.fixLink} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="inline-flex items-center text-blue-500 hover:text-blue-700"
+                      >
+                        View <ExternalLink className="ml-1 h-3 w-3" />
+                      </a>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center">
+                  No logs found matching your filters.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+};
+
+export default DebugLogTable;

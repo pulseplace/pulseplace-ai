@@ -1,119 +1,141 @@
 
 import React, { useState } from 'react';
-import { useTaskManager } from '@/contexts/TaskContext';
-import { Task } from '@/types/task.types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Plus, Table as TableIcon, Kanban, Calendar } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTasks } from '@/contexts/TaskContext';
 import TaskTable from '@/components/task-tracker/TaskTable';
-import TaskForm from '@/components/task-tracker/TaskForm';
 import TaskKanban from '@/components/task-tracker/TaskKanban';
 import TaskCalendar from '@/components/task-tracker/TaskCalendar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import AddTaskDialog from '@/components/dashboard/AddTaskDialog';
+import { Button } from '@/components/ui/button';
+import { Filter, Plus } from 'lucide-react';
+import { TaskStatus, Task } from '@/types/task.types';
 
-export default function TaskTracker() {
-  const { tasks, addTask, updateTask } = useTaskManager();
-  const { toast } = useToast();
-  const [viewMode, setViewMode] = useState<'table' | 'kanban' | 'calendar'>('table');
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [currentTask, setCurrentTask] = useState<Task | undefined>(undefined);
-
-  const handleAddTask = () => {
-    setCurrentTask(undefined);
-    setIsFormOpen(true);
+// TaskStats component to show statistics
+const TaskStats = () => {
+  const { tasks } = useTasks();
+  
+  const getTasksByStatus = (status: TaskStatus) => {
+    return tasks.filter(task => task.status === status).length;
   };
-
-  const handleEditTask = (task: Task) => {
-    setCurrentTask(task);
-    setIsFormOpen(true);
+  
+  const getHighPriorityCount = () => {
+    return tasks.filter(task => task.priority === 'High').length;
   };
-
-  const handleFormSubmit = (data: any) => {
-    if (currentTask) {
-      updateTask(currentTask.id, data);
-      toast({
-        title: "Task updated",
-        description: "The task has been updated successfully."
-      });
-    } else {
-      addTask(data);
-      toast({
-        title: "Task added",
-        description: "A new task has been added successfully."
-      });
-    }
-    setIsFormOpen(false);
+  
+  const getOverdueTasks = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return tasks.filter(task => {
+      if (!task.deadline) return false;
+      if (task.status === 'Done') return false;
+      
+      const deadline = new Date(task.deadline);
+      deadline.setHours(0, 0, 0, 0);
+      
+      return deadline < today;
+    }).length;
   };
+  
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium">All Tasks</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{tasks.length}</div>
+          <p className="text-xs text-gray-500">Total number of tasks</p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{getTasksByStatus('In Progress')}</div>
+          <p className="text-xs text-gray-500">Tasks currently in progress</p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium">High Priority</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{getHighPriorityCount()}</div>
+          <p className="text-xs text-gray-500">Tasks needing immediate attention</p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium">Overdue</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{getOverdueTasks()}</div>
+          <p className="text-xs text-gray-500">Tasks past their deadline</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
 
+const TaskTracker = () => {
+  const [view, setView] = useState('table');
+  
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">PulsePlace Task Tracker</h1>
-          <p className="text-gray-500 mt-1">Manage and track all project tasks in one place</p>
+          <h1 className="text-3xl font-bold mb-2">Task Tracker</h1>
+          <p className="text-gray-600">
+            Manage tasks, track progress, and stay organized
+          </p>
         </div>
-        <Button onClick={handleAddTask} className="mt-4 md:mt-0 bg-pulse-gradient">
-          <Plus className="h-4 w-4 mr-2" />
-          New Task
-        </Button>
+        <div className="flex gap-2 mt-4 md:mt-0">
+          <Button variant="outline">
+            <Filter className="mr-2 h-4 w-4" />
+            Filter
+          </Button>
+          <AddTaskDialog>
+            <Button className="bg-pulse-gradient hover:opacity-90">
+              <Plus className="mr-2 h-4 w-4" />
+              New Task
+            </Button>
+          </AddTaskDialog>
+        </div>
       </div>
-
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Current Sprint: April 22–26</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="text-gray-500">
-                Total Tasks: <span className="font-semibold">{tasks.length}</span>
-              </div>
-              <div className="text-gray-500">
-                Completed: <span className="font-semibold">{tasks.filter(t => t.status === 'Done').length}</span>
-              </div>
-            </div>
-            <Tabs 
-              defaultValue="table" 
-              className="w-[400px]"
-              onValueChange={(value) => setViewMode(value as any)}
-            >
-              <TabsList className="grid grid-cols-3">
-                <TabsTrigger value="table" className="flex items-center">
-                  <TableIcon className="h-4 w-4 mr-2" />
-                  Table
-                </TabsTrigger>
-                <TabsTrigger value="kanban" className="flex items-center">
-                  <Kanban className="h-4 w-4 mr-2" />
-                  Kanban
-                </TabsTrigger>
-                <TabsTrigger value="calendar" className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Calendar
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+      
+      <TaskStats />
+      
+      <div className="mb-6">
+        <Tabs defaultValue={view} onValueChange={setView} className="w-full">
+          <div className="flex justify-between items-center mb-4">
+            <TabsList>
+              <TabsTrigger value="table">List</TabsTrigger>
+              <TabsTrigger value="kanban">Board</TabsTrigger>
+              <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            </TabsList>
           </div>
-        </CardContent>
-      </Card>
-
-      {viewMode === 'table' && <TaskTable onEditTask={handleEditTask} />}
-      {viewMode === 'kanban' && <TaskKanban onEditTask={handleEditTask} />}
-      {viewMode === 'calendar' && <TaskCalendar onEditTask={handleEditTask} />}
-
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>{currentTask ? 'Edit Task' : 'Add New Task'}</DialogTitle>
-          </DialogHeader>
-          <TaskForm 
-            task={currentTask} 
-            onSubmit={handleFormSubmit} 
-            onCancel={() => setIsFormOpen(false)} 
-          />
-        </DialogContent>
-      </Dialog>
+          
+          <TabsContent value="table" className="mt-0">
+            <TaskTable showSprint={true} />
+          </TabsContent>
+          
+          <TabsContent value="kanban" className="mt-0">
+            <TaskKanban />
+          </TabsContent>
+          
+          <TabsContent value="calendar" className="mt-0">
+            <TaskCalendar />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
-}
+};
+
+export default TaskTracker;

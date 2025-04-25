@@ -1,149 +1,152 @@
+
 import React, { useState } from 'react';
-import { 
-  Calendar, 
-  Check, 
-  Plus, 
-  Trash2,
-  AlertCircle,
-  ArrowUp,
-  Clock
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
-import { useTasks } from '@/contexts/TaskContext';
-import { Task } from '@/types/task.types';
-import { AddTaskDialog } from './AddTaskDialog';
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { CheckCircle2, AlertCircle, Clock } from "lucide-react";
+import AddTaskDialog from './AddTaskDialog';
+import { useTasks } from '@/contexts/TaskContext';
 import { format } from 'date-fns';
+import { Task, TaskPriority } from '@/types/task.types';
+import { useToast } from '@/hooks/use-toast';
+
+const TaskPriorityColors: Record<TaskPriority, string> = {
+  "High": "text-red-500",
+  "Medium": "text-amber-500",
+  "Low": "text-green-500"
+};
 
 const TaskList = () => {
+  const { tasks, updateTask } = useTasks();
   const { toast } = useToast();
-  const { tasks, updateTask, deleteTask } = useTasks();
-  const [showAddTask, setShowAddTask] = useState(false);
-
-  const handleCompleteTask = (id: string) => {
-    updateTask(id);
-    toast({ description: "Task marked as completed" });
+  
+  // Sort tasks by status (not done first) then by priority (high first)
+  const sortedTasks = [...tasks].sort((a, b) => {
+    // First sort by status - Not Done comes before Done
+    if (a.status === 'Done' && b.status !== 'Done') {
+      return 1;
+    }
+    if (a.status !== 'Done' && b.status === 'Done') {
+      return -1;
+    }
+    
+    // Then sort by priority (High > Medium > Low)
+    if (a.priority === 'High' && b.priority !== 'High') {
+      return -1;
+    }
+    if (a.priority === 'Medium' && b.priority === 'Low') {
+      return -1;
+    }
+    if (a.priority === 'Low' && (b.priority === 'High' || b.priority === 'Medium')) {
+      return 1;
+    }
+    
+    // Finally sort by deadline if present
+    if (a.deadline && b.deadline) {
+      return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+    }
+    
+    return 0;
+  });
+  
+  // Only show the latest 3 tasks that aren't done
+  const displayTasks = sortedTasks.filter(task => task.status !== 'Done').slice(0, 3);
+  
+  const toggleTaskStatus = (task: Task) => {
+    const newStatus = task.status === 'Done' ? 'Not Started' : 'Done';
+    updateTask(task.id, { status: newStatus });
+    
+    toast({
+      title: `Task ${newStatus === 'Done' ? 'Completed' : 'Reopened'}`,
+      description: task.name,
+    });
   };
-
-  const handleDeleteTask = (id: string) => {
-    deleteTask(id);
-    toast({ description: "Task removed" });
-  };
-
-  const getPriorityBadge = (priority: Task['priority']) => {
-    switch (priority) {
-      case 'high':
-        return <Badge variant="destructive" className="ml-2">High</Badge>;
-      case 'medium':
-        return <Badge variant="default" className="ml-2 bg-amber-500">Medium</Badge>;
-      case 'low':
-        return <Badge variant="outline" className="ml-2">Low</Badge>;
+  
+  const getPriorityIcon = (priority: TaskPriority) => {
+    switch(priority) {
+      case 'High':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      case 'Medium':
+        return <AlertCircle className="h-4 w-4 text-amber-500" />;
+      case 'Low':
+        return <AlertCircle className="h-4 w-4 text-green-500" />;
       default:
         return null;
     }
   };
-
+  
   return (
-    <Card className="shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-xl font-bold">Today's Tasks</CardTitle>
-        <Button 
-          onClick={() => setShowAddTask(true)} 
-          size="sm" 
-          className="bg-pulse-gradient"
-        >
-          <Plus className="h-4 w-4 mr-1" /> Add Task
-        </Button>
-      </CardHeader>
-      <CardContent>
-        {tasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-6 text-center text-gray-500">
-            <Clock className="h-12 w-12 mb-2 text-gray-400" />
-            <p>No tasks scheduled for today</p>
-            <Button 
-              variant="link" 
-              onClick={() => setShowAddTask(true)}
-              className="mt-2 text-pulse-600"
-            >
-              Add your first task
-            </Button>
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium">Active Tasks</h3>
+          <AddTaskDialog />
+        </div>
+        
+        {displayTasks.length > 0 ? (
+          <div className="space-y-4">
+            {displayTasks.map((task) => (
+              <div 
+                key={task.id}
+                className="flex items-center justify-between border-b pb-3"
+              >
+                <div className="flex items-start">
+                  <button 
+                    onClick={() => toggleTaskStatus(task)}
+                    className="mt-1 mr-3"
+                  >
+                    {task.status === 'Done' ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
+                    )}
+                  </button>
+                  
+                  <div>
+                    <div className="flex items-center">
+                      <span className="font-medium">{task.name}</span>
+                      <Badge className="ml-2" variant={task.status === 'Stuck' ? 'destructive' : 'outline'}>
+                        {task.status}
+                      </Badge>
+                    </div>
+                    
+                    <div className="text-sm text-gray-500 mt-1">
+                      {task.notes && task.notes.length > 30 
+                        ? `${task.notes.substring(0, 30)}...` 
+                        : task.notes}
+                    </div>
+                    
+                    <div className="flex items-center mt-1 text-xs text-gray-500">
+                      {task.deadline && (
+                        <>
+                          <Clock className="h-3 w-3 mr-1" />
+                          <span>{format(new Date(task.deadline), 'MMM d, yyyy')}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center">
+                  {getPriorityIcon(task.priority)}
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
-          <ul className="space-y-3">
-            {tasks.map((task) => (
-              <li 
-                key={task.id} 
-                className={`flex items-start p-3 rounded-md border ${
-                  task.completed 
-                    ? 'bg-gray-50 border-gray-200' 
-                    : 'bg-white border-gray-200 hover:border-pulse-200 transition-colors'
-                }`}
-              >
-                <Checkbox 
-                  id={`task-${task.id}`}
-                  checked={task.completed}
-                  onCheckedChange={() => handleCompleteTask(task.id)}
-                  className="mt-1 mr-3"
-                />
-                <div className="flex-grow">
-                  <div className="flex flex-wrap items-center">
-                    <label 
-                      htmlFor={`task-${task.id}`}
-                      className={`font-medium cursor-pointer ${
-                        task.completed ? 'line-through text-gray-500' : ''
-                      }`}
-                    >
-                      {task.title}
-                    </label>
-                    {getPriorityBadge(task.priority)}
-                  </div>
-                  
-                  {task.description && (
-                    <p className={`text-sm mt-1 ${
-                      task.completed ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {task.description}
-                    </p>
-                  )}
-                  
-                  {task.dueDate && (
-                    <div className="flex items-center mt-2 text-xs text-gray-500">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {format(new Date(task.dueDate), 'h:mm a')}
-                    </div>
-                  )}
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-gray-400 hover:text-red-500" 
-                  onClick={() => handleDeleteTask(task.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </li>
-            ))}
-          </ul>
+          <div className="text-center py-8 text-gray-500">
+            <p>No active tasks. Click "Add New Task" to create one.</p>
+          </div>
         )}
         
-        {tasks.length > 0 && (
-          <div className="mt-4 pt-3 border-t border-gray-100 text-sm text-gray-500 flex justify-between">
-            <span>
-              {tasks.filter(t => t.completed).length} of {tasks.length} tasks completed
-            </span>
-            {tasks.some(t => t.priority === 'high' && !t.completed) && (
-              <span className="flex items-center text-amber-600">
-                <AlertCircle className="h-3 w-3 mr-1" />
-                High priority tasks pending
-              </span>
-            )}
+        {tasks.length > 3 && (
+          <div className="mt-4 text-center">
+            <Button variant="link" asChild>
+              <a href="/task-tracker">View All Tasks</a>
+            </Button>
           </div>
         )}
       </CardContent>
-      <AddTaskDialog open={showAddTask} onOpenChange={setShowAddTask} />
     </Card>
   );
 };

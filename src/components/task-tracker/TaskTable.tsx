@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -21,7 +20,10 @@ import {
   ChevronDown,
   MoreHorizontal,
   Pencil,
-  Trash2
+  Trash2,
+  ThumbsUp,
+  ThumbsDown,
+  Clock
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { 
@@ -66,7 +68,7 @@ interface TaskTableProps {
 }
 
 export default function TaskTable({ showSprint = false, onEditTask }: TaskTableProps) {
-  const { tasks, deleteTask } = useTaskManager();
+  const { tasks, deleteTask, voteTask, updateTaskTime } = useTaskManager();
   const [sortField, setSortField] = useState<keyof Task>('priority');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
@@ -79,8 +81,14 @@ export default function TaskTable({ showSprint = false, onEditTask }: TaskTableP
     }
   };
 
+  const handleTimeUpdate = (taskId: string) => {
+    const timeSpent = prompt('Enter time spent in minutes:');
+    if (timeSpent && !isNaN(Number(timeSpent))) {
+      updateTaskTime(taskId, Number(timeSpent));
+    }
+  };
+
   const sortedTasks = [...tasks].sort((a, b) => {
-    // Handle priority special case
     if (sortField === 'priority') {
       const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
       const valA = priorityOrder[a.priority as TaskPriority] || 0;
@@ -88,14 +96,12 @@ export default function TaskTable({ showSprint = false, onEditTask }: TaskTableP
       return sortDirection === 'asc' ? valA - valB : valB - valA;
     }
     
-    // Handle deadline special case
     if (sortField === 'deadline') {
       const dateA = a.deadline ? new Date(a.deadline).getTime() : 0;
       const dateB = b.deadline ? new Date(b.deadline).getTime() : 0;
       return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
     }
     
-    // Generic string/date sort
     if (a[sortField] < b[sortField]) {
       return sortDirection === 'asc' ? -1 : 1;
     }
@@ -225,6 +231,43 @@ export default function TaskTable({ showSprint = false, onEditTask }: TaskTableP
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => handleTimeUpdate(task.id)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Clock className="h-4 w-4" />
+                    {task.timeSpent && (
+                      <span className="ml-1 text-xs">{task.timeSpent}m</span>
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => voteTask(task.id, true)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ThumbsUp className="h-4 w-4" />
+                    {task.feedback?.upvotes && (
+                      <span className="ml-1 text-xs">{task.feedback.upvotes}</span>
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => voteTask(task.id, false)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ThumbsDown className="h-4 w-4" />
+                    {task.feedback?.downvotes && (
+                      <span className="ml-1 text-xs">{task.feedback.downvotes}</span>
+                    )}
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}

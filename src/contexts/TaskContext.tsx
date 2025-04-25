@@ -1,36 +1,31 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { 
   Task, 
-  TaskModule, 
-  TaskPriority, 
-  TaskStatus, 
+  TaskModule,
+  TaskPriority,
+  TaskStatus,
   TaskOwner,
   DebugLog,
-  DebugLogSeverity,
-  DebugLogStatus,
   BuildRequest,
   BuildFlowLane
 } from '@/types/task.types';
 
 interface TaskContextType {
-  // Tasks
   tasks: Task[];
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateTask: (id: string, updates: Partial<Omit<Task, 'id' | 'createdAt' | 'updatedAt'>>) => void;
   deleteTask: (id: string) => void;
   filterTasksBySprint: (sprint: string) => Task[];
-  
-  // Debug Logs
+  updateTaskTime: (id: string, timeSpent: number) => void;
+  voteTask: (id: string, isUpvote: boolean) => void;
+  generateChangelog: (taskId: string) => string;
   debugLogs: DebugLog[];
   addDebugLog: (log: Omit<DebugLog, 'id' | 'dateLogged'>) => void;
   updateDebugLog: (id: string, updates: Partial<Omit<DebugLog, 'id' | 'dateLogged'>>) => void;
   deleteDebugLog: (id: string) => void;
   getCriticalOpenLogs: () => DebugLog[];
   getRecentlyFixedLogs: (days: number) => DebugLog[];
-  
-  // Build Flow
   buildRequests: BuildRequest[];
   addBuildRequest: (request: Omit<BuildRequest, 'id' | 'lane' | 'createdAt'>) => void;
   updateBuildRequest: (id: string, updates: Partial<Omit<BuildRequest, 'id' | 'createdAt'>>) => void;
@@ -161,7 +156,6 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('pulseplace-build-requests', JSON.stringify(buildRequests));
   }, [buildRequests]);
 
-  // Task functions
   const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
     const now = new Date();
     const newTask: Task = {
@@ -191,7 +185,49 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     return tasks.filter(task => task.sprint === sprint);
   };
   
-  // Debug Log functions
+  const updateTaskTime = (id: string, timeSpent: number) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === id
+          ? {
+              ...task,
+              timeSpent: (task.timeSpent || 0) + timeSpent,
+              updatedAt: new Date()
+            }
+          : task
+      )
+    );
+  };
+
+  const voteTask = (id: string, isUpvote: boolean) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === id
+          ? {
+              ...task,
+              feedback: {
+                upvotes: (task.feedback?.upvotes || 0) + (isUpvote ? 1 : 0),
+                downvotes: (task.feedback?.downvotes || 0) + (!isUpvote ? 1 : 0)
+              },
+              updatedAt: new Date()
+            }
+          : task
+      )
+    );
+  };
+
+  const generateChangelog = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return '';
+
+    return `[${task.status}] ${task.name}\n` +
+           `Module: ${task.module}\n` +
+           `Owner: ${task.owner}\n` +
+           `Notes: ${task.notes}\n` +
+           `Time Spent: ${task.timeSpent || 0} minutes\n` +
+           `Feedback: 👍 ${task.feedback?.upvotes || 0} | 👎 ${task.feedback?.downvotes || 0}`;
+  };
+
   const addDebugLog = (logData: Omit<DebugLog, 'id' | 'dateLogged'>) => {
     const newLog: DebugLog = {
       ...logData,
@@ -229,7 +265,6 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       .sort((a, b) => b.dateLogged.getTime() - a.dateLogged.getTime());
   };
   
-  // Build Flow functions
   const addBuildRequest = (requestData: Omit<BuildRequest, 'id' | 'lane' | 'createdAt'>) => {
     const newRequest: BuildRequest = {
       ...requestData,
@@ -269,6 +304,9 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       updateTask, 
       deleteTask,
       filterTasksBySprint,
+      updateTaskTime,
+      voteTask,
+      generateChangelog,
       
       debugLogs,
       addDebugLog,

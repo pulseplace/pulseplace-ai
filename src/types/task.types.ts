@@ -1,4 +1,3 @@
-
 export type TaskModule = 
   | 'PulseScore Engine' 
   | 'AI Summary' 
@@ -28,6 +27,12 @@ export interface Task {
   sprint?: string;
   createdAt: Date;
   updatedAt: Date;
+  timeSpent?: number; // Time spent in minutes
+  feedback?: {
+    upvotes: number;
+    downvotes: number;
+  };
+  changelog?: string;
 }
 
 export type DebugLogSeverity = 'Critical' | 'Major' | 'Minor';

@@ -1,10 +1,11 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { useTaskManager } from '@/contexts/TaskContext';
 import { Task, TaskStatus } from '@/types/task.types';
+import { ThumbsUp, ThumbsDown, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const TASK_STATUSES: TaskStatus[] = ['Not Started', 'In Progress', 'Stuck', 'Done'];
 
@@ -41,9 +42,8 @@ interface TaskKanbanProps {
 }
 
 export default function TaskKanban({ onEditTask }: TaskKanbanProps) {
-  const { tasks, updateTask } = useTaskManager();
+  const { tasks, updateTask, voteTask, updateTaskTime } = useTaskManager();
 
-  // Group tasks by status
   const tasksByStatus = TASK_STATUSES.reduce<Record<TaskStatus, Task[]>>((acc, status) => {
     acc[status] = tasks.filter(task => task.status === status);
     return acc;
@@ -54,7 +54,6 @@ export default function TaskKanban({ onEditTask }: TaskKanbanProps) {
     'Done': []
   });
 
-  // Handle drag and drop
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     e.dataTransfer.setData('taskId', taskId);
   };
@@ -68,6 +67,13 @@ export default function TaskKanban({ onEditTask }: TaskKanbanProps) {
     const taskId = e.dataTransfer.getData('taskId');
     if (taskId) {
       updateTask(taskId, { status: targetStatus });
+    }
+  };
+
+  const handleTimeUpdate = (taskId: string) => {
+    const timeSpent = prompt('Enter time spent in minutes:');
+    if (timeSpent && !isNaN(Number(timeSpent))) {
+      updateTaskTime(taskId, Number(timeSpent));
     }
   };
 
@@ -103,7 +109,37 @@ export default function TaskKanban({ onEditTask }: TaskKanbanProps) {
                     <Badge className={`${getPriorityColor(task.priority)} border text-xs`}>
                       {task.priority}
                     </Badge>
-                    <span>{task.module}</span>
+                    <div className="flex items-center space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleTimeUpdate(task.id)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Clock className="h-3 w-3" />
+                        {task.timeSpent && (
+                          <span className="ml-1 text-xs">{task.timeSpent}m</span>
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => voteTask(task.id, true)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <ThumbsUp className="h-3 w-3" />
+                        <span className="ml-1 text-xs">{task.feedback?.upvotes || 0}</span>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => voteTask(task.id, false)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <ThumbsDown className="h-3 w-3" />
+                        <span className="ml-1 text-xs">{task.feedback?.downvotes || 0}</span>
+                      </Button>
+                    </div>
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span>{task.owner}</span>

@@ -1,66 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  Table, 
-  TableHeader, 
-  TableRow, 
-  TableHead, 
-  TableBody, 
-  TableCell 
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { 
-  ChevronDown,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  ThumbsUp,
-  ThumbsDown,
-  Clock
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { 
-  Task, 
-  TaskModule, 
-  TaskPriority, 
-  TaskStatus 
-} from '@/types/task.types';
+import { Table, TableBody } from '@/components/ui/table';
 import { useTaskManager } from '@/contexts/TaskContext';
-
-const getPriorityColor = (priority: TaskPriority) => {
-  switch (priority) {
-    case 'High':
-      return 'bg-red-100 text-red-800 border-red-200';
-    case 'Medium':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    case 'Low':
-      return 'bg-green-100 text-green-800 border-green-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
-
-const getStatusColor = (status: TaskStatus) => {
-  switch (status) {
-    case 'Not Started':
-      return 'bg-gray-100 text-gray-800 border-gray-200';
-    case 'In Progress':
-      return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'Stuck':
-      return 'bg-red-100 text-red-800 border-red-200';
-    case 'Done':
-      return 'bg-green-100 text-green-800 border-green-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
+import { Task } from '@/types/task.types';
+import { TaskTableHeader } from './table/TaskTableHeader';
+import { TaskTableRow } from './table/TaskTableRow';
+import { TaskTableLoading } from './table/TaskTableLoading';
+import { TaskTableEmpty } from './table/TaskTableEmpty';
 
 interface TaskTableProps {
   showSprint?: boolean;
@@ -69,17 +14,35 @@ interface TaskTableProps {
 
 export default function TaskTable({ showSprint = false, onEditTask }: TaskTableProps) {
   const { tasks, deleteTask, voteTask, updateTaskTime } = useTaskManager();
-  const [sortField, setSortField] = useState<keyof Task>('priority');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [sortConfig, setSortConfig] = useState<{key: string; direction: 'asc' | 'desc'}>({
+    key: 'priority',
+    direction: 'desc'
+  });
 
-  const handleSort = (field: keyof Task) => {
-    if (sortField === field) {
-      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
+  const handleSort = (field: string) => {
+    setSortConfig(prev => {
+      if (prev.key === field) {
+        return { key: field, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key: field, direction: 'asc' };
+    });
   };
+
+  const sortedTasks = React.useMemo(() => {
+    return [...tasks].sort((a, b) => {
+      const key = sortConfig.key as keyof Task;
+      if (!a[key] || !b[key]) return 0;
+      
+      let comparison = 0;
+      if (key === 'deadline') {
+        comparison = new Date(a.deadline || '').getTime() - new Date(b.deadline || '').getTime();
+      } else {
+        comparison = String(a[key]).localeCompare(String(b[key]));
+      }
+      
+      return sortConfig.direction === 'asc' ? comparison : -comparison;
+    });
+  }, [tasks, sortConfig]);
 
   const handleTimeUpdate = (taskId: string) => {
     const timeSpent = prompt('Enter time spent in minutes:');
@@ -88,189 +51,35 @@ export default function TaskTable({ showSprint = false, onEditTask }: TaskTableP
     }
   };
 
-  const sortedTasks = [...tasks].sort((a, b) => {
-    if (sortField === 'priority') {
-      const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
-      const valA = priorityOrder[a.priority as TaskPriority] || 0;
-      const valB = priorityOrder[b.priority as TaskPriority] || 0;
-      return sortDirection === 'asc' ? valA - valB : valB - valA;
-    }
-    
-    if (sortField === 'deadline') {
-      const dateA = a.deadline ? new Date(a.deadline).getTime() : 0;
-      const dateB = b.deadline ? new Date(b.deadline).getTime() : 0;
-      return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-    }
-    
-    if (a[sortField] < b[sortField]) {
-      return sortDirection === 'asc' ? -1 : 1;
-    }
-    if (a[sortField] > b[sortField]) {
-      return sortDirection === 'asc' ? 1 : -1;
-    }
-    return 0;
-  });
-
   return (
     <div className="rounded-md border">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[50px]">
-              <Checkbox />
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('name')}
-            >
-              Task Name
-              {sortField === 'name' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('module')}
-            >
-              Module
-              {sortField === 'module' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('priority')}
-            >
-              Priority
-              {sortField === 'priority' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('status')}
-            >
-              Status
-              {sortField === 'status' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('owner')}
-            >
-              Owner
-              {sortField === 'owner' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer"
-              onClick={() => handleSort('deadline')}
-            >
-              Deadline
-              {sortField === 'deadline' && (
-                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-              )}
-            </TableHead>
-            {showSprint && (
-              <TableHead 
-                className="cursor-pointer"
-                onClick={() => handleSort('sprint')}
-              >
-                Sprint
-                {sortField === 'sprint' && (
-                  <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
-                )}
-              </TableHead>
-            )}
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+        <TaskTableHeader 
+          sortConfig={sortConfig}
+          onSort={handleSort}
+          showSprint={showSprint}
+        />
         <TableBody>
-          {sortedTasks.map((task) => (
-            <TableRow key={task.id}>
-              <TableCell>
-                <Checkbox />
-              </TableCell>
-              <TableCell className="font-medium">{task.name}</TableCell>
-              <TableCell>{task.module}</TableCell>
-              <TableCell>
-                <Badge className={`${getPriorityColor(task.priority)} border`}>
-                  {task.priority}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge className={`${getStatusColor(task.status)} border`}>
-                  {task.status}
-                </Badge>
-              </TableCell>
-              <TableCell>{task.owner}</TableCell>
-              <TableCell>
-                {task.deadline ? format(new Date(task.deadline), 'MMM d, yyyy') : '-'}
-              </TableCell>
-              {showSprint && (
-                <TableCell>{task.sprint || '-'}</TableCell>
-              )}
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEditTask(task)}>
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => deleteTask(task.id)} className="text-red-600">
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center space-x-2">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => handleTimeUpdate(task.id)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Clock className="h-4 w-4" />
-                    {task.timeSpent && (
-                      <span className="ml-1 text-xs">{task.timeSpent}m</span>
-                    )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => voteTask(task.id, true)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <ThumbsUp className="h-4 w-4" />
-                    {task.feedback?.upvotes && (
-                      <span className="ml-1 text-xs">{task.feedback.upvotes}</span>
-                    )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => voteTask(task.id, false)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <ThumbsDown className="h-4 w-4" />
-                    {task.feedback?.downvotes && (
-                      <span className="ml-1 text-xs">{task.feedback.downvotes}</span>
-                    )}
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+          {!tasks ? (
+            <TaskTableLoading />
+          ) : tasks.length === 0 ? (
+            <TaskTableEmpty />
+          ) : (
+            sortedTasks.map((task) => (
+              <TaskTableRow
+                key={task.id}
+                task={task}
+                showSprint={showSprint}
+                onEdit={onEditTask}
+                onDelete={deleteTask}
+                onVote={voteTask}
+                onTimeUpdate={handleTimeUpdate}
+                onDuplicate={(task) => {
+                  console.log('Duplicate task:', task);
+                }}
+              />
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

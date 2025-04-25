@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import { enUS } from 'date-fns/locale';
 import { useTasks } from '@/contexts/TaskContext';
 import { Task } from '@/types/task.types';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -11,12 +10,23 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 // Setup the localizer
 const localizer = momentLocalizer(moment);
 
+interface CalendarEvent {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  allDay: boolean;
+  resource: Task;
+  status: string;
+  priority: string;
+}
+
 const TaskCalendar = () => {
   const { tasks } = useTasks();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   
   // Format tasks for calendar
-  const calendarEvents = tasks.map(task => ({
+  const calendarEvents: CalendarEvent[] = tasks.map(task => ({
     id: task.id,
     title: task.name,
     start: task.deadline ? new Date(task.deadline) : new Date(),
@@ -28,7 +38,7 @@ const TaskCalendar = () => {
   }));
   
   // Event styling based on priority and status
-  const eventStyleGetter = (event: any) => {
+  const eventStyleGetter = (event: CalendarEvent) => {
     let backgroundColor = '#3490dc'; // Default blue
     
     // Color based on priority
@@ -55,7 +65,7 @@ const TaskCalendar = () => {
   };
   
   // Handle event select
-  const handleSelectEvent = (event: any) => {
+  const handleSelectEvent = (event: CalendarEvent) => {
     setSelectedTask(event.resource);
   };
   

@@ -1,9 +1,24 @@
 
 // Define task status options
-export type TaskStatus = 'Not Started' | 'In Progress' | 'Done' | 'Blocked' | 'Backlog';
+export type TaskStatus = 'Not Started' | 'In Progress' | 'Done' | 'Blocked' | 'Backlog' | 'Stuck';
 
 // Define task priority options
 export type TaskPriority = 'High' | 'Medium' | 'Low';
+
+// Define task module options
+export type TaskModule = 
+  | 'PulseScore Engine'
+  | 'AI Summary'
+  | 'Certification'
+  | 'Dashboard'
+  | 'Slack Bot'
+  | 'Lite Survey'
+  | 'Backend Infra'
+  | 'Frontend UI'
+  | 'Other';
+
+// Define task owner options
+export type TaskOwner = 'Lovable' | 'Founder' | 'External';
 
 // Define allowed lanes for build flow
 export type BuildFlowLane = 'BACKLOG' | 'CURRENT SPRINT' | 'SHIPPED';
@@ -18,10 +33,10 @@ export type DebugLogStatus = 'Open' | 'In Progress' | 'Fixed';
 export interface Task {
   id: string;
   name: string;
-  module: string;
+  module: TaskModule;
   priority: TaskPriority;
   status: TaskStatus;
-  owner: string;
+  owner: TaskOwner;
   deadline?: Date;
   notes?: string;
   sprint?: string;
@@ -51,7 +66,7 @@ export interface BuildRequest {
   id: string;
   name: string;
   context: string;
-  module: string;
+  module: TaskModule;
   deadline: Date;
   notes?: string;
   lane: BuildFlowLane;

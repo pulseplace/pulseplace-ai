@@ -65,7 +65,7 @@ export default function BuildRequestForm({ request, onSubmit, onCancel }: BuildR
     defaultValues: request ? {
       name: request.name,
       context: request.context,
-      module: request.module as TaskModule,
+      module: request.module,
       deadline: request.deadline ? new Date(request.deadline) : null,
       notes: request.notes || '',
     } : {

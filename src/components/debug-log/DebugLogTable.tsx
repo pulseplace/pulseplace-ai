@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useDebugLogs } from '@/contexts/TaskContext';
 import { format } from "date-fns";
 import { ExternalLink, Check, AlertCircle } from 'lucide-react';
+import { Pencil2Icon } from '@radix-ui/react-icons';
 import { DebugLog, DebugLogSeverity, DebugLogStatus } from '@/types/task.types';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -14,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Pencil2Icon } from '@radix-ui/react-icons';
 
 // Helper functions for styling
 const getSeverityBadgeVariant = (severity: DebugLogSeverity) => {

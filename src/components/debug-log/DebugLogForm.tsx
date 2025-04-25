@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { BugIcon, Plus } from 'lucide-react';
 import { useDebugLogs } from '@/contexts/TaskContext';
-import { DebugLog } from '@/types/task.types';
+import { DebugLog, DebugLogSeverity, DebugLogStatus } from '@/types/task.types';
 
 export interface DebugLogFormProps {
   onSubmit?: (log: Omit<DebugLog, 'id' | 'dateLogged'>) => void;
@@ -18,7 +18,7 @@ export interface DebugLogFormProps {
 const DebugLogForm = ({ onSubmit, onCancel }: DebugLogFormProps = {}) => {
   const { addDebugLog } = useDebugLogs();
   const [isOpen, setIsOpen] = useState(false);
-  const [logData, setLogData] = useState({
+  const [logData, setLogData] = useState<Omit<DebugLog, 'id' | 'dateLogged'>>({
     component: '',
     description: '',
     severity: 'Major',
@@ -117,7 +117,7 @@ const DebugLogForm = ({ onSubmit, onCancel }: DebugLogFormProps = {}) => {
               <Label htmlFor="severity">Severity</Label>
               <Select 
                 value={logData.severity} 
-                onValueChange={(value) => setLogData({...logData, severity: value})}
+                onValueChange={(value: DebugLogSeverity) => setLogData({...logData, severity: value})}
               >
                 <SelectTrigger id="severity">
                   <SelectValue placeholder="Select severity" />
@@ -134,7 +134,7 @@ const DebugLogForm = ({ onSubmit, onCancel }: DebugLogFormProps = {}) => {
               <Label htmlFor="status">Status</Label>
               <Select 
                 value={logData.status} 
-                onValueChange={(value) => setLogData({...logData, status: value})}
+                onValueChange={(value: DebugLogStatus) => setLogData({...logData, status: value})}
               >
                 <SelectTrigger id="status">
                   <SelectValue placeholder="Select status" />

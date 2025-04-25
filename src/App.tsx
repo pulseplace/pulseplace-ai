@@ -6,7 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import LandingPage from './pages/LandingPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardHome from './pages/dashboard/DashboardHome';
-import PulseBotPage from './pages/PulseBot';
+import GTMECopilotPage from './pages/PulseBot';
 import TaskTrackerPage from './pages/dashboard/TaskTracker';
 import LLMInsights from './pages/dashboard/LLMInsights';
 import AuthLayout from './layouts/AuthLayout';
@@ -32,7 +32,8 @@ function App() {
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardHome />} />
-            <Route path="pulsebot" element={<PulseBotPage />} />
+            <Route path="gtme-copilot" element={<GTMECopilotPage />} />
+            <Route path="pulsebot" element={<GTMECopilotPage />} /> {/* keep old route for compatibility */}
             <Route path="tasktracker" element={<TaskTrackerPage />} />
             <Route path="llminsights" element={<LLMInsights />} />
             <Route path="routes" element={<RouteValidator />} />

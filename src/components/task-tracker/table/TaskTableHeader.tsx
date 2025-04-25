@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDown } from 'lucide-react';
 
 interface TaskTableHeaderProps {

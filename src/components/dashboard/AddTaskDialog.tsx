@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -45,7 +44,7 @@ const taskSchema = z.object({
   }),
   description: z.string().optional(),
   dueDate: z.date(),
-  priority: z.enum(["low", "medium", "high"]),
+  priority: z.enum(["High", "Medium", "Low"]),
 });
 
 type TaskFormValues = z.infer<typeof taskSchema>;
@@ -65,7 +64,7 @@ export function AddTaskDialog({ open, onOpenChange }: AddTaskDialogProps) {
       title: "",
       description: "",
       dueDate: new Date(),
-      priority: "medium",
+      priority: "Medium",
     },
   });
 
@@ -177,9 +176,9 @@ export function AddTaskDialog({ open, onOpenChange }: AddTaskDialogProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="High">High</SelectItem>
+                        <SelectItem value="Medium">Medium</SelectItem>
+                        <SelectItem value="Low">Low</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

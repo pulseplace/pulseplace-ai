@@ -1,218 +1,163 @@
 
-import React from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { BugIcon, Plus } from 'lucide-react';
+import { useDebugLogs } from '@/contexts/TaskContext';
+import { DebugLog } from '@/types/task.types';
 
-import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { DebugLog, TaskModule } from '@/types/task.types';
-
-const debugLogSchema = z.object({
-  component: z.enum([
-    'PulseScore Engine', 
-    'AI Summary', 
-    'Certification', 
-    'Dashboard', 
-    'Slack Bot', 
-    'Lite Survey', 
-    'Backend Infra', 
-    'Frontend UI', 
-    'Other'
-  ] as const),
-  description: z.string().min(5, 'Description must be at least 5 characters'),
-  severity: z.enum(['Critical', 'Major', 'Minor'] as const),
-  status: z.enum(['Open', 'In Progress', 'Fixed'] as const),
-  fixLink: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  loggedBy: z.string().min(2, 'Name must be at least 2 characters'),
-});
-
-type DebugLogFormValues = z.infer<typeof debugLogSchema>;
-
-interface DebugLogFormProps {
-  log?: DebugLog;
-  onSubmit: (data: DebugLogFormValues) => void;
-  onCancel: () => void;
+export interface DebugLogFormProps {
+  onSubmit?: (log: Omit<DebugLog, 'id' | 'dateLogged'>) => void;
+  onCancel?: () => void;
 }
 
-export default function DebugLogForm({ log, onSubmit, onCancel }: DebugLogFormProps) {
-  const form = useForm<DebugLogFormValues>({
-    resolver: zodResolver(debugLogSchema),
-    defaultValues: log ? {
-      component: log.component as TaskModule,
-      description: log.description,
-      severity: log.severity,
-      status: log.status,
-      fixLink: log.fixLink || '',
-      loggedBy: log.loggedBy,
-    } : {
-      component: 'Other',
-      description: '',
-      severity: 'Minor',
-      status: 'Open',
-      fixLink: '',
-      loggedBy: '',
-    },
+const DebugLogForm = ({ onSubmit, onCancel }: DebugLogFormProps = {}) => {
+  const { addDebugLog } = useDebugLogs();
+  const [isOpen, setIsOpen] = useState(false);
+  const [logData, setLogData] = useState({
+    component: '',
+    description: '',
+    severity: 'Major',
+    status: 'Open',
+    loggedBy: ''
   });
 
-  const handleSubmit = (data: DebugLogFormValues) => {
-    onSubmit(data);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Use the provided onSubmit or default to addDebugLog
+    if (onSubmit) {
+      onSubmit(logData);
+    } else {
+      addDebugLog(logData);
+    }
+    
+    // Reset form and close dialog
+    setLogData({
+      component: '',
+      description: '',
+      severity: 'Major',
+      status: 'Open',
+      loggedBy: ''
+    });
+    setIsOpen(false);
+  };
+
+  const handleCancel = () => {
+    // Use the provided onCancel or default to closing dialog
+    if (onCancel) {
+      onCancel();
+    }
+    setIsOpen(false);
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="component"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Component/Module</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select component" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="PulseScore Engine">PulseScore Engine</SelectItem>
-                    <SelectItem value="AI Summary">AI Summary</SelectItem>
-                    <SelectItem value="Certification">Certification</SelectItem>
-                    <SelectItem value="Dashboard">Dashboard</SelectItem>
-                    <SelectItem value="Slack Bot">Slack Bot</SelectItem>
-                    <SelectItem value="Lite Survey">Lite Survey</SelectItem>
-                    <SelectItem value="Backend Infra">Backend Infra</SelectItem>
-                    <SelectItem value="Frontend UI">Frontend UI</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="loggedBy"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Logged By</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="Your name" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="severity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Severity</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select severity" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Critical">Critical</SelectItem>
-                    <SelectItem value="Major">Major</SelectItem>
-                    <SelectItem value="Minor">Minor</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Open">Open</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Fixed">Fixed</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Error Description</FormLabel>
-              <FormControl>
-                <Textarea 
-                  {...field} 
-                  placeholder="Describe the error or issue in detail" 
-                  className="min-h-[100px]"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="fixLink"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Link to Fix (optional)</FormLabel>
-              <FormControl>
-                <Input 
-                  {...field} 
-                  placeholder="https://github.com/org/repo/pull/123" 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex justify-end space-x-2 pt-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit">
-            {log ? 'Update Log' : 'Log Issue'}
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button className="bg-pulse-gradient">
+          <Plus className="mr-2 h-4 w-4" />
+          Log New Issue
+        </Button>
+      </DialogTrigger>
+      
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <BugIcon className="h-5 w-5" />
+            Log a New Debug Issue
+          </DialogTitle>
+          <DialogDescription>
+            Report bugs and issues to track them in the debug log.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="component">Component/Module</Label>
+              <Input 
+                id="component"
+                value={logData.component}
+                onChange={(e) => setLogData({...logData, component: e.target.value})}
+                placeholder="e.g. Dashboard"
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="loggedBy">Logged By</Label>
+              <Input 
+                id="loggedBy"
+                value={logData.loggedBy}
+                onChange={(e) => setLogData({...logData, loggedBy: e.target.value})}
+                placeholder="Your name"
+                required
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description">Issue Description</Label>
+            <Textarea 
+              id="description"
+              value={logData.description}
+              onChange={(e) => setLogData({...logData, description: e.target.value})}
+              placeholder="Describe the issue in detail..."
+              rows={3}
+              required
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="severity">Severity</Label>
+              <Select 
+                value={logData.severity} 
+                onValueChange={(value) => setLogData({...logData, severity: value})}
+              >
+                <SelectTrigger id="severity">
+                  <SelectValue placeholder="Select severity" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Critical">Critical</SelectItem>
+                  <SelectItem value="Major">Major</SelectItem>
+                  <SelectItem value="Minor">Minor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select 
+                value={logData.status} 
+                onValueChange={(value) => setLogData({...logData, status: value})}
+              >
+                <SelectTrigger id="status">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Open">Open</SelectItem>
+                  <SelectItem value="In Progress">In Progress</SelectItem>
+                  <SelectItem value="Fixed">Fixed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <DialogFooter className="pt-4">
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button type="submit">Submit</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
-}
+};
+
+export default DebugLogForm;

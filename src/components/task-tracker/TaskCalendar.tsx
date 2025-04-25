@@ -1,110 +1,76 @@
 
 import React, { useState } from 'react';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
-import enUS from 'date-fns/locale/en-US';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import { enUS } from 'date-fns/locale';
 import { useTasks } from '@/contexts/TaskContext';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Task } from '@/types/task.types';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales: {
-    'en-US': enUS
-  }
-});
-
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  allDay: boolean;
-  resource: Task;
-}
+// Setup the localizer
+const localizer = momentLocalizer(moment);
 
 const TaskCalendar = () => {
   const { tasks } = useTasks();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   
-  // Convert tasks to calendar events
-  const events: CalendarEvent[] = tasks
-    .filter(task => task.deadline) // Only include tasks with deadlines
-    .map(task => {
-      const deadline = new Date(task.deadline!);
-      
-      return {
-        id: task.id,
-        title: task.name,
-        start: deadline,
-        end: deadline,
-        allDay: true,
-        resource: task
-      };
-    });
-    
-  const eventStyleGetter = (event: CalendarEvent) => {
-    const task = event.resource;
-    let backgroundColor = '#3B82F6'; // Default blue
+  // Format tasks for calendar
+  const calendarEvents = tasks.map(task => ({
+    id: task.id,
+    title: task.name,
+    start: task.deadline ? new Date(task.deadline) : new Date(),
+    end: task.deadline ? new Date(task.deadline) : new Date(),
+    allDay: true,
+    resource: task,
+    status: task.status,
+    priority: task.priority
+  }));
+  
+  // Event styling based on priority and status
+  const eventStyleGetter = (event: any) => {
+    let backgroundColor = '#3490dc'; // Default blue
     
     // Color based on priority
-    if (task.priority === 'High') {
-      backgroundColor = '#EF4444'; // Red for high priority
-    } else if (task.priority === 'Medium') {
-      backgroundColor = '#F59E0B'; // Amber for medium priority
-    } else if (task.priority === 'Low') {
-      backgroundColor = '#10B981'; // Green for low priority
+    if (event.priority === 'High') {
+      backgroundColor = '#e53e3e'; // Red for high priority
+    } else if (event.priority === 'Medium') {
+      backgroundColor = '#ed8936'; // Orange for medium priority
+    } else if (event.priority === 'Low') {
+      backgroundColor = '#38a169'; // Green for low priority
     }
     
-    // Fade color if task is completed
-    const opacity = task.status === 'Done' ? 0.5 : 1;
+    // If the task is done, make it slightly transparent
+    const opacity = event.status === 'Done' ? 0.6 : 1;
     
     return {
       style: {
         backgroundColor,
         opacity,
         borderRadius: '4px',
-        border: '0',
-        display: 'block',
-        color: 'white'
+        border: 'none',
+        color: 'white',
       }
     };
   };
   
-  const eventPropGetter = (event: CalendarEvent) => {
-    return eventStyleGetter(event);
-  };
-  
-  const formats = {
-    eventTimeRangeFormat: () => '', // Hide time range in event
-    dayFormat: 'dd'
+  // Handle event select
+  const handleSelectEvent = (event: any) => {
+    setSelectedTask(event.resource);
   };
   
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle>Task Calendar</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div style={{ height: 600 }}>
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            eventPropGetter={eventPropGetter as any}
-            // @ts-ignore - Type mismatch in library definition
-            formats={formats}
-            views={['month']}
-            defaultView='month'
-            popup
-            selectable
-          />
-        </div>
-      </CardContent>
+    <Card className="p-4 h-[600px] flex flex-col">
+      <Calendar
+        localizer={localizer}
+        events={calendarEvents}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: '100%', width: '100%' }}
+        eventPropGetter={eventStyleGetter}
+        onSelectEvent={handleSelectEvent}
+        views={['month', 'week', 'day']}
+      />
     </Card>
   );
 };

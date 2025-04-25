@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { IntegrationTile } from './IntegrationTile';
-import { Google, Slack, Link } from 'lucide-react';
+import { Sheet, Slack, Link, ExternalLink } from 'lucide-react';
 
 // Mock data for integrations
 // In a real app, this would come from an API or state management
@@ -10,7 +10,7 @@ const integrations = [
     id: 'google-sheets',
     name: 'Google Sheets',
     description: 'Connect to Google Sheets to import/export data seamlessly.',
-    icon: Google,
+    icon: Sheet,
     isConnected: false
   },
   {

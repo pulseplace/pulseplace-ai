@@ -1,17 +1,38 @@
 
 import React from 'react';
-import { TableCell, TableRow } from '@/components/ui/table';
-import { RefreshCw } from 'lucide-react';
+import { TableRow, TableCell, Table, TableBody, TableHead, TableHeader } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export function TaskTableLoading() {
-  return (
-    <TableRow>
-      <TableCell colSpan={8} className="text-center py-8">
-        <div className="flex justify-center items-center">
-          <RefreshCw className="h-5 w-5 animate-spin mr-2" />
-          <span>Loading tasks...</span>
-        </div>
-      </TableCell>
-    </TableRow>
-  );
+interface TaskTableLoadingProps {
+  columns: number;
+  rows?: number;
 }
+
+export const TaskTableLoading = ({ columns, rows = 5 }: TaskTableLoadingProps) => {
+  return (
+    <div className="border rounded-md">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {Array.from({ length: columns }).map((_, index) => (
+              <TableHead key={index}>
+                <Skeleton className="h-6 w-20" />
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Array.from({ length: rows }).map((_, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {Array.from({ length: columns }).map((_, colIndex) => (
+                <TableCell key={colIndex}>
+                  <Skeleton className="h-6 w-full" />
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};

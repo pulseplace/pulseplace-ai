@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
@@ -10,12 +11,12 @@ import AuthLayout from './layouts/AuthLayout';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
 import { AuthProvider } from './contexts/AuthContext';
-import { ToastProvider } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 import ChatbotWidget from './components/ChatbotWidget';
 
 function App() {
   return (
-    <ToastProvider>
+    <>
       <AuthProvider>
         <Router>
           <Routes>
@@ -38,7 +39,8 @@ function App() {
           <ChatbotWidget />
         </Router>
       </AuthProvider>
-    </ToastProvider>
+      <Toaster />
+    </>
   );
 }
 

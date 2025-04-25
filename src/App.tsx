@@ -13,6 +13,8 @@ import SignUp from './pages/auth/SignUp';
 import { AuthProvider } from './contexts/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
 import ChatbotWidget from './components/ChatbotWidget';
+import NotFound from './pages/NotFound';
+import RouteValidator from './pages/dashboard/RouteValidator';
 
 function App() {
   return (
@@ -34,7 +36,11 @@ function App() {
               <Route path="pulsebot" element={<PulseBotPage />} />
               <Route path="tasktracker" element={<TaskTrackerPage />} />
               <Route path="llminsights" element={<LLMInsights />} />
+              <Route path="routes" element={<RouteValidator />} />
             </Route>
+
+            {/* 404 Route - This must be last */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
           <ChatbotWidget />
         </Router>

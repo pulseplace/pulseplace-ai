@@ -33,6 +33,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Task, TaskModule, TaskPriority, TaskStatus, TaskOwner } from '@/types/task.types';
 
+// Update the schema to match the TaskStatus type
 const taskSchema = z.object({
   name: z.string().min(3, 'Task name must be at least 3 characters'),
   module: z.enum([
@@ -47,7 +48,7 @@ const taskSchema = z.object({
     'Other'
   ] as const),
   priority: z.enum(['High', 'Medium', 'Low'] as const),
-  status: z.enum(['Not Started', 'In Progress', 'Stuck', 'Done'] as const),
+  status: z.enum(['Not Started', 'In Progress', 'Done', 'Blocked', 'Backlog', 'Stuck'] as const),
   owner: z.enum(['Lovable', 'Founder', 'External'] as const),
   deadline: z.date().nullable(),
   notes: z.string().optional(),
@@ -67,10 +68,10 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
     resolver: zodResolver(taskSchema),
     defaultValues: task ? {
       name: task.name,
-      module: task.module as TaskModule,
-      priority: task.priority as TaskPriority,
-      status: task.status as TaskStatus,
-      owner: task.owner as TaskOwner,
+      module: task.module,
+      priority: task.priority,
+      status: task.status,
+      owner: task.owner,
       deadline: task.deadline ? new Date(task.deadline) : null,
       notes: task.notes || '',
       sprint: task.sprint || '',
@@ -175,6 +176,8 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
                   <SelectContent>
                     <SelectItem value="Not Started">Not Started</SelectItem>
                     <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Blocked">Blocked</SelectItem>
+                    <SelectItem value="Backlog">Backlog</SelectItem>
                     <SelectItem value="Stuck">Stuck</SelectItem>
                     <SelectItem value="Done">Done</SelectItem>
                   </SelectContent>

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ChatProvider } from '@/contexts/ChatbotContext';
-import GTMEBot from './chat/PulseBot';  // Note: We kept the file name but renamed the component
+import GTMEBot from './chat/PulseBot';  // Keeping the file name but using the correct component name
 
 // Main wrapper component that provides the chat context
 const ChatbotWidget = () => {

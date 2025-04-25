@@ -1,47 +1,44 @@
-
-import React, { useEffect } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Toaster } from "@/components/ui/toaster";
-import DemoReadyLayout from '@/components/layout/DemoReadyLayout';
-import routes from '@/config/routes';
-import Root from '@/pages/Root';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import DashboardLayout from './layouts/DashboardLayout';
+import DashboardHome from './pages/dashboard/DashboardHome';
+import PulseBotPage from './pages/PulseBot';
+import TaskTrackerPage from './pages/dashboard/TaskTracker';
+import LLMInsights from './pages/dashboard/LLMInsights';
+import AuthLayout from './layouts/AuthLayout';
+import SignIn from './pages/auth/SignIn';
+import SignUp from './pages/auth/SignUp';
 import { AuthProvider } from './contexts/AuthContext';
-import { TaskProvider } from './contexts/TaskContext';
-
-// Create router with proper configuration
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Root />,
-    children: routes.map(route => ({
-      path: route.path === '/' ? '' : route.path, // Fix root path mapping
-      element: <DemoReadyLayout>{route.element}</DemoReadyLayout>
-    }))
-  }
-]);
+import { ToastProvider } from '@/hooks/use-toast';
+import ChatbotWidget from './components/ChatbotWidget';
 
 function App() {
-  useEffect(() => {
-    console.log('App component mounted');
-    console.log('Current routes:', routes);
-    
-    // Check for any error listeners
-    window.addEventListener('error', (event) => {
-      console.error('Global error caught:', event.error);
-    });
-    
-    return () => {
-      window.removeEventListener('error', () => {});
-    };
-  }, []);
-
   return (
-    <AuthProvider>
-      <TaskProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </TaskProvider>
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            
+            {/* Auth Routes */}
+            <Route path="/auth" element={<AuthLayout />}>
+              <Route path="signin" element={<SignIn />} />
+              <Route path="signup" element={<SignUp />} />
+            </Route>
+            
+            {/* Dashboard Routes */}
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<DashboardHome />} />
+              <Route path="pulsebot" element={<PulseBotPage />} />
+              <Route path="tasktracker" element={<TaskTrackerPage />} />
+              <Route path="llminsights" element={<LLMInsights />} />
+            </Route>
+          </Routes>
+          <ChatbotWidget />
+        </Router>
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 

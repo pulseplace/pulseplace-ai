@@ -33,7 +33,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         {
           id: 'welcome-message',
           role: 'assistant',
-          content: "Hi! I'm your PulsePlace Assistant. Ask me anything about culture surveys, PulseScore, or certification.",
+          content: "Hi! I'm your GTME Copilot. Ask me anything about marketing funnels, prompt optimization, or performance improvements.",
           timestamp: new Date(),
         },
       ]);
@@ -60,25 +60,23 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Prepare messages for API (excluding system messages)
-      const apiMessages = messages
-        .filter(msg => msg.role !== 'system')
-        .concat(userMessage)
-        .map(({ role, content }) => ({ role, content }));
-
       // Call the Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('ask-pulsebot', {
-        body: { messages: apiMessages },
+      const { data, error } = await supabase.functions.invoke('gtme-copilot', {
+        body: { 
+          message: content,
+          sessionId: generateId(),
+          language: 'en'
+        },
       });
 
       if (error) throw new Error(error.message || 'Failed to get a response');
 
       // Add assistant's response to the chat
-      if (data && data.message) {
+      if (data && data.reply) {
         const assistantMessage: Message = {
           id: generateId(),
-          role: data.message.role,
-          content: data.message.content,
+          role: 'assistant',
+          content: data.reply,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, assistantMessage]);
@@ -89,7 +87,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       console.error('Error sending message:', error);
       toast({
         title: "Communication Error",
-        description: "Unable to reach PulseBot. Please try again later.",
+        description: "Unable to reach GTME Copilot. Please try again later.",
         variant: "destructive",
       });
       
@@ -99,7 +97,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         {
           id: generateId(),
           role: 'assistant',
-          content: "I'm having trouble connecting to my brain right now. Please try again in a moment.",
+          content: "I'm having trouble connecting right now. Please try again in a moment.",
           timestamp: new Date(),
         },
       ]);
@@ -117,7 +115,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       {
         id: 'welcome-message',
         role: 'assistant',
-        content: "Hi! I'm your PulsePlace Assistant. Ask me anything about culture surveys, PulseScore, or certification.",
+        content: "Hi! I'm your GTME Copilot. Ask me anything about marketing funnels, prompt optimization, or performance improvements.",
         timestamp: new Date(),
       },
     ]);

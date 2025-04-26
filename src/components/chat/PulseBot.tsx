@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatbotContext';
 import { Button } from '@/components/ui/button';
@@ -56,7 +55,7 @@ const GTMEBot: React.FC = () => {
         <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-t-lg">
           <div className="flex items-center space-x-2">
             <Bot className="h-5 w-5" />
-            <h3 className="font-semibold">GTME Copilot</h3>
+            <h3 className="font-semibold">PulseBot</h3>
           </div>
           <Button
             variant="ghost"

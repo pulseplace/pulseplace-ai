@@ -33,7 +33,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         {
           id: 'welcome-message',
           role: 'assistant',
-          content: "Hi! I'm your GTME Copilot. Ask me anything about marketing funnels, prompt optimization, or performance improvements.",
+          content: "Hi! I'm PulseBot, your AI assistant for workplace culture improvement. I can help you understand your culture metrics, certification progress, and provide insights to enhance your work environment.",
           timestamp: new Date(),
         },
       ]);

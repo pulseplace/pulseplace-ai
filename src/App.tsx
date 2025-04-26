@@ -7,14 +7,14 @@ import LandingPage from './pages/LandingPage';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardHome from './pages/dashboard/DashboardHome';
 import PulseBotPage from './pages/PulseBot';
-import TaskTrackerPage from './pages/dashboard/TaskTracker';
-import LLMInsights from './pages/dashboard/LLMInsights';
 import AuthLayout from './layouts/AuthLayout';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
 import ChatbotWidget from './components/ChatbotWidget';
 import NotFound from './pages/NotFound';
-import RouteValidator from './pages/dashboard/RouteValidator';
+import TeamDashboard from './pages/dashboard/TeamDashboard';
+import CertificationReport from './pages/dashboard/CertificationReport';
+import AdminView from './pages/dashboard/AdminView';
 
 function App() {
   return (
@@ -32,10 +32,9 @@ function App() {
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardHome />} />
-            <Route path="pulsebot" element={<PulseBotPage />} />
-            <Route path="tasktracker" element={<TaskTrackerPage />} />
-            <Route path="llminsights" element={<LLMInsights />} />
-            <Route path="routes" element={<RouteValidator />} />
+            <Route path="teams" element={<TeamDashboard />} />
+            <Route path="certification" element={<CertificationReport />} />
+            <Route path="admin" element={<AdminView />} />
           </Route>
 
           {/* PulseBot standalone route */}

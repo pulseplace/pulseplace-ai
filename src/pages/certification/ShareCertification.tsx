@@ -19,7 +19,7 @@ const ShareCertification = () => {
       
       <CertificationSharing
         companyName="Acme Corporation"
-        tier="pulse_certified"
+        tier="thriving"
         score={88}
         issueDate="April 7, 2025"
         validUntil="April 7, 2026"

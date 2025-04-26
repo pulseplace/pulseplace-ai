@@ -1,109 +1,98 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { BuildRequest, BuildFlowLane } from '@/types/task.types';
+import { BuildRequest, TaskModule } from '@/types/task.types';
+
+// Sample build requests data
+const initialBuildRequests: BuildRequest[] = [
+  {
+    id: '1',
+    title: 'Implement Certification Validation API',
+    description: 'Create API endpoint to validate certification codes',
+    status: 'in_progress',
+    priority: 'high',
+    createdAt: '2025-04-17',
+    assignedTo: 'Alex Chen',
+    module: 'certification'
+  },
+  {
+    id: '2',
+    title: 'Dashboard Performance Optimization',
+    description: 'Improve loading time of the analytics dashboard',
+    status: 'backlog',
+    priority: 'medium',
+    createdAt: '2025-04-19',
+    module: 'dashboard'
+  },
+  {
+    id: '3',
+    title: 'PulseBot NLP Engine Upgrade',
+    description: 'Upgrade the NLP engine to enhance sentiment analysis',
+    status: 'review',
+    priority: 'critical',
+    createdAt: '2025-04-10',
+    assignedTo: 'Jamie Wong',
+    module: 'pulsebot'
+  }
+];
 
 interface BuildRequestsContextType {
   buildRequests: BuildRequest[];
   addBuildRequest: (request: Omit<BuildRequest, 'id' | 'createdAt'>) => void;
-  updateBuildRequest: (request: BuildRequest) => void;
+  updateBuildRequest: (id: string, request: Partial<BuildRequest>) => void;
   deleteBuildRequest: (id: string) => void;
-  moveBuildRequest: (id: string, newStatus: BuildFlowLane) => void;
+  moveBuildRequest: (id: string, status: BuildRequest['status']) => void;
 }
 
-const BuildRequestsContext = createContext<BuildRequestsContextType | undefined>(undefined);
-
-// Sample build requests for demonstration
-const initialBuildRequests: BuildRequest[] = [
-  {
-    id: uuidv4(),
-    title: 'Implement AI insights dashboard',
-    description: 'Create a dashboard to show AI-generated insights from PulseBot conversations',
-    status: 'backlog',
-    priority: 'high',
-    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
-    module: 'dashboard'
-  },
-  {
-    id: uuidv4(),
-    title: 'PulseBot Slack integration',
-    description: 'Integrate PulseBot with Slack to enable survey collection via Slack',
-    status: 'in_progress',
-    priority: 'critical',
-    createdAt: new Date(Date.now() - 86400000 * 10).toISOString(), // 10 days ago
-    module: 'pulsebot',
-    assignedTo: 'Alex'
-  },
-  {
-    id: uuidv4(),
-    title: 'Certificate sharing via email',
-    description: 'Add functionality to share certificates via email',
-    status: 'review',
-    priority: 'medium',
-    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
-    module: 'certification',
-    assignedTo: 'Jordan'
-  },
-  {
-    id: uuidv4(),
-    title: 'Fix mobile responsive issues',
-    description: 'Address various mobile responsive issues in the dashboard',
-    status: 'done',
-    priority: 'high',
-    createdAt: new Date(Date.now() - 86400000 * 15).toISOString(), // 15 days ago
-    module: 'core',
-    assignedTo: 'Sam'
-  },
-];
+const BuildRequestsContext = createContext<BuildRequestsContextType>({
+  buildRequests: [],
+  addBuildRequest: () => {},
+  updateBuildRequest: () => {},
+  deleteBuildRequest: () => {},
+  moveBuildRequest: () => {}
+});
 
 export const BuildRequestsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [buildRequests, setBuildRequests] = useState<BuildRequest[]>(initialBuildRequests);
 
-  // Add a new build request
   const addBuildRequest = (request: Omit<BuildRequest, 'id' | 'createdAt'>) => {
     const newRequest: BuildRequest = {
       ...request,
       id: uuidv4(),
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString().split('T')[0]
     };
-    
-    setBuildRequests(prev => [newRequest, ...prev]);
+    setBuildRequests([...buildRequests, newRequest]);
   };
 
-  // Update an existing build request
-  const updateBuildRequest = (updatedRequest: BuildRequest) => {
-    setBuildRequests(prev => 
-      prev.map(request => request.id === updatedRequest.id ? updatedRequest : request)
-    );
+  const updateBuildRequest = (id: string, updatedRequest: Partial<BuildRequest>) => {
+    setBuildRequests(buildRequests.map(request => 
+      request.id === id ? { ...request, ...updatedRequest } : request
+    ));
   };
 
-  // Delete a build request
   const deleteBuildRequest = (id: string) => {
-    setBuildRequests(prev => prev.filter(request => request.id !== id));
+    setBuildRequests(buildRequests.filter(request => request.id !== id));
   };
 
-  // Move a build request to a different status lane
-  const moveBuildRequest = (id: string, newStatus: BuildFlowLane) => {
-    setBuildRequests(prev => 
-      prev.map(request => request.id === id ? { ...request, status: newStatus } : request)
-    );
+  const moveBuildRequest = (id: string, status: BuildRequest['status']) => {
+    setBuildRequests(buildRequests.map(request => 
+      request.id === id ? { ...request, status } : request
+    ));
   };
 
-  const value = {
-    buildRequests,
-    addBuildRequest,
-    updateBuildRequest,
-    deleteBuildRequest,
-    moveBuildRequest
-  };
-
-  return <BuildRequestsContext.Provider value={value}>{children}</BuildRequestsContext.Provider>;
+  return (
+    <BuildRequestsContext.Provider 
+      value={{ 
+        buildRequests, 
+        addBuildRequest, 
+        updateBuildRequest, 
+        deleteBuildRequest,
+        moveBuildRequest
+      }}
+    >
+      {children}
+    </BuildRequestsContext.Provider>
+  );
 };
 
-export const useBuildRequests = () => {
-  const context = useContext(BuildRequestsContext);
-  if (context === undefined) {
-    throw new Error('useBuildRequests must be used within a BuildRequestsProvider');
-  }
-  return context;
-};
+export const useBuildRequests = () => useContext(BuildRequestsContext);

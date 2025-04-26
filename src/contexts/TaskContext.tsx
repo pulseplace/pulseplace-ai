@@ -1,114 +1,78 @@
 
 import React, { createContext, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { DebugLog, DebugLogStatus, DebugLogSeverity } from '@/types/task.types';
 
-interface DebugLogsContextType {
-  debugLogs: DebugLog[];
-  addDebugLog: (log: Omit<DebugLog, 'id' | 'dateLogged'>) => void;
-  updateDebugLog: (log: DebugLog) => void;
-  deleteDebugLog: (id: string) => void;
-  getCriticalOpenLogs: () => DebugLog[];
-  getRecentlyFixedLogs: (days: number) => DebugLog[];
+// Basic task types
+interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'Not Started' | 'In Progress' | 'Completed' | 'Blocked';
+  priority: 'Low' | 'Medium' | 'High' | 'Critical';
+  dueDate?: string;
+  assignedTo?: string;
+  module: 'Dashboard' | 'PulseBot' | 'Certification' | 'Analytics';
 }
 
-const TaskContext = createContext<DebugLogsContextType | undefined>(undefined);
+interface TaskContextType {
+  tasks: Task[];
+  addTask: (task: Omit<Task, 'id'>) => void;
+  updateTask: (id: string, task: Partial<Task>) => void;
+  deleteTask: (id: string) => void;
+}
 
-// Sample debug logs for demonstration
-const initialDebugLogs: DebugLog[] = [
-  {
-    id: uuidv4(),
-    description: 'PulseBot not showing response on mobile',
-    status: 'Open',
-    severity: 'high',
-    component: 'PulseBot',
-    loggedBy: 'Alex',
-    dateLogged: new Date(Date.now() - 86400000 * 2).toISOString() // 2 days ago
-  },
-  {
-    id: uuidv4(),
-    description: 'Dashboard loading slow on Firefox',
-    status: 'In Progress',
-    severity: 'medium',
-    component: 'Dashboard',
-    loggedBy: 'Sam',
-    dateLogged: new Date(Date.now() - 86400000 * 5).toISOString() // 5 days ago
-  },
-  {
-    id: uuidv4(),
-    description: 'Survey form not submitting on Safari',
-    status: 'Fixed',
-    severity: 'critical',
-    component: 'PulseScoreLite',
-    loggedBy: 'Jordan',
-    dateLogged: new Date(Date.now() - 86400000 * 10).toISOString(), // 10 days ago
-    dateFixed: new Date(Date.now() - 86400000 * 3).toISOString() // 3 days ago
-  },
-];
+const TaskContext = createContext<TaskContextType>({
+  tasks: [],
+  addTask: () => {},
+  updateTask: () => {},
+  deleteTask: () => {}
+});
 
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [debugLogs, setDebugLogs] = useState<DebugLog[]>(initialDebugLogs);
+  const [tasks, setTasks] = useState<Task[]>([
+    {
+      id: '1',
+      title: 'Implement dashboard analytics',
+      description: 'Create visualization for survey results',
+      status: 'In Progress',
+      priority: 'High',
+      dueDate: '2023-08-15',
+      assignedTo: 'Alex Kim',
+      module: 'Dashboard'
+    },
+    {
+      id: '2',
+      title: 'Fix PulseBot response time',
+      description: 'Optimize response generation for faster results',
+      status: 'Not Started',
+      priority: 'Medium',
+      dueDate: '2023-08-20',
+      assignedTo: 'Jamie Wong',
+      module: 'PulseBot'
+    }
+  ]);
 
-  // Add a new debug log
-  const addDebugLog = (log: Omit<DebugLog, 'id' | 'dateLogged'>) => {
-    const newLog: DebugLog = {
-      ...log,
-      id: uuidv4(),
-      dateLogged: new Date().toISOString(),
+  const addTask = (task: Omit<Task, 'id'>) => {
+    const newTask = {
+      ...task,
+      id: uuidv4()
     };
-    
-    setDebugLogs(prev => [newLog, ...prev]);
+    setTasks([...tasks, newTask]);
   };
 
-  // Update an existing debug log
-  const updateDebugLog = (updatedLog: DebugLog) => {
-    setDebugLogs(prev => 
-      prev.map(log => log.id === updatedLog.id ? updatedLog : log)
-    );
+  const updateTask = (id: string, updatedTask: Partial<Task>) => {
+    setTasks(tasks.map(task => (task.id === id ? { ...task, ...updatedTask } : task)));
   };
 
-  // Delete a debug log
-  const deleteDebugLog = (id: string) => {
-    setDebugLogs(prev => prev.filter(log => log.id !== id));
+  const deleteTask = (id: string) => {
+    setTasks(tasks.filter(task => task.id !== id));
   };
 
-  // Get critical open logs
-  const getCriticalOpenLogs = () => {
-    return debugLogs.filter(
-      log => log.status === 'Open' && (log.severity === 'critical' || log.severity === 'high')
-    );
-  };
-
-  // Get recently fixed logs
-  const getRecentlyFixedLogs = (days: number) => {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-    
-    return debugLogs.filter(log => {
-      if (log.status === 'Fixed' && log.dateFixed) {
-        const fixedDate = new Date(log.dateFixed);
-        return fixedDate >= cutoffDate;
-      }
-      return false;
-    });
-  };
-
-  const value = {
-    debugLogs,
-    addDebugLog,
-    updateDebugLog,
-    deleteDebugLog,
-    getCriticalOpenLogs,
-    getRecentlyFixedLogs
-  };
-
-  return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;
+  return (
+    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask }}>
+      {children}
+    </TaskContext.Provider>
+  );
 };
 
-export const useDebugLogs = () => {
-  const context = useContext(TaskContext);
-  if (context === undefined) {
-    throw new Error('useDebugLogs must be used within a TaskProvider');
-  }
-  return context;
-};
+export const useTask = () => useContext(TaskContext);

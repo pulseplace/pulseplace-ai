@@ -1,112 +1,114 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Task, TaskStatus, TaskPriority, TaskModule } from '@/types/task.types';
+
+// Sample tasks data
+const initialTasks: Task[] = [
+  {
+    id: '1',
+    title: 'PulseBot Integration',
+    description: 'Integrate PulseBot with Slack for real-time feedback',
+    status: 'in_progress',
+    priority: 'high',
+    dueDate: '2025-05-10',
+    createdAt: '2025-04-15',
+    module: 'pulsebot',
+    owner: 'Alex Chen'
+  },
+  {
+    id: '2',
+    title: 'Dashboard UX Improvements',
+    description: 'Enhance dashboard UX based on user feedback',
+    status: 'todo',
+    priority: 'medium',
+    createdAt: '2025-04-18',
+    module: 'dashboard'
+  },
+  {
+    id: '3',
+    title: 'Survey Response Analysis',
+    description: 'Develop algorithm for sentiment analysis of open-ended responses',
+    status: 'completed',
+    priority: 'medium',
+    dueDate: '2025-04-20',
+    createdAt: '2025-04-01',
+    module: 'survey',
+    owner: 'Jamie Wong'
+  },
+  {
+    id: '4',
+    title: 'API Documentation',
+    description: 'Update API docs for the certification endpoints',
+    status: 'review',
+    priority: 'low',
+    dueDate: '2025-05-01',
+    createdAt: '2025-04-10',
+    module: 'certification',
+    owner: 'Riley Smith'
+  },
+  {
+    id: '5',
+    title: 'Certification Badge Design',
+    description: 'Create new badge designs for different certification levels',
+    status: 'blocked',
+    priority: 'high',
+    dueDate: '2025-04-30',
+    createdAt: '2025-04-05',
+    module: 'certification',
+    owner: 'Sam Johnson'
+  }
+];
 
 interface TasksContextType {
   tasks: Task[];
   addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
-  updateTask: (task: Task) => void;
+  updateTask: (id: string, task: Partial<Task>) => void;
   deleteTask: (id: string) => void;
-  getTasksByStatus: (status: TaskStatus) => Task[];
-  getTasksByPriority: (priority: TaskPriority) => Task[];
-  getTasksByModule: (module: TaskModule) => Task[];
+  moveTask: (id: string, status: TaskStatus) => void;
 }
 
-const TasksContext = createContext<TasksContextType | undefined>(undefined);
-
-// Sample tasks for demonstration
-const initialTasks: Task[] = [
-  {
-    id: uuidv4(),
-    title: 'Implement PulseBot response handling',
-    description: 'Create logic to handle PulseBot responses and store them in the database',
-    status: 'in_progress',
-    priority: 'high',
-    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
-    module: 'pulsebot',
-    owner: 'Alex'
-  },
-  {
-    id: uuidv4(),
-    title: 'Design certification badge',
-    description: 'Create visual designs for certification badges at different tiers',
-    status: 'completed',
-    priority: 'medium',
-    createdAt: new Date(Date.now() - 86400000 * 7).toISOString(), // 7 days ago
-    module: 'certification',
-    owner: 'Jordan'
-  },
-  {
-    id: uuidv4(),
-    title: 'Fix dashboard loading state',
-    description: 'Add proper loading indicators to the dashboard components',
-    status: 'todo',
-    priority: 'low',
-    createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-    module: 'dashboard',
-    owner: 'Sam'
-  },
-];
+const TasksContext = createContext<TasksContextType>({
+  tasks: [],
+  addTask: () => {},
+  updateTask: () => {},
+  deleteTask: () => {},
+  moveTask: () => {}
+});
 
 export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  // Add a new task
   const addTask = (task: Omit<Task, 'id' | 'createdAt'>) => {
     const newTask: Task = {
       ...task,
       id: uuidv4(),
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString().split('T')[0]
     };
-    
-    setTasks(prev => [newTask, ...prev]);
+    setTasks([...tasks, newTask]);
   };
 
-  // Update an existing task
-  const updateTask = (updatedTask: Task) => {
-    setTasks(prev => 
-      prev.map(task => task.id === updatedTask.id ? updatedTask : task)
-    );
+  const updateTask = (id: string, updatedTask: Partial<Task>) => {
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, ...updatedTask } : task
+    ));
   };
 
-  // Delete a task
   const deleteTask = (id: string) => {
-    setTasks(prev => prev.filter(task => task.id !== id));
+    setTasks(tasks.filter(task => task.id !== id));
   };
 
-  // Get tasks by status
-  const getTasksByStatus = (status: TaskStatus) => {
-    return tasks.filter(task => task.status === status);
+  const moveTask = (id: string, status: TaskStatus) => {
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, status } : task
+    ));
   };
 
-  // Get tasks by priority
-  const getTasksByPriority = (priority: TaskPriority) => {
-    return tasks.filter(task => task.priority === priority);
-  };
-
-  // Get tasks by module
-  const getTasksByModule = (module: TaskModule) => {
-    return tasks.filter(task => task.module === module);
-  };
-
-  const value = {
-    tasks,
-    addTask,
-    updateTask,
-    deleteTask,
-    getTasksByStatus,
-    getTasksByPriority,
-    getTasksByModule
-  };
-
-  return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>;
+  return (
+    <TasksContext.Provider value={{ tasks, addTask, updateTask, deleteTask, moveTask }}>
+      {children}
+    </TasksContext.Provider>
+  );
 };
 
-export const useTasks = () => {
-  const context = useContext(TasksContext);
-  if (context === undefined) {
-    throw new Error('useTasks must be used within a TasksProvider');
-  }
-  return context;
-};
+export const useTasks = () => useContext(TasksContext);

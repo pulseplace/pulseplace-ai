@@ -1,105 +1,103 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+
+import React, { createContext, useState, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { DebugLog } from '@/types/task.types';
+import { DebugLog, DebugLogSeverity } from '@/types/task.types';
 
-interface DebugLogsContextType {
-  debugLogs: DebugLog[];
-  addDebugLog: (log: Omit<DebugLog, 'id' | 'dateLogged'>) => void;
-  updateDebugLog: (id: string, updates: Partial<Omit<DebugLog, 'id' | 'dateLogged'>>) => void;
-  deleteDebugLog: (id: string) => void;
-  getCriticalOpenLogs: () => DebugLog[];
-  getRecentlyFixedLogs: (days: number) => DebugLog[];
-}
-
-const DebugLogsContext = createContext<DebugLogsContextType | undefined>(undefined);
-
-const initialDebugLogs: DebugLog[] = [
+// Sample debug logs data
+const initialLogs: DebugLog[] = [
   {
     id: '1',
-    dateLogged: new Date('2025-04-20'),
-    component: 'Dashboard',
-    description: 'Chart rendering incorrectly on mobile devices',
-    severity: 'Major',
+    description: 'Error loading certification data',
     status: 'Open',
-    loggedBy: 'Sarah'
+    severity: 'high',
+    component: 'CertificationEngine',
+    loggedBy: 'Alex Chen',
+    dateLogged: '2025-04-17',
+    assignedTo: 'Jamie Wong',
+    notes: 'API returns 500 when trying to fetch certification data'
   },
   {
     id: '2',
-    dateLogged: new Date('2025-04-19'),
-    component: 'Backend Infra',
-    description: 'API rate limiting not working properly',
-    severity: 'Critical',
+    description: 'PulseBot not responding to certain prompts',
     status: 'In Progress',
-    fixLink: 'https://github.com/org/repo/pull/123',
-    loggedBy: 'Michael'
+    severity: 'medium',
+    component: 'PulseBot',
+    loggedBy: 'Riley Smith',
+    dateLogged: '2025-04-19',
+    assignedTo: 'Sam Johnson',
+    notes: 'Specific keywords related to engagement are triggering timeout'
+  },
+  {
+    id: '3',
+    description: 'Dashboard crashes when filtering by date range',
+    status: 'Fixed',
+    severity: 'critical',
+    component: 'Dashboard',
+    loggedBy: 'Jamie Wong',
+    dateLogged: '2025-04-15',
+    dateFixed: '2025-04-16',
+    assignedTo: 'Alex Chen',
+    notes: 'Issue was caused by invalid date format in filter params',
+    fixLink: 'https://github.com/example/repo/pull/123'
   }
 ];
 
-export function DebugLogsProvider({ children }: { children: React.ReactNode }) {
-  const [debugLogs, setDebugLogs] = useState<DebugLog[]>(() => {
-    const savedLogs = localStorage.getItem('pulseplace-debug-logs');
-    return savedLogs ? JSON.parse(savedLogs) : initialDebugLogs;
-  });
+interface DebugLogsContextType {
+  logs: DebugLog[];
+  addLog: (log: Omit<DebugLog, 'id' | 'dateLogged'>) => void;
+  updateLog: (id: string, log: Partial<DebugLog>) => void;
+  deleteLog: (id: string) => void;
+  filteredLogs: (status?: DebugLog['status'], severity?: DebugLogSeverity) => DebugLog[];
+}
 
-  useEffect(() => {
-    localStorage.setItem('pulseplace-debug-logs', JSON.stringify(debugLogs));
-  }, [debugLogs]);
+const DebugLogsContext = createContext<DebugLogsContextType>({
+  logs: [],
+  addLog: () => {},
+  updateLog: () => {},
+  deleteLog: () => {},
+  filteredLogs: () => []
+});
 
-  const addDebugLog = (logData: Omit<DebugLog, 'id' | 'dateLogged'>) => {
+export const DebugLogsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [logs, setLogs] = useState<DebugLog[]>(initialLogs);
+
+  const addLog = (log: Omit<DebugLog, 'id' | 'dateLogged'>) => {
     const newLog: DebugLog = {
-      ...logData,
+      ...log,
       id: uuidv4(),
-      dateLogged: new Date()
+      dateLogged: new Date().toISOString().split('T')[0]
     };
-    setDebugLogs(prevLogs => [...prevLogs, newLog]);
+    setLogs([...logs, newLog]);
   };
 
-  const updateDebugLog = (id: string, updates: Partial<Omit<DebugLog, 'id' | 'dateLogged'>>) => {
-    setDebugLogs(prevLogs =>
-      prevLogs.map(log => log.id === id ? { ...log, ...updates } : log)
-    );
+  const updateLog = (id: string, updatedLog: Partial<DebugLog>) => {
+    setLogs(logs.map(log => 
+      log.id === id ? { ...log, ...updatedLog } : log
+    ));
   };
 
-  const deleteDebugLog = (id: string) => {
-    setDebugLogs(prevLogs => prevLogs.filter(log => log.id !== id));
+  const deleteLog = (id: string) => {
+    setLogs(logs.filter(log => log.id !== id));
   };
 
-  const getCriticalOpenLogs = () => {
-    return debugLogs
-      .filter(log => log.severity === 'Critical' && log.status === 'Open')
-      .sort((a, b) => b.dateLogged.getTime() - a.dateLogged.getTime());
-  };
-
-  const getRecentlyFixedLogs = (days: number) => {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-    
-    return debugLogs
-      .filter(log => 
-        log.status === 'Fixed' && 
-        new Date(log.dateLogged).getTime() >= cutoffDate.getTime()
-      )
-      .sort((a, b) => b.dateLogged.getTime() - a.dateLogged.getTime());
+  const filteredLogs = (status?: DebugLog['status'], severity?: DebugLogSeverity) => {
+    return logs.filter(log => {
+      let match = true;
+      if (status) {
+        match = match && log.status === status;
+      }
+      if (severity) {
+        match = match && log.severity === severity;
+      }
+      return match;
+    });
   };
 
   return (
-    <DebugLogsContext.Provider value={{
-      debugLogs,
-      addDebugLog,
-      updateDebugLog,
-      deleteDebugLog,
-      getCriticalOpenLogs,
-      getRecentlyFixedLogs
-    }}>
+    <DebugLogsContext.Provider value={{ logs, addLog, updateLog, deleteLog, filteredLogs }}>
       {children}
     </DebugLogsContext.Provider>
   );
-}
+};
 
-export function useDebugLogs() {
-  const context = useContext(DebugLogsContext);
-  if (context === undefined) {
-    throw new Error('useDebugLogs must be used within a DebugLogsProvider');
-  }
-  return context;
-}
+export const useDebugLogs = () => useContext(DebugLogsContext);

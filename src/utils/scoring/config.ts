@@ -54,6 +54,16 @@ export const THEME_CATEGORY_WEIGHTS = {
   engagement_continuity: { category: 'engagement_stability', weight: 0.4 }
 };
 
+// Maps theme names to their categories
+export const THEME_TO_CATEGORY = {
+  trust_in_leadership: 'culture_trust',
+  psychological_safety: 'culture_trust',
+  inclusion_belonging: 'emotion_index',
+  motivation_fulfillment: 'emotion_index',
+  mission_alignment: 'engagement_stability',
+  engagement_continuity: 'engagement_stability'
+};
+
 // Category weights for overall score
 export const CATEGORY_WEIGHTS = {
   culture_trust: 0.4,

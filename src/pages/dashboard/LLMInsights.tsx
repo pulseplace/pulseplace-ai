@@ -1,127 +1,112 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Download, BarChart3, Bot, BrainCircuit } from 'lucide-react';
+import { Bot, BrainCircuit, Lightbulb, MessageSquare } from 'lucide-react';
 
 const LLMInsights = () => {
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">LLM Insights</h1>
-          <p className="text-gray-500">Advanced language model analysis of workplace culture data</p>
-        </div>
-        <div className="mt-4 md:mt-0">
-          <Button variant="outline" className="mr-2">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-          <Button className="bg-pulse-gradient text-white">
-            Generate New Insights
-          </Button>
-        </div>
-      </div>
+    <div className="container mx-auto p-6">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">LLM Insights</h1>
+        <p className="text-gray-600">
+          AI-powered analysis of your workplace culture data
+        </p>
+      </header>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <BrainCircuit className="h-5 w-5 mr-2 text-purple-600" />
-              Language Understanding
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Processed Responses
             </CardTitle>
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">93%</p>
-            <p className="text-sm text-gray-500">Semantic accuracy on employee feedback</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <Bot className="h-5 w-5 mr-2 text-blue-600" />
-              PulseBot Integration
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">87%</p>
-            <p className="text-sm text-gray-500">Sentiment analysis accuracy</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center">
-              <BarChart3 className="h-5 w-5 mr-2 text-green-600" />
-              Predictive Analysis
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">76%</p>
-            <p className="text-sm text-gray-500">Trend prediction accuracy</p>
-          </CardContent>
-        </Card>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Sentiment Analysis</CardTitle>
-          </CardHeader>
-          <CardContent className="h-80 flex items-center justify-center bg-gray-50">
-            <p className="text-gray-500 text-center">
-              Advanced sentiment analysis visualization<br />
-              (Data visualization would appear here)
+            <div className="text-2xl font-bold">1,234</div>
+            <p className="text-xs text-muted-foreground">
+              Total survey responses analyzed
             </p>
           </CardContent>
         </Card>
-        
         <Card>
-          <CardHeader>
-            <CardTitle>Theme Extraction</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Insights Generated
+            </CardTitle>
+            <Lightbulb className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="h-80 flex items-center justify-center bg-gray-50">
-            <p className="text-gray-500 text-center">
-              Key themes extracted from employee feedback<br />
-              (Data visualization would appear here)
+          <CardContent>
+            <div className="text-2xl font-bold">87</div>
+            <p className="text-xs text-muted-foreground">
+              Actionable insights identified
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              AI Model Confidence
+            </CardTitle>
+            <BrainCircuit className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">94%</div>
+            <p className="text-xs text-muted-foreground">
+              Average confidence score
             </p>
           </CardContent>
         </Card>
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>AI-Generated Action Recommendations</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="p-4 bg-green-50 border border-green-100 rounded-md">
-              <h3 className="font-medium text-green-800 mb-2">Communication Enhancement</h3>
-              <p className="text-sm text-green-700">
-                LLM analysis indicates a 27% increase in mentions of communication challenges. 
-                Consider implementing regular team check-ins and standardizing project documentation.
-              </p>
+      <div className="grid grid-cols-1 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Bot className="mr-2 h-5 w-5" />
+              LLM Generated Insights
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="font-semibold mb-2">Recognition Gap</h3>
+                <p className="text-gray-700">
+                  Analysis of feedback indicates a significant gap between employee expectations for recognition and current practices. 
+                  73% of respondents mentioned feeling undervalued despite high performance metrics.
+                </p>
+                <div className="mt-3 flex items-center text-sm">
+                  <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-medium">Medium Priority</span>
+                  <span className="ml-4 text-gray-500 text-xs">Confidence: 92%</span>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="font-semibold mb-2">Communication Clarity</h3>
+                <p className="text-gray-700">
+                  Natural language processing identified confusion around strategic direction in 64% of leadership-related feedback.
+                  Employees are seeking more transparent communication about company goals and changes.
+                </p>
+                <div className="mt-3 flex items-center text-sm">
+                  <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs font-medium">High Priority</span>
+                  <span className="ml-4 text-gray-500 text-xs">Confidence: 89%</span>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="font-semibold mb-2">Work-Life Balance</h3>
+                <p className="text-gray-700">
+                  Sentiment analysis shows an 18% improvement in work-life balance satisfaction following the implementation
+                  of flexible work policies. This correlates with a 12% increase in overall engagement scores.
+                </p>
+                <div className="mt-3 flex items-center text-sm">
+                  <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">Positive Trend</span>
+                  <span className="ml-4 text-gray-500 text-xs">Confidence: 96%</span>
+                </div>
+              </div>
             </div>
-            
-            <div className="p-4 bg-blue-50 border border-blue-100 rounded-md">
-              <h3 className="font-medium text-blue-800 mb-2">Career Development</h3>
-              <p className="text-sm text-blue-700">
-                Natural language processing identified strong correlation between mentorship and satisfaction scores.
-                Recommendation: Formalize mentorship program and provide clearer advancement pathways.
-              </p>
-            </div>
-            
-            <div className="p-4 bg-purple-50 border border-purple-100 rounded-md">
-              <h3 className="font-medium text-purple-800 mb-2">Work-Life Balance</h3>
-              <p className="text-sm text-purple-700">
-                Semantic analysis found increasing concern (32% growth) about after-hours expectations.
-                Consider establishing clear communication boundaries and flexible work arrangements.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

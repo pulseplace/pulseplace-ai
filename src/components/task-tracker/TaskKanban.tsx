@@ -1,101 +1,97 @@
 
 import React from 'react';
-import { useTask } from '@/contexts/TaskContext';
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from '@/components/ui/badge';
+import { useTasks } from '@/contexts/TaskContext';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { TaskStatus } from '@/types/task.types';
 
 const TaskKanban = () => {
-  const { tasks, updateTask } = useTask();
+  const { tasks, moveTask } = useTasks();
   
-  const handleDragStart = (e: React.DragEvent, taskId: string) => {
-    e.dataTransfer.setData('taskId', taskId);
+  // Group tasks by status
+  const tasksByStatus: Record<string, any[]> = {
+    todo: tasks.filter(task => task.status === 'todo'),
+    in_progress: tasks.filter(task => task.status === 'in_progress'),
+    review: tasks.filter(task => task.status === 'review'),
+    blocked: tasks.filter(task => task.status === 'blocked'),
+    completed: tasks.filter(task => task.status === 'completed'),
   };
   
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'todo': return 'To Do';
+      case 'in_progress': return 'In Progress';
+      case 'review': return 'Review';
+      case 'blocked': return 'Blocked';
+      case 'completed': return 'Completed';
+      default: return status;
+    }
   };
   
-  const handleDrop = (e: React.DragEvent, status: string) => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData('taskId');
-    updateTask(taskId, { status: status as any });
-  };
-  
-  const columns = [
-    { id: 'todo', name: 'To Do' },
-    { id: 'in_progress', name: 'In Progress' },
-    { id: 'review', name: 'Review' },
-    { id: 'blocked', name: 'Blocked' },
-    { id: 'completed', name: 'Completed' }
-  ];
-  
-  const getTasksByStatus = (status: string) => {
-    return tasks.filter(task => task.status === status);
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'in_progress': return 'bg-blue-100 text-blue-800';
+      case 'review': return 'bg-purple-100 text-purple-800';
+      case 'blocked': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
   
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical':
-        return 'bg-red-600';
-      case 'high':
-        return 'bg-red-500';
-      case 'medium':
-        return 'bg-amber-500';
-      case 'low':
-        return 'bg-green-500';
-      default:
-        return 'bg-gray-500';
+      case 'high': return 'bg-red-100 text-red-800';
+      case 'medium': return 'bg-amber-100 text-amber-800';
+      case 'low': return 'bg-green-100 text-green-800';
+      default: return 'bg-blue-100 text-blue-800';
     }
   };
   
   return (
-    <div className="flex overflow-x-auto pb-4 space-x-4">
-      {columns.map(column => (
-        <div 
-          key={column.id}
-          className="flex-shrink-0 w-80"
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, column.id)}
-        >
-          <div className="bg-gray-100 rounded-md p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-medium text-sm">{column.name}</h3>
-              <Badge variant="outline">{getTasksByStatus(column.id).length}</Badge>
-            </div>
-            
-            <div className="space-y-3">
-              {getTasksByStatus(column.id).map(task => (
-                <Card 
-                  key={task.id}
-                  className="cursor-move"
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, task.id)}
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      {Object.entries(tasksByStatus).map(([status, statusTasks]) => (
+        <div key={status} className="flex flex-col h-full">
+          <Card className="h-full flex flex-col overflow-hidden">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium flex items-center">
+                <Badge className={`${getStatusColor(status)} mr-2`}>
+                  {statusTasks.length}
+                </Badge>
+                {getStatusLabel(status)}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-grow overflow-auto space-y-2 pb-6">
+              {statusTasks.map(task => (
+                <div 
+                  key={task.id} 
+                  className="bg-white p-3 rounded border shadow-sm"
                 >
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`} />
-                      <span className="text-sm font-medium truncate">{task.title}</span>
+                  <h4 className="font-medium line-clamp-2">{task.title}</h4>
+                  
+                  <div className="mt-2 flex justify-between items-center">
+                    <Badge className={getPriorityColor(task.priority)}>
+                      {task.priority}
+                    </Badge>
+                    <span className="text-xs text-gray-500">
+                      {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : ''}
+                    </span>
+                  </div>
+                  
+                  {task.owner && (
+                    <div className="mt-2 text-xs text-gray-600">
+                      {task.owner}
                     </div>
-                    
-                    {task.description && (
-                      <p className="text-xs text-gray-500 mb-2 line-clamp-2">{task.description}</p>
-                    )}
-                    
-                    <div className="flex justify-between items-center text-xs text-gray-500">
-                      <span>{task.module}</span>
-                      {task.owner && <span>{task.owner}</span>}
-                    </div>
-                    
-                    {task.dueDate && (
-                      <div className="mt-2">
-                        <Badge variant="outline" className="text-xs">Due: {new Date(task.dueDate).toLocaleDateString()}</Badge>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                  )}
+                </div>
               ))}
-            </div>
-          </div>
+              
+              {statusTasks.length === 0 && (
+                <div className="text-center py-4 text-sm text-gray-500">
+                  No tasks
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       ))}
     </div>

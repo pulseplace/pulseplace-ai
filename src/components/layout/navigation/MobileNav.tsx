@@ -1,18 +1,25 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Bot, ListTodo, Bug, Workflow } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard, BarChart3, Bot, Users, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ROUTES } from '../routes';
+import { cn } from '@/lib/utils';
 
 const MobileNav = () => {
+  const location = useLocation();
+  
+  // Helper function to determine if a path is active
+  const isActive = (path: string) => {
+    return location.pathname.startsWith(path);
+  };
+  
   return (
     <div className="md:hidden border-b bg-gray-50 px-4 py-2">
       <div className="flex justify-between items-center">
         <div className="flex space-x-1 overflow-x-auto py-1 scrollbar-hide">
-          <Link to={ROUTES.DASHBOARD.INDEX}>
+          <Link to="/dashboard">
             <Button 
-              variant="ghost"
+              variant={isActive('/dashboard') ? "secondary" : "ghost"}
               size="sm"
               className="text-xs h-8 px-2.5"
             >
@@ -21,9 +28,9 @@ const MobileNav = () => {
             </Button>
           </Link>
           
-          <Link to={ROUTES.INSIGHTS.INDEX}>
+          <Link to="/dashboard/insights">
             <Button 
-              variant="ghost"
+              variant={isActive('/dashboard/insights') ? "secondary" : "ghost"}
               size="sm"
               className="text-xs h-8 px-2.5"
             >
@@ -32,9 +39,9 @@ const MobileNav = () => {
             </Button>
           </Link>
           
-          <Link to={ROUTES.PULSEBOT}>
+          <Link to="/dashboard/pulsebot">
             <Button 
-              variant="ghost"
+              variant={isActive('/dashboard/pulsebot') ? "secondary" : "ghost"}
               size="sm"
               className="text-xs h-8 px-2.5"
             >
@@ -43,36 +50,25 @@ const MobileNav = () => {
             </Button>
           </Link>
           
-          <Link to="/task-tracker">
+          <Link to="/dashboard/teams">
             <Button 
-              variant="ghost"
+              variant={isActive('/dashboard/teams') ? "secondary" : "ghost"}
               size="sm"
               className="text-xs h-8 px-2.5"
             >
-              <ListTodo className="h-3.5 w-3.5 mr-1" />
-              Tasks
+              <Users className="h-3.5 w-3.5 mr-1" />
+              Teams
             </Button>
           </Link>
 
-          <Link to="/debug-log">
+          <Link to="/dashboard/certification">
             <Button 
-              variant="ghost"
+              variant={isActive('/dashboard/certification') ? "secondary" : "ghost"}
               size="sm"
               className="text-xs h-8 px-2.5"
             >
-              <Bug className="h-3.5 w-3.5 mr-1" />
-              Debug
-            </Button>
-          </Link>
-
-          <Link to="/build-flow">
-            <Button 
-              variant="ghost"
-              size="sm"
-              className="text-xs h-8 px-2.5"
-            >
-              <Workflow className="h-3.5 w-3.5 mr-1" />
-              Flow
+              <Award className="h-3.5 w-3.5 mr-1" />
+              Certification
             </Button>
           </Link>
         </div>

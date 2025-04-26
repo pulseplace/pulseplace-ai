@@ -1,25 +1,26 @@
+
 export const ROUTES = {
   HOME: '/',
   DASHBOARD: {
-    INDEX: '/',
-    QA_SPRINT: '/dashboard/qa-sprint',
-    QA_TESTING: '/dashboard/qa-testing',
-    DASHBOARD_QA: '/dashboard/dashboard-qa'
+    INDEX: '/dashboard',
+    TEAMS: '/dashboard/teams',
+    INSIGHTS: '/dashboard/insights',
+    PULSEBOT: '/dashboard/pulsebot',
+    AI: '/dashboard/ai',
+    CERTIFICATION: '/dashboard/certification'
   },
-  INSIGHTS: {
-    INDEX: '/insights'
+  PUBLIC: {
+    PULSE_SCORE: '/pulse-score-lite',
+    THANK_YOU: '/pulse-score-lite/thank-you',
+    BOOK_DEMO: '/book-demo'
   },
-  TEAMS: {
-    INDEX: '/teams',
-    TEAM: (id: string) => `/teams/${id}`
+  AUTH: {
+    SIGNIN: '/auth/signin',
+    SIGNUP: '/auth/signup'
   },
   CERTIFICATION: {
-    INDEX: '/certification',
-    SHARE: '/certification/share',
-    VERIFY: '/certification/verify',
-    MANAGE: '/dashboard/certification-engine'
-  },
-  PULSEBOT: '/pulsebot',
-  BOOK_DEMO: '/book-demo',
-  PULSE_SCORE_LITE: '/pulse-score-lite'
+    INDEX: '/dashboard/certification',
+    SHARE: '/dashboard/certification/share'
+  }
 };
+

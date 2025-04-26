@@ -6,7 +6,7 @@ import { useTasks } from '@/contexts/TaskContext';
 import TaskTable from '@/components/task-tracker/TaskTable';
 import TaskKanban from '@/components/task-tracker/TaskKanban';
 import TaskCalendar from '@/components/task-tracker/TaskCalendar';
-import AddTaskDialog from '@/components/dashboard/AddTaskDialog';
+import AddTaskDialog from '@/components/task-tracker/AddTaskDialog';
 import { Button } from '@/components/ui/button';
 import { Filter, Plus } from 'lucide-react';
 import { TaskStatus, Task } from '@/types/task.types';
@@ -20,7 +20,7 @@ const TaskStats = () => {
   };
   
   const getHighPriorityCount = () => {
-    return tasks.filter(task => task.priority === 'High').length;
+    return tasks.filter(task => task.priority === 'high').length;
   };
   
   const getOverdueTasks = () => {
@@ -28,10 +28,10 @@ const TaskStats = () => {
     today.setHours(0, 0, 0, 0);
     
     return tasks.filter(task => {
-      if (!task.deadline) return false;
-      if (task.status === 'Done') return false;
+      if (!task.dueDate) return false;
+      if (task.status === 'completed') return false;
       
-      const deadline = new Date(task.deadline);
+      const deadline = new Date(task.dueDate);
       deadline.setHours(0, 0, 0, 0);
       
       return deadline < today;
@@ -55,7 +55,7 @@ const TaskStats = () => {
           <CardTitle className="text-sm font-medium">In Progress</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{getTasksByStatus('In Progress')}</div>
+          <div className="text-2xl font-bold">{getTasksByStatus('in_progress')}</div>
           <p className="text-xs text-gray-500">Tasks currently in progress</p>
         </CardContent>
       </Card>

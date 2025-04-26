@@ -1,23 +1,37 @@
 
 import { SurveyResponse, ThemeScore, CategoryScore, PulseScoreTier } from '@/types/scoring.types';
 import { 
-  processSurveyResponse,
-  calculateThemeScores,
-  calculateCategoryScores,
-  calculateOverallScore as calculateScoreCore,
+  calculateThemeScores as calcThemeScores,
+  calculateCategoryScores as calcCategoryScores,
   getTier,
   getTierDisplay,
   getSampleSurveyQuestions
 } from './scoring/core';
 
-export const calculateOverallScore = (response: SurveyResponse) => {
-  const result = processSurveyResponse(response);
-  const tier = getTier(result.overallScore);
+// Process a survey response and calculate all scores
+export const processSurveyResponse = (response: SurveyResponse) => {
+  const themeScores = calcThemeScores(response);
+  const categoryScores = calcCategoryScores(themeScores);
+  const overallScore = calculateOverallScore(categoryScores);
   
-  return { 
-    ...result,
-    tier
+  return {
+    themeScores,
+    categoryScores,
+    overallScore
   };
+};
+
+// Calculate overall score from category scores
+export const calculateOverallScore = (categoryScores: CategoryScore[]): number => {
+  let totalScore = 0;
+  let totalWeight = 0;
+  
+  categoryScores.forEach(score => {
+    totalScore += score.score * score.weight;
+    totalWeight += score.weight;
+  });
+  
+  return totalWeight > 0 ? Math.round(totalScore / totalWeight) : 0;
 };
 
 // Feedback synthesis prompts for PromptsContent.tsx
@@ -36,7 +50,6 @@ export {
   getSampleSurveyQuestions, 
   getTierDisplay,
   getTier,
-  calculateThemeScores,
-  calculateCategoryScores,
-  calculateScoreCore as calculateOverallScore
+  calcThemeScores as calculateThemeScores,
+  calcCategoryScores as calculateCategoryScores
 };

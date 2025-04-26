@@ -1,20 +1,71 @@
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Task, TaskPriority, TaskStatus, TaskModule, DebugLog, DebugLogSeverity } from '@/types/task.types';
+import { Task, TaskStatus, TaskPriority, TaskModule } from '@/types/task.types';
 
-// Basic task types
+// Sample tasks data
+const initialTasks: Task[] = [
+  {
+    id: '1',
+    title: 'PulseBot Integration',
+    description: 'Integrate PulseBot with Slack for real-time feedback',
+    status: 'in_progress',
+    priority: 'high',
+    dueDate: '2025-05-10',
+    createdAt: '2025-04-15',
+    module: 'pulsebot',
+    owner: 'Alex Chen'
+  },
+  {
+    id: '2',
+    title: 'Dashboard UX Improvements',
+    description: 'Enhance dashboard UX based on user feedback',
+    status: 'todo',
+    priority: 'medium',
+    createdAt: '2025-04-18',
+    module: 'dashboard'
+  },
+  {
+    id: '3',
+    title: 'Survey Response Analysis',
+    description: 'Develop algorithm for sentiment analysis of open-ended responses',
+    status: 'completed',
+    priority: 'medium',
+    dueDate: '2025-04-20',
+    createdAt: '2025-04-01',
+    module: 'survey',
+    owner: 'Jamie Wong'
+  },
+  {
+    id: '4',
+    title: 'API Documentation',
+    description: 'Update API docs for the certification endpoints',
+    status: 'review',
+    priority: 'low',
+    dueDate: '2025-05-01',
+    createdAt: '2025-04-10',
+    module: 'certification',
+    owner: 'Riley Smith'
+  },
+  {
+    id: '5',
+    title: 'Certification Badge Design',
+    description: 'Create new badge designs for different certification levels',
+    status: 'blocked',
+    priority: 'high',
+    dueDate: '2025-04-30',
+    createdAt: '2025-04-05',
+    module: 'certification',
+    owner: 'Sam Johnson'
+  }
+];
+
 interface TaskContextType {
   tasks: Task[];
-  addTask: (task: Omit<Task, 'id'>) => void;
+  addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
   updateTask: (id: string, task: Partial<Task>) => void;
   deleteTask: (id: string) => void;
-  debugLogs: DebugLog[];
-  addDebugLog: (log: Omit<DebugLog, 'id' | 'dateLogged'>) => void;
-  updateDebugLog: (id: string, log: Partial<DebugLog>) => void;
-  deleteDebugLog: (id: string) => void;
-  getCriticalOpenLogs: () => DebugLog[];
-  getRecentlyFixedLogs: (days: number) => DebugLog[];
+  moveTask: (id: string, status: TaskStatus) => void;
 }
 
 const TaskContext = createContext<TaskContextType>({
@@ -22,83 +73,14 @@ const TaskContext = createContext<TaskContextType>({
   addTask: () => {},
   updateTask: () => {},
   deleteTask: () => {},
-  debugLogs: [],
-  addDebugLog: () => {},
-  updateDebugLog: () => {},
-  deleteDebugLog: () => {},
-  getCriticalOpenLogs: () => [],
-  getRecentlyFixedLogs: () => []
+  moveTask: () => {}
 });
 
-// Sample debug logs data
-const initialDebugLogs: DebugLog[] = [
-  {
-    id: '1',
-    description: 'Error loading certification data',
-    status: 'Open',
-    severity: 'high',
-    component: 'CertificationEngine',
-    loggedBy: 'Alex Chen',
-    dateLogged: '2025-04-17',
-    assignedTo: 'Jamie Wong',
-    notes: 'API returns 500 when trying to fetch certification data'
-  },
-  {
-    id: '2',
-    description: 'PulseBot not responding to certain prompts',
-    status: 'In Progress',
-    severity: 'medium',
-    component: 'PulseBot',
-    loggedBy: 'Riley Smith',
-    dateLogged: '2025-04-19',
-    assignedTo: 'Sam Johnson',
-    notes: 'Specific keywords related to engagement are triggering timeout'
-  },
-  {
-    id: '3',
-    description: 'Dashboard crashes when filtering by date range',
-    status: 'Fixed',
-    severity: 'critical',
-    component: 'Dashboard',
-    loggedBy: 'Jamie Wong',
-    dateLogged: '2025-04-15',
-    dateFixed: '2025-04-16',
-    assignedTo: 'Alex Chen',
-    notes: 'Issue was caused by invalid date format in filter params',
-    fixLink: 'https://github.com/example/repo/pull/123'
-  }
-];
-
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      title: 'Implement dashboard analytics',
-      description: 'Create visualization for survey results',
-      status: 'in_progress',
-      priority: 'high',
-      dueDate: '2023-08-15',
-      createdAt: '2023-07-01',
-      assignedTo: 'Alex Kim',
-      module: 'dashboard'
-    },
-    {
-      id: '2',
-      title: 'Fix PulseBot response time',
-      description: 'Optimize response generation for faster results',
-      status: 'todo',
-      priority: 'medium',
-      dueDate: '2023-08-20',
-      createdAt: '2023-07-05',
-      assignedTo: 'Jamie Wong',
-      module: 'pulsebot'
-    }
-  ]);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  const [debugLogs, setDebugLogs] = useState<DebugLog[]>(initialDebugLogs);
-
-  const addTask = (task: Omit<Task, 'id'>) => {
-    const newTask = {
+  const addTask = (task: Omit<Task, 'id' | 'createdAt'>) => {
+    const newTask: Task = {
       ...task,
       id: uuidv4(),
       createdAt: new Date().toISOString().split('T')[0]
@@ -107,77 +89,26 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateTask = (id: string, updatedTask: Partial<Task>) => {
-    setTasks(tasks.map(task => (task.id === id ? { ...task, ...updatedTask } : task)));
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, ...updatedTask } : task
+    ));
   };
 
   const deleteTask = (id: string) => {
     setTasks(tasks.filter(task => task.id !== id));
   };
 
-  const addDebugLog = (log: Omit<DebugLog, 'id' | 'dateLogged'>) => {
-    const newLog: DebugLog = {
-      ...log,
-      id: uuidv4(),
-      dateLogged: new Date().toISOString().split('T')[0]
-    };
-    setDebugLogs([...debugLogs, newLog]);
-  };
-
-  const updateDebugLog = (id: string, updatedLog: Partial<DebugLog>) => {
-    setDebugLogs(debugLogs.map(log => 
-      log.id === id ? { ...log, ...updatedLog } : log
+  const moveTask = (id: string, status: TaskStatus) => {
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, status } : task
     ));
   };
 
-  const deleteDebugLog = (id: string) => {
-    setDebugLogs(debugLogs.filter(log => log.id !== id));
-  };
-
-  const getCriticalOpenLogs = () => {
-    return debugLogs.filter(log => 
-      log.severity === 'critical' && log.status !== 'Fixed'
-    );
-  };
-
-  const getRecentlyFixedLogs = (days: number) => {
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-    const cutoffString = cutoffDate.toISOString().split('T')[0];
-    
-    return debugLogs.filter(log => 
-      log.status === 'Fixed' && 
-      log.dateFixed && 
-      log.dateFixed >= cutoffString
-    );
-  };
-
   return (
-    <TaskContext.Provider value={{ 
-      tasks, 
-      addTask, 
-      updateTask, 
-      deleteTask,
-      debugLogs,
-      addDebugLog,
-      updateDebugLog,
-      deleteDebugLog,
-      getCriticalOpenLogs,
-      getRecentlyFixedLogs
-    }}>
+    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask, moveTask }}>
       {children}
     </TaskContext.Provider>
   );
 };
 
-export const useTask = () => useContext(TaskContext);
-export const useDebugLogs = () => {
-  const context = useContext(TaskContext);
-  return {
-    debugLogs: context.debugLogs,
-    addDebugLog: context.addDebugLog,
-    updateDebugLog: context.updateDebugLog,
-    deleteDebugLog: context.deleteDebugLog,
-    getCriticalOpenLogs: context.getCriticalOpenLogs,
-    getRecentlyFixedLogs: context.getRecentlyFixedLogs,
-  };
-};
+export const useTasks = () => useContext(TaskContext);

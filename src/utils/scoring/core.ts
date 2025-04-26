@@ -1,172 +1,152 @@
 
 import { 
   SurveyQuestion, 
-  SurveyResponseItem,
+  SurveyResponse, 
   ThemeScore, 
-  CategoryScore,
-  PulseScoreTier,
-  SurveyResponse
+  CategoryScore, 
+  PulseScoreTier
 } from '@/types/scoring.types';
-import { TIER_THRESHOLDS, TIER_DISPLAY, THEME_CATEGORY_WEIGHTS, CATEGORY_WEIGHTS } from './config';
+import { 
+  TIER_THRESHOLDS, 
+  TIER_DISPLAY,
+  THEME_CATEGORY_WEIGHTS,
+  CATEGORY_WEIGHTS
+} from './config';
 
-// Calculate scores for each theme based on survey responses
-export const calculateThemeScores = (
-  questions: SurveyQuestion[],
-  responses: SurveyResponseItem[]
-): ThemeScore[] => {
-  const themeMap: Record<string, { total: number; count: number; weight: number }> = {};
+// Calculate theme scores from a survey response
+export const calculateThemeScores = (response: SurveyResponse): ThemeScore[] => {
+  const themeScores: Record<string, { score: number; count: number }> = {};
   
-  // Group responses by theme
-  responses.forEach(response => {
-    const question = questions.find(q => q.id === response.questionId);
-    if (!question) return;
+  Object.keys(response.responses).forEach(questionId => {
+    const theme = response.questionMapping[questionId]?.theme;
+    const weight = response.questionMapping[questionId]?.weight || 1;
+    const value = response.responses[questionId];
     
-    if (typeof response.value === 'string') return; // Skip text responses for now
-    
-    const { theme, weight } = question;
-    
-    if (!themeMap[theme]) {
-      themeMap[theme] = { total: 0, count: 0, weight: 0 };
+    if (theme && typeof value === 'number') {
+      if (!themeScores[theme]) {
+        themeScores[theme] = { score: 0, count: 0 };
+      }
+      themeScores[theme].score += value * weight;
+      themeScores[theme].count += 1;
     }
-    
-    themeMap[theme].total += response.value * weight;
-    themeMap[theme].count += 1;
-    themeMap[theme].weight += weight;
   });
-  
-  // Convert to array of theme scores
-  return Object.entries(themeMap).map(([theme, data]) => ({
+
+  return Object.entries(themeScores).map(([theme, data]) => ({
     theme,
-    score: data.count > 0 ? (data.total / data.weight) * 20 : 0, // Scale to 0-100
-    count: data.count,
-    weight: data.weight
+    score: data.count > 0 ? Math.round((data.score / data.count) * 20) : 0, // Scale to 0-100
+    count: data.count
   }));
 };
 
-// Calculate category scores based on theme scores
-export const calculateCategoryScores = (
-  themeScores: ThemeScore[]
-): CategoryScore[] => {
-  const categoryMap: Record<string, { total: number; weight: number }> = {};
+// Calculate category scores from theme scores
+export const calculateCategoryScores = (themeScores: ThemeScore[]): CategoryScore[] => {
+  const categoryScores: Record<string, { score: number; count: number }> = {};
   
-  // Group theme scores by category
   themeScores.forEach(themeScore => {
-    const themeConfig = THEME_CATEGORY_WEIGHTS[themeScore.theme as keyof typeof THEME_CATEGORY_WEIGHTS];
-    if (!themeConfig) return;
-    
-    const { category, weight } = themeConfig;
-    
-    if (!categoryMap[category]) {
-      categoryMap[category] = { total: 0, weight: 0 };
+    const categoryInfo = (THEME_CATEGORY_WEIGHTS as any)[themeScore.theme];
+    if (categoryInfo) {
+      const { category, weight } = categoryInfo;
+      if (!categoryScores[category]) {
+        categoryScores[category] = { score: 0, count: 0 };
+      }
+      categoryScores[category].score += themeScore.score * weight;
+      categoryScores[category].count += weight;
     }
-    
-    categoryMap[category].total += themeScore.score * weight;
-    categoryMap[category].weight += weight;
   });
-  
-  // Convert to array of category scores and normalize
-  return Object.entries(categoryMap).map(([category, data]) => ({
+
+  return Object.entries(categoryScores).map(([category, data]) => ({
     category: category as any,
-    score: data.weight > 0 ? data.total / data.weight : 0,
-    weight: CATEGORY_WEIGHTS[category as keyof typeof CATEGORY_WEIGHTS] || 1
+    score: data.count > 0 ? Math.round(data.score / data.count) : 0,
+    weight: (CATEGORY_WEIGHTS as any)[category] || 1
   }));
 };
 
-// Calculate overall score based on category scores
-export const calculateOverallScore = (
-  categoryScores: CategoryScore[]
-): number => {
-  let totalWeightedScore = 0;
+// Calculate overall score from category scores
+export const calculateOverallScore = (categoryScores: CategoryScore[]): number => {
+  let totalScore = 0;
   let totalWeight = 0;
   
-  categoryScores.forEach(category => {
-    totalWeightedScore += category.score * category.weight;
-    totalWeight += category.weight;
+  categoryScores.forEach(score => {
+    totalScore += score.score * score.weight;
+    totalWeight += score.weight;
   });
   
-  return totalWeight > 0 ? Math.round(totalWeightedScore / totalWeight) : 0;
+  return totalWeight > 0 ? Math.round(totalScore / totalWeight) : 0;
 };
 
-// Get tier based on score
+// Determine tier based on overall score
 export const getTier = (score: number): PulseScoreTier => {
-  if (score >= TIER_THRESHOLDS.thriving) {
-    return 'thriving';
-  } else if (score >= TIER_THRESHOLDS.stable) {
-    return 'stable';
-  } else if (score >= TIER_THRESHOLDS.at_risk) {
-    return 'at_risk';
-  } else {
-    return 'critical';
-  }
+  if (score >= TIER_THRESHOLDS.pulse_certified) return 'pulse_certified';
+  if (score >= TIER_THRESHOLDS.thriving) return 'thriving';
+  if (score >= TIER_THRESHOLDS.stable) return 'stable';
+  if (score >= TIER_THRESHOLDS.at_risk) return 'at_risk';
+  return 'critical';
 };
 
-// Get display information for a tier
+// Get tier display information
 export const getTierDisplay = (tier: PulseScoreTier) => {
   return TIER_DISPLAY[tier];
 };
 
-// Process a survey response and calculate all scores
-export const processSurveyResponse = (response: SurveyResponse) => {
-  // Convert the responses object to an array of response items
-  const responseItems: SurveyResponseItem[] = Object.entries(response.responses).map(
-    ([questionId, value]) => ({ questionId, value })
-  );
-  
-  // Create an array of questions from the mapping
-  const questions: SurveyQuestion[] = Object.entries(response.questionMapping).map(
-    ([id, data]) => ({
-      id,
-      text: `Question ${id}`, // Placeholder
-      type: 'likert', // Placeholder
-      theme: data.theme as any,
-      weight: data.weight
-    })
-  );
-  
-  const themeScores = calculateThemeScores(questions, responseItems);
-  const categoryScores = calculateCategoryScores(themeScores);
-  const overallScore = calculateOverallScore(categoryScores);
-  
-  return { themeScores, categoryScores, overallScore };
-};
-
-// Sample questions for prototyping
+// Generate sample survey questions for testing
 export const getSampleSurveyQuestions = (): SurveyQuestion[] => {
   return [
     {
-      id: '1',
-      text: 'I trust the leadership of my organization',
+      id: 'q1',
+      text: 'I trust the leadership team to make good decisions.',
       type: 'likert',
       theme: 'trust_in_leadership',
-      weight: 1.0
-    },
-    {
-      id: '2',
-      text: 'I feel safe to express my opinions without fear of negative consequences',
-      type: 'likert',
-      theme: 'psychological_safety',
       weight: 1.2
     },
     {
-      id: '3',
-      text: 'I feel like I belong at this organization',
+      id: 'q2',
+      text: 'I feel comfortable sharing my ideas and opinions.',
+      type: 'likert',
+      theme: 'psychological_safety',
+      weight: 1.5
+    },
+    {
+      id: 'q3',
+      text: 'I feel like I belong at this company.',
       type: 'likert',
       theme: 'inclusion_belonging',
-      weight: 1.0
+      weight: 1.3
     },
     {
-      id: '4',
-      text: 'My work gives me a sense of purpose',
+      id: 'q4',
+      text: 'My work gives me a sense of purpose.',
       type: 'likert',
       theme: 'motivation_fulfillment',
-      weight: 0.8
+      weight: 1.0
     },
     {
-      id: '5',
-      text: 'I understand how my work contributes to the organization\'s mission',
+      id: 'q5',
+      text: 'I understand how my work contributes to company goals.',
       type: 'likert',
       theme: 'mission_alignment',
-      weight: 1.0
+      weight: 1.1
+    },
+    {
+      id: 'q6',
+      text: 'I see myself working here a year from now.',
+      type: 'likert',
+      theme: 'engagement_continuity',
+      weight: 1.4
     }
-  ] as SurveyQuestion[];
+  ];
+};
+
+// Process a survey response and calculate all scores
+export const processSurveyResponse = (response: SurveyResponse) => {
+  const themeScores = calculateThemeScores(response);
+  const categoryScores = calculateCategoryScores(themeScores);
+  const overallScore = calculateOverallScore(categoryScores);
+  const tier = getTier(overallScore);
+  
+  return {
+    themeScores,
+    categoryScores,
+    overallScore,
+    tier
+  };
 };

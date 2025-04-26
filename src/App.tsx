@@ -3,40 +3,38 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
+import { TaskProvider } from './contexts/TaskContext';
+import { BuildRequestsProvider } from './contexts/BuildRequestsContext';
+
+// Main public pages
 import LandingPage from './pages/LandingPage';
-import PulseBot from './pages/PulseBot';
 import PulseScoreLite from './pages/PulseScoreLite';
 import PulseScoreThankYou from './pages/PulseScoreThankYou';
-import TeamDashboard from './pages/TeamDashboard';
+import BookDemo from './pages/BookDemo';
+
+// Auth
 import AuthLayout from './layouts/AuthLayout';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
+
+// Dashboard and related pages
+import DashboardLayout from './layouts/DashboardLayout';
+import Dashboard from './pages/Dashboard';
+import TeamDashboard from './pages/TeamDashboard';
+import Insights from './pages/Insights';
+import PulseBot from './pages/PulseBot';
+import AiDashboard from './pages/dashboard/AiDashboard';
+
+// Certification related
+import CertificationEngine from './pages/dashboard/CertificationEngine';
+import ShareCertification from './pages/certification/ShareCertification';
+
+// Utility components
 import PulseBotWidget from './components/chat/PulseBotWidget';
 import NotFound from './pages/NotFound';
-import CertificationEngine from './pages/dashboard/CertificationEngine';
-import DebugLog from './pages/task-tracker/DebugLog';
+
+// Case studies
 import TayanaStudy from './pages/case-studies/TayanaStudy';
-import BuildFlow from './pages/task-tracker/BuildFlow';
-import TaskTracker from './pages/task-tracker/TaskTracker';
-import Integrations from './pages/features/Integrations';
-import Root from './pages/Root';
-import Dashboard from './pages/Dashboard';
-import DashboardLayout from './layouts/DashboardLayout';
-import PulseScoreAdmin from './pages/dashboard/PulseScoreAdmin';
-import PulseBotAnalytics from './pages/dashboard/PulseBotAnalytics';
-import LLMInsights from './pages/dashboard/LLMInsights';
-import LinkValidation from './pages/dashboard/LinkValidation';
-import ProfileSettings from './pages/dashboard/ProfileSettings';
-import MailchimpEvents from './pages/dashboard/MailchimpEvents';
-import PitchDeckAdmin from './pages/dashboard/PitchDeckAdmin';
-import QASprint from './pages/dashboard/QASprint';
-import { TaskProvider } from './contexts/TaskContext';
-import { BuildRequestsProvider } from './contexts/BuildRequestsContext';
-import AiDashboard from './pages/dashboard/AiDashboard';
-import ShareCertification from './pages/certification/ShareCertification';
-import Insights from './pages/Insights'; 
-import BookDemo from './pages/BookDemo';
-import TaskSummary from './pages/TaskSummary';
 
 function App() {
   return (
@@ -45,46 +43,28 @@ function App() {
         <TaskProvider>
           <BuildRequestsProvider>
             <Routes>
-              <Route path="/" element={<Root />}>
-                <Route index element={<LandingPage />} />
-                <Route path="/pulse-score-lite" element={<PulseScoreLite />} />
-                <Route path="/pulse-score-lite/thank-you" element={<PulseScoreThankYou />} />
-                <Route path="/case-studies/tayana" element={<TayanaStudy />} />
-                <Route path="/book-demo" element={<BookDemo />} />
-              </Route>
+              {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/pulse-score-lite" element={<PulseScoreLite />} />
+              <Route path="/pulse-score-lite/thank-you" element={<PulseScoreThankYou />} />
+              <Route path="/book-demo" element={<BookDemo />} />
+              <Route path="/case-studies/tayana" element={<TayanaStudy />} />
 
-              {/* Dashboard Routes */}
-              <Route path="/dashboard" element={<DashboardLayout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="pulse-score-admin" element={<PulseScoreAdmin />} />
-                <Route path="certification-engine" element={<CertificationEngine />} />
-                <Route path="pulsebot-analytics" element={<PulseBotAnalytics />} />
-                <Route path="llm-insights" element={<LLMInsights />} />
-                <Route path="link-validation" element={<LinkValidation />} />
-                <Route path="profile-settings" element={<ProfileSettings />} />
-                <Route path="mailchimp-events" element={<MailchimpEvents />} />
-                <Route path="pitch-deck-admin" element={<PitchDeckAdmin />} />
-                <Route path="qa-sprint" element={<QASprint />} />
-                <Route path="tasktracker" element={<TaskTracker />} />
-              </Route>
-              
-              {/* Core Feature Routes */}
-              <Route path="/pulsebot" element={<PulseBot />} />
-              <Route path="/ai-dashboard" element={<AiDashboard />} />
-              <Route path="/insights" element={<Insights />} />
-              <Route path="/teams" element={<TeamDashboard />} />
-              <Route path="/teams/:id" element={<TeamDashboard />} />
-              <Route path="/task-tracker" element={<TaskTracker />} />
-              <Route path="/debug-log" element={<DebugLog />} />
-              <Route path="/build-flow" element={<BuildFlow />} />
-              <Route path="/integrations" element={<Integrations />} />
-              <Route path="/task-summary" element={<TaskSummary />} />
-              <Route path="/certification/share" element={<ShareCertification />} />
-                
               {/* Auth Routes */}
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="signin" element={<SignIn />} />
                 <Route path="signup" element={<SignUp />} />
+              </Route>
+
+              {/* Dashboard Routes - Consolidated under one layout */}
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="teams/:teamId?" element={<TeamDashboard />} />
+                <Route path="insights" element={<Insights />} />
+                <Route path="pulsebot" element={<PulseBot />} />
+                <Route path="ai" element={<AiDashboard />} />
+                <Route path="certification" element={<CertificationEngine />} />
+                <Route path="certification/share" element={<ShareCertification />} />
               </Route>
 
               {/* 404 Route */}

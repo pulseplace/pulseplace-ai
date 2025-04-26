@@ -113,3 +113,23 @@ export interface MockPulseScoreData {
   insights: string[];
   recommendedActions: string[];
 }
+
+// Theme trend analysis types
+export interface ThemeTrend {
+  theme: ScoringTheme;
+  previousScore: number;
+  currentScore: number;
+  change: number;
+  direction: 'up' | 'down' | 'stable';
+}
+
+export interface AttritionRisk {
+  department: string;
+  risk: number;
+  change: number;
+  factors: {
+    theme: ScoringTheme;
+    impact: number;
+  }[];
+  level: 'high' | 'medium' | 'low';
+}

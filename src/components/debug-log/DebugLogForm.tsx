@@ -1,125 +1,210 @@
 
 import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useDebugLogs } from '@/contexts/TaskContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Plus } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useDebugLogs } from '@/contexts/TaskContext';
-import { DebugLogSeverity } from '@/types/task.types';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+} from "@/components/ui/select";
 
-const DebugLogForm: React.FC = () => {
+const debugLogSchema = z.object({
+  description: z.string().min(5, { message: "Description is required" }),
+  component: z.string().min(1, { message: "Component is required" }),
+  severity: z.string().min(1, { message: "Severity is required" }),
+  notes: z.string().optional(),
+  assignedTo: z.string().optional(),
+  loggedBy: z.string().min(1, { message: "Logged by is required" }),
+});
+
+type DebugLogFormValues = z.infer<typeof debugLogSchema>;
+
+const DebugLogForm = () => {
   const { addDebugLog } = useDebugLogs();
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
-
-  const onSubmit = (data: any) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  
+  const form = useForm<DebugLogFormValues>({
+    resolver: zodResolver(debugLogSchema),
+    defaultValues: {
+      description: "",
+      component: "",
+      severity: "medium",
+      notes: "",
+      assignedTo: "",
+      loggedBy: "",
+    },
+  });
+  
+  const onSubmit = (data: DebugLogFormValues) => {
     addDebugLog({
       description: data.description,
       component: data.component,
-      severity: data.severity as DebugLogSeverity,
-      status: 'Open',
-      loggedBy: data.loggedBy || 'Anonymous',
+      severity: data.severity as any,
+      notes: data.notes,
       assignedTo: data.assignedTo || undefined,
-      notes: data.notes || undefined,
-      fixLink: data.fixLink || undefined
+      loggedBy: data.loggedBy,
+      status: 'Open'
     });
-
-    toast.success('Debug log added successfully');
-    reset();
+    
+    form.reset();
+    setIsOpen(false);
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Log New Issue</CardTitle>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              {...register('description', { required: 'Description is required' })}
-              placeholder="Describe the issue..."
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button className="bg-pulse-gradient hover:opacity-90">
+          <Plus className="mr-2 h-4 w-4" />
+          Log New Issue
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Log a new issue</DialogTitle>
+          <DialogDescription>
+            Describe the issue you've encountered to help track and resolve it.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Brief description of the issue" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.description && (
-              <p className="text-sm text-red-500">{errors.description.message as string}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="component">Component</Label>
-            <Input
-              id="component"
-              {...register('component', { required: 'Component is required' })}
-              placeholder="e.g., Dashboard, PulseBot, Survey"
+            
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="component"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Component</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Affected component" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="severity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Severity</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select severity" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="critical">Critical</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Additional details about the issue"
+                      className="min-h-[100px]"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.component && (
-              <p className="text-sm text-red-500">{errors.component.message as string}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="severity">Severity</Label>
-            <Select
-              onValueChange={(value) => setValue('severity', value)}
-              defaultValue="medium"
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select severity" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="critical">Critical</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-              </SelectContent>
-            </Select>
-            <input type="hidden" {...register('severity', { required: true })} />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="loggedBy">Logged By</Label>
-            <Input
-              id="loggedBy"
-              {...register('loggedBy')}
-              placeholder="Your name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="assignedTo">Assign To (Optional)</Label>
-            <Input
-              id="assignedTo"
-              {...register('assignedTo')}
-              placeholder="Assignee name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes (Optional)</Label>
-            <Textarea
-              id="notes"
-              {...register('notes')}
-              placeholder="Additional details or steps to reproduce"
-              rows={3}
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" className="w-full">Log Issue</Button>
-        </CardFooter>
-      </form>
-    </Card>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="loggedBy"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Logged By</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="assignedTo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assign To (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Who should fix this?" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="flex justify-end pt-2">
+              <Button type="submit">Log Issue</Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

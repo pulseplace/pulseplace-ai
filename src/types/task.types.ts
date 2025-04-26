@@ -1,14 +1,43 @@
 
-export type DebugLogStatus = 'Open' | 'In Progress' | 'Fixed' | 'Won\'t Fix';
-export type DebugLogSeverity = 'critical' | 'high' | 'medium' | 'low';
+export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'blocked' | 'completed';
+export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
+export type TaskModule = 'dashboard' | 'pulsebot' | 'certification' | 'analytics' | 'survey';
+export type BuildFlowLane = 'backlog' | 'current_sprint' | 'shipped';
+
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  dueDate?: string;
+  deadline?: string;
+  createdAt: string;
+  module: TaskModule;
+  owner?: string;
+  assignedTo?: string;
+  sprint?: string;
+}
+
+export interface BuildRequest {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'backlog' | 'in_progress' | 'review' | 'blocked' | 'completed' | 'shipped';
+  priority: TaskPriority;
+  createdAt: string;
+  module: TaskModule;
+  assignedTo?: string;
+  lane?: BuildFlowLane;
+}
 
 export interface DebugLog {
   id: string;
   description: string;
-  status: DebugLogStatus;
+  status: 'Open' | 'In Progress' | 'Fixed';
   severity: DebugLogSeverity;
   component: string;
-  loggedBy: string;
+  loggedBy?: string;
   dateLogged: string;
   dateFixed?: string;
   assignedTo?: string;
@@ -16,40 +45,4 @@ export interface DebugLog {
   fixLink?: string;
 }
 
-// Add missing task types for build-flow
-export interface BuildRequest {
-  id: string;
-  title: string;
-  description: string;
-  status: 'backlog' | 'in_progress' | 'review' | 'done';
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  createdAt: string;
-  assignedTo?: string;
-  module: TaskModule;
-}
-
-export type BuildFlowLane = 'backlog' | 'in_progress' | 'review' | 'done';
-
-export type TaskModule = 
-  | 'core'
-  | 'dashboard'
-  | 'certification'
-  | 'pulsebot'
-  | 'survey'
-  | 'integration';
-
-export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
-export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'completed' | 'blocked';
-export type TaskOwner = string;
-
-export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  priority: TaskPriority;
-  dueDate?: string;
-  createdAt: string;
-  module: TaskModule;
-  owner?: TaskOwner;
-}
+export type DebugLogSeverity = 'low' | 'medium' | 'high' | 'critical';

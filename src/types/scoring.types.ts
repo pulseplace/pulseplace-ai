@@ -1,6 +1,4 @@
 
-import { Json } from './database.types';
-
 export type ScoringTheme = 
   | 'trust_in_leadership'
   | 'psychological_safety'
@@ -48,7 +46,7 @@ export interface ThemeScore {
   weight?: number;
 }
 
-// Updated PulseScoreTier to match what's used in the app
+// Updated PulseScoreTier to match what's used in components
 export type PulseScoreTier = 
   | 'thriving'
   | 'stable'

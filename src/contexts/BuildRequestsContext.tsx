@@ -1,7 +1,7 @@
 
 import React, { createContext, useState, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { BuildRequest, TaskModule } from '@/types/task.types';
+import { BuildRequest } from '@/types/task.types';
 
 // Sample build requests data
 const initialBuildRequests: BuildRequest[] = [
@@ -13,7 +13,8 @@ const initialBuildRequests: BuildRequest[] = [
     priority: 'high',
     createdAt: '2025-04-17',
     assignedTo: 'Alex Chen',
-    module: 'certification'
+    module: 'certification',
+    lane: 'backlog'
   },
   {
     id: '2',
@@ -22,7 +23,8 @@ const initialBuildRequests: BuildRequest[] = [
     status: 'backlog',
     priority: 'medium',
     createdAt: '2025-04-19',
-    module: 'dashboard'
+    module: 'dashboard',
+    lane: 'backlog'
   },
   {
     id: '3',
@@ -32,7 +34,8 @@ const initialBuildRequests: BuildRequest[] = [
     priority: 'critical',
     createdAt: '2025-04-10',
     assignedTo: 'Jamie Wong',
-    module: 'pulsebot'
+    module: 'pulsebot',
+    lane: 'current_sprint'
   }
 ];
 

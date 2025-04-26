@@ -1,120 +1,157 @@
 
 import React, { useState } from 'react';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
-import { useTasks } from '@/contexts/TasksContext';
-import { Task } from '@/types/task.types';
+import { useTask } from '@/contexts/TaskContext';
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-
-const locales = {
-  'en-US': require('date-fns/locale/en-US')
-};
-
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales,
-});
-
-const TaskCalendar: React.FC = () => {
-  const { tasks } = useTasks();
-  const [selectedEvent, setSelectedEvent] = useState<Task | null>(null);
-
-  const events = tasks.map(task => ({
-    ...task,
-    title: task.title,
-    start: task.dueDate ? new Date(task.dueDate) : new Date(),
-    end: task.dueDate ? new Date(task.dueDate) : new Date(),
-    allDay: true,
-  }));
-
-  const handleSelectEvent = (event: any) => {
-    const task = tasks.find(t => t.id === event.id);
-    if (task) {
-      setSelectedEvent(task);
-    }
+const TaskCalendar = () => {
+  const { tasks } = useTask();
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  
+  // Format date to YYYY-MM-DD
+  const formatDateForComparison = (date: Date): string => {
+    return date.toISOString().split('T')[0];
   };
-
-  const handleCloseDetails = () => {
-    setSelectedEvent(null);
+  
+  // Get tasks for a specific date
+  const getTasksForDate = (dateStr: string) => {
+    return tasks.filter(task => task.dueDate === dateStr);
   };
-
-  const eventStyleGetter = (event: any) => {
-    let backgroundColor = '#3b82f6'; // Default blue
-
-    switch (event.priority) {
-      case 'critical':
-        backgroundColor = '#ef4444'; // red
-        break;
-      case 'high':
-        backgroundColor = '#f97316'; // orange
-        break;
-      case 'medium':
-        backgroundColor = '#3b82f6'; // blue
-        break;
-      case 'low':
-        backgroundColor = '#10b981'; // green
-        break;
-      default:
-        backgroundColor = '#3b82f6';
-    }
-
-    return {
-      style: {
-        backgroundColor,
-        borderRadius: '4px',
-        opacity: 0.8,
-        color: 'white',
-        border: '0',
-        display: 'block',
-        padding: '2px 8px',
+  
+  // Get all dates that have tasks
+  const getDatesWithTasks = () => {
+    const dates: { [key: string]: number } = {};
+    tasks.forEach(task => {
+      if (task.dueDate) {
+        dates[task.dueDate] = (dates[task.dueDate] || 0) + 1;
       }
-    };
+    });
+    return dates;
   };
-
-  return (
-    <div className="h-[600px]">
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: '100%' }}
-        onSelectEvent={handleSelectEvent}
-        eventPropGetter={eventStyleGetter}
-        views={['month', 'week', 'day']}
-      />
-      
-      {selectedEvent && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <h3 className="text-lg font-bold mb-2">{selectedEvent.title}</h3>
-            <p className="text-gray-600 mb-4">{selectedEvent.description}</p>
-            <div className="mb-4">
-              <span className="font-semibold">Priority:</span> {selectedEvent.priority}
-            </div>
-            <div className="mb-4">
-              <span className="font-semibold">Status:</span> {selectedEvent.status}
-            </div>
-            {selectedEvent.dueDate && (
-              <div className="mb-4">
-                <span className="font-semibold">Due Date:</span> {format(new Date(selectedEvent.dueDate), 'PPP')}
-              </div>
-            )}
-            {selectedEvent.owner && (
-              <div className="mb-4">
-                <span className="font-semibold">Owner:</span> {selectedEvent.owner}
-              </div>
-            )}
-            <div className="flex justify-end">
-              <Button onClick={handleCloseDetails}>Close</Button>
-            </div>
+  
+  const datesWithTasks = getDatesWithTasks();
+  
+  // Handle date selection
+  const handleSelect = (date: Date | undefined) => {
+    if (date) {
+      setDate(date);
+      const formattedDate = formatDateForComparison(date);
+      setSelectedDate(formattedDate);
+    }
+  };
+  
+  // Style tasks based on status and priority
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'todo':
+        return 'bg-gray-200 text-gray-800';
+      case 'in_progress':
+        return 'bg-blue-100 text-blue-800';
+      case 'review':
+        return 'bg-purple-100 text-purple-800';
+      case 'blocked':
+        return 'bg-red-100 text-red-800';
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-200 text-gray-800';
+    }
+  };
+  
+  const getPriorityBorder = (priority: string) => {
+    switch (priority) {
+      case 'critical':
+        return 'border-l-4 border-red-600';
+      case 'high':
+        return 'border-l-4 border-red-500';
+      case 'medium':
+        return 'border-l-4 border-amber-500';
+      case 'low':
+        return 'border-l-4 border-green-500';
+      default:
+        return '';
+    }
+  };
+  
+  // Custom day render to show task indicators
+  const renderDay = (day: Date) => {
+    const dateStr = formatDateForComparison(day);
+    const taskCount = datesWithTasks[dateStr] || 0;
+    
+    return (
+      <div className="relative">
+        {day.getDate()}
+        {taskCount > 0 && (
+          <div className="absolute -top-1 -right-1">
+            <Badge variant="secondary" className="h-4 w-4 p-0 flex items-center justify-center text-[10px]">
+              {taskCount}
+            </Badge>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+    );
+  };
+  
+  return (
+    <div className="flex flex-col md:flex-row gap-6">
+      <div className="md:w-1/2 lg:w-2/5">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={handleSelect}
+          className="rounded-md border w-full"
+          components={{
+            Day: ({ date, ...props }) => (
+              <Button {...props} variant="ghost" className="h-9 w-9">
+                {renderDay(date)}
+              </Button>
+            ),
+          }}
+        />
+      </div>
+      
+      <div className="flex-1">
+        <h3 className="font-medium mb-4">
+          {selectedDate ? (
+            <>Tasks due on {new Date(selectedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</>
+          ) : (
+            <>Select a date to view tasks</>
+          )}
+        </h3>
+        
+        {selectedDate && (
+          <div className="space-y-3">
+            {getTasksForDate(selectedDate).length > 0 ? (
+              getTasksForDate(selectedDate).map(task => (
+                <Card key={task.id} className={`${getPriorityBorder(task.priority)}`}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-medium">{task.title}</h4>
+                      <Badge className={getStatusColor(task.status)}>
+                        {task.status.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                    {task.description && (
+                      <p className="text-sm text-gray-500 mb-3">{task.description}</p>
+                    )}
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>Module: {task.module}</span>
+                      {task.owner && <span>Owner: {task.owner}</span>}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="text-center py-8 bg-gray-50 rounded-md">
+                <p className="text-gray-500">No tasks due on this date</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

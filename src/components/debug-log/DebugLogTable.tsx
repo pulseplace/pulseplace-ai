@@ -1,118 +1,152 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useDebugLogs } from '@/contexts/TaskContext';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useDebugLogs } from '@/contexts/DebugLogsContext';
-import { formatDistanceToNow } from 'date-fns';
-import { ExternalLink, CheckCircle, AlertCircle } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DebugLog, DebugLogStatus } from '@/types/task.types';
+
+const statusColors = {
+  'Open': 'bg-red-100 text-red-800 border-red-300',
+  'In Progress': 'bg-blue-100 text-blue-800 border-blue-300',
+  'Fixed': 'bg-green-100 text-green-800 border-green-300',
+  'Won\'t Fix': 'bg-gray-100 text-gray-800 border-gray-300'
+};
+
+const severityVariant = {
+  'critical': 'destructive',
+  'high': 'destructive',
+  'medium': 'secondary',
+  'low': 'outline'
+};
 
 const DebugLogTable = () => {
   const { debugLogs, updateDebugLog } = useDebugLogs();
-
-  const handleStatusChange = (id: string, newStatus: string) => {
-    updateDebugLog(id, { status: newStatus });
-  };
-
-  const getSeverityBadge = (severity: string) => {
-    switch (severity) {
-      case 'Critical':
-        return <Badge variant="destructive">Critical</Badge>;
-      case 'Major':
-        return <Badge variant="warning">Major</Badge>;
-      case 'Minor':
-        return <Badge variant="default">Minor</Badge>;
-      default:
-        return <Badge variant="outline">Unknown</Badge>;
-    }
+  const [filter, setFilter] = useState<string | null>(null);
+  
+  // Helper function to handle status change
+  const handleStatusChange = (log: DebugLog, newStatus: DebugLogStatus) => {
+    updateDebugLog({
+      ...log,
+      status: newStatus,
+      dateFixed: newStatus === 'Fixed' ? new Date().toISOString() : log.dateFixed
+    });
   };
   
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Open':
-        return <Badge variant="destructive" className="bg-red-500">Open</Badge>;
-      case 'In Progress':
-        return <Badge variant="warning" className="bg-amber-500">In Progress</Badge>;
-      case 'Fixed':
-        return <Badge variant="success" className="bg-green-500">Fixed</Badge>;
-      default:
-        return <Badge variant="outline">Unknown</Badge>;
-    }
-  };
-
+  const filteredLogs = filter 
+    ? debugLogs.filter(log => log.status === filter || log.severity === filter)
+    : debugLogs;
+    
   return (
-    <div className="rounded-md border overflow-hidden">
+    <div className="rounded-md border">
+      <div className="p-4 bg-gray-50 border-b flex flex-wrap gap-2">
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setFilter(null)}
+          className={filter === null ? 'bg-gray-200' : ''}
+        >
+          All
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setFilter('Open')}
+          className={filter === 'Open' ? 'bg-gray-200' : ''}
+        >
+          Open
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setFilter('In Progress')}
+          className={filter === 'In Progress' ? 'bg-gray-200' : ''}
+        >
+          In Progress
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setFilter('Fixed')}
+          className={filter === 'Fixed' ? 'bg-gray-200' : ''}
+        >
+          Fixed
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm"
+          onClick={() => setFilter('critical')}
+          className={filter === 'critical' ? 'bg-gray-200' : ''}
+        >
+          Critical
+        </Button>
+      </div>
+      
       <Table>
+        <TableCaption>Debug log entries</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[200px]">Component</TableHead>
             <TableHead>Description</TableHead>
+            <TableHead>Component</TableHead>
             <TableHead>Severity</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Date</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {debugLogs.map((log) => (
-            <TableRow key={log.id}>
-              <TableCell className="font-medium">{log.component}</TableCell>
-              <TableCell>{log.description}</TableCell>
-              <TableCell>{getSeverityBadge(log.severity)}</TableCell>
-              <TableCell>{getStatusBadge(log.status)}</TableCell>
-              <TableCell>{formatDistanceToNow(new Date(log.dateLogged), { addSuffix: true })}</TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
+          {filteredLogs.length > 0 ? (
+            filteredLogs.map((log) => (
+              <TableRow key={log.id}>
+                <TableCell>{log.description}</TableCell>
+                <TableCell>{log.component}</TableCell>
+                <TableCell>
+                  <Badge variant={severityVariant[log.severity] as any}>
+                    {log.severity}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[log.status]}`}>
+                    {log.status}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  {new Date(log.dateLogged).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
                   {log.status === 'Open' && (
                     <Button 
+                      size="sm" 
                       variant="outline" 
-                      size="sm"
-                      onClick={() => handleStatusChange(log.id, 'In Progress')}
+                      onClick={() => handleStatusChange(log, 'In Progress')}
                     >
-                      Start Working
+                      Start
                     </Button>
                   )}
                   {log.status === 'In Progress' && (
                     <Button 
+                      size="sm" 
                       variant="outline" 
-                      size="sm"
-                      className="text-green-600 border-green-600 hover:bg-green-50"
-                      onClick={() => handleStatusChange(log.id, 'Fixed')}
+                      onClick={() => handleStatusChange(log, 'Fixed')}
                     >
-                      <CheckCircle className="h-4 w-4 mr-1" />
                       Mark Fixed
                     </Button>
                   )}
-                  {log.fixLink && (
-                    <a 
-                      href={log.fixLink} 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-1" />
-                      View Fix
-                    </a>
-                  )}
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-          
-          {debugLogs.length === 0 && (
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
             <TableRow>
-              <TableCell colSpan={6} className="text-center py-6 text-gray-500">
-                <div className="flex flex-col items-center">
-                  <AlertCircle className="h-12 w-12 text-gray-300 mb-2" />
-                  <p>No debug logs found</p>
-                </div>
+              <TableCell colSpan={6} className="text-center py-8">
+                No debug logs found
               </TableCell>
             </TableRow>
           )}

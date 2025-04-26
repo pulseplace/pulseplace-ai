@@ -1,3 +1,4 @@
+
 import { Json } from './database.types';
 
 export type ScoringTheme = 
@@ -21,6 +22,11 @@ export interface SurveyQuestion {
   weight: number;
 }
 
+export interface SurveyResponseItem {
+  questionId: string;
+  value: number | string;
+}
+
 export interface SurveyResponse {
   responses: Record<string, number>;
   questionMapping: Record<string, {
@@ -35,11 +41,18 @@ export interface CategoryScore {
   weight: number;
 }
 
+export interface ThemeScore {
+  theme: string;
+  score: number;
+  count: number;
+  weight?: number;
+}
+
 export type PulseScoreTier = 
-  | 'pulse_certified'
-  | 'emerging_culture'
+  | 'thriving'  // Previously pulse_certified
+  | 'stable'    // Previously emerging_culture
   | 'at_risk'
-  | 'intervention_advised';
+  | 'critical'; // Previously intervention_advised
 
 export interface SentimentAnalysis {
   score: number;
@@ -75,6 +88,15 @@ export interface DashboardMetricVisibility {
 export interface DateRangeFilter {
   from: Date;
   to: Date;
+}
+
+export interface PulseScoreData {
+  overallScore: number;
+  categoryScores: CategoryScore[];
+  themeScores: ThemeScore[];
+  tier: PulseScoreTier;
+  insights: string[];
+  recommendedActions: string[];
 }
 
 export interface MockPulseScoreData {

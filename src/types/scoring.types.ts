@@ -49,10 +49,10 @@ export interface ThemeScore {
 }
 
 export type PulseScoreTier = 
-  | 'thriving'  // Previously pulse_certified
-  | 'stable'    // Previously emerging_culture
+  | 'thriving'
+  | 'stable'
   | 'at_risk'
-  | 'critical'; // Previously intervention_advised
+  | 'critical';
 
 export interface SentimentAnalysis {
   score: number;

@@ -1,152 +1,125 @@
 
-import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useDebugLogs } from '@/contexts/DebugLogsContext';
-import { Plus } from 'lucide-react';
+} from '@/components/ui/select';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { useDebugLogs } from '@/contexts/TaskContext';
+import { DebugLogSeverity } from '@/types/task.types';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
-const DebugLogForm = () => {
+const DebugLogForm: React.FC = () => {
   const { addDebugLog } = useDebugLogs();
-  const [open, setOpen] = useState(false);
-  const [component, setComponent] = useState("");
-  const [description, setDescription] = useState("");
-  const [severity, setSeverity] = useState("Major");
-  const [loggedBy, setLoggedBy] = useState("");
-  const [fixLink, setFixLink] = useState("");
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!component || !description || !severity || !loggedBy) {
-      return; // Basic validation
-    }
-    
+  const onSubmit = (data: any) => {
     addDebugLog({
-      component,
-      description,
-      severity: severity as any,
+      description: data.description,
+      component: data.component,
+      severity: data.severity as DebugLogSeverity,
       status: 'Open',
-      loggedBy,
-      fixLink: fixLink || undefined
+      loggedBy: data.loggedBy || 'Anonymous',
+      assignedTo: data.assignedTo || undefined,
+      notes: data.notes || undefined,
+      fixLink: data.fixLink || undefined
     });
-    
-    // Reset form
-    setComponent("");
-    setDescription("");
-    setSeverity("Major");
-    setLoggedBy("");
-    setFixLink("");
-    
-    // Close dialog
-    setOpen(false);
+
+    toast.success('Debug log added successfully');
+    reset();
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-pulse-gradient flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Log New Issue
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Log a new issue</DialogTitle>
-            <DialogDescription>
-              Enter the details of the bug or issue you've encountered.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="component">Component</Label>
-                <Input
-                  id="component"
-                  value={component}
-                  onChange={(e) => setComponent(e.target.value)}
-                  placeholder="e.g., Dashboard, PulseBot"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="severity">Severity</Label>
-                <Select value={severity} onValueChange={setSeverity} required>
-                  <SelectTrigger id="severity">
-                    <SelectValue placeholder="Select severity" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Critical">Critical</SelectItem>
-                    <SelectItem value="Major">Major</SelectItem>
-                    <SelectItem value="Minor">Minor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Detailed description of the issue..."
-                className="min-h-[100px]"
-                required
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="loggedBy">Logged By</Label>
-                <Input
-                  id="loggedBy"
-                  value={loggedBy}
-                  onChange={(e) => setLoggedBy(e.target.value)}
-                  placeholder="Your name"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="fixLink">Fix Link (optional)</Label>
-                <Input
-                  id="fixLink"
-                  value={fixLink}
-                  onChange={(e) => setFixLink(e.target.value)}
-                  placeholder="e.g., GitHub PR or branch URL"
-                />
-              </div>
-            </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Log New Issue</CardTitle>
+      </CardHeader>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              {...register('description', { required: 'Description is required' })}
+              placeholder="Describe the issue..."
+            />
+            {errors.description && (
+              <p className="text-sm text-red-500">{errors.description.message as string}</p>
+            )}
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" className="bg-pulse-gradient">
-              Submit Issue
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+
+          <div className="space-y-2">
+            <Label htmlFor="component">Component</Label>
+            <Input
+              id="component"
+              {...register('component', { required: 'Component is required' })}
+              placeholder="e.g., Dashboard, PulseBot, Survey"
+            />
+            {errors.component && (
+              <p className="text-sm text-red-500">{errors.component.message as string}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="severity">Severity</Label>
+            <Select
+              onValueChange={(value) => setValue('severity', value)}
+              defaultValue="medium"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select severity" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="critical">Critical</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+              </SelectContent>
+            </Select>
+            <input type="hidden" {...register('severity', { required: true })} />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="loggedBy">Logged By</Label>
+            <Input
+              id="loggedBy"
+              {...register('loggedBy')}
+              placeholder="Your name"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="assignedTo">Assign To (Optional)</Label>
+            <Input
+              id="assignedTo"
+              {...register('assignedTo')}
+              placeholder="Assignee name"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notes (Optional)</Label>
+            <Textarea
+              id="notes"
+              {...register('notes')}
+              placeholder="Additional details or steps to reproduce"
+              rows={3}
+            />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" className="w-full">Log Issue</Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 };
 

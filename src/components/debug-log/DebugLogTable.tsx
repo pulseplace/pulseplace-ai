@@ -1,151 +1,79 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useDebugLogs } from '@/contexts/TaskContext';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { DebugLog, DebugLogStatus } from '@/types/task.types';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
-const statusColors = {
-  'Open': 'bg-red-100 text-red-800 border-red-300',
-  'In Progress': 'bg-blue-100 text-blue-800 border-blue-300',
-  'Fixed': 'bg-green-100 text-green-800 border-green-300',
-  'Won\'t Fix': 'bg-gray-100 text-gray-800 border-gray-300'
-};
+const DebugLogTable: React.FC = () => {
+  const { debugLogs } = useDebugLogs();
 
-const severityVariant = {
-  'critical': 'destructive',
-  'high': 'destructive',
-  'medium': 'secondary',
-  'low': 'outline'
-};
-
-const DebugLogTable = () => {
-  const { debugLogs, updateDebugLog } = useDebugLogs();
-  const [filter, setFilter] = useState<string | null>(null);
-  
-  // Helper function to handle status change
-  const handleStatusChange = (log: DebugLog, newStatus: DebugLogStatus) => {
-    updateDebugLog({
-      ...log,
-      status: newStatus,
-      dateFixed: newStatus === 'Fixed' ? new Date().toISOString() : log.dateFixed
-    });
+  const getSeverityColor = (severity: string) => {
+    switch(severity) {
+      case 'critical': return 'bg-red-100 text-red-800 hover:bg-red-100';
+      case 'high': return 'bg-orange-100 text-orange-800 hover:bg-orange-100';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100';
+      case 'low': return 'bg-green-100 text-green-800 hover:bg-green-100';
+      default: return 'bg-gray-100 text-gray-800 hover:bg-gray-100';
+    }
   };
-  
-  const filteredLogs = filter 
-    ? debugLogs.filter(log => log.status === filter || log.severity === filter)
-    : debugLogs;
-    
+
+  const getStatusColor = (status: string) => {
+    switch(status) {
+      case 'Open': return 'bg-red-100 text-red-800 hover:bg-red-100';
+      case 'In Progress': return 'bg-blue-100 text-blue-800 hover:bg-blue-100';
+      case 'Fixed': return 'bg-green-100 text-green-800 hover:bg-green-100';
+      case 'Won\'t Fix': return 'bg-gray-100 text-gray-800 hover:bg-gray-100';
+      default: return 'bg-gray-100 text-gray-800 hover:bg-gray-100';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
   return (
     <div className="rounded-md border">
-      <div className="p-4 bg-gray-50 border-b flex flex-wrap gap-2">
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => setFilter(null)}
-          className={filter === null ? 'bg-gray-200' : ''}
-        >
-          All
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => setFilter('Open')}
-          className={filter === 'Open' ? 'bg-gray-200' : ''}
-        >
-          Open
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => setFilter('In Progress')}
-          className={filter === 'In Progress' ? 'bg-gray-200' : ''}
-        >
-          In Progress
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => setFilter('Fixed')}
-          className={filter === 'Fixed' ? 'bg-gray-200' : ''}
-        >
-          Fixed
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => setFilter('critical')}
-          className={filter === 'critical' ? 'bg-gray-200' : ''}
-        >
-          Critical
-        </Button>
-      </div>
-      
       <Table>
-        <TableCaption>Debug log entries</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Description</TableHead>
+            <TableHead>Issue</TableHead>
             <TableHead>Component</TableHead>
             <TableHead>Severity</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead>Date Logged</TableHead>
+            <TableHead>Assigned</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredLogs.length > 0 ? (
-            filteredLogs.map((log) => (
+          {debugLogs.length > 0 ? (
+            debugLogs.map((log) => (
               <TableRow key={log.id}>
-                <TableCell>{log.description}</TableCell>
+                <TableCell className="font-medium">{log.description}</TableCell>
                 <TableCell>{log.component}</TableCell>
                 <TableCell>
-                  <Badge variant={severityVariant[log.severity] as any}>
-                    {log.severity}
+                  <Badge className={getSeverityColor(log.severity)}>
+                    {log.severity.charAt(0).toUpperCase() + log.severity.slice(1)}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[log.status]}`}>
+                  <Badge className={getStatusColor(log.status)}>
                     {log.status}
-                  </span>
+                  </Badge>
                 </TableCell>
-                <TableCell>
-                  {new Date(log.dateLogged).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  {log.status === 'Open' && (
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => handleStatusChange(log, 'In Progress')}
-                    >
-                      Start
-                    </Button>
-                  )}
-                  {log.status === 'In Progress' && (
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => handleStatusChange(log, 'Fixed')}
-                    >
-                      Mark Fixed
-                    </Button>
-                  )}
-                </TableCell>
+                <TableCell>{formatDate(log.dateLogged)}</TableCell>
+                <TableCell>{log.assignedTo || '-'}</TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="text-center py-8">
+              <TableCell colSpan={6} className="text-center py-8 text-gray-500">
                 No debug logs found
               </TableCell>
             </TableRow>

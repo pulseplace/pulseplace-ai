@@ -13,4 +13,5 @@ export interface DebugLog {
   dateFixed?: string;
   assignedTo?: string;
   notes?: string;
+  fixLink?: string;
 }

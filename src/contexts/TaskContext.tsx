@@ -1,7 +1,7 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { DebugLog, DebugLogStatus } from '@/types/task.types';
+import { DebugLog, DebugLogStatus, DebugLogSeverity } from '@/types/task.types';
 
 interface DebugLogsContextType {
   debugLogs: DebugLog[];
@@ -84,11 +84,13 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
     
-    return debugLogs.filter(log => 
-      log.status === 'Fixed' && 
-      log.dateFixed && 
-      new Date(log.dateFixed) >= cutoffDate
-    );
+    return debugLogs.filter(log => {
+      if (log.status === 'Fixed' && log.dateFixed) {
+        const fixedDate = new Date(log.dateFixed);
+        return fixedDate >= cutoffDate;
+      }
+      return false;
+    });
   };
 
   const value = {

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
@@ -26,7 +25,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   
-  // Initialize with welcome message
   useEffect(() => {
     if (messages.length === 0) {
       setMessages([
@@ -40,7 +38,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     }
   }, [messages.length]);
 
-  // Generate a unique ID for messages
   const generateId = () => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
   };
@@ -48,7 +45,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const sendMessage = async (content: string) => {
     if (!content.trim()) return;
 
-    // Add user message to the chat
     const userMessage: Message = {
       id: generateId(),
       role: 'user',

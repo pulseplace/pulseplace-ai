@@ -55,7 +55,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    await supabaseClient.from('copilot_logs').insert({
+    await supabaseClient.from('pulsebot_logs').insert({
       session_id: sessionId,
       user_message: message,
       bot_reply: botReply,

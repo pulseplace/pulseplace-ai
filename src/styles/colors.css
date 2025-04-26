@@ -1,9 +1,30 @@
 
 /* Brand gradients */
 .bg-pulse-gradient {
-  @apply bg-gradient-to-r from-secondary to-primary;
+  @apply bg-gradient-to-r from-teal-500 to-purple-600;
 }
 
 .bg-success-gradient {
   @apply bg-gradient-to-r from-success to-success/80;
+}
+
+/* Pulse specific colors */
+.text-pulse-600 {
+  @apply text-purple-600;
+}
+
+.bg-pulse-100 {
+  @apply bg-purple-100;
+}
+
+.text-pulse-800 {
+  @apply text-purple-800;
+}
+
+.border-pulse-100 {
+  @apply border-purple-100;
+}
+
+.from-pulse-50 {
+  @apply from-purple-50;
 }

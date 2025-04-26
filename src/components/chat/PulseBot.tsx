@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatbotContext';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { cn } from "@/lib/utils";
 
-const GTMEBot: React.FC = () => {
+const PulseBot: React.FC = () => {
   const { messages, isLoading, isChatOpen, sendMessage, toggleChat } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -100,4 +101,4 @@ const GTMEBot: React.FC = () => {
   );
 };
 
-export default GTMEBot;
+export default PulseBot;

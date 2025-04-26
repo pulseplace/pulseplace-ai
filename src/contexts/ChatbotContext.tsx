@@ -61,7 +61,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
     try {
       // Call the Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('gtme-copilot', {
+      const { data, error } = await supabase.functions.invoke('pulsebot-assistant', {
         body: { 
           message: content,
           sessionId: generateId(),
@@ -87,7 +87,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       console.error('Error sending message:', error);
       toast({
         title: "Communication Error",
-        description: "Unable to reach GTME Copilot. Please try again later.",
+        description: "Unable to reach PulseBot. Please try again later.",
         variant: "destructive",
       });
       
@@ -115,7 +115,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       {
         id: 'welcome-message',
         role: 'assistant',
-        content: "Hi! I'm your GTME Copilot. Ask me anything about marketing funnels, prompt optimization, or performance improvements.",
+        content: "Hi! I'm PulseBot, your AI assistant for workplace culture improvement. I can help you understand your culture metrics, certification progress, and provide insights to enhance your work environment.",
         timestamp: new Date(),
       },
     ]);

@@ -1,4 +1,3 @@
-
 import { type Icon } from 'lucide-react';
 
 // Define types for navigation items
@@ -11,27 +10,31 @@ export interface SubNavItem extends NavItem {
   description: string;
 }
 
-// Primary navigation items
+// Primary navigation items - Simplified for Alpha
 export const navItems: NavItem[] = [
   { label: 'Home', path: '/' },
-  { label: 'How It Works', path: '/how-it-works' },
-  { label: 'Certification', path: '/certification' },
-  { label: 'Insights', path: '/insights' },
+  { label: 'PulseScore', path: '/pulse-score-lite' },
+  { label: 'Team Dashboards', path: '/teams' },
   { label: 'PulseBot', path: '/pulsebot' },
-  { label: 'AI Dashboard', path: '/ai-dashboard' },
-  { label: 'Dashboard', path: '/dashboard' },
 ];
 
-// Features submenu items
+// Features submenu items - Only showing Alpha-ready features
 export const featuresSubItems: SubNavItem[] = [
-  { label: 'Pulse Surveys', description: 'Collect real-time employee feedback', path: '/features#surveys' },
-  { label: 'AI Analytics', description: 'Transform data into actionable insights', path: '/features#ai-analytics' },
-  { label: 'PulseBot', description: 'AI assistant for engagement', path: '/pulsebot' },
-  { label: 'Dashboard', description: 'Real-time culture metrics', path: '/dashboard' },
-  { label: 'LLM Insights', description: 'AI-powered language analytics', path: '/dashboard/llm-insights' },
-  { label: 'Task Management', description: 'Track project tasks and progress', path: '/task-audit' },
-  { label: 'Project Reports', description: 'View handover and summary reports', path: '/project-handover' },
-  { label: 'ROI Calculator', description: 'See the business impact', path: '/roi-calculator' },
+  { 
+    label: 'Culture Certification', 
+    description: 'Get your workplace culture certified', 
+    path: '/pulse-score-lite' 
+  },
+  { 
+    label: 'Team Insights', 
+    description: 'Anonymous feedback and culture metrics', 
+    path: '/teams' 
+  },
+  { 
+    label: 'PulseBot Assistant', 
+    description: 'AI-powered culture improvement', 
+    path: '/pulsebot' 
+  },
 ];
 
 // Helper to check if a path is active

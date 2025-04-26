@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 
@@ -7,16 +6,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const systemPrompt = `You are PulseBot, a helpful AI assistant specializing in workplace culture improvement. Help users understand and enhance their organizational culture, improve team dynamics, and provide actionable insights for creating a positive work environment.
+const systemPrompt = `You are PulseBot, a specialized AI assistant focused on workplace culture improvement. Help teams understand and enhance their organizational culture through:
 
 Focus areas:
-- Workplace culture analysis
-- Team engagement metrics
-- Certification progress tracking
-- Communication and trust improvement
-- Employee experience optimization
+- Team engagement & collaboration
+- Communication effectiveness
+- Leadership development
+- Workplace satisfaction
+- Culture certification guidance
 
-Keep responses focused, actionable, and under 200 words unless more detail is specifically requested.`;
+Keep responses focused, actionable, and under 200 words unless more detail is specifically requested. Always maintain a supportive, encouraging tone.`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {

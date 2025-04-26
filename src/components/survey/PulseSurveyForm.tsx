@@ -1,154 +1,112 @@
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { useSurveyQuestions } from '@/hooks/useSurveyQuestions';
-import { calculatePulseScore } from '@/utils/scoring';
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from 'react-router-dom';
 
-const surveySchema = z.object({
-  responses: z.record(z.string(), z.union([z.string(), z.number()])),
-  email: z.string().email('Please enter a valid email'),
-  marketingOptIn: z.boolean().default(false)
-});
+const questions = [
+  {
+    id: 'team-communication',
+    text: 'How effectively does your team communicate?',
+  },
+  {
+    id: 'work-life-balance',
+    text: 'How satisfied are you with your work-life balance?',
+  },
+  {
+    id: 'leadership-support',
+    text: 'How well does leadership support your professional growth?',
+  },
+  {
+    id: 'team-collaboration',
+    text: 'How would you rate team collaboration?',
+  },
+  {
+    id: 'workplace-culture',
+    text: 'How would you rate your overall workplace culture?',
+  }
+];
 
-type FormValues = z.infer<typeof surveySchema>;
+const options = [
+  { value: '1', label: 'Poor' },
+  { value: '2', label: 'Fair' },
+  { value: '3', label: 'Good' },
+  { value: '4', label: 'Very Good' },
+  { value: '5', label: 'Excellent' }
+];
 
 const PulseSurveyForm = () => {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [showResults, setShowResults] = React.useState(false);
-  const [score, setScore] = React.useState<number | null>(null);
-  const { data: questions = [], isLoading } = useSurveyQuestions();
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [submitted, setSubmitted] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(surveySchema),
-    defaultValues: {
-      responses: {},
-      email: '',
-      marketingOptIn: false
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (Object.keys(answers).length < questions.length) {
+      toast({
+        title: "Please complete all questions",
+        description: "All questions require a response to generate your PulseScore.",
+        variant: "destructive",
+      });
+      return;
     }
-  });
 
-  const onSubmit = async (data: FormValues) => {
-    try {
-      setIsSubmitting(true);
-      // Convert the questions type to match what calculatePulseScore expects
-      const calculatedScore = calculatePulseScore(data.responses, questions as any);
-      
-      const { error } = await supabase
-        .from('pulse_survey_responses')
-        .insert({
-          email: data.email,
-          marketing_opt_in: data.marketingOptIn,
-          responses: data.responses,
-          score: calculatedScore
-        });
+    setSubmitted(true);
+    toast({
+      title: "Survey Submitted!",
+      description: "Thank you for completing the PulseScore certification survey.",
+    });
 
-      if (error) throw error;
-
-      setScore(calculatedScore);
-      setShowResults(true);
-      toast.success('Survey submitted successfully!');
-    } catch (error) {
-      console.error('Error submitting survey:', error);
-      toast.error('Failed to submit survey');
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Redirect to thank you page after a brief delay
+    setTimeout(() => {
+      navigate('/pulse-score-lite/thank-you');
+    }, 2000);
   };
 
-  if (isLoading) {
-    return <div>Loading survey questions...</div>;
-  }
-
-  if (showResults) {
+  if (submitted) {
     return (
       <div className="text-center py-8">
-        <h2 className="text-3xl font-bold mb-4">Your PulseScore™</h2>
-        <div className="text-6xl font-bold text-pulse-600 mb-6">{score}</div>
-        <p className="text-lg mb-6">
-          Want to get certified and showcase your great workplace culture?
+        <h3 className="text-2xl font-semibold mb-4">Thank you for your feedback!</h3>
+        <p className="text-gray-600">
+          Processing your responses...
         </p>
-        <Button className="bg-pulse-gradient">
-          Upgrade to PulsePlace Pro
-        </Button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {questions.map((question) => (
         <div key={question.id} className="space-y-4">
-          <Label className="text-lg font-medium">
-            {question.text}
-          </Label>
-          
-          {question.type === 'likert' ? (
-            <RadioGroup
-              onValueChange={(value) => 
-                form.setValue(`responses.${question.id}`, parseInt(value))
-              }
-              className="grid grid-cols-5 gap-4"
-            >
-              {[1, 2, 3, 4, 5].map((value) => (
-                <div key={value} className="flex flex-col items-center">
-                  <RadioGroupItem
-                    value={value.toString()}
-                    id={`${question.id}-${value}`}
-                  />
-                  <Label htmlFor={`${question.id}-${value}`}>{value}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-          ) : (
-            <Textarea
-              onChange={(e) => 
-                form.setValue(`responses.${question.id}`, e.target.value)
-              }
-              placeholder="Share your thoughts..."
-            />
-          )}
+          <Label className="text-lg font-medium">{question.text}</Label>
+          <RadioGroup
+            onValueChange={(value) => {
+              setAnswers(prev => ({ ...prev, [question.id]: value }));
+            }}
+            value={answers[question.id]}
+            className="flex flex-col space-y-1"
+          >
+            {options.map((option) => (
+              <div key={option.value} className="flex items-center space-x-2">
+                <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
+                <Label htmlFor={`${question.id}-${option.value}`}>{option.label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
         </div>
       ))}
-
-      <div className="space-y-4 pt-4 border-t">
-        <div>
-          <Label htmlFor="email">Email address</Label>
-          <Input
-            type="email"
-            id="email"
-            {...form.register('email')}
-            placeholder="Enter your email to get your results"
-          />
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="marketingOptIn"
-            {...form.register('marketingOptIn')}
-          />
-          <Label htmlFor="marketingOptIn">
-            Keep me updated with workplace culture insights
-          </Label>
-        </div>
-
-        <Button 
-          type="submit" 
-          className="w-full bg-pulse-gradient"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? 'Submitting...' : 'Get Your PulseScore™'}
-        </Button>
-      </div>
+      
+      <Button 
+        type="submit" 
+        className="w-full bg-pulse-gradient"
+        size="lg"
+      >
+        Submit Survey
+      </Button>
     </form>
   );
 };

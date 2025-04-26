@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
@@ -60,7 +59,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Call the Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('pulsebot-assistant', {
         body: { 
           message: content,
@@ -71,7 +69,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
       if (error) throw new Error(error.message || 'Failed to get a response');
 
-      // Add assistant's response to the chat
       if (data && data.reply) {
         const assistantMessage: Message = {
           id: generateId(),
@@ -81,7 +78,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         };
         setMessages((prev) => [...prev, assistantMessage]);
       } else {
-        throw new Error('Invalid response format from assistant');
+        throw new Error('Invalid response format');
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -91,7 +88,6 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         variant: "destructive",
       });
       
-      // Add error message
       setMessages((prev) => [
         ...prev,
         {

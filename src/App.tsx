@@ -38,6 +38,9 @@ function App() {
             <Route path="routes" element={<RouteValidator />} />
           </Route>
 
+          {/* PulseBot standalone route */}
+          <Route path="/pulsebot" element={<PulseBotPage />} />
+
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>

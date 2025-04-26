@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
               <span>AI Dashboard</span>
             </CardTitle>
             <CardDescription>
-              Explore AI-powered insights and analytics
+              Explore AI-powered culture insights and analytics
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart className="h-6 w-6 text-pulse-600" />
-              <span>LLM Insights</span>
+              <span>Culture Insights</span>
             </CardTitle>
             <CardDescription>
               View AI-generated culture insights
@@ -108,7 +108,7 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="mt-4 space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span>Real-time Analysis</span>
+                  <span>Real-time Culture Analysis</span>
                   <span className="text-amber-600">In Progress</span>
                 </div>
                 <div className="flex justify-between text-xs">

@@ -1,16 +1,17 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+
+import React, { createContext, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Task } from '@/types/task.types';
+import { Task, TaskStatus, TaskPriority } from '@/types/task.types';
 
 interface TasksContextType {
   tasks: Task[];
-  addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  updateTask: (id: string, updates: Partial<Omit<Task, 'id' | 'createdAt' | 'updatedAt'>>) => void;
+  addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
+  updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
-  filterTasksBySprint: (sprint: string) => Task[];
-  updateTaskTime: (id: string, timeSpent: number) => void;
-  voteTask: (id: string, isUpvote: boolean) => void;
-  generateChangelog: (taskId: string) => string;
+  moveTask: (id: string, newStatus: TaskStatus) => void;
+  getTasksByStatus: (status: TaskStatus) => Task[];
+  getTasksByModule: (module: string) => Task[];
+  getTasksDueThisWeek: () => Task[];
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
@@ -18,147 +19,96 @@ const TasksContext = createContext<TasksContextType | undefined>(undefined);
 const initialTasks: Task[] = [
   {
     id: '1',
-    name: 'Implement PulseScore Algorithm',
-    module: 'PulseScore Engine',
-    priority: 'High',
-    status: 'In Progress',
-    owner: 'Lovable',
-    deadline: new Date('2025-04-25'),
-    notes: 'Focus on emotion index calculation first',
-    sprint: 'Sprint April 22–26',
-    createdAt: new Date('2025-04-19'),
-    updatedAt: new Date('2025-04-20')
+    title: 'Complete PulseScore algorithm',
+    description: 'Finalize the calculation logic for PulseScore weighted average',
+    status: 'in_progress',
+    priority: 'high',
+    module: 'dashboard',
+    createdAt: new Date(2025, 3, 18).toISOString(),
+    dueDate: new Date(2025, 4, 1).toISOString(),
+    owner: 'Alex Johnson'
   },
   {
     id: '2',
-    name: 'Build Certification Badge Generator',
-    module: 'Certification',
-    priority: 'Medium',
-    status: 'Not Started',
-    owner: 'Founder',
-    deadline: new Date('2025-04-24'),
-    notes: 'Need designs from marketing team',
-    sprint: 'Sprint April 22–26',
-    createdAt: new Date('2025-04-19'),
-    updatedAt: new Date('2025-04-19')
-  },
-  {
-    id: '3',
-    name: 'Fix Dashboard Loading State',
-    module: 'Dashboard',
-    priority: 'Low',
-    status: 'Done',
-    owner: 'External',
-    deadline: new Date('2025-04-22'),
-    notes: 'Added loading spinner and error handling',
-    sprint: 'Sprint April 22–26',
-    createdAt: new Date('2025-04-18'),
-    updatedAt: new Date('2025-04-21')
+    title: 'Fix mobile responsive design',
+    description: 'Address layout issues on mobile devices for the certification page',
+    status: 'todo',
+    priority: 'medium',
+    module: 'certification',
+    createdAt: new Date(2025, 3, 20).toISOString(),
+    dueDate: new Date(2025, 4, 3).toISOString(),
+    owner: 'Morgan Smith'
   }
 ];
 
-export function TasksProvider({ children }: { children: React.ReactNode }) {
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const savedTasks = localStorage.getItem('pulseplace-tasks');
-    return savedTasks ? JSON.parse(savedTasks) : initialTasks;
-  });
+export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  useEffect(() => {
-    localStorage.setItem('pulseplace-tasks', JSON.stringify(tasks));
-  }, [tasks]);
-
-  const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = new Date();
+  const addTask = (task: Omit<Task, 'id' | 'createdAt'>) => {
     const newTask: Task = {
-      ...taskData,
+      ...task,
       id: uuidv4(),
-      createdAt: now,
-      updatedAt: now
+      createdAt: new Date().toISOString()
     };
-    setTasks(prevTasks => [...prevTasks, newTask]);
+    setTasks(prev => [...prev, newTask]);
   };
 
-  const updateTask = (id: string, updates: Partial<Omit<Task, 'id' | 'createdAt' | 'updatedAt'>>) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task => 
-        task.id === id 
-          ? { ...task, ...updates, updatedAt: new Date() } 
-          : task
-      )
+  const updateTask = (id: string, updates: Partial<Task>) => {
+    setTasks(prev => 
+      prev.map(task => task.id === id ? { ...task, ...updates } : task)
     );
   };
 
   const deleteTask = (id: string) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+    setTasks(prev => prev.filter(task => task.id !== id));
   };
 
-  const filterTasksBySprint = (sprint: string) => {
-    return tasks.filter(task => task.sprint === sprint);
-  };
-
-  const updateTaskTime = (id: string, timeSpent: number) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === id
-          ? {
-              ...task,
-              timeSpent: (task.timeSpent || 0) + timeSpent,
-              updatedAt: new Date()
-            }
-          : task
-      )
+  const moveTask = (id: string, newStatus: TaskStatus) => {
+    setTasks(prev => 
+      prev.map(task => task.id === id ? { ...task, status: newStatus } : task)
     );
   };
 
-  const voteTask = (id: string, isUpvote: boolean) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === id
-          ? {
-              ...task,
-              feedback: {
-                upvotes: (task.feedback?.upvotes || 0) + (isUpvote ? 1 : 0),
-                downvotes: (task.feedback?.downvotes || 0) + (!isUpvote ? 1 : 0)
-              },
-              updatedAt: new Date()
-            }
-          : task
-      )
-    );
+  const getTasksByStatus = (status: TaskStatus) => {
+    return tasks.filter(task => task.status === status);
   };
 
-  const generateChangelog = (taskId: string) => {
-    const task = tasks.find(t => t.id === taskId);
-    if (!task) return '';
+  const getTasksByModule = (module: string) => {
+    return tasks.filter(task => task.module === module);
+  };
 
-    return `[${task.status}] ${task.name}\n` +
-           `Module: ${task.module}\n` +
-           `Owner: ${task.owner}\n` +
-           `Notes: ${task.notes}\n` +
-           `Time Spent: ${task.timeSpent || 0} minutes\n` +
-           `Feedback: 👍 ${task.feedback?.upvotes || 0} | 👎 ${task.feedback?.downvotes || 0}`;
+  const getTasksDueThisWeek = () => {
+    const today = new Date();
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
+    
+    return tasks.filter(task => {
+      if (!task.dueDate) return false;
+      const dueDate = new Date(task.dueDate);
+      return dueDate >= today && dueDate <= nextWeek;
+    });
   };
 
   return (
-    <TasksContext.Provider value={{
-      tasks,
-      addTask,
-      updateTask,
+    <TasksContext.Provider value={{ 
+      tasks, 
+      addTask, 
+      updateTask, 
       deleteTask,
-      filterTasksBySprint,
-      updateTaskTime,
-      voteTask,
-      generateChangelog
+      moveTask,
+      getTasksByStatus,
+      getTasksByModule,
+      getTasksDueThisWeek
     }}>
       {children}
     </TasksContext.Provider>
   );
-}
+};
 
-export function useTasks() {
+export const useTasks = () => {
   const context = useContext(TasksContext);
   if (context === undefined) {
     throw new Error('useTasks must be used within a TasksProvider');
   }
   return context;
-}
+};

@@ -1,87 +1,121 @@
 
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import { useTasks } from '@/contexts/TaskContext';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { useTasks } from '@/contexts/TasksContext';
 import { Task } from '@/types/task.types';
+
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-// Setup the localizer
-const localizer = momentLocalizer(moment);
+const locales = {
+  'en-US': require('date-fns/locale/en-US')
+};
 
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  allDay: boolean;
-  resource: Task;
-  status: string;
-  priority: string;
-}
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
 
-const TaskCalendar = () => {
+const TaskCalendar: React.FC = () => {
   const { tasks } = useTasks();
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  
-  // Format tasks for calendar
-  const calendarEvents: CalendarEvent[] = tasks.map(task => ({
-    id: task.id,
-    title: task.name,
-    start: task.deadline ? new Date(task.deadline) : new Date(),
-    end: task.deadline ? new Date(task.deadline) : new Date(),
+  const [selectedEvent, setSelectedEvent] = useState<Task | null>(null);
+
+  const events = tasks.map(task => ({
+    ...task,
+    title: task.title,
+    start: task.dueDate ? new Date(task.dueDate) : new Date(),
+    end: task.dueDate ? new Date(task.dueDate) : new Date(),
     allDay: true,
-    resource: task,
-    status: task.status,
-    priority: task.priority
   }));
-  
-  // Event styling based on priority and status
-  const eventStyleGetter = (event: CalendarEvent) => {
-    let backgroundColor = '#3490dc'; // Default blue
-    
-    // Color based on priority
-    if (event.priority === 'High') {
-      backgroundColor = '#e53e3e'; // Red for high priority
-    } else if (event.priority === 'Medium') {
-      backgroundColor = '#ed8936'; // Orange for medium priority
-    } else if (event.priority === 'Low') {
-      backgroundColor = '#38a169'; // Green for low priority
+
+  const handleSelectEvent = (event: any) => {
+    const task = tasks.find(t => t.id === event.id);
+    if (task) {
+      setSelectedEvent(task);
     }
-    
-    // If the task is done, make it slightly transparent
-    const opacity = event.status === 'Done' ? 0.6 : 1;
-    
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedEvent(null);
+  };
+
+  const eventStyleGetter = (event: any) => {
+    let backgroundColor = '#3b82f6'; // Default blue
+
+    switch (event.priority) {
+      case 'critical':
+        backgroundColor = '#ef4444'; // red
+        break;
+      case 'high':
+        backgroundColor = '#f97316'; // orange
+        break;
+      case 'medium':
+        backgroundColor = '#3b82f6'; // blue
+        break;
+      case 'low':
+        backgroundColor = '#10b981'; // green
+        break;
+      default:
+        backgroundColor = '#3b82f6';
+    }
+
     return {
       style: {
         backgroundColor,
-        opacity,
         borderRadius: '4px',
-        border: 'none',
+        opacity: 0.8,
         color: 'white',
+        border: '0',
+        display: 'block',
+        padding: '2px 8px',
       }
     };
   };
-  
-  // Handle event select
-  const handleSelectEvent = (event: CalendarEvent) => {
-    setSelectedTask(event.resource);
-  };
-  
+
   return (
-    <Card className="p-4 h-[600px] flex flex-col">
+    <div className="h-[600px]">
       <Calendar
         localizer={localizer}
-        events={calendarEvents}
+        events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: '100%', width: '100%' }}
-        eventPropGetter={eventStyleGetter}
+        style={{ height: '100%' }}
         onSelectEvent={handleSelectEvent}
+        eventPropGetter={eventStyleGetter}
         views={['month', 'week', 'day']}
       />
-    </Card>
+      
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <h3 className="text-lg font-bold mb-2">{selectedEvent.title}</h3>
+            <p className="text-gray-600 mb-4">{selectedEvent.description}</p>
+            <div className="mb-4">
+              <span className="font-semibold">Priority:</span> {selectedEvent.priority}
+            </div>
+            <div className="mb-4">
+              <span className="font-semibold">Status:</span> {selectedEvent.status}
+            </div>
+            {selectedEvent.dueDate && (
+              <div className="mb-4">
+                <span className="font-semibold">Due Date:</span> {format(new Date(selectedEvent.dueDate), 'PPP')}
+              </div>
+            )}
+            {selectedEvent.owner && (
+              <div className="mb-4">
+                <span className="font-semibold">Owner:</span> {selectedEvent.owner}
+              </div>
+            )}
+            <div className="flex justify-end">
+              <Button onClick={handleCloseDetails}>Close</Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

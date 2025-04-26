@@ -1,21 +1,9 @@
 
 import React from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
-
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
@@ -24,196 +12,121 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
+import { useBuildRequests } from '@/contexts/BuildRequestsContext';
 import { BuildRequest, TaskModule } from '@/types/task.types';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
-const buildRequestSchema = z.object({
-  name: z.string().min(3, 'Request name must be at least 3 characters'),
-  context: z.string().min(10, 'Please provide more context'),
-  module: z.enum([
-    'PulseScore Engine', 
-    'AI Summary', 
-    'Certification', 
-    'Dashboard', 
-    'Slack Bot', 
-    'Lite Survey', 
-    'Backend Infra', 
-    'Frontend UI', 
-    'Other'
-  ] as const),
-  deadline: z.date().nullable(),
-  notes: z.string().optional(),
-});
+const BuildRequestForm: React.FC = () => {
+  const { addBuildRequest } = useBuildRequests();
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
 
-type BuildRequestFormValues = z.infer<typeof buildRequestSchema>;
+  const modules: TaskModule[] = [
+    'core',
+    'dashboard',
+    'certification',
+    'pulsebot',
+    'survey',
+    'integration'
+  ];
 
-interface BuildRequestFormProps {
-  request?: BuildRequest;
-  onSubmit: (data: BuildRequestFormValues) => void;
-  onCancel: () => void;
-}
+  const onSubmit = (data: any) => {
+    addBuildRequest({
+      title: data.title,
+      description: data.description || '',
+      status: 'backlog',
+      priority: data.priority,
+      module: data.module,
+      assignedTo: data.assignedTo || undefined
+    });
 
-export default function BuildRequestForm({ request, onSubmit, onCancel }: BuildRequestFormProps) {
-  const form = useForm<BuildRequestFormValues>({
-    resolver: zodResolver(buildRequestSchema),
-    defaultValues: request ? {
-      name: request.name,
-      context: request.context,
-      module: request.module,
-      deadline: request.deadline ? new Date(request.deadline) : null,
-      notes: request.notes || '',
-    } : {
-      name: '',
-      context: '',
-      module: 'Other',
-      deadline: null,
-      notes: '',
-    },
-  });
-
-  const handleSubmit = (data: BuildRequestFormValues) => {
-    onSubmit(data);
+    toast.success('Build request added successfully');
+    reset();
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Request Name</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Enter build request name" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="module"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Module</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select module" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="PulseScore Engine">PulseScore Engine</SelectItem>
-                    <SelectItem value="AI Summary">AI Summary</SelectItem>
-                    <SelectItem value="Certification">Certification</SelectItem>
-                    <SelectItem value="Dashboard">Dashboard</SelectItem>
-                    <SelectItem value="Slack Bot">Slack Bot</SelectItem>
-                    <SelectItem value="Lite Survey">Lite Survey</SelectItem>
-                    <SelectItem value="Backend Infra">Backend Infra</SelectItem>
-                    <SelectItem value="Frontend UI">Frontend UI</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
+    <Card>
+      <CardHeader>
+        <CardTitle>New Build Request</CardTitle>
+      </CardHeader>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              {...register('title', { required: 'Title is required' })}
+              placeholder="Feature or component name"
+            />
+            {errors.title && (
+              <p className="text-sm text-red-500">{errors.title.message as string}</p>
             )}
-          />
+          </div>
 
-          <FormField
-            control={form.control}
-            name="deadline"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Deadline</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>No deadline</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value || undefined}
-                      onSelect={field.onChange}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              {...register('description')}
+              placeholder="Describe what needs to be built"
+              rows={3}
+            />
+          </div>
 
-        <FormField
-          control={form.control}
-          name="context"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Context</FormLabel>
-              <FormControl>
-                <Textarea 
-                  {...field} 
-                  placeholder="Provide context about why this feature is needed"
-                  className="min-h-[100px]"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <div className="space-y-2">
+            <Label htmlFor="priority">Priority</Label>
+            <Select
+              onValueChange={(value) => setValue('priority', value)}
+              defaultValue="medium"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="critical">Critical</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+              </SelectContent>
+            </Select>
+            <input type="hidden" {...register('priority', { required: true })} />
+          </div>
 
-        <FormField
-          control={form.control}
-          name="notes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Additional Notes</FormLabel>
-              <FormControl>
-                <Textarea 
-                  {...field} 
-                  placeholder="Any additional details or requirements"
-                  className="min-h-[100px]"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <div className="space-y-2">
+            <Label htmlFor="module">Module</Label>
+            <Select
+              onValueChange={(value) => setValue('module', value)}
+              defaultValue="core"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select module" />
+              </SelectTrigger>
+              <SelectContent>
+                {modules.map(module => (
+                  <SelectItem key={module} value={module}>
+                    {module.charAt(0).toUpperCase() + module.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <input type="hidden" {...register('module', { required: true })} />
+          </div>
 
-        <div className="flex justify-end space-x-2 pt-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit">
-            {request ? 'Update Request' : 'Submit Request'}
-          </Button>
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="assignedTo">Assign To (Optional)</Label>
+            <Input
+              id="assignedTo"
+              {...register('assignedTo')}
+              placeholder="Assignee name"
+            />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" className="w-full">Submit Build Request</Button>
+        </CardFooter>
       </form>
-    </Form>
+    </Card>
   );
-}
+};
+
+export default BuildRequestForm;

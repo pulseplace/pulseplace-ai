@@ -1,65 +1,52 @@
 
-import React, { useState, useEffect } from 'react';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import React from 'react';
+import { Card } from '@/components/ui/card';
 import { BuildFlowLane } from '@/types/task.types';
-import { useBuildRequests } from '@/contexts/TaskContext';
+import { useBuildRequests } from '@/contexts/BuildRequestsContext';
 import BuildFlowColumn from './BuildFlowColumn';
 
-const BuildFlowBoard = () => {
-  const { buildRequests, moveBuildRequest, getBuildRequestsByLane } = useBuildRequests();
+const BuildFlowBoard: React.FC = () => {
+  const { buildRequests, moveBuildRequest } = useBuildRequests();
 
-  const handleDragEnd = (result: any) => {
-    const { destination, source, draggableId } = result;
-    
-    // Dropped outside a droppable area
-    if (!destination) return;
-    
-    // Dropped in the same place
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    ) {
-      return;
+  const lanes: BuildFlowLane[] = ['backlog', 'in_progress', 'review', 'done'];
+
+  const getLaneTitle = (lane: BuildFlowLane): string => {
+    switch (lane) {
+      case 'backlog': return 'Backlog';
+      case 'in_progress': return 'In Progress';
+      case 'review': return 'Review';
+      case 'done': return 'Done';
+      default: return lane;
     }
-    
-    // Move the request to the new lane
-    moveBuildRequest(draggableId, destination.droppableId as BuildFlowLane);
   };
-  
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetLane: BuildFlowLane) => {
+    e.preventDefault();
+    const requestId = e.dataTransfer.getData('requestId');
+    moveBuildRequest(requestId, targetLane);
+  };
+
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-        <Droppable droppableId="BACKLOG">
-          {(provided) => (
-            <BuildFlowColumn 
-              title="Backlog" 
-              items={getBuildRequestsByLane('BACKLOG')} 
-              droppableProvided={provided} 
-            />
-          )}
-        </Droppable>
-        
-        <Droppable droppableId="CURRENT SPRINT">
-          {(provided) => (
-            <BuildFlowColumn 
-              title="Current Sprint" 
-              items={getBuildRequestsByLane('CURRENT SPRINT')} 
-              droppableProvided={provided} 
-            />
-          )}
-        </Droppable>
-        
-        <Droppable droppableId="SHIPPED">
-          {(provided) => (
-            <BuildFlowColumn 
-              title="Shipped" 
-              items={getBuildRequestsByLane('SHIPPED')} 
-              droppableProvided={provided} 
-            />
-          )}
-        </Droppable>
-      </div>
-    </DragDropContext>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {lanes.map(lane => (
+        <Card
+          key={lane}
+          className="p-4 h-full"
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, lane)}
+        >
+          <h3 className="font-medium mb-3">{getLaneTitle(lane)}</h3>
+          <BuildFlowColumn 
+            lane={lane} 
+            requests={buildRequests.filter(r => r.status === lane)} 
+          />
+        </Card>
+      ))}
+    </div>
   );
 };
 

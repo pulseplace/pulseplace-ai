@@ -1,14 +1,14 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+
+import React, { createContext, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { BuildRequest, BuildFlowLane } from '@/types/task.types';
 
 interface BuildRequestsContextType {
   buildRequests: BuildRequest[];
-  addBuildRequest: (request: Omit<BuildRequest, 'id' | 'lane' | 'createdAt'>) => void;
-  updateBuildRequest: (id: string, updates: Partial<Omit<BuildRequest, 'id' | 'createdAt'>>) => void;
+  addBuildRequest: (request: Omit<BuildRequest, 'id' | 'createdAt'>) => void;
+  updateBuildRequest: (id: string, updates: Partial<BuildRequest>) => void;
   deleteBuildRequest: (id: string) => void;
-  moveBuildRequest: (id: string, lane: BuildFlowLane) => void;
-  getBuildRequestsByLane: (lane: BuildFlowLane) => BuildRequest[];
+  moveBuildRequest: (id: string, newStatus: BuildFlowLane) => void;
 }
 
 const BuildRequestsContext = createContext<BuildRequestsContextType | undefined>(undefined);
@@ -16,86 +16,80 @@ const BuildRequestsContext = createContext<BuildRequestsContextType | undefined>
 const initialBuildRequests: BuildRequest[] = [
   {
     id: '1',
-    name: 'Team Comparison View',
-    context: 'Allow managers to compare team performance metrics side-by-side',
-    module: 'Dashboard',
-    deadline: new Date('2025-05-10'),
-    notes: 'Requested by VP of HR',
-    lane: 'BACKLOG',
-    createdAt: new Date('2025-04-18')
+    title: 'Implement Certification Badge',
+    description: 'Create an embeddable certification badge component with customizable styles',
+    status: 'in_progress',
+    priority: 'high',
+    module: 'certification',
+    createdAt: new Date(2025, 3, 20).toISOString(),
+    assignedTo: 'Sarah Chen'
   },
   {
     id: '2',
-    name: 'Slack Integration',
-    context: 'Send pulse survey reminders via Slack',
-    module: 'Slack Bot',
-    deadline: new Date('2025-04-28'),
-    notes: 'Requires Slack API approval',
-    lane: 'CURRENT SPRINT',
-    createdAt: new Date('2025-04-15')
+    title: 'PulseScore Tier Display Fix',
+    description: 'Fix color coding and labels for PulseScore tiers in dashboard summary',
+    status: 'review',
+    priority: 'medium',
+    module: 'dashboard',
+    createdAt: new Date(2025, 3, 22).toISOString(),
+    assignedTo: 'James Wilson'
+  },
+  {
+    id: '3',
+    title: 'Add Email Template Preview',
+    description: 'Create preview functionality for certification email templates',
+    status: 'backlog',
+    priority: 'low',
+    module: 'core',
+    createdAt: new Date(2025, 3, 23).toISOString()
   }
 ];
 
-export function BuildRequestsProvider({ children }: { children: React.ReactNode }) {
-  const [buildRequests, setBuildRequests] = useState<BuildRequest[]>(() => {
-    const savedRequests = localStorage.getItem('pulseplace-build-requests');
-    return savedRequests ? JSON.parse(savedRequests) : initialBuildRequests;
-  });
+export const BuildRequestsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [buildRequests, setBuildRequests] = useState<BuildRequest[]>(initialBuildRequests);
 
-  useEffect(() => {
-    localStorage.setItem('pulseplace-build-requests', JSON.stringify(buildRequests));
-  }, [buildRequests]);
-
-  const addBuildRequest = (requestData: Omit<BuildRequest, 'id' | 'lane' | 'createdAt'>) => {
+  const addBuildRequest = (request: Omit<BuildRequest, 'id' | 'createdAt'>) => {
     const newRequest: BuildRequest = {
-      ...requestData,
+      ...request,
       id: uuidv4(),
-      lane: 'BACKLOG',
-      createdAt: new Date()
+      createdAt: new Date().toISOString()
     };
-    setBuildRequests(prevRequests => [...prevRequests, newRequest]);
+    setBuildRequests(prev => [...prev, newRequest]);
   };
 
-  const updateBuildRequest = (id: string, updates: Partial<Omit<BuildRequest, 'id' | 'createdAt'>>) => {
-    setBuildRequests(prevRequests =>
-      prevRequests.map(request => request.id === id ? { ...request, ...updates } : request)
+  const updateBuildRequest = (id: string, updates: Partial<BuildRequest>) => {
+    setBuildRequests(prev => 
+      prev.map(request => request.id === id ? { ...request, ...updates } : request)
     );
   };
 
   const deleteBuildRequest = (id: string) => {
-    setBuildRequests(prevRequests => prevRequests.filter(request => request.id !== id));
+    setBuildRequests(prev => prev.filter(request => request.id !== id));
   };
 
-  const moveBuildRequest = (id: string, lane: BuildFlowLane) => {
-    setBuildRequests(prevRequests =>
-      prevRequests.map(request => 
-        request.id === id ? { ...request, lane } : request
-      )
+  const moveBuildRequest = (id: string, newStatus: BuildFlowLane) => {
+    setBuildRequests(prev => 
+      prev.map(request => request.id === id ? { ...request, status: newStatus } : request)
     );
   };
 
-  const getBuildRequestsByLane = (lane: BuildFlowLane) => {
-    return buildRequests.filter(request => request.lane === lane);
-  };
-
   return (
-    <BuildRequestsContext.Provider value={{
-      buildRequests,
-      addBuildRequest,
-      updateBuildRequest,
+    <BuildRequestsContext.Provider value={{ 
+      buildRequests, 
+      addBuildRequest, 
+      updateBuildRequest, 
       deleteBuildRequest,
-      moveBuildRequest,
-      getBuildRequestsByLane
+      moveBuildRequest
     }}>
       {children}
     </BuildRequestsContext.Provider>
   );
-}
+};
 
-export function useBuildRequests() {
+export const useBuildRequests = () => {
   const context = useContext(BuildRequestsContext);
   if (context === undefined) {
     throw new Error('useBuildRequests must be used within a BuildRequestsProvider');
   }
   return context;
-}
+};

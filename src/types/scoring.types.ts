@@ -48,7 +48,7 @@ export interface ThemeScore {
   weight?: number;
 }
 
-// Fixed PulseScoreTier to match the TIER_THRESHOLDS in config.ts
+// Fixed PulseScoreTier to match what's used in the app
 export type PulseScoreTier = 
   | 'thriving'
   | 'stable'

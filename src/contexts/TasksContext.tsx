@@ -1,108 +1,106 @@
 
 import React, { createContext, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Task, TaskStatus, TaskPriority } from '@/types/task.types';
+import { Task, TaskStatus, TaskPriority, TaskModule } from '@/types/task.types';
 
 interface TasksContextType {
   tasks: Task[];
   addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
-  updateTask: (id: string, updates: Partial<Task>) => void;
+  updateTask: (task: Task) => void;
   deleteTask: (id: string) => void;
-  moveTask: (id: string, newStatus: TaskStatus) => void;
   getTasksByStatus: (status: TaskStatus) => Task[];
-  getTasksByModule: (module: string) => Task[];
-  getTasksDueThisWeek: () => Task[];
+  getTasksByPriority: (priority: TaskPriority) => Task[];
+  getTasksByModule: (module: TaskModule) => Task[];
 }
 
 const TasksContext = createContext<TasksContextType | undefined>(undefined);
 
+// Sample tasks for demonstration
 const initialTasks: Task[] = [
   {
-    id: '1',
-    title: 'Complete PulseScore algorithm',
-    description: 'Finalize the calculation logic for PulseScore weighted average',
+    id: uuidv4(),
+    title: 'Implement PulseBot response handling',
+    description: 'Create logic to handle PulseBot responses and store them in the database',
     status: 'in_progress',
     priority: 'high',
-    module: 'dashboard',
-    createdAt: new Date(2025, 3, 18).toISOString(),
-    dueDate: new Date(2025, 4, 1).toISOString(),
-    owner: 'Alex Johnson'
+    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
+    module: 'pulsebot',
+    owner: 'Alex'
   },
   {
-    id: '2',
-    title: 'Fix mobile responsive design',
-    description: 'Address layout issues on mobile devices for the certification page',
-    status: 'todo',
+    id: uuidv4(),
+    title: 'Design certification badge',
+    description: 'Create visual designs for certification badges at different tiers',
+    status: 'completed',
     priority: 'medium',
+    createdAt: new Date(Date.now() - 86400000 * 7).toISOString(), // 7 days ago
     module: 'certification',
-    createdAt: new Date(2025, 3, 20).toISOString(),
-    dueDate: new Date(2025, 4, 3).toISOString(),
-    owner: 'Morgan Smith'
-  }
+    owner: 'Jordan'
+  },
+  {
+    id: uuidv4(),
+    title: 'Fix dashboard loading state',
+    description: 'Add proper loading indicators to the dashboard components',
+    status: 'todo',
+    priority: 'low',
+    createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    module: 'dashboard',
+    owner: 'Sam'
+  },
 ];
 
 export const TasksProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
+  // Add a new task
   const addTask = (task: Omit<Task, 'id' | 'createdAt'>) => {
     const newTask: Task = {
       ...task,
       id: uuidv4(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
-    setTasks(prev => [...prev, newTask]);
+    
+    setTasks(prev => [newTask, ...prev]);
   };
 
-  const updateTask = (id: string, updates: Partial<Task>) => {
+  // Update an existing task
+  const updateTask = (updatedTask: Task) => {
     setTasks(prev => 
-      prev.map(task => task.id === id ? { ...task, ...updates } : task)
+      prev.map(task => task.id === updatedTask.id ? updatedTask : task)
     );
   };
 
+  // Delete a task
   const deleteTask = (id: string) => {
     setTasks(prev => prev.filter(task => task.id !== id));
   };
 
-  const moveTask = (id: string, newStatus: TaskStatus) => {
-    setTasks(prev => 
-      prev.map(task => task.id === id ? { ...task, status: newStatus } : task)
-    );
-  };
-
+  // Get tasks by status
   const getTasksByStatus = (status: TaskStatus) => {
     return tasks.filter(task => task.status === status);
   };
 
-  const getTasksByModule = (module: string) => {
+  // Get tasks by priority
+  const getTasksByPriority = (priority: TaskPriority) => {
+    return tasks.filter(task => task.priority === priority);
+  };
+
+  // Get tasks by module
+  const getTasksByModule = (module: TaskModule) => {
     return tasks.filter(task => task.module === module);
   };
 
-  const getTasksDueThisWeek = () => {
-    const today = new Date();
-    const nextWeek = new Date(today);
-    nextWeek.setDate(today.getDate() + 7);
-    
-    return tasks.filter(task => {
-      if (!task.dueDate) return false;
-      const dueDate = new Date(task.dueDate);
-      return dueDate >= today && dueDate <= nextWeek;
-    });
+  const value = {
+    tasks,
+    addTask,
+    updateTask,
+    deleteTask,
+    getTasksByStatus,
+    getTasksByPriority,
+    getTasksByModule
   };
 
-  return (
-    <TasksContext.Provider value={{ 
-      tasks, 
-      addTask, 
-      updateTask, 
-      deleteTask,
-      moveTask,
-      getTasksByStatus,
-      getTasksByModule,
-      getTasksDueThisWeek
-    }}>
-      {children}
-    </TasksContext.Provider>
-  );
+  return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>;
 };
 
 export const useTasks = () => {

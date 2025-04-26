@@ -6,84 +6,98 @@ import { BuildRequest, BuildFlowLane } from '@/types/task.types';
 interface BuildRequestsContextType {
   buildRequests: BuildRequest[];
   addBuildRequest: (request: Omit<BuildRequest, 'id' | 'createdAt'>) => void;
-  updateBuildRequest: (id: string, updates: Partial<BuildRequest>) => void;
+  updateBuildRequest: (request: BuildRequest) => void;
   deleteBuildRequest: (id: string) => void;
   moveBuildRequest: (id: string, newStatus: BuildFlowLane) => void;
 }
 
 const BuildRequestsContext = createContext<BuildRequestsContextType | undefined>(undefined);
 
+// Sample build requests for demonstration
 const initialBuildRequests: BuildRequest[] = [
   {
-    id: '1',
-    title: 'Implement Certification Badge',
-    description: 'Create an embeddable certification badge component with customizable styles',
-    status: 'in_progress',
+    id: uuidv4(),
+    title: 'Implement AI insights dashboard',
+    description: 'Create a dashboard to show AI-generated insights from PulseBot conversations',
+    status: 'backlog',
     priority: 'high',
-    module: 'certification',
-    createdAt: new Date(2025, 3, 20).toISOString(),
-    assignedTo: 'Sarah Chen'
+    createdAt: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
+    module: 'dashboard'
   },
   {
-    id: '2',
-    title: 'PulseScore Tier Display Fix',
-    description: 'Fix color coding and labels for PulseScore tiers in dashboard summary',
+    id: uuidv4(),
+    title: 'PulseBot Slack integration',
+    description: 'Integrate PulseBot with Slack to enable survey collection via Slack',
+    status: 'in_progress',
+    priority: 'critical',
+    createdAt: new Date(Date.now() - 86400000 * 10).toISOString(), // 10 days ago
+    module: 'pulsebot',
+    assignedTo: 'Alex'
+  },
+  {
+    id: uuidv4(),
+    title: 'Certificate sharing via email',
+    description: 'Add functionality to share certificates via email',
     status: 'review',
     priority: 'medium',
-    module: 'dashboard',
-    createdAt: new Date(2025, 3, 22).toISOString(),
-    assignedTo: 'James Wilson'
+    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
+    module: 'certification',
+    assignedTo: 'Jordan'
   },
   {
-    id: '3',
-    title: 'Add Email Template Preview',
-    description: 'Create preview functionality for certification email templates',
-    status: 'backlog',
-    priority: 'low',
+    id: uuidv4(),
+    title: 'Fix mobile responsive issues',
+    description: 'Address various mobile responsive issues in the dashboard',
+    status: 'done',
+    priority: 'high',
+    createdAt: new Date(Date.now() - 86400000 * 15).toISOString(), // 15 days ago
     module: 'core',
-    createdAt: new Date(2025, 3, 23).toISOString()
-  }
+    assignedTo: 'Sam'
+  },
 ];
 
 export const BuildRequestsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [buildRequests, setBuildRequests] = useState<BuildRequest[]>(initialBuildRequests);
 
+  // Add a new build request
   const addBuildRequest = (request: Omit<BuildRequest, 'id' | 'createdAt'>) => {
     const newRequest: BuildRequest = {
       ...request,
       id: uuidv4(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
-    setBuildRequests(prev => [...prev, newRequest]);
+    
+    setBuildRequests(prev => [newRequest, ...prev]);
   };
 
-  const updateBuildRequest = (id: string, updates: Partial<BuildRequest>) => {
+  // Update an existing build request
+  const updateBuildRequest = (updatedRequest: BuildRequest) => {
     setBuildRequests(prev => 
-      prev.map(request => request.id === id ? { ...request, ...updates } : request)
+      prev.map(request => request.id === updatedRequest.id ? updatedRequest : request)
     );
   };
 
+  // Delete a build request
   const deleteBuildRequest = (id: string) => {
     setBuildRequests(prev => prev.filter(request => request.id !== id));
   };
 
+  // Move a build request to a different status lane
   const moveBuildRequest = (id: string, newStatus: BuildFlowLane) => {
     setBuildRequests(prev => 
       prev.map(request => request.id === id ? { ...request, status: newStatus } : request)
     );
   };
 
-  return (
-    <BuildRequestsContext.Provider value={{ 
-      buildRequests, 
-      addBuildRequest, 
-      updateBuildRequest, 
-      deleteBuildRequest,
-      moveBuildRequest
-    }}>
-      {children}
-    </BuildRequestsContext.Provider>
-  );
+  const value = {
+    buildRequests,
+    addBuildRequest,
+    updateBuildRequest,
+    deleteBuildRequest,
+    moveBuildRequest
+  };
+
+  return <BuildRequestsContext.Provider value={value}>{children}</BuildRequestsContext.Provider>;
 };
 
 export const useBuildRequests = () => {

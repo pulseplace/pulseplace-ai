@@ -1,5 +1,5 @@
 
-import { SurveyResponse } from '@/types/scoring.types';
+import { SurveyResponse, ThemeScore, CategoryScore, PulseScoreTier } from '@/types/scoring.types';
 import { processSurveyResponse } from './scoring/core';
 import { getTier } from './scoring/core';
 

@@ -1,176 +1,9 @@
 
-import { 
-  SurveyQuestion, 
-  SurveyResponse, 
-  ThemeScore, 
-  CategoryScore, 
-  PulseScoreTier 
-} from '@/types/scoring.types';
-import { THEME_TO_CATEGORY, CATEGORY_WEIGHTS } from './config';
+import { SurveyQuestion, SurveyResponse, ThemeScore, CategoryScore, PulseScoreTier } from '@/types/scoring.types';
+import { THEME_TO_CATEGORY, CATEGORY_WEIGHTS, TIER_THRESHOLDS } from './config';
 
-// Sample Survey Questions
-export const getSampleSurveyQuestions = (): SurveyQuestion[] => {
-  return [
-    {
-      id: 'q1',
-      text: 'I trust my leadership team to make good decisions for the company',
-      type: 'likert',
-      theme: 'trust_in_leadership',
-      weight: 1.2
-    },
-    {
-      id: 'q2',
-      text: 'I feel safe expressing my opinions at work',
-      type: 'likert',
-      theme: 'psychological_safety',
-      weight: 1.0
-    },
-    {
-      id: 'q3',
-      text: 'I feel a sense of belonging on my team',
-      type: 'likert',
-      theme: 'inclusion_belonging',
-      weight: 1.0
-    },
-    {
-      id: 'q4',
-      text: 'I find my work fulfilling',
-      type: 'likert',
-      theme: 'motivation_fulfillment',
-      weight: 0.9
-    },
-    {
-      id: 'q5',
-      text: 'I understand how my work contributes to the company mission',
-      type: 'likert',
-      theme: 'mission_alignment',
-      weight: 0.8
-    },
-    {
-      id: 'q6',
-      text: 'I intend to stay at this company for the foreseeable future',
-      type: 'likert',
-      theme: 'engagement_continuity',
-      weight: 1.1
-    }
-  ];
-};
-
-// Calculate theme scores
-export const calculateThemeScores = (
-  responses: Record<string, number>, 
-  questionMapping: Record<string, { theme: string; weight: number }>
-): ThemeScore[] => {
-  const themeScores: Record<string, { total: number; count: number; weights: number }> = {};
-  
-  // Sum up values by theme
-  Object.entries(responses).forEach(([questionId, value]) => {
-    if (questionMapping[questionId]) {
-      const { theme, weight } = questionMapping[questionId];
-      
-      if (!themeScores[theme]) {
-        themeScores[theme] = { total: 0, count: 0, weights: 0 };
-      }
-      
-      themeScores[theme].total += (value * weight);
-      themeScores[theme].count += 1;
-      themeScores[theme].weights += weight;
-    }
-  });
-  
-  // Convert to array and calculate score
-  return Object.entries(themeScores).map(([theme, data]) => {
-    const weightedAverage = data.total / data.weights;
-    // Normalize to 0-100 scale (assuming values are 1-5)
-    const score = ((weightedAverage - 1) / 4) * 100;
-    
-    return {
-      theme,
-      score,
-      count: data.count
-    };
-  });
-};
-
-// Calculate category scores
-export const calculateCategoryScores = (themeScores: ThemeScore[]): CategoryScore[] => {
-  const categoryData: Record<string, { total: number; count: number }> = {};
-  
-  // Group theme scores by category
-  themeScores.forEach(themeScore => {
-    const category = THEME_TO_CATEGORY[themeScore.theme as keyof typeof THEME_TO_CATEGORY] || 'unknown';
-    
-    if (!categoryData[category]) {
-      categoryData[category] = { total: 0, count: 0 };
-    }
-    
-    categoryData[category].total += themeScore.score;
-    categoryData[category].count += 1;
-  });
-  
-  // Convert to array and calculate avg score
-  return Object.entries(categoryData).map(([category, data]) => {
-    const avgScore = data.total / data.count;
-    
-    // Apply category weight (if defined)
-    const weight = CATEGORY_WEIGHTS[category as keyof typeof CATEGORY_WEIGHTS] || 1;
-    
-    return {
-      category: category as any,
-      score: avgScore,
-      weight
-    };
-  });
-};
-
-// Calculate overall score
-export const calculateOverallScore = (categoryScores: CategoryScore[]): number => {
-  let totalWeightedScore = 0;
-  let totalWeight = 0;
-  
-  categoryScores.forEach(category => {
-    totalWeightedScore += (category.score * category.weight);
-    totalWeight += category.weight;
-  });
-  
-  // Return weighted average, rounded to nearest integer
-  return Math.round(totalWeightedScore / totalWeight);
-};
-
-// Define tier thresholds
-export const TIER_THRESHOLDS = {
-  thriving: 85,
-  stable: 70,
-  at_risk: 50,
-  critical: 0
-};
-
-// Determine tier based on score
-export const getTier = (score: number): PulseScoreTier => {
-  if (score >= TIER_THRESHOLDS.thriving) return 'thriving';
-  if (score >= TIER_THRESHOLDS.stable) return 'stable';
-  if (score >= TIER_THRESHOLDS.at_risk) return 'at_risk';
-  return 'critical';
-};
-
-// Get human-friendly tier display
-export const getTierDisplay = (tier: PulseScoreTier): string => {
-  switch (tier) {
-    case 'thriving': return 'Thriving';
-    case 'stable': return 'Stable';
-    case 'at_risk': return 'At Risk';
-    case 'critical': return 'Critical';
-    default: return 'Unknown';
-  }
-};
-
-// Process survey response
 export const processSurveyResponse = (response: SurveyResponse) => {
-  const themeScores = calculateThemeScores(
-    response.responses, 
-    response.questionMapping
-  );
-  
+  const themeScores = calculateThemeScores(response);
   const categoryScores = calculateCategoryScores(themeScores);
   const overallScore = calculateOverallScore(categoryScores);
   
@@ -179,4 +12,137 @@ export const processSurveyResponse = (response: SurveyResponse) => {
     categoryScores,
     themeScores
   };
+};
+
+export const calculateThemeScores = (response: SurveyResponse): ThemeScore[] => {
+  const themeScores: Record<string, { score: number; count: number }> = {};
+  
+  Object.keys(response.responses).forEach(questionId => {
+    const theme = response.questionMapping[questionId]?.theme;
+    const weight = response.questionMapping[questionId]?.weight || 1;
+    const value = response.responses[questionId];
+    
+    if (theme && typeof value === 'number') {
+      if (!themeScores[theme]) {
+        themeScores[theme] = { score: 0, count: 0 };
+      }
+      themeScores[theme].score += value * weight;
+      themeScores[theme].count += 1;
+    }
+  });
+
+  return Object.entries(themeScores).map(([theme, data]) => ({
+    theme,
+    score: data.count > 0 ? Math.round(data.score / data.count) : 0,
+    count: data.count
+  }));
+};
+
+export const calculateCategoryScores = (themeScores: ThemeScore[]): CategoryScore[] => {
+  const categoryScores: Record<string, { score: number; count: number }> = {};
+  
+  themeScores.forEach(themeScore => {
+    const category = THEME_TO_CATEGORY[themeScore.theme as keyof typeof THEME_TO_CATEGORY];
+    if (category) {
+      if (!categoryScores[category]) {
+        categoryScores[category] = { score: 0, count: 0 };
+      }
+      categoryScores[category].score += themeScore.score * (themeScore.weight || 1);
+      categoryScores[category].count += 1;
+    }
+  });
+
+  return Object.entries(categoryScores).map(([category, data]) => ({
+    category: category as any,
+    score: data.count > 0 ? Math.round(data.score / data.count) : 0,
+    weight: CATEGORY_WEIGHTS[category as keyof typeof CATEGORY_WEIGHTS] || 1
+  }));
+};
+
+export const calculateOverallScore = (categoryScores: CategoryScore[]): number => {
+  let totalScore = 0;
+  let totalWeight = 0;
+  
+  categoryScores.forEach(score => {
+    totalScore += score.score * score.weight;
+    totalWeight += score.weight;
+  });
+  
+  return totalWeight > 0 ? Math.round(totalScore / totalWeight) : 0;
+};
+
+export const getTier = (score: number): PulseScoreTier => {
+  if (score >= TIER_THRESHOLDS.thriving) return 'thriving';
+  if (score >= TIER_THRESHOLDS.stable) return 'stable';
+  if (score >= TIER_THRESHOLDS.at_risk) return 'at_risk';
+  return 'critical';
+};
+
+export const getTierDisplay = (tier: PulseScoreTier) => {
+  switch (tier) {
+    case 'thriving':
+      return { label: 'Thriving', color: 'text-green-600' };
+    case 'stable':
+      return { label: 'Stable', color: 'text-blue-600' };
+    case 'at_risk':
+      return { label: 'At Risk', color: 'text-amber-600' };
+    case 'critical':
+      return { label: 'Critical', color: 'text-red-600' };
+    default:
+      return { label: 'Unknown', color: 'text-gray-600' };
+  }
+};
+
+export const getSampleSurveyQuestions = (): SurveyQuestion[] => {
+  return [
+    {
+      id: 'q1',
+      text: 'I feel valued by my leadership team',
+      type: 'likert',
+      theme: 'trust_in_leadership',
+      weight: 1.0
+    },
+    {
+      id: 'q2',
+      text: 'I can express my opinions without fear of negative consequences',
+      type: 'likert',
+      theme: 'psychological_safety',
+      weight: 1.2
+    },
+    {
+      id: 'q3',
+      text: 'I feel a sense of belonging at my workplace',
+      type: 'likert',
+      theme: 'inclusion_belonging',
+      weight: 1.0
+    },
+    {
+      id: 'q4',
+      text: 'My work gives me a sense of purpose',
+      type: 'likert',
+      theme: 'motivation_fulfillment',
+      weight: 0.8
+    },
+    {
+      id: 'q5',
+      text: 'I understand and believe in our company mission',
+      type: 'likert',
+      theme: 'mission_alignment',
+      weight: 1.0
+    },
+    {
+      id: 'q6',
+      text: 'I see myself working here a year from now',
+      type: 'likert',
+      theme: 'engagement_continuity',
+      weight: 1.5
+    },
+    {
+      id: 'q7',
+      text: 'Share any specific feedback about leadership communication',
+      type: 'text',
+      theme: 'trust_in_leadership',
+      weight: 0.5
+    }
+  ];
 };

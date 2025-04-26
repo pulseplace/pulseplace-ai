@@ -46,12 +46,15 @@ export interface ThemeScore {
   weight?: number;
 }
 
-// Updated PulseScoreTier to match what's used in components
+// Updated PulseScoreTier to include all tiers used in the application
 export type PulseScoreTier = 
   | 'thriving'
   | 'stable'
   | 'at_risk'
-  | 'critical';
+  | 'critical'
+  | 'pulse_certified'
+  | 'emerging_culture'
+  | 'intervention_advised';
 
 export interface SentimentAnalysis {
   score: number;

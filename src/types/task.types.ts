@@ -1,7 +1,14 @@
 
 export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'blocked' | 'completed';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
-export type TaskModule = 'dashboard' | 'pulsebot' | 'certification' | 'analytics' | 'survey';
+export type TaskModule = 
+  | 'dashboard' 
+  | 'pulsebot' 
+  | 'certification' 
+  | 'analytics' 
+  | 'survey'
+  | 'core'
+  | 'integration';
 export type BuildFlowLane = 'backlog' | 'current_sprint' | 'shipped';
 
 export interface Task {
@@ -17,6 +24,7 @@ export interface Task {
   owner?: string;
   assignedTo?: string;
   sprint?: string;
+  notes?: string;
 }
 
 export interface BuildRequest {

@@ -6,11 +6,8 @@ import {
   BarChart3, 
   Bot, 
   Users,
-  Clock,
   ChevronDown,
-  ListTodo,
-  Bug,
-  Workflow
+  ListTodo
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -65,7 +62,7 @@ const DesktopNav = () => {
             className="text-sm"
           >
             <ListTodo className="h-4 w-4 mr-1.5" />
-            Task System
+            Tools
             <ChevronDown className="h-3.5 w-3.5 ml-1.5" />
           </Button>
         </DropdownMenuTrigger>
@@ -103,37 +100,6 @@ const DesktopNav = () => {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to={ROUTES.TEAMS.TEAM('gamma')}>Team Gamma</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to={ROUTES.TEAMS.TEAM('sigma')}>Team Sigma</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to={ROUTES.TEAMS.TEAM('zeta')}>Team Zeta</Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost"
-            size="sm" 
-            className="text-sm"
-          >
-            <Clock className="h-4 w-4 mr-1.5" />
-            QA Sprint
-            <ChevronDown className="h-3.5 w-3.5 ml-1.5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem asChild>
-            <Link to={ROUTES.DASHBOARD.QA_SPRINT}>Sprint Checklist</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to={ROUTES.DASHBOARD.QA_TESTING}>QA Testing Dashboard</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to={ROUTES.DASHBOARD.DASHBOARD_QA}>Dashboard QA Plan</Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

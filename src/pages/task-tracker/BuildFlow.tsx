@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useBuildRequests } from '@/contexts/TaskContext';
+import { useBuildRequests } from '@/contexts/BuildRequestsContext';
 import BuildFlowBoard from '@/components/build-flow/BuildFlowBoard';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
@@ -37,7 +37,7 @@ const BuildFlow = () => {
             <CardTitle className="text-lg">Backlog</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{countByLane('BACKLOG')}</div>
+            <div className="text-3xl font-bold">{countByLane('backlog')}</div>
             <p className="text-sm text-gray-500">Build requests waiting to be started</p>
           </CardContent>
         </Card>
@@ -47,7 +47,7 @@ const BuildFlow = () => {
             <CardTitle className="text-lg">Current Sprint</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{countByLane('CURRENT SPRINT')}</div>
+            <div className="text-3xl font-bold">{countByLane('current_sprint')}</div>
             <p className="text-sm text-gray-500">Build requests in progress</p>
           </CardContent>
         </Card>
@@ -57,7 +57,7 @@ const BuildFlow = () => {
             <CardTitle className="text-lg">Shipped</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{countByLane('SHIPPED')}</div>
+            <div className="text-3xl font-bold">{countByLane('shipped')}</div>
             <p className="text-sm text-gray-500">Build requests completed</p>
           </CardContent>
         </Card>

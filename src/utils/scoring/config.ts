@@ -6,7 +6,10 @@ export const TIER_THRESHOLDS = {
   thriving: 80,
   stable: 65,
   at_risk: 45,
-  critical: 0
+  critical: 0,
+  pulse_certified: 85,
+  emerging_culture: 55,
+  intervention_advised: 30
 };
 
 // Mapping of tiers to display data
@@ -26,6 +29,18 @@ export const TIER_DISPLAY = {
   critical: { 
     label: 'Critical',
     color: 'text-red-600'
+  },
+  pulse_certified: {
+    label: 'Pulse Certified',
+    color: 'text-purple-600'
+  },
+  emerging_culture: {
+    label: 'Emerging Culture',
+    color: 'text-teal-600'
+  },
+  intervention_advised: {
+    label: 'Intervention Advised',
+    color: 'text-orange-600'
   }
 };
 

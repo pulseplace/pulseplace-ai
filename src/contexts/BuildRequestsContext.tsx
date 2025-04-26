@@ -1,7 +1,7 @@
 
 import React, { createContext, useState, useContext } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { BuildRequest } from '@/types/task.types';
+import { BuildRequest, TaskModule } from '@/types/task.types';
 
 // Sample build requests data
 const initialBuildRequests: BuildRequest[] = [

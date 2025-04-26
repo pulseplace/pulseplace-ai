@@ -49,23 +49,8 @@ function App() {
                 <Route index element={<LandingPage />} />
                 <Route path="/pulse-score-lite" element={<PulseScoreLite />} />
                 <Route path="/pulse-score-lite/thank-you" element={<PulseScoreThankYou />} />
-                <Route path="/teams" element={<TeamDashboard />} />
-                <Route path="/teams/:id" element={<TeamDashboard />} />
-                <Route path="/pulsebot" element={<PulseBot />} />
-                <Route path="/certification-engine" element={<CertificationEngine />} />
-                <Route path="/debug-log" element={<DebugLog />} />
                 <Route path="/case-studies/tayana" element={<TayanaStudy />} />
-                <Route path="/task-tracker" element={<TaskTracker />} />
-                <Route path="/build-flow" element={<BuildFlow />} />
-                <Route path="/integrations" element={<Integrations />} />
-                <Route path="/ai-dashboard" element={<AiDashboard />} />
-                <Route path="/insights" element={<Insights />} />
-                <Route path="/insights/pulsebot" element={<PulseBotAnalytics />} />
-                <Route path="/certification/share" element={<ShareCertification />} />
                 <Route path="/book-demo" element={<BookDemo />} />
-                <Route path="/task-summary" element={<TaskSummary />} />
-                <Route path="/qa-browser" element={<QASprint />} />
-                <Route path="/demo/reset" element={<PulseScoreLite />} />
               </Route>
 
               {/* Dashboard Routes */}
@@ -81,14 +66,20 @@ function App() {
                 <Route path="pitch-deck-admin" element={<PitchDeckAdmin />} />
                 <Route path="qa-sprint" element={<QASprint />} />
                 <Route path="tasktracker" element={<TaskTracker />} />
-                <Route path="dashboard-qa" element={<Dashboard />} />
-                <Route path="qa-testing" element={<QASprint />} />
-                <Route path="insights" element={<Insights />} />
-                <Route path="certification" element={<CertificationEngine />} />
-                <Route path="share-certification" element={<ShareCertification />} />
-                <Route path="badge-customization" element={<ShareCertification />} />
-                <Route path="teams" element={<TeamDashboard />} />
               </Route>
+              
+              {/* Core Feature Routes */}
+              <Route path="/pulsebot" element={<PulseBot />} />
+              <Route path="/ai-dashboard" element={<AiDashboard />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="/teams" element={<TeamDashboard />} />
+              <Route path="/teams/:id" element={<TeamDashboard />} />
+              <Route path="/task-tracker" element={<TaskTracker />} />
+              <Route path="/debug-log" element={<DebugLog />} />
+              <Route path="/build-flow" element={<BuildFlow />} />
+              <Route path="/integrations" element={<Integrations />} />
+              <Route path="/task-summary" element={<TaskSummary />} />
+              <Route path="/certification/share" element={<ShareCertification />} />
                 
               {/* Auth Routes */}
               <Route path="/auth" element={<AuthLayout />}>

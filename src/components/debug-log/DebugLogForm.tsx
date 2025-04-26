@@ -1,158 +1,148 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { BugIcon, Plus } from 'lucide-react';
-import { useDebugLogs } from '@/contexts/TaskContext';
-import { DebugLog, DebugLogSeverity, DebugLogStatus } from '@/types/task.types';
+import { useDebugLogs } from '@/contexts/DebugLogsContext';
+import { Plus } from 'lucide-react';
 
-export interface DebugLogFormProps {
-  onSubmit?: (log: Omit<DebugLog, 'id' | 'dateLogged'>) => void;
-  onCancel?: () => void;
-}
-
-const DebugLogForm = ({ onSubmit, onCancel }: DebugLogFormProps = {}) => {
+const DebugLogForm = () => {
   const { addDebugLog } = useDebugLogs();
-  const [isOpen, setIsOpen] = useState(false);
-  const [logData, setLogData] = useState<Omit<DebugLog, 'id' | 'dateLogged'>>({
-    component: '',
-    description: '',
-    severity: 'Major',
-    status: 'Open',
-    loggedBy: ''
-  });
+  const [open, setOpen] = useState(false);
+  const [component, setComponent] = useState("");
+  const [description, setDescription] = useState("");
+  const [severity, setSeverity] = useState("Major");
+  const [loggedBy, setLoggedBy] = useState("");
+  const [fixLink, setFixLink] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Use the provided onSubmit or default to addDebugLog
-    if (onSubmit) {
-      onSubmit(logData);
-    } else {
-      addDebugLog(logData);
+    if (!component || !description || !severity || !loggedBy) {
+      return; // Basic validation
     }
     
-    // Reset form and close dialog
-    setLogData({
-      component: '',
-      description: '',
-      severity: 'Major',
+    addDebugLog({
+      component,
+      description,
+      severity: severity as any,
       status: 'Open',
-      loggedBy: ''
+      loggedBy,
+      fixLink: fixLink || undefined
     });
-    setIsOpen(false);
-  };
-
-  const handleCancel = () => {
-    // Use the provided onCancel or default to closing dialog
-    if (onCancel) {
-      onCancel();
-    }
-    setIsOpen(false);
+    
+    // Reset form
+    setComponent("");
+    setDescription("");
+    setSeverity("Major");
+    setLoggedBy("");
+    setFixLink("");
+    
+    // Close dialog
+    setOpen(false);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-pulse-gradient">
-          <Plus className="mr-2 h-4 w-4" />
+        <Button className="bg-pulse-gradient flex items-center gap-2">
+          <Plus className="h-4 w-4" />
           Log New Issue
         </Button>
       </DialogTrigger>
-      
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <BugIcon className="h-5 w-5" />
-            Log a New Debug Issue
-          </DialogTitle>
-          <DialogDescription>
-            Report bugs and issues to track them in the debug log.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
+      <DialogContent className="sm:max-w-[500px]">
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Log a new issue</DialogTitle>
+            <DialogDescription>
+              Enter the details of the bug or issue you've encountered.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="component">Component</Label>
+                <Input
+                  id="component"
+                  value={component}
+                  onChange={(e) => setComponent(e.target.value)}
+                  placeholder="e.g., Dashboard, PulseBot"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="severity">Severity</Label>
+                <Select value={severity} onValueChange={setSeverity} required>
+                  <SelectTrigger id="severity">
+                    <SelectValue placeholder="Select severity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Critical">Critical</SelectItem>
+                    <SelectItem value="Major">Major</SelectItem>
+                    <SelectItem value="Minor">Minor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
             <div className="space-y-2">
-              <Label htmlFor="component">Component/Module</Label>
-              <Input 
-                id="component"
-                value={logData.component}
-                onChange={(e) => setLogData({...logData, component: e.target.value})}
-                placeholder="e.g. Dashboard"
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Detailed description of the issue..."
+                className="min-h-[100px]"
                 required
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="loggedBy">Logged By</Label>
-              <Input 
-                id="loggedBy"
-                value={logData.loggedBy}
-                onChange={(e) => setLogData({...logData, loggedBy: e.target.value})}
-                placeholder="Your name"
-                required
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="loggedBy">Logged By</Label>
+                <Input
+                  id="loggedBy"
+                  value={loggedBy}
+                  onChange={(e) => setLoggedBy(e.target.value)}
+                  placeholder="Your name"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fixLink">Fix Link (optional)</Label>
+                <Input
+                  id="fixLink"
+                  value={fixLink}
+                  onChange={(e) => setFixLink(e.target.value)}
+                  placeholder="e.g., GitHub PR or branch URL"
+                />
+              </div>
             </div>
           </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="description">Issue Description</Label>
-            <Textarea 
-              id="description"
-              value={logData.description}
-              onChange={(e) => setLogData({...logData, description: e.target.value})}
-              placeholder="Describe the issue in detail..."
-              rows={3}
-              required
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="severity">Severity</Label>
-              <Select 
-                value={logData.severity} 
-                onValueChange={(value: DebugLogSeverity) => setLogData({...logData, severity: value})}
-              >
-                <SelectTrigger id="severity">
-                  <SelectValue placeholder="Select severity" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Critical">Critical</SelectItem>
-                  <SelectItem value="Major">Major</SelectItem>
-                  <SelectItem value="Minor">Minor</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select 
-                value={logData.status} 
-                onValueChange={(value: DebugLogStatus) => setLogData({...logData, status: value})}
-              >
-                <SelectTrigger id="status">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Open">Open</SelectItem>
-                  <SelectItem value="In Progress">In Progress</SelectItem>
-                  <SelectItem value="Fixed">Fixed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <DialogFooter className="pt-4">
-            <Button type="button" variant="outline" onClick={handleCancel}>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" className="bg-pulse-gradient">
+              Submit Issue
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

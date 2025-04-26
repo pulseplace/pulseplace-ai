@@ -1,4 +1,3 @@
-
 export type Json =
   | string
   | number
@@ -109,6 +108,32 @@ export interface Database {
           created_at?: string
         }
       }
+      pulse_survey_responses: {
+        Row: {
+          id: string
+          created_at: string
+          responses: Json
+          score: number | null
+          email: string | null
+          marketing_opt_in: boolean | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          responses: Json
+          score?: number | null
+          email?: string | null
+          marketing_opt_in?: boolean | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          responses?: Json
+          score?: number | null
+          email?: string | null
+          marketing_opt_in?: boolean | null
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -128,3 +153,14 @@ export interface Database {
 export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
 export type Insertables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert']
 export type Updateables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']
+
+export type DebugLog = {
+  id: string;
+  dateLogged: Date;
+  component: string;
+  description: string;
+  severity: 'Critical' | 'Major' | 'Minor';
+  status: 'Open' | 'In Progress' | 'Fixed';
+  loggedBy: string;
+  fixLink?: string;
+};

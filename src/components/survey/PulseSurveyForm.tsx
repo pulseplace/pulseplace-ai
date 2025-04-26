@@ -3,45 +3,71 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
-import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { SurveyResponse } from '@/types/scoring.types';
 
+// Survey questions focused on trust, engagement, and wellbeing
 const questions = [
   {
-    id: 'team-communication',
-    text: 'How effectively does your team communicate?',
+    id: 'trust_leadership',
+    text: 'I trust the leadership team at my organization.',
+    theme: 'trust_in_leadership',
+    weight: 1.2
   },
   {
-    id: 'work-life-balance',
-    text: 'How satisfied are you with your work-life balance?',
+    id: 'psych_safety',
+    text: 'I feel safe sharing my opinions without fear of negative consequences.',
+    theme: 'psychological_safety',
+    weight: 1.0
   },
   {
-    id: 'leadership-support',
-    text: 'How well does leadership support your professional growth?',
+    id: 'inclusion',
+    text: 'I feel a sense of belonging at my workplace.',
+    theme: 'inclusion_belonging',
+    weight: 1.0
   },
   {
-    id: 'team-collaboration',
-    text: 'How would you rate team collaboration?',
+    id: 'engagement',
+    text: 'I find my work meaningful and engaging.',
+    theme: 'motivation_fulfillment',
+    weight: 1.1
   },
   {
-    id: 'workplace-culture',
-    text: 'How would you rate your overall workplace culture?',
-  }
+    id: 'mission',
+    text: 'I understand and believe in our company\'s mission.',
+    theme: 'mission_alignment',
+    weight: 0.9
+  },
+  {
+    id: 'retention',
+    text: 'I see myself working here a year from now.',
+    theme: 'engagement_continuity',
+    weight: 1.3
+  },
 ];
 
 const options = [
-  { value: '1', label: 'Poor' },
-  { value: '2', label: 'Fair' },
-  { value: '3', label: 'Good' },
-  { value: '4', label: 'Very Good' },
-  { value: '5', label: 'Excellent' }
+  { value: '1', label: 'Strongly Disagree' },
+  { value: '2', label: 'Disagree' },
+  { value: '3', label: 'Neutral' },
+  { value: '4', label: 'Agree' },
+  { value: '5', label: 'Strongly Agree' }
 ];
 
-const PulseSurveyForm = () => {
+interface PulseSurveyFormProps {
+  onSubmit: (response: SurveyResponse) => void;
+}
+
+const PulseSurveyForm: React.FC<PulseSurveyFormProps> = ({ onSubmit }) => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [email, setEmail] = useState<string>('');
+  const [companyName, setCompanyName] = useState<string>('');
+  const [marketingOptIn, setMarketingOptIn] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,57 +81,130 @@ const PulseSurveyForm = () => {
       return;
     }
 
-    setSubmitted(true);
-    toast({
-      title: "Survey Submitted!",
-      description: "Thank you for completing the PulseScore certification survey.",
-    });
-
-    // Redirect to thank you page after a brief delay
-    setTimeout(() => {
-      navigate('/pulse-score-lite/thank-you');
-    }, 2000);
+    setIsSubmitting(true);
+    
+    try {
+      // Format responses for database
+      const formattedResponses: Record<string, number> = {};
+      Object.entries(answers).forEach(([questionId, value]) => {
+        formattedResponses[questionId] = parseInt(value, 10);
+      });
+      
+      // Save response to Supabase
+      const { data, error } = await supabase
+        .from('pulse_survey_responses')
+        .insert({
+          responses: formattedResponses,
+          email: email || null,
+          marketing_opt_in: marketingOptIn,
+          score: 0 // Will be calculated and updated
+        })
+        .select();
+      
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      // Prepare the response for scoring calculation
+      const surveyResponse: SurveyResponse = {
+        responses: formattedResponses,
+        questionMapping: questions.reduce((map, q) => {
+          map[q.id] = {
+            theme: q.theme,
+            weight: q.weight
+          };
+          return map;
+        }, {} as Record<string, { theme: string; weight: number }>)
+      };
+      
+      // Call the onSubmit handler with the response
+      onSubmit(surveyResponse);
+      
+    } catch (error) {
+      console.error('Error submitting survey:', error);
+      toast({
+        title: "Submission error",
+        description: "There was a problem submitting your survey. Please try again.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+    }
   };
-
-  if (submitted) {
-    return (
-      <div className="text-center py-8">
-        <h3 className="text-2xl font-semibold mb-4">Thank you for your feedback!</h3>
-        <p className="text-gray-600">
-          Processing your responses...
-        </p>
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {questions.map((question) => (
-        <div key={question.id} className="space-y-4">
-          <Label className="text-lg font-medium">{question.text}</Label>
-          <RadioGroup
-            onValueChange={(value) => {
-              setAnswers(prev => ({ ...prev, [question.id]: value }));
-            }}
-            value={answers[question.id]}
-            className="flex flex-col space-y-1"
-          >
-            {options.map((option) => (
-              <div key={option.value} className="flex items-center space-x-2">
-                <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
-                <Label htmlFor={`${question.id}-${option.value}`}>{option.label}</Label>
-              </div>
-            ))}
-          </RadioGroup>
+      <div className="space-y-4">
+        <h2 className="text-lg font-medium">About You (Optional)</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="your.email@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="companyName">Company Name</Label>
+            <Input
+              id="companyName"
+              placeholder="Your organization"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+            />
+          </div>
         </div>
-      ))}
+      </div>
+
+      <div className="border-t pt-8">
+        <h2 className="text-lg font-medium mb-6">Rate your agreement with each statement</h2>
+        
+        {questions.map((question) => (
+          <div key={question.id} className="space-y-4 mb-8">
+            <Label className="text-base">{question.text}</Label>
+            <RadioGroup
+              onValueChange={(value) => {
+                setAnswers(prev => ({ ...prev, [question.id]: value }));
+              }}
+              value={answers[question.id]}
+              className="flex justify-between"
+            >
+              {options.map((option) => (
+                <div key={option.value} className="flex flex-col items-center space-y-1">
+                  <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
+                  <Label 
+                    htmlFor={`${question.id}-${option.value}`}
+                    className="text-xs text-gray-500"
+                  >
+                    {option.label}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+        ))}
+      </div>
+      
+      <div className="flex items-center space-x-2">
+        <Checkbox 
+          id="marketing-optin" 
+          checked={marketingOptIn}
+          onCheckedChange={(checked) => setMarketingOptIn(!!checked)} 
+        />
+        <Label htmlFor="marketing-optin" className="text-sm text-gray-600">
+          I'd like to receive insights about workplace culture and certification.
+        </Label>
+      </div>
       
       <Button 
         type="submit" 
         className="w-full bg-pulse-gradient"
         size="lg"
+        disabled={isSubmitting}
       >
-        Submit Survey
+        {isSubmitting ? 'Calculating Your PulseScore...' : 'Submit Survey'}
       </Button>
     </form>
   );

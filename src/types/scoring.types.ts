@@ -1,4 +1,3 @@
-
 import { Json } from './database.types';
 
 export type ScoringTheme = 
@@ -23,30 +22,17 @@ export interface SurveyQuestion {
 }
 
 export interface SurveyResponse {
-  questionId: string;
-  value: number | string;
-  normalizedScore?: number;
-}
-
-export interface ThemeScore {
-  theme: ScoringTheme;
-  score: number;
-  count: number;
+  responses: Record<string, number>;
+  questionMapping: Record<string, {
+    theme: string;
+    weight: number;
+  }>;
 }
 
 export interface CategoryScore {
   category: ScoringCategory;
   score: number;
   weight: number;
-}
-
-export interface PulseScoreData {
-  overallScore: number;
-  categoryScores: CategoryScore[];
-  themeScores: ThemeScore[];
-  tier: PulseScoreTier;
-  insights: string[];
-  recommendedActions: string[];
 }
 
 export type PulseScoreTier = 
@@ -91,7 +77,6 @@ export interface DateRangeFilter {
   to: Date;
 }
 
-// Fix for EmailSendTest component
 export interface MockPulseScoreData {
   overallScore: number;
   categoryScores: {

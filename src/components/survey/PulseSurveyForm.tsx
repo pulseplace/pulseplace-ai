@@ -7,44 +7,44 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from '@/integrations/supabase/client';
-import { SurveyResponse } from '@/types/scoring.types';
+import { SurveyResponse, ScoringTheme } from '@/types/scoring.types';
 
 // Survey questions focused on trust, engagement, and wellbeing
 const questions = [
   {
     id: 'trust_leadership',
     text: 'I trust the leadership team at my organization.',
-    theme: 'trust_in_leadership',
+    theme: 'trust_in_leadership' as ScoringTheme,
     weight: 1.2
   },
   {
     id: 'psych_safety',
     text: 'I feel safe sharing my opinions without fear of negative consequences.',
-    theme: 'psychological_safety',
+    theme: 'psychological_safety' as ScoringTheme,
     weight: 1.0
   },
   {
     id: 'inclusion',
     text: 'I feel a sense of belonging at my workplace.',
-    theme: 'inclusion_belonging',
+    theme: 'inclusion_belonging' as ScoringTheme,
     weight: 1.0
   },
   {
     id: 'engagement',
     text: 'I find my work meaningful and engaging.',
-    theme: 'motivation_fulfillment',
+    theme: 'motivation_fulfillment' as ScoringTheme,
     weight: 1.1
   },
   {
     id: 'mission',
     text: 'I understand and believe in our company\'s mission.',
-    theme: 'mission_alignment',
+    theme: 'mission_alignment' as ScoringTheme,
     weight: 0.9
   },
   {
     id: 'retention',
     text: 'I see myself working here a year from now.',
-    theme: 'engagement_continuity',
+    theme: 'engagement_continuity' as ScoringTheme,
     weight: 1.3
   },
 ];
@@ -114,7 +114,7 @@ const PulseSurveyForm: React.FC<PulseSurveyFormProps> = ({ onSubmit }) => {
             weight: q.weight
           };
           return map;
-        }, {} as Record<string, { theme: string; weight: number }>)
+        }, {} as Record<string, { theme: ScoringTheme; weight: number }>)
       };
       
       // Call the onSubmit handler with the response

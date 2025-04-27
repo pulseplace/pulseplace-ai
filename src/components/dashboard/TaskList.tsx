@@ -1,140 +1,173 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import AddTaskDialog from './AddTaskDialog';
 import { useTasks } from '@/contexts/TaskContext';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Plus, CheckCircle2, ClockIcon } from 'lucide-react';
-import AddTaskDialog from './AddTaskDialog';
-import { useNavigate } from 'react-router-dom';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  CheckCircle2, 
+  Clock, 
+  AlertTriangle, 
+  XCircle,
+  ArrowUpRight,
+  Calendar,
+  BarChart
+} from "lucide-react";
+import { Task } from '@/types/task.types';
 
 const TaskList = () => {
+  const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
   const { tasks } = useTasks();
-  const navigate = useNavigate();
   
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'critical':
-        return 'bg-red-600';
-      case 'high':
-        return 'bg-red-500';
-      case 'medium':
-        return 'bg-amber-500';
-      case 'low':
-        return 'bg-green-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
+  // Group tasks by status
+  const todoTasks = tasks.filter(task => task.status === 'Not Started');
+  const inProgressTasks = tasks.filter(task => task.status === 'In Progress');
+  const inReviewTasks = tasks.filter(task => task.status === 'In Review');
+  const completedTasks = tasks.filter(task => task.status === 'Completed');
   
+  // Get status icon
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed':
+      case 'Not Started':
+        return <Clock className="h-4 w-4 text-gray-500" />;
+      case 'In Progress':
+        return <ArrowUpRight className="h-4 w-4 text-blue-500" />;
+      case 'In Review':
+        return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+      case 'Completed':
         return <CheckCircle2 className="h-4 w-4 text-green-500" />;
       default:
-        return <ClockIcon className="h-4 w-4 text-amber-500" />;
+        return <XCircle className="h-4 w-4 text-red-500" />;
     }
   };
   
-  const sortedTasks = [...tasks].sort((a, b) => {
-    const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-    const priorityA = priorityOrder[a.priority as keyof typeof priorityOrder] || 4;
-    const priorityB = priorityOrder[b.priority as keyof typeof priorityOrder] || 4;
-    
-    if (priorityA !== priorityB) {
-      return priorityA - priorityB;
+  // Get priority badge
+  const getPriorityBadge = (priority: string) => {
+    switch (priority) {
+      case 'Low':
+        return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">Low</Badge>;
+      case 'Medium':
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Medium</Badge>;
+      case 'High':
+        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">High</Badge>;
+      case 'Critical':
+        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Critical</Badge>;
+      default:
+        return <Badge variant="outline">Unknown</Badge>;
     }
-    
-    if (a.dueDate && b.dueDate) {
-      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-    }
-    
-    if (a.dueDate) return -1;
-    if (b.dueDate) return 1;
-    
-    return 0;
-  });
-  
-  const topTasks = sortedTasks.slice(0, 5);
-  
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
-    
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
   };
+  
+  // Render task item
+  const renderTaskItem = (task: Task) => (
+    <div key={task.id} className="p-3 border rounded-md mb-2 bg-white">
+      <div className="flex justify-between items-start">
+        <div>
+          <div className="font-medium flex items-center gap-2">
+            {getStatusIcon(task.status)}
+            {task.title}
+          </div>
+          {task.description && (
+            <p className="text-sm text-gray-600 mt-1">{task.description}</p>
+          )}
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          {getPriorityBadge(task.priority)}
+          <span className="text-xs text-gray-500">{task.module}</span>
+        </div>
+      </div>
+    </div>
+  );
   
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-lg">Priority Tasks</CardTitle>
-          <div className="flex gap-2">
-            <AddTaskDialog>
-              <Button variant="outline" size="sm" className="h-8">
-                <Plus className="h-4 w-4 mr-1" />
-                Add Task
-              </Button>
-            </AddTaskDialog>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate('/task-tracker')} 
-              className="h-8"
-            >
-              View All
-            </Button>
-          </div>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-xl flex items-center gap-2">
+          <Calendar className="h-5 w-5 text-gray-500" />
+          Sprint Tasks
+        </CardTitle>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="text-xs flex items-center gap-1"
+          >
+            <BarChart className="h-3.5 w-3.5" />
+            View Stats
+          </Button>
+          <Button 
+            size="sm"
+            onClick={() => setIsAddTaskDialogOpen(true)}
+            className="text-xs flex items-center gap-1"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add Task
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          {topTasks.length > 0 ? (
-            topTasks.map((task) => (
-              <div 
-                key={task.id}
-                className="flex items-start justify-between p-2 border-b border-gray-100 last:border-0"
-              >
-                <div className="flex items-start gap-2">
-                  <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)} mt-2`} />
-                  <div>
-                    <div className="font-medium text-sm">{task.title}</div>
-                    {task.description && (
-                      <div className="text-xs text-gray-500 line-clamp-1">
-                        {task.description}
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-                      <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
-                        {task.module}
-                      </Badge>
-                      {task.owner && <span>{task.owner}</span>}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center">
-                    {getStatusIcon(task.status)}
-                    <span className="text-xs text-gray-600 ml-1">
-                      {task.status === 'completed' ? 'Done' : 'In Progress'}
-                    </span>
-                  </div>
-                  
-                  {task.dueDate && (
-                    <Badge variant="outline" className="text-[10px]">
-                      {formatDate(task.dueDate)}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-sm text-gray-500">
-              No tasks found. Add a new task to get started.
+        <Tabs defaultValue="todo" className="w-full">
+          <TabsList className="grid grid-cols-4 mb-4">
+            <TabsTrigger value="todo" className="text-xs">
+              To Do ({todoTasks.length})
+            </TabsTrigger>
+            <TabsTrigger value="in-progress" className="text-xs">
+              In Progress ({inProgressTasks.length})
+            </TabsTrigger>
+            <TabsTrigger value="in-review" className="text-xs">
+              In Review ({inReviewTasks.length})
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="text-xs">
+              Completed ({completedTasks.length})
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="todo" className="mt-0">
+            <div className="max-h-[300px] overflow-y-auto pr-2">
+              {todoTasks.length > 0 ? (
+                todoTasks.map(renderTaskItem)
+              ) : (
+                <p className="text-center text-gray-500 py-4">No tasks to do</p>
+              )}
             </div>
-          )}
-        </div>
+          </TabsContent>
+          
+          <TabsContent value="in-progress" className="mt-0">
+            <div className="max-h-[300px] overflow-y-auto pr-2">
+              {inProgressTasks.length > 0 ? (
+                inProgressTasks.map(renderTaskItem)
+              ) : (
+                <p className="text-center text-gray-500 py-4">No tasks in progress</p>
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="in-review" className="mt-0">
+            <div className="max-h-[300px] overflow-y-auto pr-2">
+              {inReviewTasks.length > 0 ? (
+                inReviewTasks.map(renderTaskItem)
+              ) : (
+                <p className="text-center text-gray-500 py-4">No tasks in review</p>
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="completed" className="mt-0">
+            <div className="max-h-[300px] overflow-y-auto pr-2">
+              {completedTasks.length > 0 ? (
+                completedTasks.map(renderTaskItem)
+              ) : (
+                <p className="text-center text-gray-500 py-4">No completed tasks</p>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </CardContent>
+      
+      <AddTaskDialog 
+        isOpen={isAddTaskDialogOpen} 
+        onClose={() => setIsAddTaskDialogOpen(false)} 
+      />
     </Card>
   );
 };

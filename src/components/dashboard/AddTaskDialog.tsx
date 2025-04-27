@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -9,15 +8,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Task } from '@/types/task.types';
+import { Task, TaskStatus, TaskPriority, TaskModule } from '@/types/task.types';
 import { useTasks } from '@/contexts/TaskContext';
 
 const taskSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
   description: z.string().optional(),
-  status: z.string(),
-  priority: z.string(),
-  module: z.string(),
+  status: z.enum(['Not Started', 'In Progress', 'In Review', 'Completed'] as const),
+  priority: z.enum(['Low', 'Medium', 'High', 'Critical'] as const),
+  module: z.enum(['Core', 'Dashboard', 'Certification', 'Survey', 'PulseBot'] as const),
   owner: z.string().optional(),
 });
 
@@ -48,11 +47,10 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
     const task: Omit<Task, "id" | "createdAt"> = {
       title: data.title,
       description: data.description || '',
-      status: data.status,
-      priority: data.priority,
-      module: data.module,
+      status: data.status as TaskStatus,
+      priority: data.priority as TaskPriority,
+      module: data.module as TaskModule,
       owner: data.owner || 'Lovable',
-      // Remove createdAt as it's handled when adding to the tasks array
     };
     
     // Add the task

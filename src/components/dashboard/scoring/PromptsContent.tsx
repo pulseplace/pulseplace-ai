@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Copy } from 'lucide-react';
-import { ThemeScore } from '@/types/scoring.types';
+import { ScoringTheme, ThemeScore } from '@/types/scoring.types';
 import { useToast } from "@/hooks/use-toast";
 import { getFeedbackSynthesisPrompt, getOpenEndedFeedbackPrompt } from '@/utils/scoring';
 
@@ -19,7 +19,7 @@ const PromptsContent = ({ themeScores, openEndedResponses = {} }: PromptsContent
   // Generate the prompt for the theme scores
   const themeScoresForPrompt = themeScores.map(score => ({
     theme: score.theme,
-    score: score.score // Use score property not value
+    score: score.score
   }));
   
   const promptText1 = getFeedbackSynthesisPrompt({ 

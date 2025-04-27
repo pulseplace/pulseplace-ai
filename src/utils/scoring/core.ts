@@ -1,10 +1,10 @@
-
 import { 
   SurveyQuestion, 
   SurveyResponse, 
   ThemeScore, 
   CategoryScore, 
-  PulseScoreTier
+  PulseScoreTier,
+  ScoringTheme
 } from '@/types/scoring.types';
 import { 
   TIER_THRESHOLDS, 
@@ -32,7 +32,7 @@ export const calculateThemeScores = (response: SurveyResponse): ThemeScore[] => 
   });
 
   return Object.entries(themeScores).map(([theme, data]) => ({
-    theme,
+    theme: theme as ScoringTheme,
     score: data.count > 0 ? Math.round((data.score / data.count) * 20) : 0, // Scale to 0-100
     count: data.count
   }));
@@ -93,45 +93,45 @@ export const getSampleSurveyQuestions = (): SurveyQuestion[] => {
   return [
     {
       id: 'q1',
-      text: 'I trust the leadership team to make good decisions.',
+      text: 'I trust the leadership team at my organization',
       type: 'likert',
       theme: 'trust_in_leadership',
       weight: 1.2
     },
     {
       id: 'q2',
-      text: 'I feel comfortable sharing my ideas and opinions.',
+      text: 'I feel safe sharing my opinions without fear of negative consequences',
       type: 'likert',
       theme: 'psychological_safety',
-      weight: 1.5
-    },
-    {
-      id: 'q3',
-      text: 'I feel like I belong at this company.',
-      type: 'likert',
-      theme: 'inclusion_belonging',
-      weight: 1.3
-    },
-    {
-      id: 'q4',
-      text: 'My work gives me a sense of purpose.',
-      type: 'likert',
-      theme: 'motivation_fulfillment',
       weight: 1.0
     },
     {
-      id: 'q5',
-      text: 'I understand how my work contributes to company goals.',
+      id: 'q3',
+      text: 'I feel a sense of belonging at my workplace',
       type: 'likert',
-      theme: 'mission_alignment',
+      theme: 'inclusion_belonging',
+      weight: 1.0
+    },
+    {
+      id: 'q4',
+      text: 'I find my work meaningful and engaging',
+      type: 'likert',
+      theme: 'motivation_fulfillment',
       weight: 1.1
     },
     {
+      id: 'q5',
+      text: 'I understand and believe in our company\'s mission',
+      type: 'likert',
+      theme: 'mission_alignment',
+      weight: 0.9
+    },
+    {
       id: 'q6',
-      text: 'I see myself working here a year from now.',
+      text: 'I see myself working here a year from now',
       type: 'likert',
       theme: 'engagement_continuity',
-      weight: 1.4
+      weight: 1.3
     }
   ];
 };

@@ -1,199 +1,77 @@
 
 import React from 'react';
-import { useDebugLogs } from '@/contexts/TaskContext';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useDebugLogs } from '@/contexts/DebugLogsContext';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Edit, CheckCircle, ExternalLink } from 'lucide-react';
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { InfoIcon, AlertTriangle, AlertCircle } from 'lucide-react';
+import { format } from 'date-fns';
 
-const DebugLogTable = () => {
-  const { debugLogs, updateDebugLog } = useDebugLogs();
+export const DebugLogTable = () => {
+  const { logs } = useDebugLogs();
   
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'critical':
-        return 'bg-red-100 text-red-800 border-red-300';
-      case 'high':
-        return 'bg-orange-100 text-orange-800 border-orange-300';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'low':
-        return 'bg-green-100 text-green-800 border-green-300';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+  const getLevelIcon = (level: 'info' | 'warning' | 'error') => {
+    switch (level) {
+      case 'info':
+        return <InfoIcon className="h-4 w-4 text-blue-500" />;
+      case 'warning':
+        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
+      case 'error':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
     }
   };
   
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Open':
-        return 'bg-red-100 text-red-800';
-      case 'In Progress':
-        return 'bg-blue-100 text-blue-800';
-      case 'Fixed':
-        return 'bg-green-100 text-green-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+  const getLevelBadge = (level: 'info' | 'warning' | 'error') => {
+    switch (level) {
+      case 'info':
+        return <Badge variant="outline" className="bg-blue-50 text-blue-800 border-blue-200">{level}</Badge>;
+      case 'warning':
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200">{level}</Badge>;
+      case 'error':
+        return <Badge variant="outline" className="bg-red-50 text-red-800 border-red-200">{level}</Badge>;
     }
   };
   
-  const handleMarkAsFixed = (id: string) => {
-    updateDebugLog(id, { 
-      status: 'Fixed',
-      dateFixed: new Date().toISOString().split('T')[0]
-    });
-  };
+  if (logs.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        No logs to display
+      </div>
+    );
+  }
   
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Issue</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Severity</TableHead>
-            <TableHead>Component</TableHead>
-            <TableHead>Logged By</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+    <Table>
+      <TableCaption>Debug logs</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[180px]">Timestamp</TableHead>
+          <TableHead className="w-[100px]">Level</TableHead>
+          <TableHead>Message</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {logs.map(log => (
+          <TableRow key={log.id}>
+            <TableCell className="font-mono text-sm">
+              {format(log.timestamp, 'yyyy-MM-dd HH:mm:ss')}
+            </TableCell>
+            <TableCell>
+              <div className="flex items-center gap-2">
+                {getLevelIcon(log.level)}
+                {getLevelBadge(log.level)}
+              </div>
+            </TableCell>
+            <TableCell>
+              <div>
+                <p>{log.message}</p>
+                {log.details && (
+                  <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">{log.details}</p>
+                )}
+              </div>
+            </TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {debugLogs.length > 0 ? (
-            debugLogs.map((log) => (
-              <TableRow key={log.id}>
-                <TableCell>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="link" className="p-0 h-auto text-left font-medium">
-                        {log.description}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>{log.description}</DialogTitle>
-                        <DialogDescription>
-                          Component: {log.component}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4 py-4">
-                        <div className="flex justify-between">
-                          <div>
-                            <span className="text-sm font-semibold">Status:</span>
-                            <Badge className={`ml-2 ${getStatusColor(log.status)}`}>
-                              {log.status}
-                            </Badge>
-                          </div>
-                          <div>
-                            <span className="text-sm font-semibold">Severity:</span>
-                            <Badge className={`ml-2 ${getSeverityColor(log.severity)}`}>
-                              {log.severity}
-                            </Badge>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-sm font-semibold mb-1">Notes:</h4>
-                          <p className="text-sm text-gray-700 p-3 bg-gray-50 rounded-md">
-                            {log.notes || 'No notes provided'}
-                          </p>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-sm font-semibold">Logged by:</p>
-                            <p className="text-sm">{log.loggedBy}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold">Assigned to:</p>
-                            <p className="text-sm">{log.assignedTo || 'Unassigned'}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold">Date logged:</p>
-                            <p className="text-sm">{new Date(log.dateLogged).toLocaleDateString()}</p>
-                          </div>
-                          {log.dateFixed && (
-                            <div>
-                              <p className="text-sm font-semibold">Date fixed:</p>
-                              <p className="text-sm">{new Date(log.dateFixed).toLocaleDateString()}</p>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {log.fixLink && (
-                          <div>
-                            <a 
-                              href={log.fixLink} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-sm text-blue-600 hover:underline flex items-center"
-                            >
-                              View fix details
-                              <ExternalLink className="h-3 w-3 ml-1" />
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </TableCell>
-                <TableCell>
-                  <Badge className={getStatusColor(log.status)}>
-                    {log.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={getSeverityColor(log.severity)}>
-                    {log.severity}
-                  </Badge>
-                </TableCell>
-                <TableCell>{log.component}</TableCell>
-                <TableCell>{log.loggedBy}</TableCell>
-                <TableCell>{new Date(log.dateLogged).toLocaleDateString()}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end space-x-2">
-                    {log.status !== 'Fixed' && (
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => handleMarkAsFixed(log.id)}
-                      >
-                        <CheckCircle className="h-4 w-4" />
-                      </Button>
-                    )}
-                    <Button variant="ghost" size="sm">
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center">
-                No debug logs found.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
-
-export default DebugLogTable;

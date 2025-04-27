@@ -1,4 +1,3 @@
-
 export type ScoringTheme = 
   | 'trust_in_leadership'
   | 'psychological_safety'
@@ -28,7 +27,7 @@ export interface SurveyResponseItem {
 export interface SurveyResponse {
   responses: Record<string, number>;
   questionMapping: Record<string, {
-    theme: string;
+    theme: ScoringTheme;
     weight: number;
   }>;
 }
@@ -40,13 +39,12 @@ export interface CategoryScore {
 }
 
 export interface ThemeScore {
-  theme: string;
+  theme: ScoringTheme;
   score: number;
   count: number;
   weight?: number;
 }
 
-// Updated PulseScoreTier to include all tiers used in the application
 export type PulseScoreTier = 
   | 'thriving'
   | 'stable'
@@ -114,7 +112,6 @@ export interface MockPulseScoreData {
   recommendedActions: string[];
 }
 
-// Theme trend analysis types
 export interface ThemeTrend {
   theme: ScoringTheme;
   previousScore: number;

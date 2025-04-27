@@ -8,8 +8,6 @@ export const ROUTES = {
     PULSEBOT: '/dashboard/pulsebot',
     AI: '/dashboard/ai',
     CERTIFICATION: '/dashboard/certification',
-    QA_TESTING: '/dashboard/qa-testing',
-    QA_SPRINT: '/dashboard/qa-sprint'
   },
   PUBLIC: {
     PULSE_SCORE: '/pulse-score-lite',

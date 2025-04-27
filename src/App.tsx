@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
 import { TaskProvider } from './contexts/TaskContext';
 import { BuildRequestsProvider } from './contexts/BuildRequestsContext';
+import { DebugLogsProvider } from './contexts/DebugLogsContext';
 
 // Main public pages
 import LandingPage from './pages/LandingPage';
@@ -42,36 +43,38 @@ function App() {
       <AuthProvider>
         <TaskProvider>
           <BuildRequestsProvider>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/pulse-score-lite" element={<PulseScoreLite />} />
-              <Route path="/pulse-score-lite/thank-you" element={<PulseScoreThankYou />} />
-              <Route path="/book-demo" element={<BookDemo />} />
-              <Route path="/case-studies/tayana" element={<TayanaStudy />} />
+            <DebugLogsProvider>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/pulse-score-lite" element={<PulseScoreLite />} />
+                <Route path="/pulse-score-lite/thank-you" element={<PulseScoreThankYou />} />
+                <Route path="/book-demo" element={<BookDemo />} />
+                <Route path="/case-studies/tayana" element={<TayanaStudy />} />
 
-              {/* Auth Routes */}
-              <Route path="/auth" element={<AuthLayout />}>
-                <Route path="signin" element={<SignIn />} />
-                <Route path="signup" element={<SignUp />} />
-              </Route>
+                {/* Auth Routes */}
+                <Route path="/auth" element={<AuthLayout />}>
+                  <Route path="signin" element={<SignIn />} />
+                  <Route path="signup" element={<SignUp />} />
+                </Route>
 
-              {/* Dashboard Routes - Consolidated under one layout */}
-              <Route path="/dashboard" element={<DashboardLayout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="teams/:teamId?" element={<TeamDashboard />} />
-                <Route path="insights" element={<Insights />} />
-                <Route path="pulsebot" element={<PulseBot />} />
-                <Route path="ai" element={<AiDashboard />} />
-                <Route path="certification" element={<CertificationEngine />} />
-                <Route path="certification/share" element={<ShareCertification />} />
-              </Route>
+                {/* Dashboard Routes - Consolidated under one layout */}
+                <Route path="/dashboard" element={<DashboardLayout />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="teams/:teamId?" element={<TeamDashboard />} />
+                  <Route path="insights" element={<Insights />} />
+                  <Route path="pulsebot" element={<PulseBot />} />
+                  <Route path="ai" element={<AiDashboard />} />
+                  <Route path="certification" element={<CertificationEngine />} />
+                  <Route path="certification/share" element={<ShareCertification />} />
+                </Route>
 
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <PulseBotWidget />
-            <Toaster />
+                {/* 404 Route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <PulseBotWidget />
+              <Toaster />
+            </DebugLogsProvider>
           </BuildRequestsProvider>
         </TaskProvider>
       </AuthProvider>

@@ -1,5 +1,5 @@
 
-export type TaskStatus = 'not_started' | 'in_progress' | 'in_review' | 'completed';
+export type TaskStatus = 'not_started' | 'in_progress' | 'in_review' | 'completed' | 'todo' | 'review' | 'blocked';
 
 export interface Task {
   id: string;
@@ -8,9 +8,11 @@ export interface Task {
   status: TaskStatus;
   priority: 'low' | 'medium' | 'high' | 'critical';
   assignedTo?: string;
-  dueDate?: Date;
+  dueDate?: Date | string;
   module?: TaskModule;
   owner?: string;
+  createdAt?: string;
+  sprint?: string;
 }
 
 export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';

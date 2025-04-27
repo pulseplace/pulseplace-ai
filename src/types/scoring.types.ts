@@ -7,7 +7,11 @@ export type ScoringTheme =
   | 'career_growth'
   | 'inclusion_diversity'
   | 'communication'
-  | 'recognition';
+  | 'recognition'
+  | 'inclusion_belonging'
+  | 'motivation_fulfillment'
+  | 'mission_alignment'
+  | 'engagement_continuity';
 
 export type SurveyQuestionType = 'likert' | 'emoji' | 'text' | 'binary';
 
@@ -39,9 +43,44 @@ export interface SurveyResponse {
   }>;
 }
 
-export type PulseScoreTier = 'bronze' | 'silver' | 'gold' | 'not_eligible';
+export type PulseScoreTier = 'pulse_certified' | 'emerging_culture' | 'at_risk' | 'intervention_advised' | 'bronze' | 'silver' | 'gold' | 'not_eligible' | 'thriving';
+
+export interface TierDisplay {
+  label: string;
+  color: string;
+  description?: string;
+}
 
 export interface DateRangeFilter {
   from: Date;
   to: Date;
 }
+
+export interface SurveyResponseItem {
+  questionId: string;
+  value: number | string;
+}
+
+export interface PulseScoreData {
+  overallScore: number;
+  categoryScores: CategoryScore[];
+  themeScores: ThemeScore[];
+  tier: PulseScoreTier;
+  insights: string[];
+  recommendedActions?: string[];
+}
+
+export interface MockPulseScoreData {
+  overallScore: number;
+  categoryScores: {
+    category: ScoringCategory;
+    score: number;
+    weight: number;
+  }[];
+  themeScores: ThemeScore[];
+  tier: PulseScoreTier;
+  insights: string[];
+  recommendedActions?: string[];
+}
+
+export type ScoringCategory = 'emotion_index' | 'engagement_stability' | 'culture_trust' | string;

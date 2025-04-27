@@ -8,6 +8,7 @@ interface TaskContextProps {
   addTask: (task: Omit<Task, "id">) => void;
   updateTask: (id: string, task: Partial<Task>) => void;
   deleteTask: (id: string) => void;
+  moveTask: (id: string, status: TaskStatus) => void;
 }
 
 const TaskContext = createContext<TaskContextProps | undefined>(undefined);
@@ -67,9 +68,15 @@ export const TaskProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const deleteTask = (id: string) => {
     setTasks(tasks.filter(task => task.id !== id));
   };
+  
+  const moveTask = (id: string, status: TaskStatus) => {
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, status } : task
+    ));
+  };
 
   return (
-    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask }}>
+    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask, moveTask }}>
       {children}
     </TaskContext.Provider>
   );

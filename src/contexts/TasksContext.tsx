@@ -11,7 +11,7 @@ const initialTasks: Task[] = [
     description: 'Integrate PulseBot with Slack for real-time feedback',
     status: 'in_progress',
     priority: 'high',
-    dueDate: '2025-05-10',
+    dueDate: new Date('2025-05-10'),
     createdAt: '2025-04-15',
     module: 'pulsebot',
     owner: 'Alex Chen'
@@ -31,7 +31,7 @@ const initialTasks: Task[] = [
     description: 'Develop algorithm for sentiment analysis of open-ended responses',
     status: 'completed',
     priority: 'medium',
-    dueDate: '2025-04-20',
+    dueDate: new Date('2025-04-20'),
     createdAt: '2025-04-01',
     module: 'survey',
     owner: 'Jamie Wong'
@@ -42,7 +42,7 @@ const initialTasks: Task[] = [
     description: 'Update API docs for the certification endpoints',
     status: 'review',
     priority: 'low',
-    dueDate: '2025-05-01',
+    dueDate: new Date('2025-05-01'),
     createdAt: '2025-04-10',
     module: 'certification',
     owner: 'Riley Smith'
@@ -53,7 +53,7 @@ const initialTasks: Task[] = [
     description: 'Create new badge designs for different certification levels',
     status: 'blocked',
     priority: 'high',
-    dueDate: '2025-04-30',
+    dueDate: new Date('2025-04-30'),
     createdAt: '2025-04-05',
     module: 'certification',
     owner: 'Sam Johnson'

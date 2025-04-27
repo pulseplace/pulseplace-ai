@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useTask } from '@/contexts/TaskContext';
+import { useTasks } from '@/contexts/TaskContext';
 import {
   Dialog,
   DialogContent,
@@ -50,7 +49,7 @@ interface AddTaskDialogProps {
 }
 
 const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ children }) => {
-  const { addTask } = useTask();
+  const { addTask } = useTasks();
   const [open, setOpen] = React.useState(false);
   
   const form = useForm<TaskFormValues>({

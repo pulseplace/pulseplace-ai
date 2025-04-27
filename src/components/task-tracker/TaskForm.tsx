@@ -8,26 +8,64 @@ import { TaskBasicInfo } from './components/TaskBasicInfo';
 import { TaskMetadata } from './components/TaskMetadata';
 import { TaskScheduling } from './components/TaskScheduling';
 import { TaskNotes } from './components/TaskNotes';
-import { TaskFormProps, TaskFormValues, taskSchema } from './types/form.types';
+import { z } from 'zod';
 
-export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
+// Define schema for task form
+const taskSchema = z.object({
+  title: z.string().min(3, { message: "Title must be at least 3 characters" }),
+  description: z.string().optional(),
+  status: z.string(),
+  priority: z.string(),
+  module: z.string(),
+  dueDate: z.string().optional(),
+  owner: z.string().optional(),
+  notes: z.string().optional(),
+  sprint: z.string().optional(),
+  deadline: z.date().optional().nullable(),
+});
+
+export type TaskFormValues = z.infer<typeof taskSchema>;
+
+export interface TaskFormProps {
+  taskData?: {
+    id?: string;
+    title: string;
+    description?: string;
+    status: string;
+    priority: string;
+    module: string;
+    owner?: string;
+    dueDate?: string;
+    deadline?: Date | null;
+    notes?: string;
+    sprint?: string;
+  };
+  onSubmit: (data: TaskFormValues) => void;
+  onCancel: () => void;
+}
+
+export default function TaskForm({ taskData, onSubmit, onCancel }: TaskFormProps) {
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
-    defaultValues: task ? {
-      name: task.name,
-      module: task.module,
-      priority: task.priority,
-      status: task.status,
-      owner: task.owner,
-      deadline: task.deadline ? new Date(task.deadline) : null,
-      notes: task.notes || '',
-      sprint: task.sprint || '',
+    defaultValues: taskData ? {
+      title: taskData.title,
+      description: taskData.description || '',
+      status: taskData.status,
+      priority: taskData.priority,
+      module: taskData.module,
+      owner: taskData.owner || '',
+      dueDate: taskData.dueDate || '',
+      deadline: taskData.deadline || null,
+      notes: taskData.notes || '',
+      sprint: taskData.sprint || '',
     } : {
-      name: '',
-      module: 'Other',
-      priority: 'Medium',
+      title: '',
+      description: '',
       status: 'Not Started',
+      priority: 'Medium',
+      module: 'Other',
       owner: 'Lovable',
+      dueDate: '',
       deadline: null,
       notes: '',
       sprint: 'Sprint April 22–26',
@@ -51,7 +89,7 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
             Cancel
           </Button>
           <Button type="submit">
-            {task ? 'Update Task' : 'Create Task'}
+            {taskData ? 'Update Task' : 'Create Task'}
           </Button>
         </div>
       </form>

@@ -7,7 +7,9 @@ export const ROUTES = {
     INSIGHTS: '/dashboard/insights',
     PULSEBOT: '/dashboard/pulsebot',
     AI: '/dashboard/ai',
-    CERTIFICATION: '/dashboard/certification'
+    CERTIFICATION: '/dashboard/certification',
+    QA_TESTING: '/dashboard/qa-testing',
+    QA_SPRINT: '/dashboard/qa-sprint'
   },
   PUBLIC: {
     PULSE_SCORE: '/pulse-score-lite',
@@ -21,6 +23,6 @@ export const ROUTES = {
   CERTIFICATION: {
     INDEX: '/dashboard/certification',
     SHARE: '/dashboard/certification/share'
-  }
+  },
+  PULSEBOT: '/pulsebot'
 };
-

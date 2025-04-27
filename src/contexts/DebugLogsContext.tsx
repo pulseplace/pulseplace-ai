@@ -43,23 +43,25 @@ const initialLogs: DebugLog[] = [
 ];
 
 interface DebugLogsContextType {
-  logs: DebugLog[];
+  debugLogs: DebugLog[];
   addLog: (log: Omit<DebugLog, 'id' | 'dateLogged'>) => void;
   updateLog: (id: string, log: Partial<DebugLog>) => void;
   deleteLog: (id: string) => void;
-  filteredLogs: (status?: DebugLog['status'], severity?: DebugLogSeverity) => DebugLog[];
+  getCriticalOpenLogs: () => DebugLog[];
+  getRecentlyFixedLogs: (days: number) => DebugLog[];
 }
 
 const DebugLogsContext = createContext<DebugLogsContextType>({
-  logs: [],
+  debugLogs: [],
   addLog: () => {},
   updateLog: () => {},
   deleteLog: () => {},
-  filteredLogs: () => []
+  getCriticalOpenLogs: () => [],
+  getRecentlyFixedLogs: () => []
 });
 
 export const DebugLogsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [logs, setLogs] = useState<DebugLog[]>(initialLogs);
+  const [debugLogs, setDebugLogs] = useState<DebugLog[]>(initialLogs);
 
   const addLog = (log: Omit<DebugLog, 'id' | 'dateLogged'>) => {
     const newLog: DebugLog = {
@@ -67,34 +69,46 @@ export const DebugLogsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       id: uuidv4(),
       dateLogged: new Date().toISOString().split('T')[0]
     };
-    setLogs([...logs, newLog]);
+    setDebugLogs([...debugLogs, newLog]);
   };
 
   const updateLog = (id: string, updatedLog: Partial<DebugLog>) => {
-    setLogs(logs.map(log => 
+    setDebugLogs(debugLogs.map(log => 
       log.id === id ? { ...log, ...updatedLog } : log
     ));
   };
 
   const deleteLog = (id: string) => {
-    setLogs(logs.filter(log => log.id !== id));
+    setDebugLogs(debugLogs.filter(log => log.id !== id));
   };
 
-  const filteredLogs = (status?: DebugLog['status'], severity?: DebugLogSeverity) => {
-    return logs.filter(log => {
-      let match = true;
-      if (status) {
-        match = match && log.status === status;
-      }
-      if (severity) {
-        match = match && log.severity === severity;
-      }
-      return match;
+  const getCriticalOpenLogs = () => {
+    return debugLogs.filter(log => log.severity === 'critical' && log.status === 'Open');
+  };
+
+  const getRecentlyFixedLogs = (days: number) => {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    return debugLogs.filter(log => {
+      if (log.status !== 'Fixed' || !log.dateFixed) return false;
+      
+      const fixedDate = new Date(log.dateFixed);
+      return fixedDate >= cutoffDate;
     });
   };
 
   return (
-    <DebugLogsContext.Provider value={{ logs, addLog, updateLog, deleteLog, filteredLogs }}>
+    <DebugLogsContext.Provider 
+      value={{ 
+        debugLogs, 
+        addLog, 
+        updateLog, 
+        deleteLog, 
+        getCriticalOpenLogs, 
+        getRecentlyFixedLogs 
+      }}
+    >
       {children}
     </DebugLogsContext.Provider>
   );

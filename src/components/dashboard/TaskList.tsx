@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { useTask } from '@/contexts/TaskContext';
+import { useTasks } from '@/contexts/TaskContext';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import AddTaskDialog from './AddTaskDialog';
 import { useNavigate } from 'react-router-dom';
 
 const TaskList = () => {
-  const { tasks } = useTask();
+  const { tasks } = useTasks();
   const navigate = useNavigate();
   
   const getPriorityColor = (priority: string) => {
@@ -36,9 +35,7 @@ const TaskList = () => {
     }
   };
   
-  // Sort tasks: high priority first, then by due date
   const sortedTasks = [...tasks].sort((a, b) => {
-    // First by priority
     const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
     const priorityA = priorityOrder[a.priority as keyof typeof priorityOrder] || 4;
     const priorityB = priorityOrder[b.priority as keyof typeof priorityOrder] || 4;
@@ -47,7 +44,6 @@ const TaskList = () => {
       return priorityA - priorityB;
     }
     
-    // Then by due date (if exists)
     if (a.dueDate && b.dueDate) {
       return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
     }
@@ -58,10 +54,8 @@ const TaskList = () => {
     return 0;
   });
   
-  // Only show top 5 tasks
   const topTasks = sortedTasks.slice(0, 5);
   
-  // Format date
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
     

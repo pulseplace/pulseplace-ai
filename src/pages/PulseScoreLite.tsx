@@ -7,7 +7,7 @@ import PulseSurveyForm from '@/components/survey/PulseSurveyForm';
 import PulseScoreResult from '@/components/survey/PulseScoreResult';
 import { useNavigate } from 'react-router-dom';
 import { SurveyResponse } from '@/types/scoring.types';
-import { calculateOverallScore } from '@/utils/scoring';
+import { processSurveyResponse } from '@/utils/scoring';
 
 const PulseScoreLite = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -17,7 +17,7 @@ const PulseScoreLite = () => {
 
   const handleSurveySubmit = (response: SurveyResponse) => {
     // Process the survey response
-    const result = calculateOverallScore(response);
+    const result = processSurveyResponse(response);
     
     // Save scores
     setPulseScore(result.overallScore);

@@ -24,21 +24,25 @@ const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
 
   return (
     <div className="space-y-4">
-      {tasks.map(task => (
-        <div key={task.id} className="p-4 border rounded-lg">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="font-medium">{task.title}</h3>
-              {task.description && (
-                <p className="text-sm text-gray-600 mt-1">{task.description}</p>
-              )}
+      {tasks.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">No tasks available</div>
+      ) : (
+        tasks.map(task => (
+          <div key={task.id} className="p-4 border rounded-lg">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-medium">{task.title}</h3>
+                {task.description && (
+                  <p className="text-sm text-gray-600 mt-1">{task.description}</p>
+                )}
+              </div>
+              <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(task.status)}`}>
+                {task.status.replace('_', ' ')}
+              </span>
             </div>
-            <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(task.status)}`}>
-              {task.status.replace('_', ' ')}
-            </span>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 };

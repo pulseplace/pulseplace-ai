@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -14,10 +15,10 @@ import { useTasks } from '@/contexts/TaskContext';
 const taskSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
   description: z.string().optional(),
-  status: z.enum(['Not Started', 'In Progress', 'In Review', 'Completed'] as const),
-  priority: z.enum(['Low', 'Medium', 'High', 'Critical'] as const),
-  module: z.enum(['Core', 'Dashboard', 'Certification', 'Survey', 'PulseBot'] as const),
-  owner: z.string().optional(),
+  status: z.enum(['not_started', 'in_progress', 'in_review', 'completed'] as const),
+  priority: z.enum(['low', 'medium', 'high', 'critical'] as const),
+  module: z.enum(['core', 'dashboard', 'certification', 'survey', 'pulsebot', 'integration'] as const),
+  assignedTo: z.string().optional(),
 });
 
 type FormData = z.infer<typeof taskSchema>;
@@ -35,22 +36,22 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
     defaultValues: {
       title: '',
       description: '',
-      status: 'Not Started',
-      priority: 'Medium',
-      module: 'Core',
-      owner: 'Lovable',
+      status: 'not_started',
+      priority: 'medium',
+      module: 'core',
+      assignedTo: '',
     },
   });
   
   const onSubmit = (data: FormData) => {
     // Create a new task object
-    const task: Omit<Task, "id" | "createdAt"> = {
+    const task: Omit<Task, "id"> = {
       title: data.title,
       description: data.description || '',
-      status: data.status as TaskStatus,
-      priority: data.priority as TaskPriority,
-      module: data.module as TaskModule,
-      owner: data.owner || 'Lovable',
+      status: data.status,
+      priority: data.priority,
+      module: data.module,
+      assignedTo: data.assignedTo || '',
     };
     
     // Add the task
@@ -112,10 +113,10 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Not Started">Not Started</SelectItem>
-                        <SelectItem value="In Progress">In Progress</SelectItem>
-                        <SelectItem value="In Review">In Review</SelectItem>
-                        <SelectItem value="Completed">Completed</SelectItem>
+                        <SelectItem value="not_started">Not Started</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="in_review">In Review</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -136,10 +137,10 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Low">Low</SelectItem>
-                        <SelectItem value="Medium">Medium</SelectItem>
-                        <SelectItem value="High">High</SelectItem>
-                        <SelectItem value="Critical">Critical</SelectItem>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="critical">Critical</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -162,11 +163,12 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Core">Core</SelectItem>
-                        <SelectItem value="Dashboard">Dashboard</SelectItem>
-                        <SelectItem value="Certification">Certification</SelectItem>
-                        <SelectItem value="Survey">Survey</SelectItem>
-                        <SelectItem value="PulseBot">PulseBot</SelectItem>
+                        <SelectItem value="core">Core</SelectItem>
+                        <SelectItem value="dashboard">Dashboard</SelectItem>
+                        <SelectItem value="certification">Certification</SelectItem>
+                        <SelectItem value="survey">Survey</SelectItem>
+                        <SelectItem value="pulsebot">PulseBot</SelectItem>
+                        <SelectItem value="integration">Integration</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -176,10 +178,10 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
               
               <FormField
                 control={form.control}
-                name="owner"
+                name="assignedTo"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Owner</FormLabel>
+                    <FormLabel>Assigned To</FormLabel>
                     <FormControl>
                       <Input placeholder="Task owner" {...field} />
                     </FormControl>

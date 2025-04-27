@@ -1,177 +1,118 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { toast } from 'sonner';
-import { Tables } from '@/types/database.types';
-import { AuthContextType, UserData } from '@/types/auth.types';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+type User = {
+  id: string;
+  email: string;
+  name?: string;
+  role?: string;
+} | null;
+
+interface AuthContextType {
+  user: User;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, name?: string) => Promise<void>;
+  signOut: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Tables<'profiles'> | null>(null);
+export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+  const [user, setUser] = useState<User>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
-  const location = useLocation();
-
+  
+  // Check for existing session on initial load
   useEffect(() => {
-    // Set up the auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        console.log('Auth state changed:', event);
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        
-        if (currentSession?.user) {
-          // Use setTimeout to avoid potential recursive loops with Supabase
-          setTimeout(() => {
-            fetchProfile(currentSession.user.id);
-          }, 0);
-        } else {
-          setProfile(null);
-        }
-      }
-    );
-
-    // Check for existing session
-    const initializeAuth = async () => {
-      setIsLoading(true);
+    // This is a placeholder for actual auth implementation
+    // We'll implement real auth in a future sprint with Supabase
+    const checkExistingSession = () => {
       try {
-        console.log('Initializing auth...');
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        console.log('Current session:', currentSession);
-        
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        
-        if (currentSession?.user) {
-          await fetchProfile(currentSession.user.id);
+        const userJson = localStorage.getItem('pulseplace_user');
+        if (userJson) {
+          setUser(JSON.parse(userJson));
         }
       } catch (error) {
-        console.error('Error initializing auth:', error);
+        console.error("Error checking session:", error);
       } finally {
         setIsLoading(false);
       }
     };
-
-    initializeAuth();
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    
+    checkExistingSession();
   }, []);
-
-  const fetchProfile = async (userId: string) => {
-    try {
-      console.log('Fetching profile for user:', userId);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return;
-      }
-
-      console.log('Profile fetched:', data);
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
-
-  const refreshProfile = async () => {
-    if (user) {
-      await fetchProfile(user.id);
-    }
-  };
-
+  
+  // Mock auth functions for development - will be replaced with actual Supabase auth
   const signIn = async (email: string, password: string) => {
+    setIsLoading(true);
+    
     try {
-      setIsLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // Mock successful login for now
+      const mockUser = {
+        id: 'mock-user-id',
         email,
-        password,
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      toast.success('Signed in successfully');
-      navigate('/dashboard');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in');
+        name: email.split('@')[0]
+      };
+      
+      // Store in localStorage for development
+      localStorage.setItem('pulseplace_user', JSON.stringify(mockUser));
+      setUser(mockUser);
+    } catch (error) {
+      console.error("Error signing in:", error);
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
-
-  const signUp = async (email: string, password: string, userData: UserData) => {
+  
+  const signUp = async (email: string, password: string, name?: string) => {
+    setIsLoading(true);
+    
     try {
-      setIsLoading(true);
-      const { data, error } = await supabase.auth.signUp({
+      // Mock successful signup
+      const mockUser = {
+        id: 'mock-user-id',
         email,
-        password,
-        options: {
-          data: {
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            company: userData.company,
-            department: userData.department || null,
-            role: userData.role || null
-          },
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      toast.success('Account created successfully!');
-      navigate('/dashboard');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create account');
+        name: name || email.split('@')[0]
+      };
+      
+      localStorage.setItem('pulseplace_user', JSON.stringify(mockUser));
+      setUser(mockUser);
+    } catch (error) {
+      console.error("Error signing up:", error);
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   const signOut = async () => {
+    setIsLoading(true);
+    
     try {
-      setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw error;
-      }
-      navigate('/');
-      toast.success('Signed out successfully');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to sign out');
+      localStorage.removeItem('pulseplace_user');
+      setUser(null);
+    } catch (error) {
+      console.error("Error signing out:", error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const value = {
-    session,
-    user,
-    profile,
-    isLoading,
-    signIn,
-    signUp,
-    signOut,
-    refreshProfile,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ 
+      user, 
+      isAuthenticated: !!user, 
+      isLoading,
+      signIn,
+      signUp, 
+      signOut
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

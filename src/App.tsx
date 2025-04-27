@@ -8,7 +8,7 @@ import { BuildRequestsProvider } from './contexts/BuildRequestsContext';
 import { DebugLogsProvider } from './contexts/DebugLogsContext';
 
 // Main public pages
-import LandingPage from './pages/LandingPage';
+import HomePage from './pages/HomePage';
 import PulseScoreLite from './pages/PulseScoreLite';
 import PulseScoreThankYou from './pages/PulseScoreThankYou';
 import BookDemo from './pages/BookDemo';
@@ -46,7 +46,7 @@ function App() {
             <DebugLogsProvider>
               <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<LandingPage />} />
+                <Route path="/" element={<HomePage />} />
                 <Route path="/pulse-score-lite" element={<PulseScoreLite />} />
                 <Route path="/pulse-score-lite/thank-you" element={<PulseScoreThankYou />} />
                 <Route path="/book-demo" element={<BookDemo />} />

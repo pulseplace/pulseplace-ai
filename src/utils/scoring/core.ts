@@ -1,119 +1,132 @@
 
-import { SurveyResponse, ThemeScore, CategoryScore, PulseScoreTier, ScoringTheme } from '@/types/scoring.types';
+import { ScoringTheme, SurveyQuestion, SurveyResponse, ThemeScore, CategoryScore, PulseScoreTier } from '@/types/scoring.types';
 
+// Calculate theme scores from survey responses
 export const calculateThemeScores = (response: SurveyResponse): ThemeScore[] => {
-  const themeScores: Record<ScoringTheme, { score: number; count: number }> = {
-    trust_in_leadership: { score: 0, count: 0 },
-    psychological_safety: { score: 0, count: 0 },
-    inclusion_belonging: { score: 0, count: 0 },
-    motivation_fulfillment: { score: 0, count: 0 },
-    mission_alignment: { score: 0, count: 0 },
-    engagement_continuity: { score: 0, count: 0 }
+  const themeScores: Record<ScoringTheme, { total: number; count: number }> = {
+    psychological_safety: { total: 0, count: 0 },
+    trust_in_leadership: { total: 0, count: 0 },
+    team_cohesion: { total: 0, count: 0 },
+    work_life_balance: { total: 0, count: 0 },
+    career_growth: { total: 0, count: 0 },
+    inclusion_diversity: { total: 0, count: 0 },
+    communication: { total: 0, count: 0 },
+    recognition: { total: 0, count: 0 }
   };
-
-  Object.entries(response.responses).forEach(([questionId, value]) => {
-    const mapping = response.questionMapping[questionId];
-    if (mapping && typeof value === 'number') {
-      const theme = mapping.theme as ScoringTheme;
-      themeScores[theme].score += value * mapping.weight;
-      themeScores[theme].count++;
+  
+  // Process each response
+  Object.entries(response.responses).forEach(([questionId, answer]) => {
+    // Get the question metadata
+    const questionMeta = response.questionMapping[questionId];
+    
+    if (questionMeta) {
+      const { theme, weight } = questionMeta;
+      // Add the weighted score to the appropriate theme
+      themeScores[theme].total += answer * weight;
+      themeScores[theme].count += 1;
     }
   });
-
-  return Object.entries(themeScores).map(([theme, data]) => ({
-    theme: theme as ScoringTheme,
-    score: data.count > 0 ? Math.round(data.score / data.count) : 0,
-    count: data.count
-  }));
+  
+  // Convert to array of theme scores
+  return Object.entries(themeScores)
+    .filter(([_, data]) => data.count > 0) // Only include themes with responses
+    .map(([theme, data]) => ({
+      theme: theme as ScoringTheme,
+      score: Math.round((data.total / data.count) * 20), // Scale to 0-100
+      count: data.count
+    }));
 };
 
+// Calculate category scores from theme scores
 export const calculateCategoryScores = (themeScores: ThemeScore[]): CategoryScore[] => {
-  const categoryMapping = {
-    emotion_index: ['psychological_safety', 'inclusion_belonging'],
-    engagement_stability: ['motivation_fulfillment', 'engagement_continuity'],
-    culture_trust: ['trust_in_leadership', 'mission_alignment']
+  // Map themes to categories
+  const categoryMap: Record<string, ScoringTheme[]> = {
+    'culture_trust': ['psychological_safety', 'trust_in_leadership'],
+    'team_dynamics': ['team_cohesion', 'communication'],
+    'employee_wellbeing': ['work_life_balance', 'recognition'],
+    'growth_inclusion': ['career_growth', 'inclusion_diversity']
   };
-
-  const categoryWeights = {
-    emotion_index: 0.4,
-    engagement_stability: 0.3,
-    culture_trust: 0.3
-  };
-
-  return Object.entries(categoryMapping).map(([category, themes]) => {
-    const relevantScores = themeScores.filter(score => 
-      themes.includes(score.theme)
-    );
+  
+  // Calculate scores by category
+  return Object.entries(categoryMap).map(([category, themes]) => {
+    // Filter theme scores to only include those in this category
+    const relevantScores = themeScores.filter(score => themes.includes(score.theme));
     
-    const totalScore = relevantScores.reduce((sum, score) => sum + score.score, 0);
-    const avgScore = relevantScores.length > 0 ? Math.round(totalScore / relevantScores.length) : 0;
-
+    // Calculate average score for the category
+    const totalScore = relevantScores.reduce((sum, score) => sum + score.score * score.count, 0);
+    const totalCount = relevantScores.reduce((sum, score) => sum + score.count, 0);
+    
     return {
-      category: category as 'emotion_index' | 'engagement_stability' | 'culture_trust',
-      score: avgScore,
-      weight: categoryWeights[category as keyof typeof categoryWeights]
+      category,
+      score: totalCount > 0 ? Math.round(totalScore / totalCount) : 0,
+      weight: category === 'culture_trust' ? 0.4 : category === 'team_dynamics' ? 0.3 : 0.15
     };
   });
 };
 
-export const getTier = (score: number): PulseScoreTier => {
-  if (score >= 85) return 'pulse_certified';
-  if (score >= 70) return 'emerging_culture';
-  if (score >= 55) return 'at_risk';
-  return 'critical';
+// Get certification tier based on scores
+export const getTier = (overallScore: number): PulseScoreTier => {
+  if (overallScore >= 85) return 'gold';
+  if (overallScore >= 75) return 'silver';
+  if (overallScore >= 65) return 'bronze';
+  return 'not_eligible';
 };
 
-export const getTierDisplay = (tier: PulseScoreTier) => {
-  const displayConfig = {
-    pulse_certified: { label: 'Pulse Certified™', color: 'text-green-600' },
-    emerging_culture: { label: 'Growth Culture™', color: 'text-blue-600' },
-    at_risk: { label: 'At Risk', color: 'text-amber-600' },
-    critical: { label: 'Critical', color: 'text-red-600' }
-  };
-  return displayConfig[tier];
-};
-
-export const getSampleSurveyQuestions = () => [
-  {
-    id: 'trust_leadership',
-    text: 'I trust the leadership team at my organization.',
-    type: 'likert',
-    theme: 'trust_in_leadership' as ScoringTheme,
-    weight: 1.2
-  },
-  {
-    id: 'psych_safety',
-    text: 'I feel safe sharing my opinions without fear of negative consequences.',
-    type: 'likert',
-    theme: 'psychological_safety' as ScoringTheme,
-    weight: 1.0
-  },
-  {
-    id: 'inclusion',
-    text: 'I feel a sense of belonging at my workplace.',
-    type: 'likert',
-    theme: 'inclusion_belonging' as ScoringTheme,
-    weight: 1.0
-  },
-  {
-    id: 'engagement',
-    text: 'I find my work meaningful and engaging.',
-    type: 'likert',
-    theme: 'motivation_fulfillment' as ScoringTheme,
-    weight: 1.1
-  },
-  {
-    id: 'mission',
-    text: "I understand and believe in our company's mission.",
-    type: 'likert',
-    theme: 'mission_alignment' as ScoringTheme,
-    weight: 0.9
-  },
-  {
-    id: 'retention',
-    text: 'I see myself working here a year from now.',
-    type: 'likert',
-    theme: 'engagement_continuity' as ScoringTheme,
-    weight: 1.3
+// Get display text for tier
+export const getTierDisplay = (tier: PulseScoreTier): string => {
+  switch (tier) {
+    case 'gold': return 'Gold';
+    case 'silver': return 'Silver';
+    case 'bronze': return 'Bronze';
+    case 'not_eligible': return 'Not Eligible';
+    default: return 'Unknown';
   }
-];
+};
+
+// Get sample survey questions
+export const getSampleSurveyQuestions = (): SurveyQuestion[] => {
+  return [
+    {
+      id: 'q1',
+      text: 'I feel comfortable sharing concerns with my team',
+      type: 'likert',
+      theme: 'psychological_safety',
+      weight: 1.2
+    },
+    {
+      id: 'q2',
+      text: 'I trust my company leadership to make good decisions',
+      type: 'likert',
+      theme: 'trust_in_leadership',
+      weight: 1.1
+    },
+    {
+      id: 'q3',
+      text: 'My team works well together to solve problems',
+      type: 'likert',
+      theme: 'team_cohesion',
+      weight: 1.0
+    },
+    {
+      id: 'q4',
+      text: 'I maintain a healthy balance between work and personal life',
+      type: 'likert',
+      theme: 'work_life_balance',
+      weight: 0.9
+    },
+    {
+      id: 'q5',
+      text: 'I have opportunities to learn and grow in my role',
+      type: 'likert',
+      theme: 'career_growth',
+      weight: 1.0
+    },
+    {
+      id: 'q6',
+      text: 'My company values diversity of thought and background',
+      type: 'likert',
+      theme: 'inclusion_diversity',
+      weight: 1.1
+    }
+  ];
+};

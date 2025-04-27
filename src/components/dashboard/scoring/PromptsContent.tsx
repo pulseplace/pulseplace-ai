@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,22 +12,15 @@ interface PromptsContentProps {
   openEndedResponses?: Record<string, any>;
 }
 
-const PromptsContent = ({ themeScores, openEndedResponses = {} }: PromptsContentProps) => {
+const PromptsContent: React.FC<PromptsContentProps> = ({ themeScores, openEndedResponses = {} }) => {
   const { toast } = useToast();
   
   // Generate the prompt for the theme scores
-  const themeScoresForPrompt = themeScores.map(score => ({
-    theme: score.theme,
-    score: score.score
-  }));
-  
-  const promptText1 = getFeedbackSynthesisPrompt({ 
-    themeScores: themeScoresForPrompt 
-  });
+  const promptText1 = getFeedbackSynthesisPrompt(themeScores);
   
   // Generate the prompt for the open-ended responses
   const promptText2 = getOpenEndedFeedbackPrompt(openEndedResponses);
-  
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
       toast({

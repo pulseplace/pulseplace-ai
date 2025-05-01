@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Calendar, 
@@ -18,10 +17,17 @@ import { AddTaskDialog } from './AddTaskDialog';
 import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
 
-const TaskList = () => {
+export interface TaskListProps {
+  tasks?: Task[];
+}
+
+const TaskList = ({ tasks }: TaskListProps = {}) => {
   const { toast } = useToast();
   const { dailyTasks, completeTask, deleteTask } = useTaskManager();
   const [showAddTask, setShowAddTask] = useState(false);
+  
+  // Use either passed tasks or dailyTasks from context
+  const displayTasks = tasks || dailyTasks;
 
   const handleCompleteTask = (id: string) => {
     completeTask(id);
@@ -59,7 +65,7 @@ const TaskList = () => {
         </Button>
       </CardHeader>
       <CardContent>
-        {dailyTasks.length === 0 ? (
+        {displayTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-6 text-center text-gray-500">
             <Clock className="h-12 w-12 mb-2 text-gray-400" />
             <p>No tasks scheduled for today</p>
@@ -73,7 +79,7 @@ const TaskList = () => {
           </div>
         ) : (
           <ul className="space-y-3">
-            {dailyTasks.map((task) => (
+            {displayTasks.map((task) => (
               <li 
                 key={task.id} 
                 className={`flex items-start p-3 rounded-md border ${
@@ -130,12 +136,12 @@ const TaskList = () => {
         )}
         
         {/* Task summary */}
-        {dailyTasks.length > 0 && (
+        {displayTasks.length > 0 && (
           <div className="mt-4 pt-3 border-t border-gray-100 text-sm text-gray-500 flex justify-between">
             <span>
-              {dailyTasks.filter(t => t.completed).length} of {dailyTasks.length} tasks completed
+              {displayTasks.filter(t => t.completed).length} of {displayTasks.length} tasks completed
             </span>
-            {dailyTasks.some(t => t.priority === 'high' && !t.completed) && (
+            {displayTasks.some(t => t.priority === 'high' && !t.completed) && (
               <span className="flex items-center text-amber-600">
                 <AlertCircle className="h-3 w-3 mr-1" />
                 High priority tasks pending

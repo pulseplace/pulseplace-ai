@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -97,11 +96,15 @@ const Auth = () => {
     setIsLoading(true);
     try {
       const userData = {
-        first_name: values.firstName,
-        last_name: values.lastName,
-        company: values.company,
-        role: values.role,
-        department: values.department
+        email: values.email,
+        password: values.password,
+        userData: {
+          first_name: values.firstName,
+          last_name: values.lastName,
+          company: values.company,
+          role: values.role,
+          department: values.department
+        }
       };
       await signUp(values.email, values.password, userData);
     } catch (error: any) {

@@ -1,5 +1,5 @@
 
-import { SurveyResponse, SurveyQuestion, PulseScoreTier } from '@/types/scoring.types';
+import { SurveyResponse, SurveyQuestion, PulseScoreTier, ScoringTheme } from '@/types/scoring.types';
 
 export const normalizeResponseValue = (
   response: SurveyResponse,

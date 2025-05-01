@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -105,6 +104,17 @@ export default function TaskTable({ showSprint = false, onEditTask }: TaskTableP
     return 0;
   });
 
+  // Helper function to safely format dates (strings or Date objects)
+  const formatDate = (date: string | Date | undefined): string => {
+    if (!date) return '-';
+    try {
+      return format(new Date(date), 'MMM d, yyyy');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '-';
+    }
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -200,9 +210,7 @@ export default function TaskTable({ showSprint = false, onEditTask }: TaskTableP
                 </Badge>
               </TableCell>
               <TableCell>{task.owner}</TableCell>
-              <TableCell>
-                {task.deadline ? format(new Date(task.deadline), 'MMM d, yyyy') : '-'}
-              </TableCell>
+              <TableCell>{formatDate(task.deadline)}</TableCell>
               {showSprint && (
                 <TableCell>{task.sprint || '-'}</TableCell>
               )}

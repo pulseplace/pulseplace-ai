@@ -7,7 +7,13 @@ export const THEME_TO_CATEGORY: Record<ScoringTheme, ScoringCategory> = {
   inclusion_belonging: 'culture_trust',
   motivation_fulfillment: 'engagement_stability',
   mission_alignment: 'emotion_index',
-  engagement_continuity: 'engagement_stability'
+  engagement_continuity: 'engagement_stability',
+  team_cohesion: 'culture_trust',
+  work_life_balance: 'engagement_stability',
+  career_growth: 'emotion_index',
+  inclusion_diversity: 'culture_trust',
+  leadership_effectiveness: 'culture_trust',
+  innovation_adaptability: 'emotion_index'
 };
 
 export const CATEGORY_WEIGHTS: Record<ScoringCategory, number> = {

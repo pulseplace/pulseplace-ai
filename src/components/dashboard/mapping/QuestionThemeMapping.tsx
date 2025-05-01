@@ -14,7 +14,13 @@ const themeColors: Record<ScoringTheme, { bg: string, text: string }> = {
   inclusion_belonging: { bg: 'bg-purple-100', text: 'text-purple-800' },
   motivation_fulfillment: { bg: 'bg-amber-100', text: 'text-amber-800' },
   mission_alignment: { bg: 'bg-teal-100', text: 'text-teal-800' },
-  engagement_continuity: { bg: 'bg-rose-100', text: 'text-rose-800' }
+  engagement_continuity: { bg: 'bg-rose-100', text: 'text-rose-800' },
+  team_cohesion: { bg: 'bg-indigo-100', text: 'text-indigo-800' },
+  work_life_balance: { bg: 'bg-cyan-100', text: 'text-cyan-800' },
+  career_growth: { bg: 'bg-emerald-100', text: 'text-emerald-800' },
+  inclusion_diversity: { bg: 'bg-fuchsia-100', text: 'text-fuchsia-800' },
+  leadership_effectiveness: { bg: 'bg-orange-100', text: 'text-orange-800' },
+  innovation_adaptability: { bg: 'bg-violet-100', text: 'text-violet-800' }
 };
 
 // Define category color mapping
@@ -30,7 +36,13 @@ const themesToCategories: Record<ScoringTheme, 'emotion_index' | 'engagement_sta
   inclusion_belonging: 'culture_trust',
   motivation_fulfillment: 'engagement_stability',
   mission_alignment: 'emotion_index',
-  engagement_continuity: 'engagement_stability'
+  engagement_continuity: 'engagement_stability',
+  team_cohesion: 'culture_trust',
+  work_life_balance: 'engagement_stability',
+  career_growth: 'emotion_index',
+  inclusion_diversity: 'culture_trust',
+  leadership_effectiveness: 'culture_trust',
+  innovation_adaptability: 'emotion_index'
 };
 
 const formatThemeName = (theme: string): string => {

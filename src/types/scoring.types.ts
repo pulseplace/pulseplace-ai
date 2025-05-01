@@ -7,7 +7,13 @@ export type ScoringTheme =
   | 'inclusion_belonging'
   | 'motivation_fulfillment'
   | 'mission_alignment'
-  | 'engagement_continuity';
+  | 'engagement_continuity'
+  | 'team_cohesion'
+  | 'work_life_balance'
+  | 'career_growth'
+  | 'inclusion_diversity'
+  | 'leadership_effectiveness'
+  | 'innovation_adaptability';
 
 export type ScoringCategory = 
   | 'emotion_index'

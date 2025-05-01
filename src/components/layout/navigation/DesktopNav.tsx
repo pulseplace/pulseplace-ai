@@ -1,13 +1,16 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   BarChart3, 
   Bot, 
   Users,
-  Award,
-  ChevronDown
+  Clock,
+  ChevronDown,
+  ListTodo,
+  Bug,
+  Workflow
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,21 +19,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from '@/lib/utils';
+import { ROUTES } from '../routes';
 
 const DesktopNav = () => {
-  const location = useLocation();
-  
-  // Helper function to determine if a path is active
-  const isActive = (path: string) => {
-    return location.pathname.startsWith(path);
-  };
-
   return (
     <div className="hidden md:flex items-center ml-8 space-x-1">
-      <Link to="/dashboard">
+      <Link to={ROUTES.DASHBOARD.INDEX}>
         <Button 
-          variant={isActive('/dashboard') ? "secondary" : "ghost"}
+          variant="ghost"
           size="sm"
           className="text-sm"
         >
@@ -39,9 +35,9 @@ const DesktopNav = () => {
         </Button>
       </Link>
       
-      <Link to="/dashboard/insights">
+      <Link to={ROUTES.INSIGHTS.INDEX}>
         <Button 
-          variant={isActive('/dashboard/insights') ? "secondary" : "ghost"}
+          variant="ghost"
           size="sm"
           className="text-sm"
         >
@@ -50,9 +46,9 @@ const DesktopNav = () => {
         </Button>
       </Link>
       
-      <Link to="/dashboard/pulsebot">
+      <Link to={ROUTES.PULSEBOT}>
         <Button 
-          variant={isActive('/dashboard/pulsebot') ? "secondary" : "ghost"}
+          variant="ghost"
           size="sm"
           className="text-sm"
         >
@@ -64,7 +60,32 @@ const DesktopNav = () => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
-            variant={isActive('/dashboard/teams') ? "secondary" : "ghost"} 
+            variant="ghost"
+            size="sm" 
+            className="text-sm"
+          >
+            <ListTodo className="h-4 w-4 mr-1.5" />
+            Task System
+            <ChevronDown className="h-3.5 w-3.5 ml-1.5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <Link to="/task-tracker">Task Tracker</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/debug-log">Debug Log</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/build-flow">Build Flow</Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button 
+            variant="ghost"
             size="sm" 
             className="text-sm"
           >
@@ -75,16 +96,19 @@ const DesktopNav = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link to="/dashboard/teams/alpha">Team Alpha</Link>
+            <Link to={ROUTES.TEAMS.TEAM('alpha')}>Team Alpha</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/dashboard/teams/beta">Team Beta</Link>
+            <Link to={ROUTES.TEAMS.TEAM('beta')}>Team Beta</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/dashboard/teams/gamma">Team Gamma</Link>
+            <Link to={ROUTES.TEAMS.TEAM('gamma')}>Team Gamma</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/dashboard/teams">All Teams</Link>
+            <Link to={ROUTES.TEAMS.TEAM('sigma')}>Team Sigma</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to={ROUTES.TEAMS.TEAM('zeta')}>Team Zeta</Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -92,24 +116,24 @@ const DesktopNav = () => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
-            variant={isActive('/dashboard/certification') ? "secondary" : "ghost"} 
+            variant="ghost"
             size="sm" 
             className="text-sm"
           >
-            <Award className="h-4 w-4 mr-1.5" />
-            Certification
+            <Clock className="h-4 w-4 mr-1.5" />
+            QA Sprint
             <ChevronDown className="h-3.5 w-3.5 ml-1.5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link to="/dashboard/certification">Certification Dashboard</Link>
+            <Link to={ROUTES.DASHBOARD.QA_SPRINT}>Sprint Checklist</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/dashboard/certification/share">Share Certificate</Link>
+            <Link to={ROUTES.DASHBOARD.QA_TESTING}>QA Testing Dashboard</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/pulse-score-lite">Get Certified</Link>
+            <Link to={ROUTES.DASHBOARD.DASHBOARD_QA}>Dashboard QA Plan</Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

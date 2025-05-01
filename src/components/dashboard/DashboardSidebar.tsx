@@ -10,12 +10,14 @@ import {
   LucideIcon,
   Users,
   Cog,
+  ClipboardList,
+  PieChart,
   Bot,
   Brain,
   MessageSquare,
-  PieChart,
+  FileBarChart,
   Link2,
-  ClipboardList,
+  CalendarClock,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -76,10 +78,13 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             <NavItem to="/dashboard" icon={Home}>
               Dashboard
             </NavItem>
-            <NavItem to="/teams" icon={Users}>
+            <NavItem to="/dashboard/organization" icon={Building2}>
+              Organization
+            </NavItem>
+            <NavItem to="/dashboard/team" icon={Users}>
               Team Management
             </NavItem>
-            <NavItem to="/insights" icon={BarChart3}>
+            <NavItem to="/dashboard/analytics" icon={BarChart3}>
               Analytics
             </NavItem>
             
@@ -105,17 +110,30 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             {/* Project Management */}
             <div className="pt-4 pb-2">
               <p className="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Tools
+                Project Management
               </p>
             </div>
-            <NavItem to="/task-tracker" icon={ClipboardList}>
-              Task Tracker
+            <NavItem to="/task-audit" icon={ClipboardList}>
+              Task Audit
             </NavItem>
-            <NavItem to="/build-flow" icon={FileText}>
-              Build Flow
+            <NavItem to="/task-summary" icon={FileBarChart}>
+              Task Summary
             </NavItem>
-            <NavItem to="/debug-log" icon={FileText}>
-              Debug Log
+            <NavItem to="/task-summary?tab=beta-plan" icon={CalendarClock}>
+              Beta Launch Plan
+            </NavItem>
+            <NavItem to="/project-handover" icon={FileText}>
+              Project Handover
+            </NavItem>
+            
+            {/* Development Tools */}
+            <div className="pt-4 pb-2">
+              <p className="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Development Tools
+              </p>
+            </div>
+            <NavItem to="/dashboard/link-validation" icon={Link2}>
+              Link Validator
             </NavItem>
             
             {/* Add the Pitch Deck Admin link for admin users */}

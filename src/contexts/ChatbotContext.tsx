@@ -1,6 +1,7 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 export interface Message {
   id: string;
@@ -25,19 +26,21 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   
+  // Initialize with welcome message
   useEffect(() => {
     if (messages.length === 0) {
       setMessages([
         {
           id: 'welcome-message',
           role: 'assistant',
-          content: "Hi! I'm PulseBot, your AI assistant for workplace culture improvement. I can help you understand your culture metrics, certification progress, and provide insights to enhance your work environment.",
+          content: "Hi! I'm your PulsePlace Assistant. Ask me anything about culture surveys, PulseScore, or certification.",
           timestamp: new Date(),
         },
       ]);
     }
   }, [messages.length]);
 
+  // Generate a unique ID for messages
   const generateId = () => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
   };
@@ -45,6 +48,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const sendMessage = async (content: string) => {
     if (!content.trim()) return;
 
+    // Add user message to the chat
     const userMessage: Message = {
       id: generateId(),
       role: 'user',
@@ -56,26 +60,30 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('pulsebot-assistant', {
-        body: { 
-          message: content,
-          sessionId: generateId(),
-          language: 'en'
-        },
+      // Prepare messages for API (excluding system messages)
+      const apiMessages = messages
+        .filter(msg => msg.role !== 'system')
+        .concat(userMessage)
+        .map(({ role, content }) => ({ role, content }));
+
+      // Call the Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('ask-pulsebot', {
+        body: { messages: apiMessages },
       });
 
       if (error) throw new Error(error.message || 'Failed to get a response');
 
-      if (data && data.reply) {
+      // Add assistant's response to the chat
+      if (data && data.message) {
         const assistantMessage: Message = {
           id: generateId(),
-          role: 'assistant',
-          content: data.reply,
+          role: data.message.role,
+          content: data.message.content,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, assistantMessage]);
       } else {
-        throw new Error('Invalid response format');
+        throw new Error('Invalid response format from assistant');
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -85,12 +93,13 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         variant: "destructive",
       });
       
+      // Add error message
       setMessages((prev) => [
         ...prev,
         {
           id: generateId(),
           role: 'assistant',
-          content: "I'm having trouble connecting right now. Please try again in a moment.",
+          content: "I'm having trouble connecting to my brain right now. Please try again in a moment.",
           timestamp: new Date(),
         },
       ]);
@@ -108,7 +117,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       {
         id: 'welcome-message',
         role: 'assistant',
-        content: "Hi! I'm PulseBot, your AI assistant for workplace culture improvement. I can help you understand your culture metrics, certification progress, and provide insights to enhance your work environment.",
+        content: "Hi! I'm your PulsePlace Assistant. Ask me anything about culture surveys, PulseScore, or certification.",
         timestamp: new Date(),
       },
     ]);

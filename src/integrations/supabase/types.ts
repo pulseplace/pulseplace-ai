@@ -9,51 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      copilot_logs: {
-        Row: {
-          avatar_state: string | null
-          bot_reply: string
-          conversation_id: string | null
-          created_at: string | null
-          id: string
-          language: string | null
-          message_tokens: number | null
-          platform: string | null
-          response_time_ms: number | null
-          session_id: string
-          user_agent: string | null
-          user_message: string
-        }
-        Insert: {
-          avatar_state?: string | null
-          bot_reply: string
-          conversation_id?: string | null
-          created_at?: string | null
-          id?: string
-          language?: string | null
-          message_tokens?: number | null
-          platform?: string | null
-          response_time_ms?: number | null
-          session_id: string
-          user_agent?: string | null
-          user_message: string
-        }
-        Update: {
-          avatar_state?: string | null
-          bot_reply?: string
-          conversation_id?: string | null
-          created_at?: string | null
-          id?: string
-          language?: string | null
-          message_tokens?: number | null
-          platform?: string | null
-          response_time_ms?: number | null
-          session_id?: string
-          user_agent?: string | null
-          user_message?: string
-        }
-        Relationships: []
-      }
       demo_bookings: {
         Row: {
           created_at: string | null

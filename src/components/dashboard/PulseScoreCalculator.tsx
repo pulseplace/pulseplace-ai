@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -7,17 +8,16 @@ import {
   calculateCategoryScores,
   calculateOverallScore,
   getSampleSurveyQuestions,
-  getTierDisplay,
-  getTier
+  getTierDisplay 
 } from '@/utils/scoring';
-import { SurveyQuestion, SurveyResponseItem, PulseScoreData, PulseScoreTier } from '@/types/scoring.types';
+import { SurveyQuestion, SurveyResponse, PulseScoreData, PulseScoreTier } from '@/types/scoring.types';
 import { Activity, HelpCircle } from 'lucide-react';
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TIER_THRESHOLDS } from '@/utils/scoring/config';
 
 const PulseScoreCalculator = () => {
   const [questions] = useState<SurveyQuestion[]>(getSampleSurveyQuestions());
-  const [responses, setResponses] = useState<SurveyResponseItem[]>([]);
+  const [responses, setResponses] = useState<SurveyResponse[]>([]);
   const [pulseScore, setPulseScore] = useState<PulseScoreData | null>(null);
   
   useEffect(() => {
@@ -31,27 +31,20 @@ const PulseScoreCalculator = () => {
   useEffect(() => {
     if (responses.length === 0) return;
     
-    // Convert responses to the format expected by scoring functions
-    const formattedResponse = {
-      responses: responses.reduce((acc, item) => {
-        if (typeof item.value === 'number') {
-          acc[item.questionId] = item.value;
-        }
-        return acc;
-      }, {} as Record<string, number>),
-      questionMapping: questions.reduce((acc, q) => {
-        acc[q.id] = { theme: q.theme, weight: q.weight };
-        return acc;
-      }, {} as Record<string, { theme: string; weight: number; }>)
-    };
-    
     // Generate pulse score data
-    const themeScores = calculateThemeScores(formattedResponse);
+    const themeScores = calculateThemeScores(questions, responses);
     const categoryScores = calculateCategoryScores(themeScores);
     const overallScore = calculateOverallScore(categoryScores);
     
     // Determine tier based on score
-    const tier = getTier(overallScore);
+    let tier: PulseScoreTier = 'intervention_advised';
+    if (overallScore >= TIER_THRESHOLDS.pulse_certified) {
+      tier = 'pulse_certified';
+    } else if (overallScore >= TIER_THRESHOLDS.emerging_culture) {
+      tier = 'emerging_culture';
+    } else if (overallScore >= TIER_THRESHOLDS.at_risk) {
+      tier = 'at_risk';
+    }
     
     // Mock insights and recommendations
     const insights = [

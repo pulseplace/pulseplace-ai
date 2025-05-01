@@ -1,33 +1,59 @@
 
-export type TaskStatus = 'not_started' | 'in_progress' | 'in_review' | 'completed' | 'todo' | 'review' | 'blocked';
+export type TaskModule = 
+  | 'PulseScore Engine' 
+  | 'AI Summary' 
+  | 'Certification' 
+  | 'Dashboard' 
+  | 'Slack Bot' 
+  | 'Lite Survey' 
+  | 'Backend Infra' 
+  | 'Frontend UI' 
+  | 'Other';
+
+export type TaskPriority = 'High' | 'Medium' | 'Low';
+
+export type TaskStatus = 'Not Started' | 'In Progress' | 'Stuck' | 'Done';
+
+export type TaskOwner = 'Lovable' | 'Founder' | 'External';
 
 export interface Task {
   id: string;
-  title: string;
-  description?: string;
+  name: string;
+  module: TaskModule;
+  priority: TaskPriority;
   status: TaskStatus;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  assignedTo?: string;
-  dueDate?: Date | string;
-  module?: TaskModule;
-  owner?: string;
-  createdAt?: string;
+  owner: TaskOwner;
+  deadline: Date | null;
+  notes: string;
   sprint?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
+export type DebugLogSeverity = 'Critical' | 'Major' | 'Minor';
 
-export type TaskModule = 'core' | 'dashboard' | 'certification' | 'survey' | 'pulsebot' | 'integration';
+export type DebugLogStatus = 'Open' | 'In Progress' | 'Fixed';
 
-export type BuildFlowLane = 'backlog' | 'current_sprint' | 'shipped';
+export interface DebugLog {
+  id: string;
+  dateLogged: Date;
+  component: TaskModule;
+  description: string;
+  severity: DebugLogSeverity;
+  status: DebugLogStatus;
+  fixLink?: string;
+  loggedBy: string;
+}
+
+export type BuildFlowLane = 'BACKLOG' | 'CURRENT SPRINT' | 'SHIPPED';
 
 export interface BuildRequest {
   id: string;
-  title: string;
-  description?: string;
-  status: string;
-  priority: string;
-  module: string;
-  lane?: BuildFlowLane;
-  assignedTo?: string;
+  name: string;
+  context: string;
+  module: TaskModule;
+  deadline: Date | null;
+  notes: string;
+  lane: BuildFlowLane;
+  createdAt: Date;
 }

@@ -1,211 +1,154 @@
 
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/components/ui/use-toast";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
-import { SurveyResponse, ScoringTheme } from '@/types/scoring.types';
+import { toast } from 'sonner';
+import { useSurveyQuestions } from '@/hooks/useSurveyQuestions';
+import { calculatePulseScore } from '@/utils/scoring';
 
-// Survey questions focused on trust, engagement, and wellbeing
-const questions = [
-  {
-    id: 'trust_leadership',
-    text: 'I trust the leadership team at my organization.',
-    theme: 'trust_in_leadership' as ScoringTheme,
-    weight: 1.2
-  },
-  {
-    id: 'psych_safety',
-    text: 'I feel safe sharing my opinions without fear of negative consequences.',
-    theme: 'psychological_safety' as ScoringTheme,
-    weight: 1.0
-  },
-  {
-    id: 'inclusion',
-    text: 'I feel a sense of belonging at my workplace.',
-    theme: 'inclusion_belonging' as ScoringTheme,
-    weight: 1.0
-  },
-  {
-    id: 'engagement',
-    text: 'I find my work meaningful and engaging.',
-    theme: 'motivation_fulfillment' as ScoringTheme,
-    weight: 1.1
-  },
-  {
-    id: 'mission',
-    text: 'I understand and believe in our company\'s mission.',
-    theme: 'mission_alignment' as ScoringTheme,
-    weight: 0.9
-  },
-  {
-    id: 'retention',
-    text: 'I see myself working here a year from now.',
-    theme: 'engagement_continuity' as ScoringTheme,
-    weight: 1.3
-  },
-];
+const surveySchema = z.object({
+  responses: z.record(z.string(), z.union([z.string(), z.number()])),
+  email: z.string().email('Please enter a valid email'),
+  marketingOptIn: z.boolean().default(false)
+});
 
-const options = [
-  { value: '1', label: 'Strongly Disagree' },
-  { value: '2', label: 'Disagree' },
-  { value: '3', label: 'Neutral' },
-  { value: '4', label: 'Agree' },
-  { value: '5', label: 'Strongly Agree' }
-];
+type FormValues = z.infer<typeof surveySchema>;
 
-interface PulseSurveyFormProps {
-  onSubmit: (response: SurveyResponse) => void;
-}
+const PulseSurveyForm = () => {
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [showResults, setShowResults] = React.useState(false);
+  const [score, setScore] = React.useState<number | null>(null);
+  const { data: questions = [], isLoading } = useSurveyQuestions();
 
-const PulseSurveyForm: React.FC<PulseSurveyFormProps> = ({ onSubmit }) => {
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [email, setEmail] = useState<string>('');
-  const [companyName, setCompanyName] = useState<string>('');
-  const [marketingOptIn, setMarketingOptIn] = useState<boolean>(false);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { toast } = useToast();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (Object.keys(answers).length < questions.length) {
-      toast({
-        title: "Please complete all questions",
-        description: "All questions require a response to generate your PulseScore.",
-        variant: "destructive",
-      });
-      return;
+  const form = useForm<FormValues>({
+    resolver: zodResolver(surveySchema),
+    defaultValues: {
+      responses: {},
+      email: '',
+      marketingOptIn: false
     }
+  });
 
-    setIsSubmitting(true);
-    
+  const onSubmit = async (data: FormValues) => {
     try {
-      // Format responses for database
-      const formattedResponses: Record<string, number> = {};
-      Object.entries(answers).forEach(([questionId, value]) => {
-        formattedResponses[questionId] = parseInt(value, 10);
-      });
+      setIsSubmitting(true);
+      // Convert the questions type to match what calculatePulseScore expects
+      const calculatedScore = calculatePulseScore(data.responses, questions as any);
       
-      // Save response to Supabase
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('pulse_survey_responses')
         .insert({
-          responses: formattedResponses,
-          email: email || null,
-          marketing_opt_in: marketingOptIn,
-          score: 0 // Will be calculated and updated
-        })
-        .select();
-      
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      // Prepare the response for scoring calculation
-      const surveyResponse: SurveyResponse = {
-        responses: formattedResponses,
-        questionMapping: questions.reduce((map, q) => {
-          map[q.id] = {
-            theme: q.theme,
-            weight: q.weight
-          };
-          return map;
-        }, {} as Record<string, { theme: ScoringTheme; weight: number }>)
-      };
-      
-      // Call the onSubmit handler with the response
-      onSubmit(surveyResponse);
-      
+          email: data.email,
+          marketing_opt_in: data.marketingOptIn,
+          responses: data.responses,
+          score: calculatedScore
+        });
+
+      if (error) throw error;
+
+      setScore(calculatedScore);
+      setShowResults(true);
+      toast.success('Survey submitted successfully!');
     } catch (error) {
       console.error('Error submitting survey:', error);
-      toast({
-        title: "Submission error",
-        description: "There was a problem submitting your survey. Please try again.",
-        variant: "destructive",
-      });
+      toast.error('Failed to submit survey');
+    } finally {
       setIsSubmitting(false);
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="space-y-4">
-        <h2 className="text-lg font-medium">About You (Optional)</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="your.email@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="companyName">Company Name</Label>
-            <Input
-              id="companyName"
-              placeholder="Your organization"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
+  if (isLoading) {
+    return <div>Loading survey questions...</div>;
+  }
 
-      <div className="border-t pt-8">
-        <h2 className="text-lg font-medium mb-6">Rate your agreement with each statement</h2>
-        
-        {questions.map((question) => (
-          <div key={question.id} className="space-y-4 mb-8">
-            <Label className="text-base">{question.text}</Label>
+  if (showResults) {
+    return (
+      <div className="text-center py-8">
+        <h2 className="text-3xl font-bold mb-4">Your PulseScore™</h2>
+        <div className="text-6xl font-bold text-pulse-600 mb-6">{score}</div>
+        <p className="text-lg mb-6">
+          Want to get certified and showcase your great workplace culture?
+        </p>
+        <Button className="bg-pulse-gradient">
+          Upgrade to PulsePlace Pro
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      {questions.map((question) => (
+        <div key={question.id} className="space-y-4">
+          <Label className="text-lg font-medium">
+            {question.text}
+          </Label>
+          
+          {question.type === 'likert' ? (
             <RadioGroup
-              onValueChange={(value) => {
-                setAnswers(prev => ({ ...prev, [question.id]: value }));
-              }}
-              value={answers[question.id]}
-              className="flex justify-between"
+              onValueChange={(value) => 
+                form.setValue(`responses.${question.id}`, parseInt(value))
+              }
+              className="grid grid-cols-5 gap-4"
             >
-              {options.map((option) => (
-                <div key={option.value} className="flex flex-col items-center space-y-1">
-                  <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
-                  <Label 
-                    htmlFor={`${question.id}-${option.value}`}
-                    className="text-xs text-gray-500"
-                  >
-                    {option.label}
-                  </Label>
+              {[1, 2, 3, 4, 5].map((value) => (
+                <div key={value} className="flex flex-col items-center">
+                  <RadioGroupItem
+                    value={value.toString()}
+                    id={`${question.id}-${value}`}
+                  />
+                  <Label htmlFor={`${question.id}-${value}`}>{value}</Label>
                 </div>
               ))}
             </RadioGroup>
-          </div>
-        ))}
+          ) : (
+            <Textarea
+              onChange={(e) => 
+                form.setValue(`responses.${question.id}`, e.target.value)
+              }
+              placeholder="Share your thoughts..."
+            />
+          )}
+        </div>
+      ))}
+
+      <div className="space-y-4 pt-4 border-t">
+        <div>
+          <Label htmlFor="email">Email address</Label>
+          <Input
+            type="email"
+            id="email"
+            {...form.register('email')}
+            placeholder="Enter your email to get your results"
+          />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="marketingOptIn"
+            {...form.register('marketingOptIn')}
+          />
+          <Label htmlFor="marketingOptIn">
+            Keep me updated with workplace culture insights
+          </Label>
+        </div>
+
+        <Button 
+          type="submit" 
+          className="w-full bg-pulse-gradient"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Submitting...' : 'Get Your PulseScore™'}
+        </Button>
       </div>
-      
-      <div className="flex items-center space-x-2">
-        <Checkbox 
-          id="marketing-optin" 
-          checked={marketingOptIn}
-          onCheckedChange={(checked) => setMarketingOptIn(!!checked)} 
-        />
-        <Label htmlFor="marketing-optin" className="text-sm text-gray-600">
-          I'd like to receive insights about workplace culture and certification.
-        </Label>
-      </div>
-      
-      <Button 
-        type="submit" 
-        className="w-full bg-pulse-gradient"
-        size="lg"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? 'Calculating Your PulseScore...' : 'Submit Survey'}
-      </Button>
     </form>
   );
 };

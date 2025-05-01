@@ -1,72 +1,128 @@
 
 import React from 'react';
-import { useBuildRequests } from '@/contexts/BuildRequestsContext';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useTaskManager } from '@/contexts/TaskContext';
+import { BuildRequest, BuildFlowLane } from '@/types/task.types';
+import { format } from 'date-fns';
+import { Pencil, Trash2 } from 'lucide-react';
 
-const BuildFlowBoard = () => {
-  const { buildRequests } = useBuildRequests();
-  
-  const requestsByLane = {
-    backlog: buildRequests.filter(req => req.lane === 'backlog'),
-    current_sprint: buildRequests.filter(req => req.lane === 'current_sprint'),
-    shipped: buildRequests.filter(req => req.lane === 'shipped')
-  };
-  
-  const getModuleBadge = (module: string) => {
-    switch (module) {
-      case 'dashboard': return <Badge className="bg-blue-100 text-blue-800">Dashboard</Badge>;
-      case 'pulsebot': return <Badge className="bg-green-100 text-green-800">PulseBot</Badge>;
-      case 'certification': return <Badge className="bg-purple-100 text-purple-800">Certification</Badge>;
-      case 'analytics': return <Badge className="bg-amber-100 text-amber-800">Analytics</Badge>;
-      default: return <Badge className="bg-gray-100 text-gray-800">{module}</Badge>;
-    }
-  };
-  
-  const getLaneTitle = (lane: string) => {
-    switch (lane) {
-      case 'backlog': return 'Backlog';
-      case 'current_sprint': return 'Current Sprint';
-      case 'shipped': return 'Shipped';
-      default: return lane;
-    }
-  };
-  
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {Object.entries(requestsByLane).map(([lane, requests]) => (
-        <Card key={lane} className="h-full flex flex-col">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">
-              {getLaneTitle(lane)} ({requests.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-grow overflow-auto space-y-4">
-            {requests.map(request => (
-              <div key={request.id} className="border rounded p-3">
-                <h4 className="font-medium mb-2">{request.title}</h4>
-                {request.description && (
-                  <p className="text-sm text-gray-600 mb-3">{request.description}</p>
-                )}
-                <div className="flex justify-between items-center">
-                  {getModuleBadge(request.module)}
-                  <span className="text-xs text-gray-500">
-                    {request.assignedTo ? `Assigned to: ${request.assignedTo}` : 'Unassigned'}
-                  </span>
-                </div>
-              </div>
-            ))}
-            
-            {requests.length === 0 && (
-              <div className="text-center py-8 text-sm text-gray-500">
-                No requests in this lane
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
+const LANES: BuildFlowLane[] = ['BACKLOG', 'CURRENT SPRINT', 'SHIPPED'];
+
+const getLaneColor = (lane: BuildFlowLane) => {
+  switch (lane) {
+    case 'BACKLOG':
+      return 'bg-gray-100 border-gray-300';
+    case 'CURRENT SPRINT':
+      return 'bg-blue-100 border-blue-300';
+    case 'SHIPPED':
+      return 'bg-green-100 border-green-300';
+    default:
+      return 'bg-gray-100 border-gray-300';
+  }
 };
 
-export default BuildFlowBoard;
+interface BuildFlowBoardProps {
+  onEditRequest: (request: BuildRequest) => void;
+  onDeleteRequest: (id: string) => void;
+}
+
+export default function BuildFlowBoard({ onEditRequest, onDeleteRequest }: BuildFlowBoardProps) {
+  const { buildRequests, moveBuildRequest, getBuildRequestsByLane } = useTaskManager();
+
+  // Handle drag and drop
+  const handleDragStart = (e: React.DragEvent, requestId: string) => {
+    e.dataTransfer.setData('requestId', requestId);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, targetLane: BuildFlowLane) => {
+    e.preventDefault();
+    const requestId = e.dataTransfer.getData('requestId');
+    if (requestId) {
+      moveBuildRequest(requestId, targetLane);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {LANES.map(lane => {
+        const requests = getBuildRequestsByLane(lane);
+        
+        return (
+          <div key={lane} className="flex flex-col space-y-2">
+            <div 
+              className={`p-2 rounded-md mb-2 text-center font-medium ${getLaneColor(lane)}`}
+            >
+              {lane} ({requests.length})
+            </div>
+            <div 
+              className="space-y-3 min-h-[200px] p-2 rounded-md bg-gray-50"
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, lane)}
+            >
+              {requests.map(request => (
+                <Card 
+                  key={request.id} 
+                  className="cursor-move hover:shadow-md transition-shadow"
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, request.id)}
+                >
+                  <CardHeader className="p-3 pb-1">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-sm font-medium">{request.name}</CardTitle>
+                      <div className="flex space-x-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-7 w-7 p-0"
+                          onClick={() => onEditRequest(request)}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-7 w-7 p-0 text-red-500 hover:text-red-700"
+                          onClick={() => onDeleteRequest(request.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-3 pt-1">
+                    <div className="text-xs text-gray-500 mb-2 line-clamp-2">
+                      {request.context}
+                    </div>
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <Badge className="bg-gray-100 text-gray-800 border">{request.module}</Badge>
+                      {request.deadline && (
+                        <span>Due: {format(new Date(request.deadline), 'MMM d')}</span>
+                      )}
+                    </div>
+                    {request.notes && (
+                      <div className="text-xs text-gray-500 italic line-clamp-1 mt-1">
+                        {request.notes}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {requests.length === 0 && (
+                <div className="p-4 text-center text-gray-400 text-sm">
+                  No requests in this lane
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}

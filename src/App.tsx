@@ -1,84 +1,47 @@
 
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Toaster } from "@/components/ui/toaster";
+import DemoReadyLayout from '@/components/layout/DemoReadyLayout';
+import routes from '@/config/routes';
+import Root from '@/pages/Root';
 import { AuthProvider } from './contexts/AuthContext';
-import { Toaster } from '@/components/ui/toaster';
 import { TaskProvider } from './contexts/TaskContext';
-import { BuildRequestsProvider } from './contexts/BuildRequestsContext';
-import { DebugLogsProvider } from './contexts/DebugLogsContext';
 
-// Main public pages
-import HomePage from './pages/HomePage';
-import PulseScoreLite from './pages/PulseScoreLite';
-import PulseScoreThankYou from './pages/PulseScoreThankYou';
-import BookDemo from './pages/BookDemo';
-
-// Auth
-import AuthLayout from './layouts/AuthLayout';
-import SignIn from './pages/auth/SignIn';
-import SignUp from './pages/auth/SignUp';
-
-// Dashboard and related pages
-import DashboardLayout from './layouts/DashboardLayout';
-import Dashboard from './pages/Dashboard';
-import TeamDashboard from './pages/TeamDashboard';
-import Insights from './pages/Insights';
-import PulseBot from './pages/PulseBot';
-import AiDashboard from './pages/dashboard/AiDashboard';
-
-// Certification related
-import CertificationEngine from './pages/dashboard/CertificationEngine';
-import ShareCertification from './pages/certification/ShareCertification';
-
-// Utility components
-import PulseBotWidget from './components/chat/PulseBotWidget';
-import NotFound from './pages/NotFound';
-
-// Case studies
-import TayanaStudy from './pages/case-studies/TayanaStudy';
+// Create router with proper configuration
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Root />,
+    children: routes.map(route => ({
+      path: route.path === '/' ? '' : route.path, // Fix root path mapping
+      element: <DemoReadyLayout>{route.element}</DemoReadyLayout>
+    }))
+  }
+]);
 
 function App() {
+  useEffect(() => {
+    console.log('App component mounted');
+    console.log('Current routes:', routes);
+    
+    // Check for any error listeners
+    window.addEventListener('error', (event) => {
+      console.error('Global error caught:', event.error);
+    });
+    
+    return () => {
+      window.removeEventListener('error', () => {});
+    };
+  }, []);
+
   return (
-    <Router>
-      <AuthProvider>
-        <TaskProvider>
-          <BuildRequestsProvider>
-            <DebugLogsProvider>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/pulse-score-lite" element={<PulseScoreLite />} />
-                <Route path="/pulse-score-lite/thank-you" element={<PulseScoreThankYou />} />
-                <Route path="/book-demo" element={<BookDemo />} />
-                <Route path="/case-studies/tayana" element={<TayanaStudy />} />
-
-                {/* Auth Routes */}
-                <Route path="/auth" element={<AuthLayout />}>
-                  <Route path="signin" element={<SignIn />} />
-                  <Route path="signup" element={<SignUp />} />
-                </Route>
-
-                {/* Dashboard Routes - Consolidated under one layout */}
-                <Route path="/dashboard" element={<DashboardLayout />}>
-                  <Route index element={<Dashboard />} />
-                  <Route path="teams/:teamId?" element={<TeamDashboard />} />
-                  <Route path="insights" element={<Insights />} />
-                  <Route path="pulsebot" element={<PulseBot />} />
-                  <Route path="ai" element={<AiDashboard />} />
-                  <Route path="certification" element={<CertificationEngine />} />
-                  <Route path="certification/share" element={<ShareCertification />} />
-                </Route>
-
-                {/* 404 Route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <PulseBotWidget />
-              <Toaster />
-            </DebugLogsProvider>
-          </BuildRequestsProvider>
-        </TaskProvider>
-      </AuthProvider>
-    </Router>
+    <AuthProvider>
+      <TaskProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </TaskProvider>
+    </AuthProvider>
   );
 }
 

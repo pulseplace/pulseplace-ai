@@ -3,7 +3,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { PulseScoreTier } from '@/types/scoring.types';
-import { BadgeStyle } from '@/types/badge.types';
 import { useBadgeSharing } from './hooks/useBadgeSharing';
 import HtmlEmbedTab from './components/HtmlEmbedTab';
 import LinkedInTab from './components/LinkedInTab';
@@ -24,7 +23,7 @@ interface CertificationSharingProps {
 
 const CertificationSharing: React.FC<CertificationSharingProps> = ({
   companyName = 'Acme Corporation',
-  tier = 'thriving',
+  tier = 'pulse_certified',
   score = 86,
   issueDate = 'August 7, 2025',
   validUntil = 'August 7, 2026',
@@ -50,7 +49,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
       <CardContent>
         <div className="mb-6 space-y-4">
           <CustomCtaInput value={customCta} onChange={setCustomCta} />
-          <BadgeStyleSelector badgeStyle={badgeStyle as BadgeStyle} onChange={(style: BadgeStyle) => setBadgeStyle(style)} />
+          <BadgeStyleSelector badgeStyle={badgeStyle} onChange={setBadgeStyle} />
         </div>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -64,7 +63,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
               score={score}
               issueDate={issueDate}
               validUntil={validUntil}
-              badgeSize={badgeStyle as BadgeStyle}
+              badgeSize={badgeStyle}
               customCta={customCta}
               onCopy={handleCopy}
               onDownload={handleDownloadBadge}
@@ -79,7 +78,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
               score={score}
               issueDate={issueDate}
               validUntil={validUntil}
-              badgeSize={badgeStyle as BadgeStyle}
+              badgeSize={badgeStyle}
               customCta={customCta}
               onCopy={handleCopy}
               onDownload={handleDownloadBadge}
@@ -94,7 +93,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
               score={score}
               issueDate={issueDate}
               validUntil={validUntil}
-              badgeSize={badgeStyle as BadgeStyle}
+              badgeSize={badgeStyle}
               customCta={customCta}
               onCopy={handleCopy}
               onDownload={handleDownloadBadge}
@@ -109,7 +108,7 @@ const CertificationSharing: React.FC<CertificationSharingProps> = ({
               score={score}
               issueDate={issueDate}
               validUntil={validUntil}
-              badgeSize={badgeStyle as BadgeStyle}
+              badgeSize={badgeStyle}
               customCta={customCta}
               onCopy={handleCopy}
               onDownload={handleDownloadBadge}

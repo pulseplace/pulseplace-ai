@@ -1,93 +1,211 @@
 
-import React from 'react';
-import { useTasks } from '@/contexts/TaskContext';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import React, { useState } from 'react';
 import { 
-  Edit, 
-  MoreHorizontal, 
-  Trash2 
-} from 'lucide-react';
-import { Button } from "@/components/ui/button";
+  Table, 
+  TableHeader, 
+  TableRow, 
+  TableHead, 
+  TableBody, 
+  TableCell 
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Task } from '@/types/task.types';
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { 
+  ChevronDown,
+  MoreHorizontal,
+  Pencil,
+  Trash2
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { 
+  Task, 
+  TaskModule, 
+  TaskPriority, 
+  TaskStatus 
+} from '@/types/task.types';
+import { useTaskManager } from '@/contexts/TaskContext';
+
+const getPriorityColor = (priority: TaskPriority) => {
+  switch (priority) {
+    case 'High':
+      return 'bg-red-100 text-red-800 border-red-200';
+    case 'Medium':
+      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    case 'Low':
+      return 'bg-green-100 text-green-800 border-green-200';
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+  }
+};
+
+const getStatusColor = (status: TaskStatus) => {
+  switch (status) {
+    case 'Not Started':
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+    case 'In Progress':
+      return 'bg-blue-100 text-blue-800 border-blue-200';
+    case 'Stuck':
+      return 'bg-red-100 text-red-800 border-red-200';
+    case 'Done':
+      return 'bg-green-100 text-green-800 border-green-200';
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+  }
+};
 
 interface TaskTableProps {
   showSprint?: boolean;
+  onEditTask: (task: Task) => void;
 }
 
-const TaskTable: React.FC<TaskTableProps> = ({ showSprint = false }) => {
-  const { tasks, moveTask, deleteTask } = useTasks();
-  
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800 hover:bg-green-200';
-      case 'in_progress': return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
-      case 'review': return 'bg-purple-100 text-purple-800 hover:bg-purple-200';
-      case 'blocked': return 'bg-red-100 text-red-800 hover:bg-red-200';
-      default: return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+export default function TaskTable({ showSprint = false, onEditTask }: TaskTableProps) {
+  const { tasks, deleteTask } = useTaskManager();
+  const [sortField, setSortField] = useState<keyof Task>('priority');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  const handleSort = (field: keyof Task) => {
+    if (sortField === field) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
     }
   };
-  
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800 hover:bg-red-200';
-      case 'medium': return 'bg-amber-100 text-amber-800 hover:bg-amber-200';
-      case 'low': return 'bg-green-100 text-green-800 hover:bg-green-200';
-      default: return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
+
+  const sortedTasks = [...tasks].sort((a, b) => {
+    // Handle priority special case
+    if (sortField === 'priority') {
+      const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
+      const valA = priorityOrder[a.priority as TaskPriority] || 0;
+      const valB = priorityOrder[b.priority as TaskPriority] || 0;
+      return sortDirection === 'asc' ? valA - valB : valB - valA;
     }
-  };
-  
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-  };
-  
+    
+    // Handle deadline special case
+    if (sortField === 'deadline') {
+      const dateA = a.deadline ? new Date(a.deadline).getTime() : 0;
+      const dateB = b.deadline ? new Date(b.deadline).getTime() : 0;
+      return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+    }
+    
+    // Generic string/date sort
+    if (a[sortField] < b[sortField]) {
+      return sortDirection === 'asc' ? -1 : 1;
+    }
+    if (a[sortField] > b[sortField]) {
+      return sortDirection === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
+
   return (
-    <div className="bg-white rounded-md border shadow-sm">
+    <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Priority</TableHead>
-            <TableHead>Due Date</TableHead>
-            <TableHead>Owner</TableHead>
-            {showSprint && <TableHead>Sprint</TableHead>}
+            <TableHead className="w-[50px]">
+              <Checkbox />
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => handleSort('name')}
+            >
+              Task Name
+              {sortField === 'name' && (
+                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+              )}
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => handleSort('module')}
+            >
+              Module
+              {sortField === 'module' && (
+                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+              )}
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => handleSort('priority')}
+            >
+              Priority
+              {sortField === 'priority' && (
+                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+              )}
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => handleSort('status')}
+            >
+              Status
+              {sortField === 'status' && (
+                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+              )}
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => handleSort('owner')}
+            >
+              Owner
+              {sortField === 'owner' && (
+                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+              )}
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => handleSort('deadline')}
+            >
+              Deadline
+              {sortField === 'deadline' && (
+                <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+              )}
+            </TableHead>
+            {showSprint && (
+              <TableHead 
+                className="cursor-pointer"
+                onClick={() => handleSort('sprint')}
+              >
+                Sprint
+                {sortField === 'sprint' && (
+                  <ChevronDown className={`ml-1 h-4 w-4 inline ${sortDirection === 'asc' ? 'rotate-180' : ''}`} />
+                )}
+              </TableHead>
+            )}
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tasks.map((task) => (
+          {sortedTasks.map((task) => (
             <TableRow key={task.id}>
-              <TableCell className="font-medium">{task.title}</TableCell>
               <TableCell>
-                <Badge className={getStatusColor(task.status)}>
-                  {task.status.replace('_', ' ')}
-                </Badge>
+                <Checkbox />
               </TableCell>
+              <TableCell className="font-medium">{task.name}</TableCell>
+              <TableCell>{task.module}</TableCell>
               <TableCell>
-                <Badge className={getPriorityColor(task.priority)}>
+                <Badge className={`${getPriorityColor(task.priority)} border`}>
                   {task.priority}
                 </Badge>
               </TableCell>
-              <TableCell>{formatDate(task.dueDate)}</TableCell>
-              <TableCell>{task.owner || '-'}</TableCell>
-              {showSprint && <TableCell>{task.sprint || '-'}</TableCell>}
+              <TableCell>
+                <Badge className={`${getStatusColor(task.status)} border`}>
+                  {task.status}
+                </Badge>
+              </TableCell>
+              <TableCell>{task.owner}</TableCell>
+              <TableCell>
+                {task.deadline ? format(new Date(task.deadline), 'MMM d, yyyy') : '-'}
+              </TableCell>
+              {showSprint && (
+                <TableCell>{task.sprint || '-'}</TableCell>
+              )}
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -97,14 +215,13 @@ const TaskTable: React.FC<TaskTableProps> = ({ showSprint = false }) => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Edit className="mr-2 h-4 w-4" />
-                      <span>Edit</span>
+                    <DropdownMenuItem onClick={() => onEditTask(task)}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Edit
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => deleteTask(task.id)}>
+                    <DropdownMenuItem onClick={() => deleteTask(task.id)} className="text-red-600">
                       <Trash2 className="mr-2 h-4 w-4" />
-                      <span>Delete</span>
+                      Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -115,6 +232,4 @@ const TaskTable: React.FC<TaskTableProps> = ({ showSprint = false }) => {
       </Table>
     </div>
   );
-};
-
-export default TaskTable;
+}

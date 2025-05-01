@@ -17,8 +17,6 @@ import PulseScoreLite from '@/pages/PulseScoreLite';
 import TaskTracker from '@/pages/task-tracker/TaskTracker';
 import DebugLog from '@/pages/task-tracker/DebugLog';
 import BuildFlow from '@/pages/task-tracker/BuildFlow';
-// New integrations import
-import Integrations from '@/pages/features/Integrations';
 
 const routes: RouteObject[] = [
   {
@@ -69,7 +67,7 @@ const routes: RouteObject[] = [
     path: '/pulse-score-lite',
     element: <PulseScoreLite />
   },
-  // Task tracker routes
+  // New routes for task tracker
   {
     path: '/task-tracker',
     element: <TaskTracker />
@@ -81,11 +79,6 @@ const routes: RouteObject[] = [
   {
     path: '/build-flow',
     element: <BuildFlow />
-  },
-  // Integrations route
-  {
-    path: '/integrations',
-    element: <Integrations />
   }
 ];
 

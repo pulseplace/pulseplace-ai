@@ -1,60 +1,131 @@
-import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import ScoreBreakdownView from '@/components/dashboard/scoring/ScoreBreakdownView';
-import DataSampleView from '@/components/dashboard/scoring/DataSampleView';
+
+import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PulseScoreCalculator from '@/components/dashboard/PulseScoreCalculator';
+import ThematicBucketsInfo from '@/components/dashboard/ThematicBucketsInfo';
+import SchemaContent from '@/components/dashboard/scoring/SchemaContent';
 import PromptsContent from '@/components/dashboard/scoring/PromptsContent';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
-import { ThemeScore, ScoringTheme } from '@/types/scoring.types';
+import AdvancedAnalytics from '@/components/dashboard/AdvancedAnalytics';
+import CertificationSharing from '@/components/certification/CertificationSharing';
 
 const ScoringLogic = () => {
-  // Sample theme scores for demonstration
-  const [themeScores] = useState<ThemeScore[]>([
-    { theme: 'trust_in_leadership' as ScoringTheme, score: 85, count: 12 },
-    { theme: 'psychological_safety' as ScoringTheme, score: 72, count: 10 },
-    { theme: 'inclusion_belonging' as ScoringTheme, score: 78, count: 8 },
-    { theme: 'motivation_fulfillment' as ScoringTheme, score: 80, count: 12 },
-    { theme: 'mission_alignment' as ScoringTheme, score: 92, count: 6 },
-    { theme: 'engagement_continuity' as ScoringTheme, score: 68, count: 14 }
-  ]);
-
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">PulseScore Logic Explorer</h1>
+    <div className="container mx-auto py-6">
+      <h1 className="text-2xl font-bold mb-6">PulseScore™ Methodology</h1>
       
-      <Alert className="mb-6 bg-blue-50 border-blue-200">
-        <Info className="h-5 w-5 text-blue-600" />
-        <AlertTitle>Transparency is our core value</AlertTitle>
-        <AlertDescription>
-          Unlike "black box" survey tools, PulsePlace.ai provides full visibility into how scores are calculated.
-        </AlertDescription>
-      </Alert>
-      
-      <Tabs defaultValue="breakdown">
-        <TabsList className="mb-4">
-          <TabsTrigger value="breakdown">Score Breakdown</TabsTrigger>
-          <TabsTrigger value="data">Data Structure</TabsTrigger>
+      <Tabs defaultValue="calculator">
+        <TabsList className="mb-6">
+          <TabsTrigger value="calculator">Score Calculator</TabsTrigger>
+          <TabsTrigger value="thematicBuckets">Thematic Buckets</TabsTrigger>
+          <TabsTrigger value="schema">Scoring Schema</TabsTrigger>
           <TabsTrigger value="prompts">AI Prompts</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced Analytics</TabsTrigger>
+          <TabsTrigger value="predictive">Predictive Models</TabsTrigger>
+          <TabsTrigger value="sharing">Certification Sharing</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="breakdown">
-          <Card>
-            <CardHeader>
-              <CardTitle>PulseScore Categories & Themes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ScoreBreakdownView />
-            </CardContent>
-          </Card>
+        <TabsContent value="calculator">
+          <PulseScoreCalculator />
         </TabsContent>
         
-        <TabsContent value="data">
-          <DataSampleView />
+        <TabsContent value="thematicBuckets">
+          <ThematicBucketsInfo />
+        </TabsContent>
+        
+        <TabsContent value="schema">
+          <SchemaContent />
         </TabsContent>
         
         <TabsContent value="prompts">
-          <PromptsContent themeScores={themeScores} />
+          <PromptsContent />
+        </TabsContent>
+        
+        <TabsContent value="advanced">
+          <AdvancedAnalytics />
+        </TabsContent>
+        
+        <TabsContent value="predictive">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <h2 className="text-xl font-semibold mb-4">Predictive Analytics Models</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Our advanced ML models analyze historical pulse data to predict future trends and identify early warning signals.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h3 className="text-lg font-medium mb-2">Attrition Prediction</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Uses sentiment analysis, response patterns, and historical data to forecast potential turnover risks.
+                </p>
+                <div className="text-sm">
+                  <div className="flex justify-between py-1 border-b border-gray-100 dark:border-gray-700">
+                    <span>Model Type:</span>
+                    <span className="font-medium">Gradient Boosted Decision Trees</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-gray-100 dark:border-gray-700">
+                    <span>Accuracy:</span>
+                    <span className="font-medium">87%</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span>Key Features:</span>
+                    <span className="font-medium">15</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h3 className="text-lg font-medium mb-2">Engagement Forecasting</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Projects future engagement levels based on current trends, seasonal patterns, and organizational changes.
+                </p>
+                <div className="text-sm">
+                  <div className="flex justify-between py-1 border-b border-gray-100 dark:border-gray-700">
+                    <span>Model Type:</span>
+                    <span className="font-medium">LSTM Neural Network</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-gray-100 dark:border-gray-700">
+                    <span>Accuracy:</span>
+                    <span className="font-medium">92%</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span>Forecast Range:</span>
+                    <span className="font-medium">6 months</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+              <h3 className="text-lg font-medium mb-2 text-purple-800 dark:text-purple-300">Enterprise AI Features</h3>
+              <p className="text-sm text-purple-700 dark:text-purple-400 mb-4">
+                Enterprise clients have access to additional predictive capabilities and custom model training.
+              </p>
+              <ul className="text-sm text-purple-700 dark:text-purple-400 space-y-2">
+                <li className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-purple-500"></div>
+                  <span>Skill gap prediction and learning recommendations</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-purple-500"></div>
+                  <span>Team composition optimization</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-purple-500"></div>
+                  <span>Performance trajectory modeling</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="sharing">
+          <CertificationSharing 
+            companyName="Acme Corporation"
+            tier="pulse_certified"
+            score={86}
+            issueDate="August 7, 2025"
+            validUntil="August 7, 2026"
+          />
         </TabsContent>
       </Tabs>
     </div>

@@ -18,9 +18,9 @@ interface MetaTagsProps {
 }
 
 const MetaTags: React.FC<MetaTagsProps> = ({
-  title = 'GTME | Marketing Optimization Platform',
-  description = 'Optimize your marketing funnels and enhance brand presence with AI. Get started with GTME today.',
-  keywords = 'marketing optimization, marketing funnel, brand presence, AI for marketing',
+  title = 'PulsePlace.ai | Measuring Trust Through Data',
+  description = 'Quantify, track, and improve workplace trust with AI. Get started with PulsePlace.ai today.',
+  keywords = 'workplace trust, employee trust, trust metrics, AI for HR, workplace analytics',
   ogTitle,
   ogDescription,
   ogImage = '/assets/images/og-image.jpg',

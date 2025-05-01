@@ -1,38 +1,34 @@
 
 import React from 'react';
+import PulseBotChat from '@/components/chat/PulseBotChat';
 import MetaTags from '@/components/MetaTags';
-import { useChat } from '@/contexts/ChatbotContext';
 
 const PulseBotPage: React.FC = () => {
-  const { toggleChat } = useChat();
-
-  // Open chat when user navigates to this page
-  React.useEffect(() => {
-    toggleChat();
-  }, [toggleChat]);
-
   return (
     <div className="container mx-auto p-6">
       <MetaTags
-        title="PulseBot | PulsePlace.ai"
-        description="Chat with our AI assistant to improve your workplace culture and understand certification metrics"
+        title="PulseBot AI Assistant | PulsePlace.ai"
+        description="Chat with our AI assistant to explore your workplace culture data"
       />
       
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">PulseBot</h1>
+        <h1 className="text-3xl font-bold mb-6">PulseBot AI Assistant</h1>
         
         <div className="bg-white p-6 rounded-lg shadow-sm border mb-8">
           <p className="text-lg mb-4">
-            Welcome to PulseBot, your AI assistant for workplace culture improvement and certification guidance.
+            Welcome to PulseBot, your AI assistant for exploring workplace culture data and analytics.
           </p>
           <p className="mb-4">
-            Ask questions about workplace culture metrics, certification requirements, team engagement, or get recommendations for improving your organization's culture score.
+            Ask questions about your organization's culture metrics, get insights on team performance, 
+            or explore emerging themes from feedback data.
           </p>
           <p>
             Click the chat icon in the bottom right to start a conversation with PulseBot.
           </p>
         </div>
       </div>
+      
+      <PulseBotChat />
     </div>
   );
 };

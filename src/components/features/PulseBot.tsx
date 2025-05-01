@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,11 +37,11 @@ const PulseBot: React.FC = () => {
       type: 'bot',
       text: "👋 Hi there! I'm PulseBot, your culture analytics assistant. I can help you understand your workplace pulse data, identify trends, and suggest actions to improve your culture. What would you like to know?",
       suggestedFollowups: [
-        "Summarize our organization's culture",
-        "What are our top culture strengths?",
-        "Where can we improve workplace engagement?",
-        "Show certification requirements",
-        "How can we improve our PulseScore?",
+        "Summarize Team Alpha",
+        "Show risk for Team Gamma",
+        "Why is Team Beta eligible for certification?",
+        "Summarize Team Sigma",
+        "Summarize Team Zeta",
         "What are our top performing departments?"
       ]
     }

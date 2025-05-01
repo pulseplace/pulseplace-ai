@@ -1,74 +1,94 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Calendar } from "lucide-react";
+import { format } from "date-fns";
+
 import { Button } from "@/components/ui/button";
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Task, TaskStatus, TaskPriority, TaskModule } from '@/types/task.types';
-import { useTasks } from '@/contexts/TaskContext';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useTaskManager } from '@/contexts/TaskContext';
+import { useToast } from '@/hooks/use-toast';
 
 const taskSchema = z.object({
-  title: z.string().min(3, { message: "Title must be at least 3 characters" }),
+  title: z.string().min(2, {
+    message: "Task title must be at least 2 characters.",
+  }),
   description: z.string().optional(),
-  status: z.enum(['not_started', 'in_progress', 'in_review', 'completed'] as const),
-  priority: z.enum(['low', 'medium', 'high', 'critical'] as const),
-  module: z.enum(['core', 'dashboard', 'certification', 'survey', 'pulsebot', 'integration'] as const),
-  assignedTo: z.string().optional(),
+  dueDate: z.date(),
+  priority: z.enum(["low", "medium", "high"]),
 });
 
-type FormData = z.infer<typeof taskSchema>;
+type TaskFormValues = z.infer<typeof taskSchema>;
 
 interface AddTaskDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
-  const { addTask } = useTasks();
+export function AddTaskDialog({ open, onOpenChange }: AddTaskDialogProps) {
+  const { addTask } = useTaskManager();
+  const { toast } = useToast();
   
-  const form = useForm<FormData>({
+  const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      status: 'not_started',
-      priority: 'medium',
-      module: 'core',
-      assignedTo: '',
+      title: "",
+      description: "",
+      dueDate: new Date(),
+      priority: "medium",
     },
   });
-  
-  const onSubmit = (data: FormData) => {
-    // Create a new task object
-    const task: Omit<Task, "id"> = {
+
+  function onSubmit(data: TaskFormValues) {
+    addTask({
       title: data.title,
-      description: data.description || '',
-      status: data.status,
+      description: data.description,
+      dueDate: data.dueDate,
       priority: data.priority,
-      module: data.module,
-      assignedTo: data.assignedTo || '',
-    };
-    
-    // Add the task
-    addTask(task);
-    
-    // Reset form and close dialog
+      completed: false,
+    });
+
+    toast({ description: "Task added successfully" });
     form.reset();
-    onClose();
-  };
-  
+    onOpenChange(false);
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px]">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add New Task</DialogTitle>
         </DialogHeader>
-        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -76,61 +96,81 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>Task Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Task title" {...field} />
+                    <Input placeholder="Enter task title..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
             <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Description (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Task description" className="min-h-[100px]" {...field} />
+                    <Textarea
+                      placeholder="Add additional details..."
+                      className="resize-none"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="status"
+                name="dueDate"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="not_started">Not Started</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="in_review">In Review</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Due Time</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={`w-full pl-3 text-left font-normal ${
+                              !field.value && "text-muted-foreground"
+                            }`}
+                          >
+                            <Calendar className="mr-2 h-4 w-4" />
+                            {field.value ? (
+                              format(field.value, "PPp")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <input
+                          type="datetime-local"
+                          onChange={(e) => {
+                            const date = new Date(e.target.value);
+                            field.onChange(date);
+                          }}
+                          className="p-2 border rounded"
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
               <FormField
                 control={form.control}
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Priority</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select priority" />
@@ -140,7 +180,6 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
                         <SelectItem value="low">Low</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="critical">Critical</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -148,62 +187,15 @@ const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ isOpen, onClose }) => {
                 )}
               />
             </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="module"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Module</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select module" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="core">Core</SelectItem>
-                        <SelectItem value="dashboard">Dashboard</SelectItem>
-                        <SelectItem value="certification">Certification</SelectItem>
-                        <SelectItem value="survey">Survey</SelectItem>
-                        <SelectItem value="pulsebot">PulseBot</SelectItem>
-                        <SelectItem value="integration">Integration</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="assignedTo"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Assigned To</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Task owner" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            <div className="flex justify-end space-x-2">
-              <Button type="button" variant="outline" onClick={onClose}>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">
-                Add Task
-              </Button>
-            </div>
+              <Button type="submit" className="bg-pulse-gradient">Add Task</Button>
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
   );
-};
-
-export default AddTaskDialog;
+}

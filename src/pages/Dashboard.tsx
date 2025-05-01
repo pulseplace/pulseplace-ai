@@ -1,200 +1,141 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { 
-  BarChart2, 
-  Users, 
-  Bot, 
-  Award,
-  ArrowRight
-} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Brain, MessageSquare, BarChart, Bot, Zap } from 'lucide-react';
 
-const Dashboard = () => {
-  const navigate = useNavigate();
-  
+const Dashboard: React.FC = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">PulsePlace Dashboard</h1>
-        <p className="text-gray-600">
-          Monitor your workplace culture health and certification progress
-        </p>
+    <div className="container mx-auto px-4 py-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">PulsePlace.ai Dashboard</h1>
+          <p className="text-gray-600">Your workplace culture analytics platform powered by AI</p>
+        </div>
+        
+        <Button className="bg-pulse-gradient">Run New Survey</Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="bg-gradient-to-br from-purple-50 to-blue-50">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <Award className="h-5 w-5 mr-2 text-purple-600" />
-              Pulse Score™
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-6 w-6 text-pulse-600" />
+              <span>AI Dashboard</span>
             </CardTitle>
-            <CardDescription>Your certification status</CardDescription>
+            <CardDescription>
+              Explore AI-powered insights and analytics
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold mb-2">82/100</div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-green-600">
-                Pulse Certified™
-              </span>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="text-xs"
-                onClick={() => navigate('/dashboard/certification')}
-              >
-                View Details
-                <ArrowRight className="ml-1 h-3 w-3" />
-              </Button>
-            </div>
+            <p className="text-gray-600 mb-6">
+              View your PulseScore™, culture analytics, and AI-generated insights in an interactive dashboard.
+            </p>
+            <Link to="/ai-dashboard">
+              <Button className="w-full">View AI Dashboard</Button>
+            </Link>
           </CardContent>
         </Card>
         
-        <Card onClick={() => navigate('/dashboard/insights')} className="cursor-pointer hover:shadow-md transition-shadow">
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <BarChart2 className="h-5 w-5 mr-2 text-blue-600" />
-              Insights
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="h-6 w-6 text-pulse-600" />
+              <span>PulseBot</span>
             </CardTitle>
-            <CardDescription>Culture analytics</CardDescription>
+            <CardDescription>
+              Chat with our AI assistant
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-gray-600 mb-4">
-              View detailed analytics about your workplace culture metrics
-            </div>
-            <Button variant="secondary" size="sm" className="w-full">
-              View Insights
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card onClick={() => navigate('/dashboard/teams')} className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <Users className="h-5 w-5 mr-2 text-green-600" />
-              Teams
-            </CardTitle>
-            <CardDescription>Team analytics</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm text-gray-600 mb-4">
-              Monitor metrics and feedback for individual teams
-            </div>
-            <Button variant="secondary" size="sm" className="w-full">
-              View Teams
-            </Button>
-          </CardContent>
-        </Card>
-        
-        <Card onClick={() => navigate('/dashboard/pulsebot')} className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <Bot className="h-5 w-5 mr-2 text-amber-600" />
-              PulseBot
-            </CardTitle>
-            <CardDescription>AI assistant</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm text-gray-600 mb-4">
-              Get AI-powered insights and recommendations
-            </div>
-            <Button variant="secondary" size="sm" className="w-full">
-              Chat with PulseBot
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Certification Journey</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <span className="text-green-600">1</span>
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium">Complete Workplace Assessment</h3>
-                  <p className="text-sm text-gray-600">
-                    Gather feedback with the PulseScore survey
-                  </p>
-                </div>
-                <Button size="sm" variant="outline" onClick={() => navigate('/pulse-score-lite')}>
-                  Take Survey
-                </Button>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                  <span className="text-blue-600">2</span>
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium">Receive AI Analysis</h3>
-                  <p className="text-sm text-gray-600">
-                    Get insights based on your survey results
-                  </p>
-                </div>
-                <Button size="sm" variant="outline" onClick={() => navigate('/dashboard/insights')}>
-                  View Insights
-                </Button>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                  <span className="text-purple-600">3</span>
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium">Get Certified</h3>
-                  <p className="text-sm text-gray-600">
-                    Receive your official Pulse Certified™ badge
-                  </p>
-                </div>
-                <Button size="sm" variant="outline" onClick={() => navigate('/dashboard/certification')}>
-                  View Status
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>PulseBot Insights</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-sm">
-                  "Employee recognition is a key opportunity area based on recent survey responses."
-                </p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-sm">
-                  "Team collaboration scores have improved 12% since implementing your new meeting structure."
-                </p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-md">
-                <p className="text-sm">
-                  "Consider scheduling a team-building event to improve psychological safety scores."
-                </p>
-              </div>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full"
-                onClick={() => navigate('/dashboard/pulsebot')}
-              >
-                <Bot className="mr-2 h-4 w-4" />
+            <p className="text-gray-600 mb-6">
+              Get answers about your workplace culture data through natural language conversations.
+            </p>
+            <Link to="/pulsebot">
+              <Button className="w-full" variant="outline">
                 Chat with PulseBot
               </Button>
-            </div>
+            </Link>
           </CardContent>
         </Card>
+        
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart className="h-6 w-6 text-pulse-600" />
+              <span>LLM Insights</span>
+            </CardTitle>
+            <CardDescription>
+              View AI-generated culture insights
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 mb-6">
+              Explore detailed AI analysis of your workplace culture and get actionable recommendations.
+            </p>
+            <Link to="/dashboard/llm-insights">
+              <Button className="w-full" variant="outline">
+                View Insights
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="bg-gradient-to-br from-pulse-50 to-purple-50 rounded-lg p-6 mb-8">
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="flex-1">
+            <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
+              <Zap className="h-5 w-5 text-pulse-600" />
+              <span>AI Integration Progress</span>
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Your AI features are 85% complete and will be fully deployed by April 21, 2025.
+            </p>
+            <Link to="/features/ai-engine">
+              <Button variant="outline">View Integration Status</Button>
+            </Link>
+          </div>
+          <div className="flex-1">
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="text-sm font-medium mb-1 flex justify-between">
+                <span>Overall AI Completion</span>
+                <span>85%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-pulse-600 h-2.5 rounded-full" style={{ width: '85%' }}></div>
+              </div>
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span>Real-time Analysis</span>
+                  <span className="text-amber-600">In Progress</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span>PulseScore™ Algorithm</span>
+                  <span className="text-green-600">Complete</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span>Sentiment Analysis</span>
+                  <span className="text-green-600">Complete</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="text-center bg-white p-6 rounded-lg shadow-sm">
+        <Bot className="h-12 w-12 text-pulse-300 mx-auto mb-4" />
+        <h2 className="text-xl font-bold mb-2">PulseBot Demo</h2>
+        <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+          Experience the power of AI-driven workplace culture analysis. Ask PulseBot questions about your culture data and get instant insights.
+        </p>
+        <Link to="/pulsebot">
+          <Button className="bg-pulse-gradient">
+            Launch PulseBot Demo
+          </Button>
+        </Link>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import React from 'react';
 import { ChatProvider } from '@/contexts/ChatbotContext';
 import PulseBot from './chat/PulseBot';
 
+// Main wrapper component that provides the chat context
 const ChatbotWidget = () => {
   return (
     <ChatProvider>

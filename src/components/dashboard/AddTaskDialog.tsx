@@ -40,7 +40,10 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ open, onOpenChange
 
   const onSubmit = (data: TaskFormValues) => {
     addTask({
-      ...data,
+      title: data.title,
+      description: data.description,
+      priority: data.priority,
+      dueDate: data.dueDate,
       completed: false,
     });
     form.reset();

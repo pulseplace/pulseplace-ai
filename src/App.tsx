@@ -6,6 +6,11 @@ import DemoReadyLayout from '@/components/layout/DemoReadyLayout';
 import routes from '@/config/routes';
 import Root from '@/pages/Root';
 import { TaskProvider } from './contexts/TaskContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Create a client
+const queryClient = new QueryClient();
 
 // Create router with proper configuration
 const router = createBrowserRouter([
@@ -35,10 +40,14 @@ function App() {
   }, []);
 
   return (
-    <TaskProvider>
-      <RouterProvider router={router} />
-      <Toaster />
-    </TaskProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TaskProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </TaskProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

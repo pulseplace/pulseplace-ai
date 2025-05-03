@@ -1,84 +1,83 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
+import { 
+  User, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
-import { Tables } from '@/types/database.types';
-import { AuthContextType, UserData } from '@/types/auth.types';
+import { auth, db } from '@/integrations/firebase/client';
+import { UserData } from '@/types/auth.types';
+
+interface ProfileData {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  role: string | null;
+  company: string | null;
+  department: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  profile: ProfileData | null;
+  isLoading: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, userData: UserData) => Promise<void>;
+  signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Tables<'profiles'> | null>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  
-  // Remove the useNavigate hook and navigate() calls
 
   useEffect(() => {
     // Set up the auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        console.log('Auth state changed:', event);
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        
-        if (currentSession?.user) {
-          // Use setTimeout to avoid potential recursive loops with Supabase
-          setTimeout(() => {
-            fetchProfile(currentSession.user.id);
-          }, 0);
-        } else {
-          setProfile(null);
-        }
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log('Auth state changed:', currentUser ? 'logged in' : 'logged out');
+      setUser(currentUser);
+      
+      if (currentUser) {
+        // Use setTimeout to avoid potential recursive loops
+        setTimeout(() => {
+          fetchProfile(currentUser.uid);
+        }, 0);
+      } else {
+        setProfile(null);
       }
-    );
-
-    // Check for existing session
-    const initializeAuth = async () => {
-      setIsLoading(true);
-      try {
-        console.log('Initializing auth...');
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        console.log('Current session:', currentSession);
-        
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        
-        if (currentSession?.user) {
-          await fetchProfile(currentSession.user.id);
-        }
-      } catch (error) {
-        console.error('Error initializing auth:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeAuth();
+      
+      setIsLoading(false);
+    });
 
     return () => {
-      subscription.unsubscribe();
+      unsubscribe();
     };
   }, []);
 
   const fetchProfile = async (userId: string) => {
     try {
       console.log('Fetching profile for user:', userId);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      const docRef = doc(db, 'profiles', userId);
+      const docSnap = await getDoc(docRef);
 
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return;
+      if (docSnap.exists()) {
+        console.log('Profile fetched:', docSnap.data());
+        setProfile({
+          id: userId,
+          ...docSnap.data() as Omit<ProfileData, 'id'>
+        });
+      } else {
+        console.log('No profile found for this user');
       }
-
-      console.log('Profile fetched:', data);
-      setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -86,26 +85,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshProfile = async () => {
     if (user) {
-      await fetchProfile(user.id);
+      await fetchProfile(user.uid);
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        throw error;
-      }
-
+      await signInWithEmailAndPassword(auth, email, password);
       toast.success('Signed in successfully');
-      // Navigation is handled elsewhere using redirect
     } catch (error: any) {
-      toast.error(error.message || 'Failed to sign in');
+      let message = 'Failed to sign in';
+      if (error.code === 'auth/invalid-credential') {
+        message = 'Invalid email or password';
+      } else if (error.code === 'auth/user-not-found') {
+        message = 'User not found';
+      } else if (error.code === 'auth/wrong-password') {
+        message = 'Incorrect password';
+      }
+      toast.error(message);
       throw error;
     } finally {
       setIsLoading(false);
@@ -115,28 +113,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, userData: UserData) => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: userData.first_name,
-            last_name: userData.last_name,
-            company: userData.company,
-            department: userData.department || null,
-            role: userData.role || null
-          },
-        },
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Create profile document in Firestore
+      const newUser = userCredential.user;
+      await setDoc(doc(db, 'profiles', newUser.uid), {
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        company: userData.company,
+        department: userData.department || null,
+        role: userData.role || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       });
-
-      if (error) {
-        throw error;
-      }
-
+      
       toast.success('Account created successfully!');
-      // Navigation is handled elsewhere using redirect
     } catch (error: any) {
-      toast.error(error.message || 'Failed to create account');
+      let message = 'Failed to create account';
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'Email already in use';
+      } else if (error.code === 'auth/weak-password') {
+        message = 'Password is too weak';
+      } else if (error.code === 'auth/invalid-email') {
+        message = 'Invalid email address';
+      }
+      toast.error(message);
       throw error;
     } finally {
       setIsLoading(false);
@@ -146,11 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw error;
-      }
-      // Navigation is handled elsewhere using redirect
+      await firebaseSignOut(auth);
       toast.success('Signed out successfully');
     } catch (error: any) {
       toast.error(error.message || 'Failed to sign out');
@@ -160,7 +157,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const value = {
-    session,
     user,
     profile,
     isLoading,

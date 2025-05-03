@@ -6,10 +6,8 @@ import { useAuth } from './AuthContext';
 import { v4 as uuidv4 } from 'uuid';
 import { 
   Task, 
-  TaskModule, 
   TaskPriority, 
-  TaskStatus, 
-  TaskOwner,
+  TaskStatus,
   BuildFlowLane,
   DebugLogSeverity,
   DebugLogStatus,
@@ -65,7 +63,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     // Set up listener for daily tasks
-    const tasksQuery = query(collection(db, "tasks"), where("userId", "==", user.uid), where("type", "==", "daily"));
+    const tasksQuery = query(collection(db, "tasks"), where("userId", "==", user.id), where("type", "==", "daily"));
     const unsubscribe = onSnapshot(tasksQuery, (snapshot) => {
       const taskList: Task[] = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -204,7 +202,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       owner: task.owner,
       dueDate: task.deadline ? task.deadline.toISOString() : null,
       sprint: task.sprint,
-      userId: user.uid,
+      userId: user.id,
       type: 'daily',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()

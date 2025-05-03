@@ -12,6 +12,11 @@ import { toast } from 'sonner';
 import { auth, db } from '@/integrations/firebase/client';
 import { UserData } from '@/types/auth.types';
 
+// Extend Firebase user type to include metadata
+interface ExtendedUser extends User {
+  id: string; // Add this for compatibility with components expecting id
+}
+
 interface ProfileData {
   id: string;
   first_name: string | null;
@@ -24,7 +29,7 @@ interface ProfileData {
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: ExtendedUser | null;
   profile: ProfileData | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
@@ -36,7 +41,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -44,14 +49,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up the auth state listener
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       console.log('Auth state changed:', currentUser ? 'logged in' : 'logged out');
-      setUser(currentUser);
       
       if (currentUser) {
+        // Extend the user object with id property
+        const extendedUser = {
+          ...currentUser,
+          id: currentUser.uid // Map uid to id for compatibility
+        };
+        setUser(extendedUser);
+        
         // Use setTimeout to avoid potential recursive loops
         setTimeout(() => {
           fetchProfile(currentUser.uid);
         }, 0);
       } else {
+        setUser(null);
         setProfile(null);
       }
       

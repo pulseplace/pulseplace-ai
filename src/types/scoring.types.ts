@@ -1,30 +1,14 @@
 
-import { Json } from './database.types';
-
-export type ScoringTheme = 
-  | 'trust_in_leadership'
-  | 'psychological_safety'
-  | 'inclusion_belonging'
-  | 'motivation_fulfillment'
-  | 'mission_alignment'
-  | 'engagement_continuity'
-  | 'team_cohesion'
-  | 'work_life_balance'
-  | 'career_growth'
-  | 'inclusion_diversity'
-  | 'leadership_effectiveness'
-  | 'innovation_adaptability';
-
-export type ScoringCategory = 
-  | 'emotion_index'
-  | 'engagement_stability'
-  | 'culture_trust';
+export type QuestionType = 'likert' | 'emoji' | 'text' | 'binary';
+export type SurveyTheme = 'trust_in_leadership' | 'psychological_safety' | 'inclusion_belonging' | 'work_life_balance' | 'growth_opportunity';
+export type ScoringCategory = 'emotion_index' | 'engagement_stability' | 'culture_trust';
+export type PulseScoreTier = 'pulse_certified' | 'emerging_culture' | 'at_risk' | 'intervention_advised';
 
 export interface SurveyQuestion {
   id: string;
   text: string;
-  type: 'likert' | 'emoji' | 'text' | 'binary';
-  theme: ScoringTheme;
+  type: QuestionType;
+  theme: SurveyTheme;
   weight: number;
 }
 
@@ -35,7 +19,7 @@ export interface SurveyResponse {
 }
 
 export interface ThemeScore {
-  theme: ScoringTheme;
+  theme: SurveyTheme;
   score: number;
   count: number;
 }
@@ -44,69 +28,4 @@ export interface CategoryScore {
   category: ScoringCategory;
   score: number;
   weight: number;
-}
-
-export interface PulseScoreData {
-  overallScore: number;
-  categoryScores: CategoryScore[];
-  themeScores: ThemeScore[];
-  tier: PulseScoreTier;
-  insights: string[];
-  recommendedActions: string[];
-}
-
-export type PulseScoreTier = 
-  | 'pulse_certified'
-  | 'emerging_culture'
-  | 'at_risk'
-  | 'intervention_advised';
-
-export interface SentimentAnalysis {
-  score: number;
-  polarity: 'positive' | 'neutral' | 'negative';
-  themes: string[];
-  keyPhrases: string[];
-}
-
-export interface AIInsight {
-  concernCategory: string;
-  concernText: string;
-  severity: 'high' | 'medium' | 'low';
-  impactArea: string;
-  recommendedAction: string;
-}
-
-export interface PredictiveFlag {
-  department: string;
-  issue: string;
-  severity: 'high' | 'medium' | 'low';
-  predictedImpact: number;
-}
-
-export interface DashboardMetricVisibility {
-  pulseScore: boolean;
-  categoryBreakdown: boolean;
-  aiInsights: boolean;
-  participationRate: boolean;
-  engagementRetention: boolean;
-  benchmarks: boolean;
-}
-
-export interface DateRangeFilter {
-  from: Date;
-  to: Date;
-}
-
-// Fix for EmailSendTest component
-export interface MockPulseScoreData {
-  overallScore: number;
-  categoryScores: {
-    category: ScoringCategory;
-    score: number;
-    weight: number;
-  }[];
-  themeScores: ThemeScore[];
-  tier: PulseScoreTier;
-  insights: string[];
-  recommendedActions: string[];
 }

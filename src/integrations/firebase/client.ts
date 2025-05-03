@@ -4,14 +4,14 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// Firebase configuration - Update with your actual Firebase project details
+// Firebase configuration - Update with your actual Firebase project details from the Firebase console
 const firebaseConfig = {
-  apiKey: "AIzaSyDemoKeyForPulsePlaceMigration",
-  authDomain: "pulseplace-ai.firebaseapp.com",
+  apiKey: "YOUR_API_KEY", // Replace with your Firebase project API Key
+  authDomain: "pulseplace-ai.firebaseapp.com", // Replace with your Firebase Auth Domain
   projectId: "pulseplace-ai",
   storageBucket: "pulseplace-ai.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abc123def456ghi789"
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // Replace with your Firebase Messaging Sender ID
+  appId: "YOUR_APP_ID" // Replace with your Firebase App ID
 };
 
 // Initialize Firebase

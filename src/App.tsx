@@ -27,10 +27,12 @@ const router = createBrowserRouter([
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TaskProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </TaskProvider>
+      <AuthProvider>
+        <TaskProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </TaskProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

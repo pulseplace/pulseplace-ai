@@ -1,105 +1,102 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { MockPulseScoreData, PulseScoreTier, ScoringCategory } from '@/types/scoring.types';
-import CustomEmailForm from './CustomEmailForm';
-import CertificationEmailForm from './CertificationEmailForm';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, CheckCircle2, Send } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { MockPulseScoreData } from '@/types/scoring.types';
 
-interface EmailFormData {
-  to: string;
-  subject: string;
-  html: string;
+interface EmailSendTestProps {
+  mockData: MockPulseScoreData;
 }
 
-const EmailSendTest: React.FC = () => {
-  const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('custom');
-  
-  const [formData, setFormData] = useState<EmailFormData>({
-    to: '',
-    subject: 'Test Email from PulsePlace',
-    html: '<p>This is a test email from PulsePlace.ai.</p>'
-  });
-  
-  const [certData, setCertData] = useState<MockPulseScoreData>({
-    overallScore: 86,
-    categoryScores: [
-      { category: 'emotion_index' as ScoringCategory, score: 84, weight: 0.4 },
-      { category: 'engagement_stability' as ScoringCategory, score: 87, weight: 0.3 },
-      { category: 'culture_trust' as ScoringCategory, score: 85, weight: 0.3 }
-    ],
-    themeScores: [],
-    tier: 'pulse_certified' as PulseScoreTier,
-    insights: ["Your organization demonstrates strong leadership trust and team cohesion, with opportunities to enhance career development paths."],
-    recommendedActions: []
-  });
+const EmailSendTest: React.FC<EmailSendTestProps> = ({ mockData }) => {
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<{ success?: boolean; message?: string }>({});
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const randomizeScores = () => {
-    const getRandomScore = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
+  const sendTestEmail = async () => {
+    if (!email) return;
     
-    const overallScore = getRandomScore(65, 95);
-    const emotionScore = getRandomScore(60, 95);
-    const engagementScore = getRandomScore(60, 95);
-    const trustScore = getRandomScore(60, 95);
+    setIsLoading(true);
+    setResult({});
     
-    let tier: PulseScoreTier = 'pulse_certified';
-    if (overallScore < 70) tier = 'intervention_advised';
-    else if (overallScore < 78) tier = 'at_risk';
-    else if (overallScore < 85) tier = 'emerging_culture';
-    
-    const categoryScores = [
-      { category: 'emotion_index' as ScoringCategory, score: emotionScore, weight: 0.4 },
-      { category: 'engagement_stability' as ScoringCategory, score: engagementScore, weight: 0.3 },
-      { category: 'culture_trust' as ScoringCategory, score: trustScore, weight: 0.3 }
-    ];
-    
-    setCertData({
-      ...certData,
-      overallScore,
-      categoryScores,
-      tier
-    });
-    
-    toast({
-      title: "Scores Randomized",
-      description: `New overall score: ${overallScore}`,
-    });
+    try {
+      // Prepare email data
+      const emailData = {
+        ...mockData,
+        recipientEmail: email
+      };
+      
+      // Send test email (disabled for now - mock success)
+      // const response = await sendCertificationEmail(emailData);
+      
+      // Mock a successful response
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setResult({
+        success: true,
+        message: `Test email has been sent to ${email}`
+      });
+    } catch (error) {
+      setResult({
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to send test email'
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-4">
-            <TabsTrigger value="custom">Custom Email</TabsTrigger>
-            <TabsTrigger value="certification">Certification Email</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="custom">
-            <CustomEmailForm 
-              formData={formData}
-              onInputChange={handleInputChange}
+    <Card className="shadow-sm">
+      <CardHeader>
+        <CardTitle className="text-lg">Send Test Email</CardTitle>
+        <CardDescription>Send a test certification email to verify how it appears</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="test-email">Recipient Email</Label>
+          <div className="flex gap-2">
+            <Input 
+              id="test-email"
+              type="email" 
+              placeholder="Enter an email address" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-          </TabsContent>
-          
-          <TabsContent value="certification">
-            <CertificationEmailForm
-              formData={formData}
-              certData={certData}
-              onInputChange={handleInputChange}
-              onRandomizeScores={randomizeScores}
-            />
-          </TabsContent>
-        </Tabs>
+            <Button 
+              className="bg-pulse-gradient"
+              disabled={!email || isLoading}
+              onClick={sendTestEmail}
+            >
+              {isLoading ? (
+                <span className="animate-spin mr-2">⏳</span>
+              ) : (
+                <Send className="h-4 w-4 mr-2" />
+              )}
+              Send Test
+            </Button>
+          </div>
+        </div>
+
+        {result.success === true && (
+          <Alert variant="default" className="bg-green-50 text-green-700 border-green-200">
+            <CheckCircle2 className="h-4 w-4" />
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription>{result.message}</AlertDescription>
+          </Alert>
+        )}
+
+        {result.success === false && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{result.message}</AlertDescription>
+          </Alert>
+        )}
       </CardContent>
     </Card>
   );

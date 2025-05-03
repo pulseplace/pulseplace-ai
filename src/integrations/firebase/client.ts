@@ -10,8 +10,8 @@ const firebaseConfig = {
   authDomain: "pulseplace-ai.firebaseapp.com",
   projectId: "pulseplace-ai",
   storageBucket: "pulseplace-ai.appspot.com",
-  messagingSenderId: "635402794801", // Updated with matching sender ID
-  appId: "1:635402794801:web:b2195eb7c9c6d5e49d2210" // Updated with the provided App ID
+  messagingSenderId: "635402794801",
+  appId: "1:635402794801:web:b2195eb7c9c6d5e49d2210"
 };
 
 // Initialize Firebase

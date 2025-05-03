@@ -1,151 +1,65 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
+import React from 'react';
 import { PulseScoreData } from '@/types/scoring.types';
-import { getTierDisplay } from '@/utils/scoring';
-import EmailTemplateActions from './components/EmailTemplateActions';
+import EmailHtmlGenerator from './components/EmailHtmlGenerator';
 import EmailPreviewContent from './components/EmailPreviewContent';
-import HtmlCodePreview from './components/HtmlCodePreview';
-import { generateCertificationHtml } from './components/EmailHtmlGenerator';
-import { emailService } from '@/services/emailService';
 
-// Interface for the email template props
+// Import UI components
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Eye, Send, Download, Copy } from 'lucide-react';
+
 interface CertificationEmailTemplateProps {
-  pulseScoreData?: PulseScoreData;
+  pulseScore: PulseScoreData;
   companyName?: string;
-  recipientName?: string;
   recipientEmail?: string;
+  onSendClick?: () => void;
 }
 
-const defaultPulseScoreData: PulseScoreData = {
-  overallScore: 92,
-  categoryScores: [
-    { category: 'emotion_index', score: 92, weight: 0.4 },
-    { category: 'engagement_stability', score: 93, weight: 0.3 },
-    { category: 'culture_trust', score: 90, weight: 0.3 }
-  ],
-  themeScores: [],
-  tier: 'pulse_certified',
-  insights: [
-    'Your organization demonstrates outstanding levels of employee trust and belonging, with high engagement scores.'
-  ],
-  recommendedActions: [
-    'Conduct team workshops on company mission and values.',
-    'Continue the current leadership communication strategy.',
-    'Consider additional psychological safety training.'
-  ]
-};
-
 const CertificationEmailTemplate: React.FC<CertificationEmailTemplateProps> = ({
-  pulseScoreData = defaultPulseScoreData,
-  companyName = 'Acme Corporation',
-  recipientName = 'John Doe',
-  recipientEmail = 'john.doe@acmecorp.com'
+  pulseScore,
+  companyName = 'Your Company',
+  recipientEmail,
+  onSendClick
 }) => {
-  const { toast } = useToast();
-  const [showHtml, setShowHtml] = useState(false);
-  const [isSending, setIsSending] = useState(false);
-  
-  const tierInfo = getTierDisplay(pulseScoreData.tier);
-  const certificationLevel = tierInfo.label;
-  
-  // Generate HTML version of the email
-  const generateHtmlEmail = () => {
-    return generateCertificationHtml({
-      recipientName,
-      companyName,
-      pulseScoreData,
-      certificationLevel
-    });
-  };
-
-  const handleCopyHtml = () => {
-    navigator.clipboard.writeText(generateHtmlEmail());
-    toast({
-      title: "HTML Copied",
-      description: "Email template HTML has been copied to clipboard",
-    });
-  };
-
-  const handleDownloadHtml = () => {
-    const element = document.createElement('a');
-    const file = new Blob([generateHtmlEmail()], {type: 'text/html'});
-    element.href = URL.createObjectURL(file);
-    element.download = `${companyName.replace(/\s+/g, '-').toLowerCase()}-certification.html`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-    
-    toast({
-      title: "Download Started",
-      description: "Email template HTML is downloading",
-    });
-  };
-
-  const handleSendTestEmail = async (): Promise<void> => {
-    setIsSending(true);
-    
-    try {
-      // Use our email service to send the test email
-      const success = await emailService.sendEmail({
-        to: recipientEmail,
-        subject: `Your PulsePlace Certification: ${certificationLevel}`,
-        html: generateHtmlEmail(),
-        fromName: "PulsePlace Certification",
-        fromEmail: "certification@pulseplace.ai"
-      });
-      
-      if (success) {
-        toast({
-          title: "Test Email Sent",
-          description: `A test email has been sent to ${recipientEmail}`,
-        });
-      } else {
-        throw new Error("Failed to send email");
-      }
-    } catch (error) {
-      console.error("Error sending test email:", error);
-      toast({
-        title: "Email Sending Failed",
-        description: "There was an error sending the test email. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSending(false);
-    }
-  };
-  
-  const toggleHtmlView = () => {
-    setShowHtml(!showHtml);
+  const emailData = {
+    ...pulseScore,
+    companyName
   };
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-xl">Certification Email Template</CardTitle>
-        <EmailTemplateActions 
-          showHtml={showHtml}
-          onToggleView={toggleHtmlView}
-          onCopyHtml={handleCopyHtml}
-          onDownloadHtml={handleDownloadHtml}
-          onSendTestEmail={handleSendTestEmail}
-          isSending={isSending}
-        />
-      </CardHeader>
-      <CardContent>
-        {showHtml ? (
-          <HtmlCodePreview htmlContent={generateHtmlEmail()} />
-        ) : (
-          <div className="border rounded-md overflow-auto max-h-[600px] bg-white">
-            <EmailPreviewContent
-              recipientName={recipientName}
-              pulseScoreData={pulseScoreData}
-              certificationLevel={certificationLevel}
-            />
-          </div>
-        )}
+    <Card className="shadow-md border-gray-200">
+      <CardContent className="pt-6 pb-2">
+        <EmailPreviewContent pulseScore={emailData} />
       </CardContent>
+      <CardFooter className="flex justify-between border-t pt-4">
+        <div className="text-sm text-gray-500">
+          {recipientEmail ? `Send to: ${recipientEmail}` : 'Preview mode'}
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">
+            <Eye className="h-4 w-4 mr-1" />
+            Preview
+          </Button>
+          <Button variant="outline" size="sm">
+            <Copy className="h-4 w-4 mr-1" />
+            Copy HTML
+          </Button>
+          <Button variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-1" />
+            Download
+          </Button>
+          <Button 
+            size="sm" 
+            className="bg-pulse-gradient"
+            onClick={onSendClick}
+            disabled={!recipientEmail}
+          >
+            <Send className="h-4 w-4 mr-1" />
+            Send
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   );
 };

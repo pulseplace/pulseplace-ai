@@ -44,6 +44,8 @@ export interface PulseScoreData {
   categoryScores: CategoryScore[];
   responseCount: number;
   tier: PulseScoreTier;
+  insights?: AIInsight[]; // Added as optional
+  recommendedActions?: string[]; // Added as optional
 }
 
 export interface MockPulseScoreData extends PulseScoreData {

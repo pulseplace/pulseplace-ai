@@ -1,30 +1,26 @@
 
-import { ScoringTheme, ScoringCategory } from '@/types/scoring.types';
+import { SurveyTheme, ScoringCategory } from '@/types/scoring.types';
 
-export const THEME_TO_CATEGORY: Record<ScoringTheme, ScoringCategory> = {
+// Map themes to categories for scoring
+export const themeToCategory: Record<SurveyTheme, ScoringCategory> = {
   trust_in_leadership: 'culture_trust',
   psychological_safety: 'culture_trust',
-  inclusion_belonging: 'culture_trust',
-  motivation_fulfillment: 'engagement_stability',
-  mission_alignment: 'emotion_index',
-  engagement_continuity: 'engagement_stability',
-  team_cohesion: 'culture_trust',
+  inclusion_belonging: 'emotion_index',
   work_life_balance: 'engagement_stability',
-  career_growth: 'emotion_index',
-  inclusion_diversity: 'culture_trust',
-  leadership_effectiveness: 'culture_trust',
-  innovation_adaptability: 'emotion_index'
+  growth_opportunity: 'engagement_stability'
 };
 
-export const CATEGORY_WEIGHTS: Record<ScoringCategory, number> = {
+// Category weights in final score
+export const categoryWeights: Record<ScoringCategory, number> = {
   emotion_index: 0.4,
-  engagement_stability: 0.3,
-  culture_trust: 0.3
+  culture_trust: 0.35,
+  engagement_stability: 0.25
 };
 
-export const TIER_THRESHOLDS = {
-  pulse_certified: 85,
-  emerging_culture: 70,
-  at_risk: 50,
-  intervention_advised: 0
+// Score thresholds for different tiers
+export const scoreTierThresholds = {
+  pulse_certified: 80,
+  emerging_culture: 65,
+  at_risk: 50
+  // Below 50 is intervention_advised
 };

@@ -1,55 +1,84 @@
 
 import { MockPulseScoreData } from '@/types/scoring.types';
+import { generateDepartmentInsights, generateRecommendedActions } from '@/utils/ai/departmentInsights';
 
-/**
- * Generates certification email HTML template
- */
-export const generateCertificationEmail = (recipientEmail: string, certData: MockPulseScoreData): string => {
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <title>PulsePlace Certification Summary</title>
-      </head>
-      <body>
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
-          <h1 style="color: #4338ca; text-align: center;">PulsePlace.ai</h1>
-          
-          <p style="font-size: 18px;">Hello ${recipientEmail.split('@')[0]},</p>
-          
-          <p>We're thrilled to share your latest certification summary from PulsePlace.ai.</p>
-          
-          <p style="font-size: 24px; text-align: center; font-weight: bold;">PulseScore®: ${certData.overallScore} / 100</p>
-          
-          <div style="text-align: center; margin: 20px 0;">
-            <span style="background-color: #e8f0fe; padding: 8px 20px; border-radius: 50px; font-weight: 600;">${certData.tier.replace('_', ' ').toUpperCase()}</span>
-          </div>
-          
-          <h2>Category Breakdown:</h2>
-          <div style="background-color: #f0f7ff; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-            ${certData.categoryScores.map(cat => `
-              <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e1eaf8;">
-                <div>${cat.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
-                <div style="font-weight: 600;">${cat.score}</div>
-              </div>
-            `).join('')}
-          </div>
-          
-          <h2>AI Insight Summary:</h2>
-          <p style="line-height: 1.6; margin-bottom: 20px;">"${certData.insights[0]}"</p>
-          
-          <p style="font-size: 16px; margin-bottom: 20px;">You're now eligible to use the official Pulse Certified® badge on your website, LinkedIn, and careers page.</p>
-          
-          <div style="text-align: center; margin-bottom: 20px;">
-            <a href="#" style="background-color: #4338ca; color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 600;">Download Badge</a>
-          </div>
-          
-          <div style="text-align: center; color: #64748b; margin-top: 30px; font-size: 12px;">
-            <p>PulsePlace.ai — Redefining workplace trust through data & AI</p>
-            <p>This is an automated summary. For support, contact <a href="mailto:hello@pulseplace.ai" style="color: #4338ca;">hello@pulseplace.ai</a></p>
-          </div>
-        </div>
-      </body>
-    </html>
-  `;
+// Generate a mock PulseScore for email templates
+export const generateMockPulseScore = (companyName: string = 'Acme Corporation'): MockPulseScoreData => {
+  // Create sample theme scores
+  const themesScores = [
+    { theme: 'trust_in_leadership' as const, score: 75, count: 15 },
+    { theme: 'psychological_safety' as const, score: 82, count: 15 },
+    { theme: 'inclusion_belonging' as const, score: 78, count: 15 },
+    { theme: 'work_life_balance' as const, score: 65, count: 15 },
+    { theme: 'growth_opportunity' as const, score: 80, count: 15 }
+  ];
+  
+  // Create sample category scores
+  const categoryScores = [
+    { category: 'emotion_index' as const, score: 78, weight: 0.4 },
+    { category: 'culture_trust' as const, score: 80, weight: 0.35 },
+    { category: 'engagement_stability' as const, score: 72, weight: 0.25 }
+  ];
+  
+  // Calculate overall score from category scores (weighted average)
+  const overallScore = Math.round(
+    categoryScores.reduce((sum, { category, score, weight }) => sum + score * weight, 0) / 
+    categoryScores.reduce((sum, { weight }) => sum + weight, 0)
+  );
+
+  // Generate insights
+  const insights = generateDepartmentInsights(overallScore);
+  
+  // Generate actions based on insights
+  const recommendedActions = generateRecommendedActions(insights);
+  
+  // Determine tier based on score
+  let tier: any = 'emerging_culture';
+  if (overallScore >= 80) {
+    tier = 'pulse_certified';
+  } else if (overallScore < 50) {
+    tier = 'intervention_advised';
+  } else if (overallScore < 65) {
+    tier = 'at_risk';
+  }
+  
+  return {
+    overallScore,
+    themesScores,
+    categoryScores,
+    responseCount: 45,
+    tier,
+    insights,
+    recommendedActions,
+    companyName,
+    industryBenchmark: 75,
+    dateGenerated: new Date().toISOString()
+  };
 };
+
+// Email content templates
+export const emailSubjectTemplates = {
+  certification: (companyName: string, score: number) => 
+    `PulseScore™ Certification: ${companyName} (${score}/100)`,
+  
+  insights: (companyName: string) => 
+    `Culture Insights Report for ${companyName}`,
+  
+  action_plan: (companyName: string) => 
+    `Culture Action Plan for ${companyName}`,
+  
+  reminder: (companyName: string) => 
+    `Reminder: Complete your PulsePlace survey at ${companyName}`
+};
+
+// Generate email signature
+export const getEmailSignature = () => `
+<div style="margin-top: 30px; color: #64748b; font-size: 14px;">
+  <p>Best regards,</p>
+  <p><strong>The PulsePlace Team</strong></p>
+  <p>
+    <a href="https://pulseplace.ai" style="color: #6366f1;">pulseplace.ai</a> | 
+    <a href="mailto:support@pulseplace.ai" style="color: #6366f1;">support@pulseplace.ai</a>
+  </p>
+</div>
+`;

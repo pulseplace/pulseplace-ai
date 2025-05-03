@@ -1,108 +1,150 @@
 
 import React from 'react';
 import { PulseScoreData } from '@/types/scoring.types';
-import { getTierDisplay } from '@/utils/scoring';
+import { Progress } from '@/components/ui/progress';
 
 interface EmailPreviewContentProps {
-  recipientName: string;
-  companyName?: string;
-  pulseScoreData: PulseScoreData;
-  certificationLevel: string;
+  pulseScore: PulseScoreData & { companyName: string };
 }
 
-const EmailPreviewContent: React.FC<EmailPreviewContentProps> = ({
-  recipientName,
-  companyName,
-  pulseScoreData,
-  certificationLevel
-}) => {
-  const tierInfo = getTierDisplay(pulseScoreData.tier);
+const EmailPreviewContent: React.FC<EmailPreviewContentProps> = ({ pulseScore }) => {
+  const {
+    companyName,
+    overallScore,
+    tier,
+    themesScores = [],
+    categoryScores = [],
+    insights = [] // Using optional chaining since insights is now optional
+  } = pulseScore;
+  
+  const getTierDescription = (tier: string): string => {
+    switch (tier) {
+      case 'pulse_certified':
+        return 'Pulse Certified™ (Excellent)';
+      case 'emerging_culture':
+        return 'Emerging Culture (Good)';
+      case 'at_risk':
+        return 'At Risk (Needs Improvement)';
+      case 'intervention_advised':
+        return 'Intervention Advised (Critical)';
+      default:
+        return 'Pending Review';
+    }
+  };
+  
+  const getTierColor = (tier: string): { textColor: string; bgColor: string } => {
+    switch (tier) {
+      case 'pulse_certified':
+        return { textColor: 'text-green-600', bgColor: 'bg-green-100' };
+      case 'emerging_culture':
+        return { textColor: 'text-yellow-600', bgColor: 'bg-yellow-100' };
+      case 'at_risk':
+        return { textColor: 'text-orange-600', bgColor: 'bg-orange-100' };
+      case 'intervention_advised':
+        return { textColor: 'text-red-600', bgColor: 'bg-red-100' };
+      default:
+        return { textColor: 'text-gray-600', bgColor: 'bg-gray-100' };
+    }
+  };
+  
+  const tierDescription = getTierDescription(tier);
+  const { textColor, bgColor } = getTierColor(tier);
+  
+  // Date formatting
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
   
   return (
-    <div className="p-8">
-      <div className="mb-6 text-center">
+    <div className="email-preview">
+      {/* Header with logo */}
+      <div className="text-center py-4 bg-gray-50 rounded-t-lg">
         <img 
-          src="/lovable-uploads/da2df9b1-afa2-4019-be42-cbfdedf8740b.png" 
-          alt="PulsePlace" 
-          width="180" 
-          className="mx-auto mb-4"
+          src="https://storage.googleapis.com/pulseplace/logo.png" 
+          alt="PulsePlace Logo"
+          className="h-8 mx-auto"
         />
       </div>
       
-      <div className="mb-6">
-        <p className="mb-4">Dear {recipientName},</p>
-        <p className="mb-4">
-          Congratulations! {companyName || 'Your organization'} has officially achieved 
-          <strong className="text-pulse-700"> {certificationLevel}</strong> status with PulsePlace.
+      {/* Certificate content */}
+      <div className="p-6">
+        <h2 className="text-xl font-bold text-center">PulseScore™ Certification</h2>
+        <p className="text-center text-gray-600 mt-2">
+          This is to certify that <strong>{companyName}</strong> has achieved the following PulseScore™ 
+          based on our comprehensive workplace culture assessment.
         </p>
-        <p className="mb-4">
-          This certification reflects your organization's commitment to creating a healthy, 
-          engaging workplace culture based on real employee feedback.
-        </p>
-      </div>
-      
-      <div className="mb-6 p-4 bg-gray-50 rounded-md">
-        <h2 className="text-xl font-bold mb-3 text-center">Your PulseScore™ Results</h2>
         
-        <div className="mb-4 text-center">
-          <span className="text-4xl font-bold text-pulse-600">{pulseScoreData.overallScore}</span>
-          <span className="text-gray-500">/100</span>
+        {/* Score display */}
+        <div className="flex flex-col items-center my-8">
+          <div className={`text-6xl font-bold ${textColor}`}>{overallScore}</div>
+          <div className={`${bgColor} ${textColor} px-4 py-1 rounded-full text-sm font-medium mt-3`}>
+            {tierDescription}
+          </div>
+          <div className="text-sm text-gray-500 mt-3">Issued on {currentDate}</div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          {pulseScoreData.categoryScores.map((category) => (
-            <div key={category.category} className="text-center p-3 bg-white rounded-md shadow-sm">
-              <div className="text-sm text-gray-500 mb-1">
-                {category.category.split('_').map(word => 
-                  word.charAt(0).toUpperCase() + word.slice(1)
-                ).join(' ')}
+        {/* Category Results */}
+        <div className="mb-6">
+          <h3 className="font-bold mb-3">Category Results</h3>
+          <div className="space-y-4">
+            {categoryScores.map(category => (
+              <div key={category.category} className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="capitalize">{category.category.replace(/_/g, ' ')}</span>
+                  <span>{category.score}%</span>
+                </div>
+                <Progress value={category.score} className="h-2" />
+                <div className="text-xs text-gray-500">
+                  Weight in final score: {Math.round(category.weight * 100)}%
+                </div>
               </div>
-              <div className="text-lg font-semibold">
-                {category.score}
-                <span className="text-xs text-gray-400">/100</span>
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        <div className="p-3 bg-white rounded-md shadow-sm mb-4">
-          <h3 className="text-sm font-medium mb-2">Key Insights:</h3>
-          <ul className="text-sm space-y-2 pl-4 list-disc">
-            {pulseScoreData.insights.map((insight, index) => (
-              <li key={index}>{insight}</li>
             ))}
-          </ul>
+          </div>
         </div>
         
-        <div className="text-center">
-          <span 
-            className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${tierInfo.color}`}>
-            {certificationLevel}
-          </span>
+        {/* Theme Breakdown */}
+        <div className="mb-6">
+          <h3 className="font-bold mb-3">Theme Breakdown</h3>
+          <div className="space-y-3">
+            {themesScores.map(theme => (
+              <div key={theme.theme} className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="capitalize">{theme.theme.replace(/_/g, ' ')}</span>
+                  <span>{theme.score}%</span>
+                </div>
+                <Progress value={theme.score} className="h-1.5" />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-      
-      <div className="mb-6">
-        <h3 className="text-md font-bold mb-2">Next Steps:</h3>
-        <ol className="list-decimal pl-5 space-y-2 text-sm">
-          <li>Download your certification badge to display on your careers page and recruitment materials</li>
-          <li>Share your certification status on LinkedIn and other social channels</li>
-          <li>Schedule a feedback session with your team to discuss the insights</li>
-        </ol>
-      </div>
-      
-      <div className="text-center mb-6">
-        <a href="#" className="inline-block bg-pulse-600 text-white px-6 py-3 rounded-md font-medium text-sm">
-          View Your Full Certification Dashboard
-        </a>
-      </div>
-      
-      <div className="text-sm text-gray-500 border-t pt-4">
-        <p>Thank you for being part of the PulsePlace community.</p>
-        <p className="mt-2">
-          The PulsePlace Team<br />
-          <a href="mailto:support@pulseplace.ai" className="text-pulse-600">support@pulseplace.ai</a>
+        
+        {/* Key Insights */}
+        {insights && insights.length > 0 && (
+          <div className="mb-6">
+            <h3 className="font-bold mb-3">Key Insights</h3>
+            <div className="bg-gray-50 p-4 rounded-lg space-y-4">
+              {insights.slice(0, 3).map((insight, index) => (
+                <div key={index} className="border-l-2 border-pulse-600 pl-3 py-1">
+                  <h4 className="text-sm font-medium">{insight.title}</h4>
+                  <p className="text-xs text-gray-600">{insight.content}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        <p className="text-sm text-gray-600 mt-6">
+          The PulseScore™ certification is valid for 12 months from the issue date. 
+          We commend your organization's commitment to fostering a positive workplace culture.
         </p>
+      </div>
+      
+      {/* Footer */}
+      <div className="text-center border-t pt-4 text-xs text-gray-500">
+        <p>© {new Date().getFullYear()} PulsePlace. All rights reserved.</p>
+        <p>This certification is based on employee feedback collected through the PulsePlace platform.</p>
       </div>
     </div>
   );

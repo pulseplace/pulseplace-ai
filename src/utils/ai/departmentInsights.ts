@@ -1,66 +1,47 @@
 
 import { AIInsight } from '@/types/scoring.types';
 
-/**
- * Generate AI insights for a specific department
- */
-export const generateDepartmentInsights = (department: string, metrics: any): AIInsight[] => {
-  // This would connect to an LLM in production
+// Generate AI insights based on score
+export const generateDepartmentInsights = (departmentScore: number): AIInsight[] => {
   const insights: AIInsight[] = [
     {
-      concernCategory: "Career Development",
-      concernText: "Limited visibility into promotion criteria",
-      severity: "medium",
-      impactArea: `${department} Team Retention`,
-      recommendedAction: "Create transparent career progression framework with clear milestones"
+      title: "Employee Engagement",
+      content: "Regular team building activities have improved employee engagement scores by 18% over the past quarter.",
+      category: "Engagement",
+      severity: "positive"
     },
     {
-      concernCategory: "Work-Life Balance",
-      concernText: "After-hours communication expectations",
-      severity: department === "Sales" ? "high" : "medium",
-      impactArea: "Employee Wellbeing",
-      recommendedAction: "Implement team communication guidelines with designated offline hours"
+      title: "Leadership Communication",
+      content: "Leadership transparency score is below benchmark. Consider implementing more consistent communication channels.",
+      category: "Leadership",
+      severity: "important"
     },
     {
-      concernCategory: "Team Dynamics",
-      concernText: "Siloed knowledge and information sharing",
-      severity: "low",
-      impactArea: "Cross-functional Collaboration",
-      recommendedAction: "Schedule bi-weekly knowledge sharing sessions across related teams"
+      title: "Work-Life Balance",
+      content: "33% of employees report working more than 50 hours per week. Review workload distribution.",
+      category: "Wellbeing",
+      severity: "moderate"
     }
   ];
-  
+
+  if (departmentScore < 65) {
+    insights.push({
+      title: "Retention Risk",
+      content: "Current engagement metrics indicate a 28% higher risk of turnover in the next quarter compared to industry baseline.",
+      category: "Retention",
+      severity: "critical"
+    });
+  }
+
   return insights;
 };
 
-/**
- * Generate predictive flags for potential cultural issues
- */
-export const generatePredictiveFlags = (surveyData: any): Array<{
-  department: string;
-  issue: string;
-  severity: "high" | "medium" | "low";
-  predictedImpact: number;
-}> => {
-  // This would use a prediction model in production
+// Generate recommended actions based on insights
+export const generateRecommendedActions = (insights: AIInsight[]): string[] => {
   return [
-    {
-      department: "Engineering",
-      issue: "Psychological safety concerns in team meetings",
-      severity: "medium",
-      predictedImpact: 65
-    },
-    {
-      department: "Sales",
-      issue: "Work-life balance deterioration due to end-of-quarter targets",
-      severity: "high",
-      predictedImpact: 80
-    },
-    {
-      department: "Customer Success",
-      issue: "Career growth perception gap with other departments",
-      severity: "medium",
-      predictedImpact: 70
-    }
+    "Implement bi-weekly leadership Q&A sessions to improve transparency",
+    "Review and adjust workload distribution across teams",
+    "Develop a structured 30-60-90 day onboarding program for new hires",
+    "Schedule regular one-on-one meetings between managers and direct reports"
   ];
 };

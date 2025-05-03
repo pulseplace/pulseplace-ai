@@ -1,12 +1,12 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
 import { toast } from 'sonner';
-import { Tables } from '@/types/database.types';
 import { calculateDashboardStats, generateDemoData } from '@/utils/dashboardUtils';
 
 export const useDashboardData = (userId: string | undefined) => {
-  const [surveys, setSurveys] = useState<Tables<'pulse_surveys'>[]>([]);
+  const [surveys, setSurveys] = useState<any[]>([]);
   const [responses, setResponses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,33 +38,44 @@ export const useDashboardData = (userId: string | undefined) => {
       console.log('Fetching dashboard data...');
       
       // Fetch surveys
-      const { data: surveysData, error: surveysError } = await supabase
-        .from('pulse_surveys')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const surveysQuery = query(
+        collection(db, 'pulse_surveys'),
+        where('created_by', '==', userId),
+        orderBy('created_at', 'desc')
+      );
+      
+      const surveysSnapshot = await getDocs(surveysQuery);
+      const surveysData = surveysSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
-      if (surveysError) throw surveysError;
       console.log('Surveys data fetched:', surveysData?.length || 0, 'surveys');
       setSurveys(surveysData || []);
 
       // Fetch responses
-      const { data: responsesData, error: responsesError } = await supabase
-        .from('survey_responses')
-        .select(`
-          id,
-          survey_id,
-          user_id,
-          responses,
-          created_at,
-          sentiment_score,
-          pulse_score,
-          pulse_surveys (
-            title
-          )
-        `)
-        .order('created_at', { ascending: false });
+      let responsesData: any[] = [];
+      // Collect response data for each survey
+      for (const survey of surveysData) {
+        const responsesQuery = query(
+          collection(db, 'survey_responses'),
+          where('survey_id', '==', survey.id),
+          orderBy('created_at', 'desc')
+        );
+        
+        const responsesSnapshot = await getDocs(responsesQuery);
+        const surveyResponses = responsesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          survey_id: survey.id,
+          ...doc.data(),
+          pulse_surveys: {
+            title: survey.title
+          }
+        }));
+        
+        responsesData = [...responsesData, ...surveyResponses];
+      }
 
-      if (responsesError) throw responsesError;
       console.log('Responses data fetched:', responsesData?.length || 0, 'responses');
       setResponses(responsesData || []);
 

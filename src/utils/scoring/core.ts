@@ -1,151 +1,111 @@
 
-import { SurveyQuestion, SurveyResponse, PulseScoreData, ThemeScore, CategoryScore, PulseScoreTier } from '@/types/scoring.types';
-import { calculateThemeScores } from './themes';
-import { THEME_TO_CATEGORY, CATEGORY_WEIGHTS, TIER_THRESHOLDS } from './config';
-import { getTierFromScore } from './utils';
+import { 
+  SurveyResponse, 
+  SurveyQuestion, 
+  ThemeScore, 
+  CategoryScore, 
+  PulseScoreData,
+  PulseScoreTier
+} from '@/types/scoring.types';
+import { themeToCategory, categoryWeights, scoreTierThresholds } from './config';
 
-export const calculatePulseScore = (
-  questions: SurveyQuestion[],
-  responses: SurveyResponse[]
-): PulseScoreData => {
-  // Calculate theme scores
-  const themeScores = calculateThemeScores(questions, responses);
+// Calculate tier based on overall score
+export const calculateTier = (score: number): PulseScoreTier => {
+  if (score >= scoreTierThresholds.pulse_certified) {
+    return 'pulse_certified';
+  } else if (score >= scoreTierThresholds.emerging_culture) {
+    return 'emerging_culture';
+  } else if (score >= scoreTierThresholds.at_risk) {
+    return 'at_risk';
+  } else {
+    return 'intervention_advised';
+  }
+};
+
+// Calculate theme scores from responses
+export const calculateThemeScores = (responses: SurveyResponse[], questions: SurveyQuestion[]): ThemeScore[] => {
+  // Group responses by theme using a map of theme -> { sum, count }
+  const themeScoresMap: Record<string, { sum: number; count: number }> = {};
   
-  // Group theme scores by category
-  const categoryScoresMap = new Map<string, { sum: number; count: number; weight: number }>();
-  
-  themeScores.forEach(themeScore => {
-    const category = THEME_TO_CATEGORY[themeScore.theme];
-    const categoryWeight = CATEGORY_WEIGHTS[category];
-    
-    if (!categoryScoresMap.has(category)) {
-      categoryScoresMap.set(category, { sum: 0, count: 0, weight: categoryWeight });
+  responses.forEach(response => {
+    // Find the corresponding question
+    const question = questions.find(q => q.id === response.questionId);
+    if (!question || typeof response.normalizedScore !== 'number') {
+      return;
     }
     
-    const categoryData = categoryScoresMap.get(category)!;
-    categoryData.sum += themeScore.score * themeScore.count;
-    categoryData.count += themeScore.count;
+    const { theme, weight } = question;
+    
+    if (!themeScoresMap[theme]) {
+      themeScoresMap[theme] = { sum: 0, count: 0 };
+    }
+    
+    themeScoresMap[theme].sum += response.normalizedScore * weight;
+    themeScoresMap[theme].count += weight;
   });
+  
+  // Convert the map to an array of ThemeScore objects
+  return Object.entries(themeScoresMap).map(([theme, { sum, count }]) => ({
+    theme: theme as any, // Cast to appropriate theme type
+    score: count > 0 ? Math.round(sum / count) : 0,
+    count
+  }));
+};
+
+// Calculate category scores from theme scores
+export const calculateCategoryScores = (themesScores: ThemeScore[]): CategoryScore[] => {
+  // Group theme scores by category
+  const categoryScoresMap: Record<string, { sum: number; count: number }> = {};
+  
+  themesScores.forEach(themeScore => {
+    const category = themeToCategory[themeScore.theme];
+    
+    if (!categoryScoresMap[category]) {
+      categoryScoresMap[category] = { sum: 0, count: 0 };
+    }
+    
+    categoryScoresMap[category].sum += themeScore.score;
+    categoryScoresMap[category].count += 1;
+  });
+  
+  // Convert to CategoryScore array with weights
+  return Object.entries(categoryScoresMap).map(([category, { sum, count }]) => ({
+    category: category as any, // Cast to appropriate category type
+    score: count > 0 ? Math.round(sum / count) : 0,
+    weight: categoryWeights[category as any]
+  }));
+};
+
+// Calculate overall score from category scores
+export const calculateOverallScore = (categoryScores: CategoryScore[]): number => {
+  const weightedSum = categoryScores.reduce((sum, { category, score }) => {
+    return sum + (score * categoryWeights[category]);
+  }, 0);
+  
+  const totalWeight = categoryScores.reduce((sum, { weight }) => sum + weight, 0);
+  
+  return Math.round(totalWeight > 0 ? weightedSum / totalWeight : 0);
+};
+
+// Generate the complete PulseScore data object
+export const generatePulseScore = (responses: SurveyResponse[], questions: SurveyQuestion[]): PulseScoreData => {
+  // Calculate theme scores
+  const themesScores = calculateThemeScores(responses, questions);
   
   // Calculate category scores
-  const categoryScores: CategoryScore[] = Array.from(categoryScoresMap.entries()).map(
-    ([category, data]) => ({
-      category: category as any,
-      score: data.count > 0 ? data.sum / data.count : 0,
-      weight: data.weight
-    })
-  );
+  const categoryScores = calculateCategoryScores(themesScores);
   
   // Calculate overall score
-  let weightedSum = 0;
-  let totalWeight = 0;
+  const overallScore = calculateOverallScore(categoryScores);
   
-  categoryScores.forEach(categoryScore => {
-    weightedSum += categoryScore.score * categoryScore.weight;
-    totalWeight += categoryScore.weight;
-  });
-  
-  const overallScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
-  
-  // Determine tier based on overall score
-  const tier = getTierFromScore(overallScore);
-  
-  // Generate insights and actions based on the scores
-  const insights = generateInsights(themeScores, categoryScores);
-  const recommendedActions = generateActions(themeScores, categoryScores, tier);
+  // Determine tier
+  const tier = calculateTier(overallScore);
   
   return {
     overallScore,
+    themesScores,
     categoryScores,
-    themeScores,
-    tier,
-    insights,
-    recommendedActions
+    responseCount: responses.length,
+    tier
   };
-};
-
-const generateInsights = (themeScores: ThemeScore[], categoryScores: CategoryScore[]): string[] => {
-  const insights = [];
-  
-  // Get the highest and lowest scoring themes
-  const sortedThemes = [...themeScores].sort((a, b) => b.score - a.score);
-  const highestTheme = sortedThemes[0];
-  const lowestTheme = sortedThemes[sortedThemes.length - 1];
-  
-  if (highestTheme && highestTheme.score > 75) {
-    insights.push(`Strong ${formatThemeName(highestTheme.theme)} indicates a positive foundation.`);
-  }
-  
-  if (lowestTheme && lowestTheme.score < 60) {
-    insights.push(`${formatThemeName(lowestTheme.theme)} may require attention.`);
-  }
-  
-  // Add category-based insights
-  categoryScores.forEach(category => {
-    if (category.score < 60) {
-      insights.push(`Low ${formatCategoryName(category.category)} score indicates potential cultural issues.`);
-    }
-  });
-  
-  // Add more generic insights if we don't have enough
-  if (insights.length < 2) {
-    insights.push("Regular pulse surveys help track cultural health over time.");
-  }
-  
-  return insights;
-};
-
-const generateActions = (
-  themeScores: ThemeScore[],
-  categoryScores: CategoryScore[],
-  tier: PulseScoreTier
-): string[] => {
-  const actions = [];
-  
-  // Get the lowest scoring themes that have enough responses
-  const actionableThemes = themeScores
-    .filter(theme => theme.count >= 3)
-    .sort((a, b) => a.score - b.score)
-    .slice(0, 2);
-  
-  actionableThemes.forEach(theme => {
-    actions.push(`Develop initiatives to improve ${formatThemeName(theme.theme)}.`);
-  });
-  
-  // Add tier-specific actions
-  switch (tier) {
-    case 'pulse_certified':
-      actions.push("Share certification achievements with your team and stakeholders.");
-      break;
-    case 'emerging_culture':
-      actions.push("Focus on building more consistency across all cultural dimensions.");
-      break;
-    case 'at_risk':
-      actions.push("Schedule regular manager check-ins to address culture concerns.");
-      break;
-    case 'intervention_advised':
-      actions.push("Consider bringing in culture experts to develop an improvement plan.");
-      break;
-  }
-  
-  // Add more generic actions if we don't have enough
-  if (actions.length < 2) {
-    actions.push("Schedule a team workshop to discuss feedback and brainstorm improvements.");
-  }
-  
-  return actions;
-};
-
-const formatThemeName = (theme: string): string => {
-  return theme
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
-const formatCategoryName = (category: string): string => {
-  return category
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
 };

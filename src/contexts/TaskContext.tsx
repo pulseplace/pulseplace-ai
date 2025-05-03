@@ -4,17 +4,18 @@ import { collection, query, where, onSnapshot, addDoc, doc, updateDoc, deleteDoc
 import { db } from '@/integrations/firebase/client';
 import { useAuth } from './AuthContext';
 import { v4 as uuidv4 } from 'uuid';
-
-export type TaskPriority = 'high' | 'medium' | 'low';
-
-export interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  completed: boolean;
-  dueDate?: string;
-  priority: TaskPriority;
-}
+import { 
+  Task, 
+  TaskModule, 
+  TaskPriority, 
+  TaskStatus, 
+  TaskOwner,
+  BuildFlowLane,
+  DebugLogSeverity,
+  DebugLogStatus,
+  BuildRequest,
+  DebugLog
+} from '@/types/task.types';
 
 export interface TaskContextType {
   dailyTasks: Task[];
@@ -43,36 +44,6 @@ export interface TaskContextType {
   tasks: Task[];
 }
 
-// Add these from task.types.ts
-export type BuildFlowLane = 'BACKLOG' | 'CURRENT SPRINT' | 'SHIPPED';
-export type TaskModule = 'PulseScore Engine' | 'AI Summary' | 'Certification' | 'Dashboard' | 'Slack Bot' | 'Lite Survey' | 'Backend Infra' | 'Frontend UI' | 'Other';
-export type TaskStatus = 'Not Started' | 'In Progress' | 'Stuck' | 'Done';
-export type TaskOwner = 'Lovable' | 'Founder' | 'External';
-export type DebugLogSeverity = 'Critical' | 'Major' | 'Minor';
-export type DebugLogStatus = 'Open' | 'In Progress' | 'Fixed';
-
-export interface BuildRequest {
-  id: string;
-  name: string;
-  context: string;
-  module: TaskModule;
-  deadline: Date | null;
-  notes: string;
-  lane: BuildFlowLane;
-  createdAt: Date;
-}
-
-export interface DebugLog {
-  id: string;
-  dateLogged: Date;
-  component: TaskModule;
-  description: string;
-  severity: DebugLogSeverity;
-  status: DebugLogStatus;
-  fixLink?: string;
-  loggedBy: string;
-}
-
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -98,7 +69,16 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onSnapshot(tasksQuery, (snapshot) => {
       const taskList: Task[] = snapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data() as Omit<Task, 'id'>
+        name: doc.data().title || "Untitled Task", // Map title to name for compatibility
+        module: doc.data().module || "Other",
+        priority: transformPriority(doc.data().priority),
+        status: doc.data().status || "Not Started",
+        owner: doc.data().owner || "Lovable",
+        deadline: doc.data().dueDate ? new Date(doc.data().dueDate) : null,
+        notes: doc.data().description || "",
+        sprint: doc.data().sprint || "",
+        createdAt: doc.data().createdAt ? new Date(doc.data().createdAt) : new Date(),
+        updatedAt: doc.data().updatedAt ? new Date(doc.data().updatedAt) : new Date()
       }));
       setDailyTasks(taskList);
     });
@@ -180,13 +160,27 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, [user]);
 
+  // Helper function to transform priority from lowercase to proper case
+  const transformPriority = (priority: string | undefined): TaskPriority => {
+    if (!priority) return 'Medium';
+    
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return 'High';
+      case 'low':
+        return 'Low';
+      default:
+        return 'Medium';
+    }
+  };
+
   // Task CRUD operations
   const completeTask = (id: string) => {
     if (!user) return;
 
     const taskRef = doc(db, "tasks", id);
     updateDoc(taskRef, {
-      completed: true,
+      status: "Done",
       updatedAt: new Date().toISOString()
     }).catch(error => console.error("Error updating task: ", error));
   };
@@ -202,7 +196,14 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) return;
     
     const taskWithUser = {
-      ...task,
+      title: task.name,
+      description: task.notes,
+      module: task.module,
+      priority: task.priority,
+      status: task.status,
+      owner: task.owner,
+      dueDate: task.deadline ? task.deadline.toISOString() : null,
+      sprint: task.sprint,
       userId: user.uid,
       type: 'daily',
       createdAt: new Date().toISOString(),
@@ -216,11 +217,23 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateTask = (id: string, updatedTask: Partial<Task>) => {
     if (!user) return;
     
+    // Convert from Task type to Firestore format
+    const firestoreUpdates: Record<string, any> = {};
+    
+    if (updatedTask.name) firestoreUpdates.title = updatedTask.name;
+    if (updatedTask.notes) firestoreUpdates.description = updatedTask.notes;
+    if (updatedTask.module) firestoreUpdates.module = updatedTask.module;
+    if (updatedTask.priority) firestoreUpdates.priority = updatedTask.priority;
+    if (updatedTask.status) firestoreUpdates.status = updatedTask.status;
+    if (updatedTask.owner) firestoreUpdates.owner = updatedTask.owner;
+    if (updatedTask.deadline) firestoreUpdates.dueDate = updatedTask.deadline.toISOString();
+    if (updatedTask.sprint) firestoreUpdates.sprint = updatedTask.sprint;
+    
+    firestoreUpdates.updatedAt = new Date().toISOString();
+    
     const taskRef = doc(db, "tasks", id);
-    updateDoc(taskRef, {
-      ...updatedTask,
-      updatedAt: new Date().toISOString()
-    }).catch(error => console.error("Error updating task: ", error));
+    updateDoc(taskRef, firestoreUpdates)
+      .catch(error => console.error("Error updating task: ", error));
   };
 
   // Build Request operations

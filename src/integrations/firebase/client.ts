@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// Firebase configuration - Update with your own Firebase project details
+// Firebase configuration - Update with your actual Firebase project details
 const firebaseConfig = {
   apiKey: "AIzaSyDemoKeyForPulsePlaceMigration",
   authDomain: "pulseplace-ai.firebaseapp.com",

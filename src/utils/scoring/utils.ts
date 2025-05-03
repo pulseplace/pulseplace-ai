@@ -64,29 +64,29 @@ export const normalizeResponseValue = (response: SurveyResponse, question: Surve
 };
 
 // Helper for tier display
-export const getTierDisplay = (tier: PulseScoreTier): { title: string; description: string; color: string } => {
+export const getTierDisplay = (tier: PulseScoreTier): { label: string; description: string; color: string } => {
   switch (tier) {
     case 'pulse_certified':
       return {
-        title: 'Pulse Certified',
+        label: 'Pulse Certified',
         description: 'Your organization demonstrates excellence in workplace culture.',
         color: 'green',
       };
     case 'emerging_culture':
       return {
-        title: 'Emerging Culture',
+        label: 'Emerging Culture',
         description: 'Your organization is building a positive workplace culture.',
         color: 'blue',
       };
     case 'at_risk':
       return {
-        title: 'At Risk',
+        label: 'At Risk',
         description: 'Your organization shows concerning signs in workplace culture.',
         color: 'orange',
       };
     case 'intervention_advised':
       return {
-        title: 'Intervention Advised',
+        label: 'Intervention Advised',
         description: 'Your organization requires immediate attention to workplace culture.',
         color: 'red',
       };

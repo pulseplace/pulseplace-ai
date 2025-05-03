@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// Firebase configuration
+// Firebase configuration - Update with your own Firebase project details
 const firebaseConfig = {
   apiKey: "AIzaSyDemoKeyForPulsePlaceMigration",
-  authDomain: "pulseplace-app.firebaseapp.com",
-  projectId: "pulseplace-app",
-  storageBucket: "pulseplace-app.appspot.com",
+  authDomain: "pulseplace-ai.firebaseapp.com",
+  projectId: "pulseplace-ai",
+  storageBucket: "pulseplace-ai.appspot.com",
   messagingSenderId: "123456789012",
   appId: "1:123456789012:web:abc123def456ghi789"
 };

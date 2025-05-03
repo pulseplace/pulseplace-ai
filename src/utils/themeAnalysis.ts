@@ -1,63 +1,74 @@
 
-import { ScoringTheme } from '@/types/scoring.types';
+import { SurveyQuestion, SurveyResponse, ThemeScore } from '@/types/scoring.types';
 
-export const calculateThemeSentiment = (feedbackData: Array<{ theme: ScoringTheme, text: string, sentiment: number }>) => {
-  // Create starting template with all required ScoringTheme keys
-  const themeResults: Record<ScoringTheme, { count: number; sentiment: number }> = {
-    trust_in_leadership: { count: 0, sentiment: 0 },
-    psychological_safety: { count: 0, sentiment: 0 },
-    inclusion_belonging: { count: 0, sentiment: 0 },
-    motivation_fulfillment: { count: 0, sentiment: 0 },
-    mission_alignment: { count: 0, sentiment: 0 },
-    engagement_continuity: { count: 0, sentiment: 0 },
-    team_cohesion: { count: 0, sentiment: 0 },
-    work_life_balance: { count: 0, sentiment: 0 },
-    career_growth: { count: 0, sentiment: 0 },
-    inclusion_diversity: { count: 0, sentiment: 0 },
-    leadership_effectiveness: { count: 0, sentiment: 0 },
-    innovation_adaptability: { count: 0, sentiment: 0 }
-  };
+interface ThemeAnalysisResult {
+  themeScores: ThemeScore[];
+  sentimentScores: Record<string, number>;
+}
 
-  // Process all feedback entries
-  feedbackData.forEach(entry => {
-    if (!themeResults[entry.theme]) {
-      console.warn(`Unknown theme encountered: ${entry.theme}`);
-      return;
+export const calculateThemeScores = (
+  questions: SurveyQuestion[],
+  responses: SurveyResponse[]
+): ThemeScore[] => {
+  // Group questions by theme
+  const themeQuestions: Record<string, SurveyQuestion[]> = {};
+  questions.forEach(q => {
+    if (!themeQuestions[q.theme]) {
+      themeQuestions[q.theme] = [];
     }
+    themeQuestions[q.theme].push(q);
+  });
+  
+  // Create a map of question IDs to responses
+  const responseMap: Record<string, SurveyResponse> = {};
+  responses.forEach(r => {
+    responseMap[r.questionId] = r;
+  });
+  
+  // Calculate scores for each theme
+  const themeScores: ThemeScore[] = [];
+  Object.entries(themeQuestions).forEach(([theme, qs]) => {
+    let totalScore = 0;
+    let totalWeight = 0;
     
-    themeResults[entry.theme].count++;
-    themeResults[entry.theme].sentiment += entry.sentiment;
+    qs.forEach(q => {
+      const response = responseMap[q.id];
+      if (response && typeof response.normalizedScore === 'number') {
+        totalScore += response.normalizedScore * q.weight;
+        totalWeight += q.weight;
+      }
+    });
+    
+    const score = totalWeight > 0 ? totalScore / totalWeight : 0;
+    themeScores.push({
+      theme: theme as any,
+      score: score,
+      count: qs.length
+    });
   });
-
-  // Calculate average sentiment for each theme
-  Object.keys(themeResults).forEach(theme => {
-    const typedTheme = theme as ScoringTheme;
-    if (themeResults[typedTheme].count > 0) {
-      themeResults[typedTheme].sentiment = themeResults[typedTheme].sentiment / themeResults[typedTheme].count;
-    }
-  });
-
-  return themeResults;
+  
+  return themeScores;
 };
 
-export const getTopThemes = (themeData: Record<ScoringTheme, { count: number; sentiment: number }>, limit: number = 3) => {
-  return Object.entries(themeData)
-    .map(([theme, data]) => ({
-      theme: theme as ScoringTheme,
-      count: data.count,
-      sentiment: data.sentiment
-    }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, limit);
+export const analyzeSentiment = (responses: SurveyResponse[]): Record<string, number> => {
+  // In a real implementation, this would use NLP to analyze sentiment
+  // For now, we'll return mock data
+  return {
+    positive: 65,
+    negative: 15,
+    neutral: 20,
+  };
 };
 
-export const getLowSentimentThemes = (themeData: Record<ScoringTheme, { count: number; sentiment: number }>, threshold: number = 0) => {
-  return Object.entries(themeData)
-    .map(([theme, data]) => ({
-      theme: theme as ScoringTheme,
-      count: data.count,
-      sentiment: data.sentiment
-    }))
-    .filter(item => item.count > 0 && item.sentiment < threshold)
-    .sort((a, b) => a.sentiment - b.sentiment);
+export const analyzeThemeData = (
+  questions: SurveyQuestion[],
+  responses: SurveyResponse[]
+): ThemeAnalysisResult => {
+  const themeScores = calculateThemeScores(questions, responses);
+  const sentimentScores = analyzeSentiment(responses);
+  
+  return {
+    themeScores,
+    sentimentScores
+  };
 };

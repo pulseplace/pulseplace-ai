@@ -13,6 +13,7 @@ import LLMInsights from '@/pages/dashboard/LLMInsights';
 import BookDemo from '@/pages/BookDemo';
 import TayanaStudy from '@/pages/case-studies/TayanaStudy';
 import PulseScoreLite from '@/pages/PulseScoreLite';
+import Auth from '@/pages/Auth';
 // New task tracker imports
 import TaskTracker from '@/pages/task-tracker/TaskTracker';
 import DebugLog from '@/pages/task-tracker/DebugLog';
@@ -22,6 +23,10 @@ const routes: RouteObject[] = [
   {
     path: '/',
     element: <Dashboard />
+  },
+  {
+    path: '/auth',
+    element: <Auth />
   },
   {
     path: '/task-summary',

@@ -95,18 +95,13 @@ const Auth = () => {
     setError(null);
     setIsLoading(true);
     try {
-      const userData = {
-        email: values.email,
-        password: values.password,
-        userData: {
-          first_name: values.firstName,
-          last_name: values.lastName,
-          company: values.company,
-          role: values.role,
-          department: values.department
-        }
-      };
-      await signUp(values.email, values.password, userData);
+      await signUp(values.email, values.password, {
+        first_name: values.firstName,
+        last_name: values.lastName,
+        company: values.company,
+        role: values.role,
+        department: values.department
+      });
     } catch (error: any) {
       setError(error.message || 'An error occurred during sign up');
       console.error(error);

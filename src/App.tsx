@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import DemoReadyLayout from '@/components/layout/DemoReadyLayout';
 import routes from '@/config/routes';
 import Root from '@/pages/Root';
-import { AuthProvider } from './contexts/AuthContext';
 import { TaskProvider } from './contexts/TaskContext';
 
 // Create router with proper configuration
@@ -36,12 +35,10 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <TaskProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </TaskProvider>
-    </AuthProvider>
+    <TaskProvider>
+      <RouterProvider router={router} />
+      <Toaster />
+    </TaskProvider>
   );
 }
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -60,21 +59,23 @@ interface BuildRequestFormProps {
 }
 
 export default function BuildRequestForm({ request, onSubmit, onCancel }: BuildRequestFormProps) {
+  const defaultValues = request ? {
+    name: request.name,
+    context: request.context,
+    module: request.module,
+    deadline: request.deadline || null,
+    notes: request.notes || ''
+  } : {
+    name: '',
+    context: '',
+    module: 'Frontend UI' as TaskModule, // Use a valid value from the updated TaskModule type
+    deadline: null,
+    notes: ''
+  };
+
   const form = useForm<BuildRequestFormValues>({
     resolver: zodResolver(buildRequestSchema),
-    defaultValues: request ? {
-      name: request.name,
-      context: request.context,
-      module: request.module as TaskModule,
-      deadline: request.deadline ? new Date(request.deadline) : null,
-      notes: request.notes || '',
-    } : {
-      name: '',
-      context: '',
-      module: 'Other',
-      deadline: null,
-      notes: '',
-    },
+    defaultValues,
   });
 
   const handleSubmit = (data: BuildRequestFormValues) => {

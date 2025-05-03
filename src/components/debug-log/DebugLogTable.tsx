@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -29,7 +28,7 @@ import {
   DebugLogSeverity, 
   DebugLogStatus 
 } from '@/types/task.types';
-import { useTaskManager } from '@/contexts/TaskContext';
+import { useTaskManager } from '@/contexts/task';
 
 const getSeverityColor = (severity: DebugLogSeverity) => {
   switch (severity) {

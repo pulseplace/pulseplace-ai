@@ -24,10 +24,11 @@ const FeedbackButton = () => {
   React.useEffect(() => {
     if (user && user.email) {
       setEmail(user.email);
-      // Try to get name from user metadata if available
-      if (user.user_metadata) {
-        const firstName = user.user_metadata.first_name || '';
-        const lastName = user.user_metadata.last_name || '';
+      // Try to get name from profile data if available
+      const profile = user.user_metadata;
+      if (profile) {
+        const firstName = profile.first_name || '';
+        const lastName = profile.last_name || '';
         if (firstName || lastName) {
           setName(`${firstName} ${lastName}`.trim());
         }

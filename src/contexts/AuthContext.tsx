@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   User, 
@@ -15,6 +14,12 @@ import { UserData } from '@/types/auth.types';
 // Extend Firebase user type to include metadata
 interface ExtendedUser extends User {
   id: string; // Add this for compatibility with components expecting id
+  user_metadata?: { 
+    first_name?: string;
+    last_name?: string;
+    role?: string;
+    company?: string;
+  };
 }
 
 interface ProfileData {

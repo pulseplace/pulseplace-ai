@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -71,18 +70,18 @@ export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
       priority: task.priority,
       status: task.status,
       owner: task.owner,
-      deadline: task.deadline ? new Date(task.deadline) : null,
+      deadline: task.deadline || new Date(),
       notes: task.notes || '',
-      sprint: task.sprint || '',
+      sprint: task.sprint || ''
     } : {
       name: '',
-      module: 'Other',
-      priority: 'Medium',
-      status: 'Not Started',
-      owner: 'Lovable',
-      deadline: null,
+      module: 'Frontend UI' as TaskModule, // Use a valid value from the updated TaskModule type
+      priority: 'Medium' as TaskPriority,
+      status: 'Not Started' as TaskStatus,
+      owner: 'Lovable' as TaskOwner,
+      deadline: new Date(),
       notes: '',
-      sprint: 'Sprint April 22–26',
+      sprint: ''
     },
   });
 

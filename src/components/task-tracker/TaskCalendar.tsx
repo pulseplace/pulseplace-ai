@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { format, isSameDay } from 'date-fns';
-import { useTaskManager } from '@/contexts/TaskContext';
+import { useTaskManager } from '@/contexts/task';
 import { Task } from '@/types/task.types';
 
 interface TaskCalendarProps {

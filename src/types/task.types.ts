@@ -1,6 +1,20 @@
 
 // Task Types
-export type TaskModule = 'Frontend UI' | 'Backend API' | 'Database' | 'Authentication' | 'PulseScore Engine' | 'AI Summary' | 'Analytics' | 'Certification' | 'Other';
+export type TaskModule = 
+  | 'Frontend UI' 
+  | 'Backend API' 
+  | 'Database' 
+  | 'Authentication' 
+  | 'PulseScore Engine' 
+  | 'AI Summary' 
+  | 'Analytics' 
+  | 'Certification' 
+  | 'Other'
+  | 'Dashboard'
+  | 'Slack Bot'
+  | 'Lite Survey'
+  | 'Backend Infra';
+  
 export type TaskStatus = 'Not Started' | 'In Progress' | 'Done' | 'Blocked';
 export type TaskPriority = 'High' | 'Medium' | 'Low';
 export type TaskOwner = 'Founder' | 'Lovable' | 'Dev Team' | 'QA Team' | 'Product Team';

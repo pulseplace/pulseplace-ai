@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useTaskManager } from '@/contexts/TaskContext';
+import { useTaskManager } from '@/contexts/task';
 import { BuildRequest, BuildFlowLane } from '@/types/task.types';
 import { format } from 'date-fns';
 import { Pencil, Trash2 } from 'lucide-react';

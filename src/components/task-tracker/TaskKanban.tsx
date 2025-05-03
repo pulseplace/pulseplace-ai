@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { useTaskManager } from '@/contexts/TaskContext';
+import { useTaskManager } from '@/contexts/task';
 import { Task, TaskStatus } from '@/types/task.types';
 
-const TASK_STATUSES: TaskStatus[] = ['Not Started', 'In Progress', 'Stuck', 'Done'];
+const TASK_STATUSES: TaskStatus[] = ['Not Started', 'In Progress', 'Blocked', 'Done'];
 
 const getStatusColor = (status: TaskStatus) => {
   switch (status) {
@@ -14,7 +13,7 @@ const getStatusColor = (status: TaskStatus) => {
       return 'bg-gray-100 text-gray-800 border-gray-200';
     case 'In Progress':
       return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'Stuck':
+    case 'Blocked':
       return 'bg-red-100 text-red-800 border-red-200';
     case 'Done':
       return 'bg-green-100 text-green-800 border-green-200';
@@ -50,7 +49,7 @@ export default function TaskKanban({ onEditTask }: TaskKanbanProps) {
   }, {
     'Not Started': [],
     'In Progress': [],
-    'Stuck': [],
+    'Blocked': [],
     'Done': []
   });
 

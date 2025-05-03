@@ -8,13 +8,14 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useTaskManager, TaskPriority } from '@/contexts/TaskContext';
+import { useTaskManager } from '@/contexts/task';
+import { TaskPriority } from '@/types/task.types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const taskSchema = z.object({
   title: z.string().min(3, { message: 'Task title must be at least 3 characters' }),
   description: z.string().optional(),
-  priority: z.enum(['high', 'medium', 'low'] as const),
+  priority: z.enum(['High', 'Medium', 'Low'] as const),
   dueDate: z.string().optional(),
 });
 
@@ -33,18 +34,22 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ open, onOpenChange
     defaultValues: {
       title: '',
       description: '',
-      priority: 'medium',
+      priority: 'Medium',
       dueDate: undefined,
     },
   });
 
   const onSubmit = (data: TaskFormValues) => {
     addTask({
-      title: data.title,
-      description: data.description,
+      name: data.title,
+      notes: data.description || '',
       priority: data.priority,
-      dueDate: data.dueDate,
-      completed: false,
+      deadline: data.dueDate ? new Date(data.dueDate) : null,
+      status: 'Not Started',
+      module: 'Other',
+      owner: 'Lovable',
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
     form.reset();
     onOpenChange(false);
@@ -103,9 +108,9 @@ export const AddTaskDialog: React.FC<AddTaskDialogProps> = ({ open, onOpenChange
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="High">High</SelectItem>
+                        <SelectItem value="Medium">Medium</SelectItem>
+                        <SelectItem value="Low">Low</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

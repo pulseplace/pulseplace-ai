@@ -1,7 +1,7 @@
 
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/integrations/firebase/client";
-import { Task } from "@/contexts/TaskContext";
+import { Task } from "@/types/task.types";
 
 // Collection reference
 const tasksCollection = collection(db, "tasks");

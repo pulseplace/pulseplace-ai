@@ -20,7 +20,7 @@ export interface Task {
 }
 
 // Build Flow Types
-export type BuildFlowLane = 'BACKLOG' | 'CURRENT SPRINT' | 'IN PROGRESS' | 'DONE';
+export type BuildFlowLane = 'BACKLOG' | 'CURRENT SPRINT' | 'IN PROGRESS' | 'DONE' | 'SHIPPED';
 
 export interface BuildRequest {
   id: string;

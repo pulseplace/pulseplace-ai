@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import DemoReadyLayout from '@/components/layout/DemoReadyLayout';
 import routes from '@/config/routes';
 import Root from '@/pages/Root';
-import { TaskProvider } from './contexts/TaskContext';
+import { TaskProvider } from './contexts/task';
 import { AuthProvider } from './contexts/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 

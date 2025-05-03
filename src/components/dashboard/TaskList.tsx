@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Calendar, 
@@ -12,7 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { useTaskManager, Task } from '@/contexts/TaskContext';
+import { useTaskManager } from '@/contexts/task';
+import { Task } from '@/types/task.types';
 import { AddTaskDialog } from './AddTaskDialog';
 import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
@@ -41,11 +43,11 @@ const TaskList = ({ tasks }: TaskListProps = {}) => {
 
   const getPriorityBadge = (priority: Task['priority']) => {
     switch (priority) {
-      case 'high':
+      case 'High':
         return <Badge variant="destructive" className="ml-2">High</Badge>;
-      case 'medium':
+      case 'Medium':
         return <Badge variant="default" className="ml-2 bg-amber-500">Medium</Badge>;
-      case 'low':
+      case 'Low':
         return <Badge variant="outline" className="ml-2">Low</Badge>;
       default:
         return null;
@@ -83,14 +85,14 @@ const TaskList = ({ tasks }: TaskListProps = {}) => {
               <li 
                 key={task.id} 
                 className={`flex items-start p-3 rounded-md border ${
-                  task.completed 
+                  task.status === 'Done'
                     ? 'bg-gray-50 border-gray-200' 
                     : 'bg-white border-gray-200 hover:border-pulse-200 transition-colors'
                 }`}
               >
                 <Checkbox 
                   id={`task-${task.id}`}
-                  checked={task.completed}
+                  checked={task.status === 'Done'}
                   onCheckedChange={() => handleCompleteTask(task.id)}
                   className="mt-1 mr-3"
                 />
@@ -99,26 +101,26 @@ const TaskList = ({ tasks }: TaskListProps = {}) => {
                     <label 
                       htmlFor={`task-${task.id}`}
                       className={`font-medium cursor-pointer ${
-                        task.completed ? 'line-through text-gray-500' : ''
+                        task.status === 'Done' ? 'line-through text-gray-500' : ''
                       }`}
                     >
-                      {task.title}
+                      {task.name}
                     </label>
                     {getPriorityBadge(task.priority)}
                   </div>
                   
-                  {task.description && (
+                  {task.notes && (
                     <p className={`text-sm mt-1 ${
-                      task.completed ? 'text-gray-400' : 'text-gray-600'
+                      task.status === 'Done' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
-                      {task.description}
+                      {task.notes}
                     </p>
                   )}
                   
-                  {task.dueDate && (
+                  {task.deadline && (
                     <div className="flex items-center mt-2 text-xs text-gray-500">
                       <Calendar className="h-3 w-3 mr-1" />
-                      {format(new Date(task.dueDate), 'h:mm a')}
+                      {format(task.deadline, 'h:mm a')}
                     </div>
                   )}
                 </div>
@@ -139,9 +141,9 @@ const TaskList = ({ tasks }: TaskListProps = {}) => {
         {displayTasks.length > 0 && (
           <div className="mt-4 pt-3 border-t border-gray-100 text-sm text-gray-500 flex justify-between">
             <span>
-              {displayTasks.filter(t => t.completed).length} of {displayTasks.length} tasks completed
+              {displayTasks.filter(t => t.status === 'Done').length} of {displayTasks.length} tasks completed
             </span>
-            {displayTasks.some(t => t.priority === 'high' && !t.completed) && (
+            {displayTasks.some(t => t.priority === 'High' && t.status !== 'Done') && (
               <span className="flex items-center text-amber-600">
                 <AlertCircle className="h-3 w-3 mr-1" />
                 High priority tasks pending

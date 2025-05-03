@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -32,18 +33,23 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { BuildRequest, TaskModule } from '@/types/task.types';
 
+// Update the schema to match the TaskModule type
 const buildRequestSchema = z.object({
   name: z.string().min(3, 'Request name must be at least 3 characters'),
   context: z.string().min(10, 'Please provide more context'),
   module: z.enum([
-    'PulseScore Engine', 
-    'AI Summary', 
-    'Certification', 
-    'Dashboard', 
-    'Slack Bot', 
-    'Lite Survey', 
-    'Backend Infra', 
-    'Frontend UI', 
+    'Frontend UI',
+    'Backend API',
+    'Database',
+    'Authentication',
+    'PulseScore Engine',
+    'AI Summary',
+    'Analytics',
+    'Certification',
+    'Dashboard',
+    'Slack Bot',
+    'Lite Survey',
+    'Backend Infra',
     'Other'
   ] as const),
   deadline: z.date().nullable(),
@@ -59,6 +65,7 @@ interface BuildRequestFormProps {
 }
 
 export default function BuildRequestForm({ request, onSubmit, onCancel }: BuildRequestFormProps) {
+  // Fix the default values to match the schema
   const defaultValues = request ? {
     name: request.name,
     context: request.context,
@@ -68,7 +75,7 @@ export default function BuildRequestForm({ request, onSubmit, onCancel }: BuildR
   } : {
     name: '',
     context: '',
-    module: 'Frontend UI' as TaskModule, // Use a valid value from the updated TaskModule type
+    module: 'Frontend UI' as TaskModule,
     deadline: null,
     notes: ''
   };
@@ -113,14 +120,18 @@ export default function BuildRequestForm({ request, onSubmit, onCancel }: BuildR
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
+                    <SelectItem value="Frontend UI">Frontend UI</SelectItem>
+                    <SelectItem value="Backend API">Backend API</SelectItem>
+                    <SelectItem value="Database">Database</SelectItem>
+                    <SelectItem value="Authentication">Authentication</SelectItem>
                     <SelectItem value="PulseScore Engine">PulseScore Engine</SelectItem>
                     <SelectItem value="AI Summary">AI Summary</SelectItem>
+                    <SelectItem value="Analytics">Analytics</SelectItem>
                     <SelectItem value="Certification">Certification</SelectItem>
                     <SelectItem value="Dashboard">Dashboard</SelectItem>
                     <SelectItem value="Slack Bot">Slack Bot</SelectItem>
                     <SelectItem value="Lite Survey">Lite Survey</SelectItem>
                     <SelectItem value="Backend Infra">Backend Infra</SelectItem>
-                    <SelectItem value="Frontend UI">Frontend UI</SelectItem>
                     <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>

@@ -29,3 +29,46 @@ export interface CategoryScore {
   score: number;
   weight: number;
 }
+
+// Adding missing types identified in error messages
+export type ScoringTheme = SurveyTheme;
+
+export interface DateRangeFilter {
+  from: Date | undefined;
+  to: Date | undefined;
+}
+
+export interface PulseScoreData {
+  overallScore: number;
+  themesScores: ThemeScore[];
+  categoryScores: CategoryScore[];
+  responseCount: number;
+  tier: PulseScoreTier;
+}
+
+export interface MockPulseScoreData extends PulseScoreData {
+  companyName: string;
+  industryBenchmark: number;
+  dateGenerated: string;
+}
+
+export interface PredictiveFlag {
+  name: string;
+  likelihood: number;
+  impact: number;
+  description: string;
+}
+
+export interface AIInsight {
+  title: string;
+  content: string;
+  category: string;
+  severity: 'critical' | 'important' | 'moderate' | 'positive';
+}
+
+export interface SentimentAnalysis {
+  theme: SurveyTheme;
+  sentiment: number;
+  keywords: string[];
+  summary: string;
+}

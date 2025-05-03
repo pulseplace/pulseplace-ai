@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -32,22 +33,27 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { Task, TaskModule, TaskPriority, TaskStatus, TaskOwner } from '@/types/task.types';
 
+// Update the schema to match the TaskModule type
 const taskSchema = z.object({
   name: z.string().min(3, 'Task name must be at least 3 characters'),
   module: z.enum([
-    'PulseScore Engine', 
-    'AI Summary', 
-    'Certification', 
-    'Dashboard', 
-    'Slack Bot', 
-    'Lite Survey', 
-    'Backend Infra', 
-    'Frontend UI', 
+    'Frontend UI',
+    'Backend API',
+    'Database',
+    'Authentication',
+    'PulseScore Engine',
+    'AI Summary',
+    'Analytics',
+    'Certification',
+    'Dashboard',
+    'Slack Bot',
+    'Lite Survey',
+    'Backend Infra',
     'Other'
   ] as const),
   priority: z.enum(['High', 'Medium', 'Low'] as const),
-  status: z.enum(['Not Started', 'In Progress', 'Stuck', 'Done'] as const),
-  owner: z.enum(['Lovable', 'Founder', 'External'] as const),
+  status: z.enum(['Not Started', 'In Progress', 'Done', 'Blocked'] as const),
+  owner: z.enum(['Founder', 'Lovable', 'Dev Team', 'QA Team', 'Product Team'] as const),
   deadline: z.date().nullable(),
   notes: z.string().optional(),
   sprint: z.string().optional(),
@@ -62,27 +68,30 @@ interface TaskFormProps {
 }
 
 export default function TaskForm({ task, onSubmit, onCancel }: TaskFormProps) {
+  // Fix the default values to match the schema
+  const defaultValues: TaskFormValues = task ? {
+    name: task.name,
+    module: task.module,
+    priority: task.priority,
+    status: task.status,
+    owner: task.owner,
+    deadline: task.deadline,
+    notes: task.notes,
+    sprint: task.sprint || '',
+  } : {
+    name: '',
+    module: 'Frontend UI',
+    priority: 'Medium',
+    status: 'Not Started',
+    owner: 'Dev Team',
+    deadline: null,
+    notes: '',
+    sprint: '',
+  };
+
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
-    defaultValues: task ? {
-      name: task.name,
-      module: task.module,
-      priority: task.priority,
-      status: task.status,
-      owner: task.owner,
-      deadline: task.deadline || new Date(),
-      notes: task.notes || '',
-      sprint: task.sprint || ''
-    } : {
-      name: '',
-      module: 'Frontend UI' as TaskModule, // Use a valid value from the updated TaskModule type
-      priority: 'Medium' as TaskPriority,
-      status: 'Not Started' as TaskStatus,
-      owner: 'Lovable' as TaskOwner,
-      deadline: new Date(),
-      notes: '',
-      sprint: ''
-    },
+    defaultValues,
   });
 
   const handleSubmit = (data: TaskFormValues) => {

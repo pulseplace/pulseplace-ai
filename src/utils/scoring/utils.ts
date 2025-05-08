@@ -1,14 +1,14 @@
 
 import { PulseScoreTier, SurveyQuestion, SurveyResponse } from '@/types/scoring.types';
-import { TIER_THRESHOLDS } from './config';
+import { scoreTierThresholds } from './config';
 
 // Get the tier based on score
 export const getTierFromScore = (score: number): PulseScoreTier => {
-  if (score >= TIER_THRESHOLDS.pulse_certified) {
+  if (score >= scoreTierThresholds.pulse_certified) {
     return 'pulse_certified';
-  } else if (score >= TIER_THRESHOLDS.emerging_culture) {
+  } else if (score >= scoreTierThresholds.emerging_culture) {
     return 'emerging_culture';
-  } else if (score >= TIER_THRESHOLDS.at_risk) {
+  } else if (score >= scoreTierThresholds.at_risk) {
     return 'at_risk';
   } else {
     return 'intervention_advised';

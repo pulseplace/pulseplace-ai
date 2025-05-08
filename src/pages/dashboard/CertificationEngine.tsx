@@ -15,6 +15,7 @@ import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from '@/contexts/AuthContext';
 import LoadingState from '@/components/dashboard/admin/components/LoadingState';
+import { SurveyQuestion, PulseScoreData } from '@/types/scoring.types';
 
 const CertificationEngine = () => {
   const { toast } = useToast();
@@ -23,6 +24,50 @@ const CertificationEngine = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Sample questions for mapping
+  const sampleQuestions: SurveyQuestion[] = [
+    {
+      id: '1',
+      text: 'I feel my ideas are valued by my team',
+      type: 'likert',
+      theme: 'psychological_safety',
+      weight: 1
+    },
+    {
+      id: '2',
+      text: 'I have opportunities to learn and grow at my company',
+      type: 'likert',
+      theme: 'growth_opportunity',
+      weight: 1
+    },
+    {
+      id: '3',
+      text: 'My manager genuinely cares about my wellbeing',
+      type: 'likert',
+      theme: 'trust_in_leadership',
+      weight: 1
+    }
+  ];
+  
+  // Sample pulse score data
+  const samplePulseScore: PulseScoreData = {
+    overallScore: 82,
+    themesScores: [
+      { theme: 'trust_in_leadership', score: 78, count: 2 },
+      { theme: 'psychological_safety', score: 85, count: 3 },
+      { theme: 'inclusion_belonging', score: 76, count: 3 },
+      { theme: 'work_life_balance', score: 68, count: 2 },
+      { theme: 'growth_opportunity', score: 82, count: 2 }
+    ],
+    categoryScores: [
+      { category: 'emotion_index', score: 76, weight: 0.4 },
+      { category: 'culture_trust', score: 81, weight: 0.35 },
+      { category: 'engagement_stability', score: 75, weight: 0.25 }
+    ],
+    responseCount: 142,
+    tier: 'pulse_certified'
+  };
+  
   // Demo data for certification badge
   const certificationData = {
     companyName: 'Acme Corporation',
@@ -30,6 +75,18 @@ const CertificationEngine = () => {
     score: 88,
     issueDate: 'April 7, 2025',
     validUntil: 'April 7, 2026'
+  };
+  
+  // Additional mock data for email test
+  const mockEmailData = {
+    companyName: 'Acme Corporation',
+    overallScore: 88,
+    themesScores: samplePulseScore.themesScores,
+    categoryScores: samplePulseScore.categoryScores,
+    tier: 'pulse_certified',
+    industryBenchmark: 75,
+    dateGenerated: 'April 8, 2025',
+    responseCount: 142
   };
   
   useEffect(() => {
@@ -116,7 +173,7 @@ const CertificationEngine = () => {
         ) : (
           <>
             <TabsContent value="mapping">
-              <QuestionThemeMapping />
+              <QuestionThemeMapping questions={sampleQuestions} />
             </TabsContent>
             
             <TabsContent value="workflow">
@@ -124,7 +181,7 @@ const CertificationEngine = () => {
             </TabsContent>
             
             <TabsContent value="email">
-              <CertificationEmailTemplate />
+              <CertificationEmailTemplate pulseScore={samplePulseScore} companyName="Acme Corporation" />
             </TabsContent>
             
             <TabsContent value="admin">

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { SurveyQuestion, SurveyResponse, PulseScoreData } from '@/types/scoring.types';
 import { Card } from '@/components/ui/card';
@@ -137,7 +136,7 @@ const PulseScoreCalculator: React.FC<PulseScoreCalculatorProps> = ({
                   <Progress 
                     value={theme.score} 
                     className="h-2" 
-                    indicatorColor={getThemeColor(theme.theme)} 
+                    style={{ backgroundColor: getThemeColor(theme.theme) }}
                   />
                 </div>
               ))}

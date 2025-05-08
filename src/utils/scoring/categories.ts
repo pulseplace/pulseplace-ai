@@ -1,6 +1,6 @@
 
 import { CategoryScore, ThemeScore } from '@/types/scoring.types';
-import { THEME_TO_CATEGORY, CATEGORY_WEIGHTS } from './config';
+import { themeToCategory, categoryWeights } from './config';
 
 export const calculateCategoryScores = (themeScores: ThemeScore[]): CategoryScore[] => {
   const categoryScores: Record<string, { sum: number; count: number }> = {
@@ -10,7 +10,7 @@ export const calculateCategoryScores = (themeScores: ThemeScore[]): CategoryScor
   };
 
   themeScores.forEach(theme => {
-    const category = THEME_TO_CATEGORY[theme.theme];
+    const category = themeToCategory[theme.theme];
     categoryScores[category].sum += theme.score * theme.count;
     categoryScores[category].count += theme.count;
   });
@@ -18,7 +18,7 @@ export const calculateCategoryScores = (themeScores: ThemeScore[]): CategoryScor
   return Object.entries(categoryScores).map(([category, { sum, count }]) => ({
     category: category as any,
     score: count > 0 ? sum / count : 0,
-    weight: CATEGORY_WEIGHTS[category as keyof typeof CATEGORY_WEIGHTS]
+    weight: categoryWeights[category as keyof typeof categoryWeights]
   }));
 };
 

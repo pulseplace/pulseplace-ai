@@ -1,32 +1,23 @@
 
-import { useState, useEffect } from 'react';
-import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { useState, useEffect, useCallback } from 'react';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/integrations/firebase/client';
-import { toast } from 'sonner';
-import { calculateDashboardStats, generateDemoData } from '@/utils/dashboardUtils';
 
 export const useDashboardData = (userId: string | undefined) => {
   const [surveys, setSurveys] = useState<any[]>([]);
   const [responses, setResponses] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<any>({
     pulseScore: 0,
     responseRate: 0,
-    employeesEngaged: 0,
-    insightsGenerated: 0
+    participationRate: 0,
+    completionRate: 0
   });
-  const [refreshCounter, setRefreshCounter] = useState(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Force refresh function for manual retries
-  const forceRefresh = () => {
-    console.log('Force refresh triggered');
-    setRefreshCounter(prev => prev + 1);
-  };
-
-  const fetchDashboardData = async () => {
+  // Fetch data function
+  const fetchData = useCallback(async () => {
     if (!userId) {
-      console.log('No user, setting isLoading to false');
       setIsLoading(false);
       return;
     }
@@ -35,81 +26,86 @@ export const useDashboardData = (userId: string | undefined) => {
     setError(null);
 
     try {
-      console.log('Fetching dashboard data...');
-      
       // Fetch surveys
       const surveysQuery = query(
-        collection(db, 'pulse_surveys'),
-        where('created_by', '==', userId),
-        orderBy('created_at', 'desc')
+        collection(db, 'surveys'),
+        where('userId', '==', userId)
       );
-      
       const surveysSnapshot = await getDocs(surveysQuery);
       const surveysData = surveysSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-
-      console.log('Surveys data fetched:', surveysData?.length || 0, 'surveys');
-      setSurveys(surveysData || []);
+      setSurveys(surveysData);
 
       // Fetch responses
-      let responsesData: any[] = [];
-      // Collect response data for each survey
-      for (const survey of surveysData) {
-        const responsesQuery = query(
-          collection(db, 'survey_responses'),
-          where('survey_id', '==', survey.id),
-          orderBy('created_at', 'desc')
-        );
-        
-        const responsesSnapshot = await getDocs(responsesQuery);
-        const surveyResponses = responsesSnapshot.docs.map(doc => ({
-          id: doc.id,
-          survey_id: survey.id,
-          ...doc.data(),
-          pulse_surveys: {
-            title: survey.title
-          }
-        }));
-        
-        responsesData = [...responsesData, ...surveyResponses];
-      }
+      const responsesQuery = query(
+        collection(db, 'responses'),
+        where('userId', '==', userId)
+      );
+      const responsesSnapshot = await getDocs(responsesQuery);
+      const responsesData = responsesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setResponses(responsesData);
 
-      console.log('Responses data fetched:', responsesData?.length || 0, 'responses');
-      setResponses(responsesData || []);
+      // Calculate statistics
+      const pulseScores = responsesData
+        .filter(r => r.pulse_score && typeof r.pulse_score.overallScore === 'number')
+        .map(r => r.pulse_score.overallScore);
 
-      // Calculate and set stats
-      const calculatedStats = calculateDashboardStats(surveysData, responsesData);
-      
-      console.log('Stats calculated:', calculatedStats);
-      setStats(calculatedStats);
-    } catch (err: any) {
+      const avgPulseScore = pulseScores.length > 0
+        ? Math.round(pulseScores.reduce((a, b) => a + b, 0) / pulseScores.length)
+        : 0;
+
+      setStats({
+        pulseScore: avgPulseScore,
+        responseRate: surveysData.length > 0 ? Math.round((responsesData.length / surveysData.length) * 100) : 0,
+        participationRate: 76, // Mock value, would be calculated from actual user data
+        completionRate: 92, // Mock value, would be calculated from actual user data
+      });
+
+    } catch (err) {
       console.error('Error fetching dashboard data:', err);
-      setError(err.message || 'Failed to load dashboard data');
+      setError('Failed to load dashboard data. Please try again later.');
       
-      // Use demo data if error occurs
-      const { surveys: demoSurveys, stats: demoStats } = generateDemoData(userId);
-      setSurveys(demoSurveys);
-      setStats(demoStats);
+      // Use mock data as fallback
+      setSurveys([
+        { id: 'mock1', name: 'Employee Engagement 2025', date: new Date().toISOString() },
+        { id: 'mock2', name: 'Leadership Assessment', date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() }
+      ]);
       
-      toast.error('Failed to load dashboard data - displaying demo data');
+      setResponses([
+        { id: 'resp1', surveyId: 'mock1', pulse_score: { overallScore: 78 } },
+        { id: 'resp2', surveyId: 'mock2', pulse_score: { overallScore: 82 } }
+      ]);
+      
+      setStats({
+        pulseScore: 80,
+        responseRate: 68,
+        participationRate: 76,
+        completionRate: 92
+      });
     } finally {
-      console.log('Finished fetching dashboard data, setting isLoading to false');
       setIsLoading(false);
     }
+  }, [userId]);
+
+  // Force refresh function for manual refresh
+  const forceRefresh = () => {
+    fetchData();
   };
 
-  // Initialize data when user changes or refresh counter changes
+  // Initial data fetch
   useEffect(() => {
-    console.log('User or refresh counter changed, fetching dashboard data...');
-    if (userId) {
-      fetchDashboardData();
-    } else {
-      // If no user, don't try to fetch data but make sure we're not in loading state
-      setIsLoading(false);
-    }
-  }, [userId, refreshCounter]);
+    fetchData();
+  }, [fetchData]);
+
+  // Refresh data periodically
+  const refreshData = useCallback(() => {
+    fetchData();
+  }, [fetchData]);
 
   return {
     surveys,
@@ -117,7 +113,7 @@ export const useDashboardData = (userId: string | undefined) => {
     stats,
     isLoading,
     error,
-    refreshData: fetchDashboardData,
+    refreshData,
     forceRefresh
   };
 };

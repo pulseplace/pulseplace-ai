@@ -83,7 +83,7 @@ const CertificationEngine = () => {
     overallScore: 88,
     themesScores: samplePulseScore.themesScores,
     categoryScores: samplePulseScore.categoryScores,
-    tier: 'pulse_certified',
+    tier: 'pulse_certified' as const, // Specify the type to match PulseScoreTier
     industryBenchmark: 75,
     dateGenerated: 'April 8, 2025',
     responseCount: 142
@@ -173,7 +173,7 @@ const CertificationEngine = () => {
         ) : (
           <>
             <TabsContent value="mapping">
-              <QuestionThemeMapping questions={sampleQuestions} />
+              <QuestionThemeMapping question={sampleQuestions} />
             </TabsContent>
             
             <TabsContent value="workflow">

@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import CertificationEmailTemplate from '@/components/dashboard/email/CertificationEmailTemplate';
 import EmailSendTest from '@/components/dashboard/email/EmailSendTest';
-import { PulseScoreData } from '@/types/scoring.types';
+import { PulseScoreData, PulseScoreTier } from '@/types/scoring.types';
 
 const EmailTemplates: React.FC = () => {
   // Sample pulse score data
@@ -32,7 +32,7 @@ const EmailTemplates: React.FC = () => {
     overallScore: 88,
     themesScores: samplePulseScore.themesScores,
     categoryScores: samplePulseScore.categoryScores,
-    tier: 'pulse_certified',
+    tier: 'pulse_certified' as PulseScoreTier,
     industryBenchmark: 75,
     dateGenerated: 'April 8, 2025',
     responseCount: 142

@@ -51,6 +51,7 @@ export const useDashboardData = (userId: string | undefined) => {
       setResponses(responsesData);
 
       // Calculate statistics
+      // Safely calculate pulse scores, handling cases where pulse_score may not exist
       const pulseScores = responsesData
         .filter(r => r.pulse_score && typeof r.pulse_score.overallScore === 'number')
         .map(r => r.pulse_score.overallScore);
@@ -77,8 +78,16 @@ export const useDashboardData = (userId: string | undefined) => {
       ]);
       
       setResponses([
-        { id: 'resp1', surveyId: 'mock1', pulse_score: { overallScore: 78 } },
-        { id: 'resp2', surveyId: 'mock2', pulse_score: { overallScore: 82 } }
+        { 
+          id: 'resp1', 
+          surveyId: 'mock1', 
+          pulse_score: { overallScore: 78 } 
+        },
+        { 
+          id: 'resp2', 
+          surveyId: 'mock2', 
+          pulse_score: { overallScore: 82 } 
+        }
       ]);
       
       setStats({
@@ -102,7 +111,7 @@ export const useDashboardData = (userId: string | undefined) => {
     fetchData();
   }, [fetchData]);
 
-  // Refresh data periodically
+  // Refresh data function
   const refreshData = useCallback(() => {
     fetchData();
   }, [fetchData]);

@@ -30,9 +30,19 @@ export const DashboardProvider = ({ children }: DashboardProviderProps) => {
     stats,
     isLoading,
     error,
-    refreshData,
-    forceRefresh
+    refreshData: refreshDataHook,
+    forceRefresh: forceRefreshHook
   } = useDashboardData(user?.id);
+  
+  // Wrap the refreshData function to return a Promise
+  const refreshData = async (): Promise<void> => {
+    return Promise.resolve(refreshDataHook());
+  };
+  
+  // Wrap the forceRefresh function to return a Promise
+  const forceRefresh = async (): Promise<void> => {
+    return Promise.resolve(forceRefreshHook());
+  };
   
   // Log data loading status for debugging
   useEffect(() => {

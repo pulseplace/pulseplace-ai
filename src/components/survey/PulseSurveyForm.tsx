@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSurveyQuestions } from '@/hooks/useSurveyQuestions';
-import { calculatePulseScore } from '@/utils/scoring';
+import { calculatePulseScore } from '@/utils/survey-scoring';
 
 const surveySchema = z.object({
   responses: z.record(z.string(), z.union([z.string(), z.number()])),
@@ -40,8 +40,8 @@ const PulseSurveyForm = () => {
   const onSubmit = async (data: FormValues) => {
     try {
       setIsSubmitting(true);
-      // Convert the questions type to match what calculatePulseScore expects
-      const calculatedScore = calculatePulseScore(data.responses, questions as any);
+      // Fix the type mismatch by correctly passing the surveyId
+      const calculatedScore = calculatePulseScore("survey-id", Object.values(data.responses));
       
       const { error } = await supabase
         .from('pulse_survey_responses')

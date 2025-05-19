@@ -1,11 +1,13 @@
 
 import { db } from '@/integrations/firebase/client';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
-import { calculatePulseScore } from '@/utils/scoring';
+import { SurveyTheme, ScoringCategory, PulseScoreTier } from '@/types/scoring.types';
+import { calculatePulseScore } from '@/utils/survey-scoring';
 
 export interface CategoryScore {
   category: string;
   score: number;
+  weight: number; // Adding weight property to match insightsService
 }
 
 export interface SentimentData {
@@ -58,14 +60,20 @@ export const scoringService = {
       };
       
       // Calculate score using the utility function
-      // In a real implementation, this would use more sophisticated calculations
-      const overallScore = calculateMockPulseScore(responses);
+      const overallScore = calculatePulseScore(responses);
       
-      // Mock category scores for demonstration
-      const categoryScores = [
-        { category: "trust_safety", score: Math.round(overallScore * 0.9) },
-        { category: "engagement_stability", score: Math.round(overallScore * 1.1) },
-        { category: "culture_belonging", score: Math.round(overallScore * 0.95) }
+      // Category weights matching the calculation specification
+      const categoryWeights = {
+        "trust_safety": 0.3,
+        "engagement_stability": 0.3,
+        "culture_belonging": 0.4
+      };
+      
+      // Mock category scores for demonstration - now with weights
+      const categoryScores: CategoryScore[] = [
+        { category: "trust_safety", score: Math.round(overallScore * 0.9), weight: categoryWeights.trust_safety },
+        { category: "engagement_stability", score: Math.round(overallScore * 1.1), weight: categoryWeights.engagement_stability },
+        { category: "culture_belonging", score: Math.round(overallScore * 0.95), weight: categoryWeights.culture_belonging }
       ];
       
       // Mock sentiment data
@@ -109,22 +117,68 @@ export const scoringService = {
 };
 
 /**
- * Helper function to calculate a mock pulse score
- * In a real implementation, this would be more sophisticated
+ * Helper function to calculate a pulse score based on category scores
+ * Implements the weighted logic: 40% Emotion + 30% Stability + 30% Trust
  */
-function calculateMockPulseScore(responses: any[]): number {
-  // Simple mock implementation - in real app would be more complex
-  const baseScore = 65 + Math.floor(Math.random() * 20);
-  const responseCount = responses.length;
+export function calculateWeightedPulseScore(categoryScores: CategoryScore[]): number {
+  // Map category names to their logical groups
+  const categoryMapping: Record<string, string> = {
+    "culture_belonging": "emotion",
+    "engagement_stability": "stability",
+    "trust_safety": "trust"
+  };
   
-  // Adjust score based on number of responses
-  let adjustedScore = baseScore;
-  if (responseCount > 10) {
-    adjustedScore += 5;
-  } else if (responseCount > 5) {
-    adjustedScore += 2;
+  // Define weights for each logical group
+  const groupWeights: Record<string, number> = {
+    "emotion": 0.4,
+    "stability": 0.3,
+    "trust": 0.3
+  };
+  
+  // Group scores by logical group
+  const groupScores: Record<string, { sum: number; count: number }> = {
+    "emotion": { sum: 0, count: 0 },
+    "stability": { sum: 0, count: 0 },
+    "trust": { sum: 0, count: 0 }
+  };
+  
+  // Aggregate scores by group
+  categoryScores.forEach(catScore => {
+    const group = categoryMapping[catScore.category] || "other";
+    if (groupScores[group]) {
+      groupScores[group].sum += catScore.score;
+      groupScores[group].count += 1;
+    }
+  });
+  
+  // Calculate weighted average
+  let totalWeight = 0;
+  let weightedSum = 0;
+  
+  Object.entries(groupScores).forEach(([group, data]) => {
+    if (data.count > 0) {
+      const avgScore = data.sum / data.count;
+      const weight = groupWeights[group] || 0;
+      weightedSum += avgScore * weight;
+      totalWeight += weight;
+    }
+  });
+  
+  // Return final score (or default if no valid data)
+  return totalWeight > 0 ? Math.round((weightedSum / totalWeight) * 100) / 100 : 0;
+}
+
+/**
+ * Determine certification tier based on overall score
+ */
+export function determineCertificationTier(score: number): PulseScoreTier {
+  if (score >= 85) {
+    return 'pulse_certified';
+  } else if (score >= 70) {
+    return 'emerging_culture';
+  } else if (score >= 55) {
+    return 'at_risk';
+  } else {
+    return 'intervention_advised';
   }
-  
-  // Ensure score is within valid range
-  return Math.min(100, Math.max(0, adjustedScore));
 }

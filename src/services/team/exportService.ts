@@ -17,18 +17,18 @@ export const exportService = {
     try {
       console.log(`Exporting team data to CSV. Department filter: ${departmentFilter || 'All Departments'}`);
       
-      let teamMembersQuery;
+      let teamMembersSnapshot;
       
       if (departmentFilter && departmentFilter !== 'All Departments') {
-        teamMembersQuery = query(
+        const teamMembersQuery = query(
           collection(db, 'team_members'),
           where('department', '==', departmentFilter)
         );
+        teamMembersSnapshot = await getDocs(teamMembersQuery);
       } else {
-        teamMembersQuery = collection(db, 'team_members');
+        teamMembersSnapshot = await getDocs(collection(db, 'team_members'));
       }
       
-      const teamMembersSnapshot = await getDocs(teamMembersQuery);
       const data = teamMembersSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()

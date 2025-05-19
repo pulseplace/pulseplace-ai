@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { db } from '@/integrations/firebase/client';
+import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
 
 export type OnboardingStep = 'welcome' | 'company-profile' | 'first-survey' | 'results-calculation' | 'certification';
 
@@ -33,15 +35,13 @@ export const useOnboarding = () => {
         }
         
         // Check if user has completed any surveys
-        const { data: surveyData, error: surveyError } = await supabase
-          .from('pulse_surveys')
-          .select('id')
-          .eq('created_by', user.id)
-          .limit(1);
+        const surveysQuery = query(
+          collection(db, 'surveys'),
+          where('created_by', '==', user.id)
+        );
         
-        if (surveyError) throw surveyError;
-        
-        const hasSurveyData = surveyData && surveyData.length > 0;
+        const surveySnapshot = await getDocs(surveysQuery);
+        const hasSurveyData = !surveySnapshot.empty;
         setHasSurveys(hasSurveyData);
         
         // For demo purposes, we'll assume certification status
@@ -115,6 +115,32 @@ export const useOnboarding = () => {
     localStorage.setItem('lastOnboardingStep', step);
   };
 
+  // Add the missing markStepComplete method
+  const markStepComplete = async (step: OnboardingStep): Promise<void> => {
+    if (!user) return;
+    
+    try {
+      // Add step to completed steps array if not already there
+      if (!completedSteps.includes(step)) {
+        const newCompletedSteps = [...completedSteps, step];
+        setCompletedSteps(newCompletedSteps);
+      }
+      
+      // In a real app, you might want to update this in your user profile in the database
+      if (profile) {
+        const userDocRef = doc(db, 'users', user.id);
+        await updateDoc(userDocRef, {
+          [`onboarding.${step}Completed`]: true,
+          'onboarding.lastCompletedStep': step
+        });
+      }
+      
+      console.log(`Marked onboarding step "${step}" as complete`);
+    } catch (error) {
+      console.error(`Error marking step ${step} as complete:`, error);
+    }
+  };
+
   // Calculate overall progress percentage
   const progressPercentage = () => {
     const steps: OnboardingStep[] = ['welcome', 'company-profile', 'first-survey', 'results-calculation', 'certification'];
@@ -144,6 +170,7 @@ export const useOnboarding = () => {
     progressPercentage,
     isStepCompleted,
     resetOnboarding,
-    lastVisitedStep
+    lastVisitedStep,
+    markStepComplete
   };
 };

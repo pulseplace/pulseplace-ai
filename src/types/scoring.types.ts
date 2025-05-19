@@ -1,5 +1,5 @@
 
-export type QuestionType = 'likert' | 'emoji' | 'text' | 'binary';
+export type QuestionType = 'likert' | 'emoji' | 'text' | 'binary' | 'scale';
 export type SurveyTheme = 'trust_in_leadership' | 'psychological_safety' | 'inclusion_belonging' | 'work_life_balance' | 'growth_opportunity';
 export type ScoringCategory = 'emotion_index' | 'engagement_stability' | 'culture_trust';
 export type PulseScoreTier = 'pulse_certified' | 'emerging_culture' | 'at_risk' | 'intervention_advised';
@@ -10,6 +10,7 @@ export interface SurveyQuestion {
   type: QuestionType;
   theme: SurveyTheme;
   weight: number;
+  options?: any[];
 }
 
 export interface SurveyResponse {

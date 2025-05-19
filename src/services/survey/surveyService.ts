@@ -1,18 +1,22 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { collection, doc, getDoc, getDocs, addDoc, query, orderBy } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/client';
 import { Survey, CreateSurveyParams } from './types';
 
 export const surveyService = {
   async getSurveys(): Promise<Survey[]> {
     try {
-      const { data, error } = await supabase
-        .from('pulse_surveys')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const q = query(
+        collection(db, 'pulse_surveys'),
+        orderBy('created_at', 'desc')
+      );
       
-      if (error) throw error;
+      const querySnapshot = await getDocs(q);
       
-      return data || [];
+      return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Survey[];
     } catch (error) {
       console.error('Error fetching surveys:', error);
       return [];
@@ -21,15 +25,17 @@ export const surveyService = {
   
   async getSurveyById(surveyId: string): Promise<Survey | null> {
     try {
-      const { data, error } = await supabase
-        .from('pulse_surveys')
-        .select('*')
-        .eq('id', surveyId)
-        .single();
+      const docRef = doc(db, 'pulse_surveys', surveyId);
+      const docSnap = await getDoc(docRef);
       
-      if (error) throw error;
+      if (docSnap.exists()) {
+        return {
+          id: docSnap.id,
+          ...docSnap.data()
+        } as Survey;
+      }
       
-      return data || null;
+      return null;
     } catch (error) {
       console.error(`Error fetching survey ${surveyId}:`, error);
       return null;
@@ -64,26 +70,20 @@ export const surveyService = {
         }
       ];
       
-      const { data, error } = await supabase
-        .from('pulse_surveys')
-        .insert({
-          title,
-          description,
-          department,
-          is_active: true,
-          is_anonymous,
-          questions: defaultQuestions,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        .select('id')
-        .single();
-      
-      if (error) throw error;
+      const docRef = await addDoc(collection(db, 'pulse_surveys'), {
+        title,
+        description,
+        department,
+        is_active: true,
+        is_anonymous,
+        questions: defaultQuestions,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
       
       return {
         success: true,
-        id: data.id
+        id: docRef.id
       };
     } catch (error: any) {
       console.error('Error creating survey:', error);

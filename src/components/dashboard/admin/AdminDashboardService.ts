@@ -1,7 +1,7 @@
 
-import { supabase } from '@/integrations/supabase/client';
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { formatDistanceToNow } from 'date-fns';
-import { Tables } from '@/types/database.types';
+import { db } from '@/integrations/firebase/client';
 
 export interface DepartmentStats {
   department: string;
@@ -26,27 +26,16 @@ export const fetchAdminDashboardStats = async (): Promise<{
 }> => {
   try {
     // Get total number of surveys
-    const { data: surveys, error: surveysError } = await supabase
-      .from('pulse_surveys')
-      .select('id, is_active');
-    
-    if (surveysError) throw surveysError;
-    
-    const activeSurveys = surveys.filter(s => s.is_active).length;
+    const surveysQuery = query(collection(db, 'pulse_surveys'), where('is_active', '==', true));
+    const surveysSnapshot = await getDocs(surveysQuery);
+    const activeSurveys = surveysSnapshot.docs.length;
     
     // Get total responses
-    const { count: totalResponses, error: responsesError } = await supabase
-      .from('survey_responses')
-      .select('*', { count: 'exact', head: true });
-    
-    if (responsesError) throw responsesError;
+    const responsesSnapshot = await getDocs(collection(db, 'survey_responses'));
+    const totalResponses = responsesSnapshot.docs.length;
     
     // Calculate average PulseScore
-    const { data: scoreData, error: scoreError } = await supabase
-      .from('survey_responses')
-      .select('pulse_score');
-    
-    if (scoreError) throw scoreError;
+    const scoreData = responsesSnapshot.docs.map(doc => doc.data());
     
     // Calculate average overall score
     let overallScore = 0;
@@ -80,17 +69,13 @@ export const fetchAdminDashboardStats = async (): Promise<{
 // Fetch department stats
 export const fetchDepartmentStats = async (): Promise<DepartmentStats[]> => {
   try {
-    // Get all unique departments
-    const { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('department')
-      .not('department', 'is', null);
-    
-    if (profilesError) throw profilesError;
+    // Get all unique departments from profiles collection
+    const profilesSnapshot = await getDocs(collection(db, 'profiles'));
     
     // Get unique departments
     const departmentsSet = new Set<string>();
-    profiles.forEach(profile => {
+    profilesSnapshot.docs.forEach(doc => {
+      const profile = doc.data();
       if (profile.department) {
         departmentsSet.add(profile.department);
       }
@@ -102,28 +87,37 @@ export const fetchDepartmentStats = async (): Promise<DepartmentStats[]> => {
     const departmentStats: DepartmentStats[] = [];
     
     for (const department of departments) {
-      // Get responses from users in this department
-      const { data: responses, error: responsesError } = await supabase
-        .from('survey_responses')
-        .select(`
-          id,
-          pulse_score,
-          profiles!inner(
-            department
-          )
-        `)
-        .eq('profiles.department', department);
+      // Get profiles with this department
+      const profilesQuery = query(
+        collection(db, 'profiles'), 
+        where('department', '==', department)
+      );
+      const profilesWithDeptSnapshot = await getDocs(profilesQuery);
+      const userIds = profilesWithDeptSnapshot.docs.map(doc => doc.id);
       
-      if (responsesError) throw responsesError;
+      // Get responses from users in this department
+      const allResponses = [];
+      
+      for (const userId of userIds) {
+        const responsesQuery = query(
+          collection(db, 'responses'),
+          where('userId', '==', userId)
+        );
+        const responsesSnapshot = await getDocs(responsesQuery);
+        allResponses.push(...responsesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })));
+      }
       
       // Calculate average score
       let departmentScore = 0;
-      if (responses && responses.length > 0) {
-        const totalScore = responses.reduce((sum, item) => {
+      if (allResponses && allResponses.length > 0) {
+        const totalScore = allResponses.reduce((sum, item) => {
           const score = item.pulse_score?.overallScore || 0;
           return sum + score;
         }, 0);
-        departmentScore = Math.round(totalScore / responses.length);
+        departmentScore = Math.round(totalScore / allResponses.length);
       } else {
         // If no responses, generate a random score for demo purposes
         departmentScore = Math.floor(Math.random() * 30) + 65;
@@ -132,7 +126,7 @@ export const fetchDepartmentStats = async (): Promise<DepartmentStats[]> => {
       departmentStats.push({
         department,
         score: departmentScore,
-        responseCount: responses?.length || 0
+        responseCount: allResponses?.length || 0
       });
     }
     
@@ -148,7 +142,7 @@ export const fetchDepartmentStats = async (): Promise<DepartmentStats[]> => {
 // Fetch recent certifications
 export const fetchRecentCertifications = async (): Promise<CertificationSummary[]> => {
   try {
-    // In a real app, this would fetch from a certifications table
+    // In a real app, this would fetch from a certifications collection
     // For now, we'll create mock data based on the department scores
     
     const departmentStats = await fetchDepartmentStats();

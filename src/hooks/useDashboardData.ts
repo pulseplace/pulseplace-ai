@@ -3,9 +3,19 @@ import { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/integrations/firebase/client';
 
+interface ResponseWithPulseScore {
+  id: string;
+  surveyId?: string;
+  survey_id?: string;
+  pulse_score?: {
+    overallScore: number;
+  };
+  [key: string]: any;
+}
+
 export const useDashboardData = (userId: string | undefined) => {
   const [surveys, setSurveys] = useState<any[]>([]);
-  const [responses, setResponses] = useState<any[]>([]);
+  const [responses, setResponses] = useState<ResponseWithPulseScore[]>([]);
   const [stats, setStats] = useState<any>({
     pulseScore: 0,
     responseRate: 0,
@@ -47,7 +57,7 @@ export const useDashboardData = (userId: string | undefined) => {
       const responsesData = responsesSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }));
+      })) as ResponseWithPulseScore[];
       setResponses(responsesData);
 
       // Calculate statistics

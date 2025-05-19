@@ -2,25 +2,37 @@
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/integrations/firebase/client';
 
+interface TeamMember {
+  id: string;
+  name?: string;
+  email?: string;
+  department?: string;
+  surveyStatus?: string;
+  lastActive?: string;
+  [key: string]: any;
+}
+
 export const exportService = {
   async exportTeamDataCSV(departmentFilter?: string): Promise<{success: boolean, data?: string, error?: string}> {
     try {
       console.log(`Exporting team data to CSV. Department filter: ${departmentFilter || 'All Departments'}`);
       
-      let teamMembersQuery = collection(db, 'team_members');
+      let teamMembersQuery;
       
       if (departmentFilter && departmentFilter !== 'All Departments') {
         teamMembersQuery = query(
           collection(db, 'team_members'),
           where('department', '==', departmentFilter)
         );
+      } else {
+        teamMembersQuery = collection(db, 'team_members');
       }
       
       const teamMembersSnapshot = await getDocs(teamMembersQuery);
       const data = teamMembersSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }));
+      })) as TeamMember[];
       
       if (!data || data.length === 0) {
         console.warn('No data found to export');

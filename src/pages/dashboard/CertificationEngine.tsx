@@ -62,8 +62,33 @@ const CertificationEngine = () => {
           throw new Error('No responses found for the latest survey');
         }
         
-        // Get the survey questions
-        const questions = latestSurvey.questions;
+        // Get the survey questions - using mock questions for now since questions aren't stored in database
+        const questions: SurveyQuestion[] = [
+          {
+            id: 'q1',
+            text: 'I trust my leadership team to make good decisions',
+            type: 'scale',
+            theme: 'trust_in_leadership',
+            weight: 1,
+            options: [1, 2, 3, 4, 5]
+          },
+          {
+            id: 'q2',
+            text: 'I feel psychologically safe to express my opinions',
+            type: 'scale',
+            theme: 'psychological_safety',
+            weight: 1,
+            options: [1, 2, 3, 4, 5]
+          },
+          {
+            id: 'q3',
+            text: 'I feel included and valued at work',
+            type: 'scale',
+            theme: 'inclusion_belonging',
+            weight: 1,
+            options: [1, 2, 3, 4, 5]
+          }
+        ];
         setSurveyQuestions(questions);
         
         // Calculate the pulse score

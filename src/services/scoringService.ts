@@ -60,7 +60,7 @@ export const scoringService = {
       };
       
       // Calculate score using the utility function
-      const overallScore = calculatePulseScore(responses);
+      const overallScore = calculatePulseScore(surveyId, responses);
       
       // Category weights matching the calculation specification
       const categoryWeights = {

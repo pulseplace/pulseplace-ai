@@ -14,10 +14,27 @@ import BookDemo from '@/pages/BookDemo';
 import TayanaStudy from '@/pages/case-studies/TayanaStudy';
 import PulseScoreLite from '@/pages/PulseScoreLite';
 import Auth from '@/pages/Auth';
+import NotFound from '@/pages/NotFound';
 // New task tracker imports
 import TaskTracker from '@/pages/task-tracker/TaskTracker';
 import DebugLog from '@/pages/task-tracker/DebugLog';
 import BuildFlow from '@/pages/task-tracker/BuildFlow';
+// New page imports
+import HowItWorks from '@/pages/HowItWorks';
+import Certification from '@/pages/Certification';
+import Features from '@/pages/Features';
+import Contact from '@/pages/Contact';
+import AboutUs from '@/pages/AboutUs';
+import Methodology from '@/pages/Methodology';
+import Pricing from '@/pages/Pricing';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
+import TermsOfService from '@/pages/TermsOfService';
+import TaskAudit from '@/pages/TaskAudit';
+import ProjectHandover from '@/pages/ProjectHandover';
+import RoiCalculator from '@/pages/RoiCalculator';
+import Demo from '@/pages/Demo';
+import JoinBeta from '@/pages/JoinBeta';
+import Resources from '@/pages/Resources';
 
 const routes: RouteObject[] = [
   {
@@ -27,6 +44,66 @@ const routes: RouteObject[] = [
   {
     path: '/auth',
     element: <Auth />
+  },
+  {
+    path: '/how-it-works',
+    element: <HowItWorks />
+  },
+  {
+    path: '/certification',
+    element: <Certification />
+  },
+  {
+    path: '/features',
+    element: <Features />
+  },
+  {
+    path: '/contact',
+    element: <Contact />
+  },
+  {
+    path: '/about-us',
+    element: <AboutUs />
+  },
+  {
+    path: '/methodology',
+    element: <Methodology />
+  },
+  {
+    path: '/pricing',
+    element: <Pricing />
+  },
+  {
+    path: '/privacy-policy',
+    element: <PrivacyPolicy />
+  },
+  {
+    path: '/terms-of-service',
+    element: <TermsOfService />
+  },
+  {
+    path: '/task-audit',
+    element: <TaskAudit />
+  },
+  {
+    path: '/project-handover',
+    element: <ProjectHandover />
+  },
+  {
+    path: '/roi-calculator',
+    element: <RoiCalculator />
+  },
+  {
+    path: '/demo',
+    element: <Demo />
+  },
+  {
+    path: '/join-beta',
+    element: <JoinBeta />
+  },
+  {
+    path: '/resources',
+    element: <Resources />
   },
   {
     path: '/task-summary',
@@ -84,6 +161,11 @@ const routes: RouteObject[] = [
   {
     path: '/build-flow',
     element: <BuildFlow />
+  },
+  // 404 catch-all route - must be last
+  {
+    path: '*',
+    element: <NotFound />
   }
 ];
 

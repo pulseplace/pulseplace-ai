@@ -37,24 +37,26 @@ const Navbar = () => {
     setIsMenuOpen(false);
   }, [location]);
 
-  const navClasses = `w-full py-4 fixed top-0 z-50 transition-all duration-300 ${
+  const navClasses = `w-full py-3 fixed top-0 z-50 transition-all duration-300 ${
     scrolled ? 'bg-white/95 backdrop-blur-sm shadow-sm' : 'bg-transparent'
   }`;
 
   return (
     <nav className={navClasses}>
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <Logo />
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center">
+          <Logo />
 
-        {/* Desktop Navigation */}
-        <DesktopNavigation location={location} />
+          {/* Desktop Navigation */}
+          <DesktopNavigation location={location} />
 
-        {/* Mobile Navigation Toggle and Menu */}
-        <MobileNavigation 
-          isMenuOpen={isMenuOpen} 
-          setIsMenuOpen={setIsMenuOpen} 
-          location={location} 
-        />
+          {/* Mobile Navigation Toggle and Menu */}
+          <MobileNavigation 
+            isMenuOpen={isMenuOpen} 
+            setIsMenuOpen={setIsMenuOpen} 
+            location={location} 
+          />
+        </div>
       </div>
     </nav>
   );

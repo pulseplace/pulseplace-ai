@@ -1,7 +1,6 @@
 
-import { navItems, featuresSubItems } from '@/components/navigation/NavigationConfig';
-import { features } from '@/components/FeatureSection';
-import { toast } from '@/components/ui/use-toast';
+import { navItems, featuresSubItems, dashboardNavItems } from '@/components/navigation/NavigationConfig';
+import { toast } from '@/hooks/use-toast';
 
 export interface LinkValidationResult {
   path: string;
@@ -13,12 +12,12 @@ export interface LinkValidationResult {
 
 /**
  * Checks if a route exists in the application
- * This is a simple check that doesn't account for dynamic routes
  */
 export const validateInternalLink = (path: string): boolean => {
   // List of known valid routes in the application
   const knownValidRoutes = [
     '/',
+    '/dashboard',
     '/auth',
     '/auth/login',
     '/auth/register',
@@ -48,7 +47,6 @@ export const validateInternalLink = (path: string): boolean => {
     '/task-summary',
     '/insights',
     '/pulsebot',
-    '/dashboard',
     '/dashboard/profile-settings',
     '/dashboard/pitch-deck-admin',
     '/dashboard/link-validation',
@@ -121,20 +119,18 @@ export const validateNavigationLinks = (): LinkValidationResult[] => {
     });
   });
 
-  return results;
-};
+  // Validate dashboard navigation items
+  dashboardNavItems.forEach(item => {
+    results.push({
+      path: item.path,
+      isValid: validateInternalLink(item.path),
+      source: 'Dashboard Navigation',
+      label: item.label,
+      description: item.description
+    });
+  });
 
-/**
- * Validates all feature cards links
- */
-export const validateFeatureLinks = (): LinkValidationResult[] => {
-  return features.map(feature => ({
-    path: feature.link,
-    isValid: validateInternalLink(feature.link),
-    source: 'Feature Card',
-    label: feature.title,
-    description: feature.description
-  }));
+  return results;
 };
 
 /**
@@ -143,7 +139,6 @@ export const validateFeatureLinks = (): LinkValidationResult[] => {
 export const validateAllLinks = (): LinkValidationResult[] => {
   return [
     ...validateNavigationLinks(),
-    ...validateFeatureLinks(),
     // Add more link validation functions as needed
   ];
 };

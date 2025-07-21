@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Cpu, Home, LogIn, UserPlus } from 'lucide-react';
+import { Calendar, Cpu, Home, LogIn, UserPlus, ChevronDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,7 +13,7 @@ import {
   NavigationMenuTrigger,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
-import { navItems, featuresSubItems, isActive } from './NavigationConfig';
+import { navItems, featuresSubItems, dashboardNavItems, isActive } from './NavigationConfig';
 import AuthDialog from '@/components/auth/AuthDialog';
 
 interface DesktopNavigationProps {
@@ -30,17 +30,21 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
   };
   
   return (
-    <div className="hidden md:flex items-center space-x-6">
+    <div className="hidden lg:flex items-center space-x-4">
       <NavigationMenu className="z-50">
-        <NavigationMenuList>
+        <NavigationMenuList className="space-x-2">
+          {/* Features Dropdown */}
           <NavigationMenuItem>
             <NavigationMenuTrigger 
-              className={isActive(location, '/features') ? 'text-pulse-600' : ''}
+              className={cn(
+                "text-sm font-medium px-3 py-2",
+                isActive(location, '/features') ? 'text-pulse-600' : 'text-gray-700'
+              )}
             >
               Features
             </NavigationMenuTrigger>
             <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
                 {featuresSubItems.map((item, index) => (
                   <li key={index}>
                     <NavigationMenuLink asChild>
@@ -59,41 +63,68 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
                     </NavigationMenuLink>
                   </li>
                 ))}
-                <li className="col-span-2">
-                  <div className="mt-2 bg-pulse-50 p-3 rounded-md">
-                    <div className="flex items-center space-x-2 text-pulse-600 mb-1">
-                      <Cpu className="h-4 w-4" />
-                      <span className="text-sm font-medium">AI-Powered Technology</span>
-                    </div>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Our platform uses advanced AI and LLM technology to provide deep insights into workplace culture.
-                    </p>
-                  </div>
-                </li>
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
+
+          {/* Dashboard Dropdown - only show if user is logged in */}
+          {user && (
+            <NavigationMenuItem>
+              <NavigationMenuTrigger 
+                className={cn(
+                  "text-sm font-medium px-3 py-2",
+                  isActive(location, '/dashboard') ? 'text-pulse-600' : 'text-gray-700'
+                )}
+              >
+                Dashboard
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[300px] gap-2 p-4">
+                  {dashboardNavItems.map((item, index) => (
+                    <li key={index}>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to={item.path}
+                          className={cn(
+                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                            isActive(location, item.path) ? "bg-pulse-50 text-pulse-600" : ""
+                          )}
+                        >
+                          <div className="text-sm font-medium leading-none">{item.label}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {item.description}
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  ))}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          )}
         </NavigationMenuList>
       </NavigationMenu>
       
-      {/* Primary navigation items */}
-      {navItems.map((item, index) => (
-        <Link 
-          key={index}
-          to={item.path}
-          className={`transition-colors flex items-center gap-1 ${
-            isActive(location, item.path) 
-              ? 'text-pulse-600 hover:text-pulse-700' 
-              : 'text-gray-700 hover:text-pulse-600'
-          }`}
-        >
-          {item.label === 'Home' && <Home className="h-4 w-4" />}
-          {item.label}
-        </Link>
-      ))}
+      {/* Primary navigation items - simplified */}
+      <div className="flex items-center space-x-4">
+        {navItems.map((item, index) => (
+          <Link 
+            key={index}
+            to={item.path}
+            className={cn(
+              "transition-colors text-sm font-medium px-2 py-1 rounded-md hover:bg-gray-100",
+              isActive(location, item.path) 
+                ? 'text-pulse-600 bg-pulse-50' 
+                : 'text-gray-700 hover:text-pulse-600'
+            )}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </div>
 
       {/* Call to action buttons */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 ml-6">
         {/* Login/Dashboard button */}
         {user ? (
           <Link to="/dashboard">
@@ -130,7 +161,7 @@ const DesktopNavigation = ({ location }: DesktopNavigationProps) => {
             size="sm"
           >
             <Calendar className="h-4 w-4" />
-            Book a Demo
+            Book Demo
           </Button>
         </a>
       </div>

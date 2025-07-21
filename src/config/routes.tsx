@@ -42,6 +42,10 @@ const routes: RouteObject[] = [
     element: <Dashboard />
   },
   {
+    path: '/dashboard',
+    element: <Dashboard />
+  },
+  {
     path: '/auth',
     element: <Auth />
   },

@@ -11,27 +11,32 @@ export interface SubNavItem extends NavItem {
   description: string;
 }
 
-// Primary navigation items
+// Primary navigation items - simplified for less clutter
 export const navItems: NavItem[] = [
   { label: 'Home', path: '/' },
   { label: 'How It Works', path: '/how-it-works' },
-  { label: 'Certification', path: '/certification' },
-  { label: 'Insights', path: '/insights' },
-  { label: 'PulseBot', path: '/pulsebot' },
-  { label: 'AI Dashboard', path: '/ai-dashboard' },
-  { label: 'Dashboard', path: '/dashboard' },
+  { label: 'Pricing', path: '/pricing' },
+  { label: 'About', path: '/about-us' },
+  { label: 'Contact', path: '/contact' },
 ];
 
-// Features submenu items
+// Features submenu items - consolidated
 export const featuresSubItems: SubNavItem[] = [
   { label: 'Pulse Surveys', description: 'Collect real-time employee feedback', path: '/features#surveys' },
   { label: 'AI Analytics', description: 'Transform data into actionable insights', path: '/features#ai-analytics' },
   { label: 'PulseBot', description: 'AI assistant for engagement', path: '/pulsebot' },
   { label: 'Dashboard', description: 'Real-time culture metrics', path: '/dashboard' },
-  { label: 'LLM Insights', description: 'AI-powered language analytics', path: '/dashboard/llm-insights' },
-  { label: 'Task Management', description: 'Track project tasks and progress', path: '/task-audit' },
-  { label: 'Project Reports', description: 'View handover and summary reports', path: '/project-handover' },
+  { label: 'Certification', description: 'Validate workplace culture', path: '/certification' },
   { label: 'ROI Calculator', description: 'See the business impact', path: '/roi-calculator' },
+];
+
+// Dashboard navigation items - for internal use
+export const dashboardNavItems: SubNavItem[] = [
+  { label: 'Dashboard', description: 'Main dashboard view', path: '/dashboard' },
+  { label: 'Insights', description: 'Culture analytics', path: '/insights' },
+  { label: 'PulseBot', description: 'AI assistant', path: '/pulsebot' },
+  { label: 'Task Tracker', description: 'Project management', path: '/task-tracker' },
+  { label: 'AI Dashboard', description: 'Advanced AI features', path: '/ai-dashboard' },
 ];
 
 // Helper to check if a path is active
